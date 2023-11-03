@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/screen/password_sign_in.dart';
 import 'package:flutter_framework/dashboard/screen/sms_sign_in.dart';
 import 'screen/home.dart';
 import 'screen/loading.dart';
 import 'logic_test.dart';
+import 'theme.dart';
 
 class Entry extends StatefulWidget {
   const Entry({Key? key}) : super(key: key);
@@ -17,6 +19,12 @@ class _State extends State<Entry> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: bgColor,
+        // textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
+        //     .apply(bodyColor: Colors.white),
+        canvasColor: secondaryColor,
+      ),
       initialRoute: '/loading',
       routes: {
         '/logic_test': (context) {
@@ -28,11 +36,14 @@ class _State extends State<Entry> {
         '/password_login': (context) {
           return const PasswordSignIn();
         },
-        '/sms_login': (context) {
+        '/sms_sign_in': (context) {
           return const SMSSignIn();
         },
         '/home': (context) {
           return const Home();
+        },
+        '/user': (context) {
+          return const User();
         },
       },
     );

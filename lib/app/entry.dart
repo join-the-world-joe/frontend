@@ -6,7 +6,6 @@ import 'screen/loading.dart';
 import 'screen/register.dart';
 import 'screen/login.dart';
 import 'screen/home.dart';
-import 'package:flutter_framework/framework/framework_test.dart';
 
 class Entry extends StatefulWidget {
   const Entry({Key? key}) : super(key: key);
@@ -24,9 +23,6 @@ class _State extends State<Entry> {
       routes: {
         '/login': (context) {
           return const Login();
-        },
-        '/framework': (context) {
-          return const FrameworkTest();
         },
         '/register': (context) {
           return const Register();

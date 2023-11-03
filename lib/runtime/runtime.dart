@@ -4,7 +4,6 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../../plugin/crypto/rsa.dart';
 import '../../../plugin/crypto/aes.dart';
 import '../framework/packet_client.dart';
-import '../framework/message_hook.dart';
 import '../framework/websocket.dart';
 import '../../../utils/convert.dart';
 import '../../../common/code/code.dart';
@@ -16,6 +15,7 @@ class Runtime {
   static late bool encryption;
   static bool connected = false;
   static late String token;
+  static Function? _observe;
 
   static setConnectivity(bool b) {
     connected = b;
@@ -33,7 +33,10 @@ class Runtime {
     return token;
   }
 
-  static MessageHook hook = MessageHook();
+  static setObserve(Function? callback) {
+    _observe = callback;
+  }
+
   static Websocket wsClient = Websocket(
     encryption: encryption,
     aes: aes,
@@ -43,7 +46,7 @@ class Runtime {
           encryption ? Convert.toBytes(aes.Decrypt(data)) : data,
         );
         if (isPacketClientValid(packet) == Code.oK) {
-          hook.observe(packet);
+          _observe?.call(packet);
         }
       } catch (e) {
         print('wsClient.OnReceive.e: $e');

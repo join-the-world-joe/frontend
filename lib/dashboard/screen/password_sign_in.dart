@@ -12,7 +12,6 @@ import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
-import 'package:flutter_framework/framework/routing.dart';
 
 class PasswordSignIn extends StatefulWidget {
   const PasswordSignIn({Key? key}) : super(key: key);
@@ -29,7 +28,7 @@ class _State extends State<PasswordSignIn> {
 
   int signInHandler(Map<String, dynamic> body) {
     try {
-      print('signInHandler');
+      print('PasswordSignIn.signInHandler');
       SignInRsp rsp = SignInRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         print('user_id: ${rsp.userId}');
@@ -43,7 +42,7 @@ class _State extends State<PasswordSignIn> {
   }
 
   void signInCallback(int code) {
-    print('signInCallback');
+    print('PasswordSignIn.signInCallback');
     if (code == Code.oK) {
       showMessageDialog(context, '温馨提示：', '成功');
     } else {
@@ -52,37 +51,33 @@ class _State extends State<PasswordSignIn> {
   }
 
   void navigate(String page) {
-    print('navigate to $page');
-    Runtime.hook.unRegister(
-      Routing.key(major: Major.backend, minor: Minor.backend.signInRsp),
-    );
-
+    print('PasswordSignIn.navigate to $page');
     Navigate.to(context, Screen.build(page));
   }
 
   void refresh() {
+    print('PasswordSignIn.refresh');
     setState(() {});
   }
 
   void setup() {
-    Runtime.hook.register(
-      Routing.key(major: Major.backend, minor: Minor.backend.signInRsp),
-      signInHandler,
-    );
+    print('PasswordSignIn.setup');
   }
 
   void progress() async {
+    print('PasswordSignIn.progress');
     return;
   }
 
   @override
   void dispose() {
-    print('sms_login.dispose');
+    print('PasswordSignIn.dispose');
     super.dispose();
   }
 
   @override
   void initState() {
+    print('PasswordSignIn.initState');
     setup();
     progress();
     super.initState();

@@ -3,12 +3,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/business/backend/fetch_menu_list_of_role.dart';
+import 'package:flutter_framework/dashboard/component/field.dart';
+import 'package:flutter_framework/dashboard/component/menu.dart';
+import 'package:flutter_framework/dashboard/component/permission.dart';
+import 'package:flutter_framework/dashboard/component/role.dart';
+import 'package:flutter_framework/dashboard/component/track.dart';
+import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import '../responsive.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/utils/spacing.dart';
-import 'package:flutter_framework/framework/routing.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/code/code.dart';
@@ -55,7 +60,20 @@ class _State extends State<Home> {
     });
   }
 
+  Stream<String>? yeildData() async* {
+    var lastContent = '';
+    while (true) {
+      await Future.delayed(Config.contentAreaRefreshInterval);
+      if (lastContent != Cache.getContent()) {
+        lastContent = Cache.getContent();
+        // print('lastContent: $lastContent');
+        yield lastContent;
+      }
+    }
+  }
+
   void fetchMenuListOfRoleHandler(Map<String, dynamic> body) {
+    print('Home.fetchMenuListOfRoleHandler');
     try {
       FetchMenuListOfRoleRsp rsp = FetchMenuListOfRoleRsp.fromJson(body);
       if (rsp.code == Code.oK) {
@@ -74,53 +92,33 @@ class _State extends State<Home> {
   }
 
   void refresh() {
+    print('home.refresh');
     setState(() {});
   }
 
   void navigate(String page) {
-    print('navigate to $page');
-    Runtime.hook.unRegister(
-      Routing.key(
-          major: Major.backend, minor: Minor.backend.fetchMenuListOfRoleRsp),
-    );
-    // Runtime.hook.clear();
+    print('home.navigate to $page');
     Navigate.to(context, Screen.build(page));
   }
 
   void setup() {
-    Runtime.hook.register(
-      Routing.key(
-          major: Major.backend, minor: Minor.backend.fetchMenuListOfRoleRsp),
-      fetchMenuListOfRoleHandler,
-    );
+    print('home.setup');
   }
 
   void progress() async {
-    // fetch menu list of role
-    // fetchMenuListOfRole(query: Cache.getRole());
+    print('home.progress');
     return;
   }
 
   void debug() async {
+    print('home.debug');
     var body =
-        '{"Admission":["User","Role","Permission","Menu","Track"],"Menu1":["item1","item2","item3","item4","item5"]}';
+        '{"Admission":["User","Role","Permission","Menu","Track", "Field"],"Menu1":["item1","item2","item3","item4","item5"]}';
     Cache.setMenuList(MenuList.fromJson(jsonDecode(body)));
 
     await Future.delayed(const Duration(seconds: 1));
     curStage = 1;
     refresh();
-  }
-
-  Stream<String>? yeildData() async* {
-    var lastContent = '';
-    while (true) {
-      await Future.delayed(Config.contentAreaRefreshInterval);
-      if (lastContent != Cache.getContent()) {
-        lastContent = Cache.getContent();
-        // print('lastContent: $lastContent');
-        yield lastContent;
-      }
-    }
   }
 
   @override
@@ -131,6 +129,7 @@ class _State extends State<Home> {
 
   @override
   void initState() {
+    print('home.initState');
     setup();
     progress();
     debug();
@@ -227,15 +226,27 @@ class _State extends State<Home> {
                 );
               },
             ),
+          Spacing.addHorizontalSpace(20),
           Expanded(
             child: StreamBuilder(
               builder: (context, snap) {
                 print('data: ${snap.data}');
                 if (snap.data != null) {
-                  return Container(
-                    color: Colors.lightBlue,
-                    child: Text(snap.data!),
-                  );
+                  if (Cache.getContent() == User.content) {
+                    return const User();
+                  } else if (Cache.getContent() == Role.content) {
+                    return const Role();
+                  } else if (Cache.getContent() == Menu.content) {
+                    return const Menu();
+                  } else if (Cache.getContent() == Permission.content) {
+                    return const Permission();
+                  } else if (Cache.getContent() == Field.content) {
+                    return const Field();
+                  } else if (Cache.getContent() == Track.content) {
+                    return const Track();
+                  }else {
+                    return const Text('Unknown');
+                  }
                 }
                 return const Center(child: CircularProgressIndicator());
               },

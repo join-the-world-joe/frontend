@@ -12,8 +12,8 @@ import 'package:flutter_framework/validator/mobile.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
-import 'package:flutter_framework/framework/routing.dart';
 import 'package:flutter_framework/common/business/account/login.dart';
+import 'package:flutter_framework/framework/packet_client.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -33,6 +33,26 @@ class _State extends State<Login> {
   final countryCodeControl = TextEditingController();
   final phoneNumberControl = TextEditingController();
   final verificationCodeControl = TextEditingController();
+
+  void observe(PacketClient packet) {
+    var major = packet.getHeader().getMajor();
+    var minor = packet.getHeader().getMinor();
+    var body = packet.getBody();
+    print("Login.observe: major: $major, minor: $minor");
+    try {
+      if (major == Major.sms && minor == Minor.sms.sendVerificationCodeRsp) {
+        smsHandler(body);
+      } else if (major == Major.account && minor == Minor.account.loginRsp) {
+        loginHandler(body);
+      } else {
+        print("Login.observe warning: $major-$minor doesn't matched");
+      }
+      return;
+    } catch (e) {
+      print('Login.observe($major-$minor).e: ${e.toString()}');
+      return;
+    }
+  }
 
   void smsHandler(Map<String, dynamic> body) {
     try {
@@ -65,7 +85,7 @@ class _State extends State<Login> {
         showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
       }
     } catch (e) {
-      print("login.smsHandler failure, $e");
+      print("Login.smsHandler failure, $e");
       return;
     }
   }
@@ -84,7 +104,7 @@ class _State extends State<Login> {
       }
       return;
     } catch (e) {
-      print("login.loginHandler failure, $e");
+      print("Login.loginHandler failure, $e");
       return;
     }
   }
@@ -94,37 +114,21 @@ class _State extends State<Login> {
   }
 
   void setup() {
-    Runtime.hook.register(
-      Routing.key(major: Major.sms, minor: Minor.sms.sendVerificationCodeRsp),
-      smsHandler,
-    );
-    Runtime.hook.register(
-      Routing.key(major: Major.account, minor: Minor.account.loginRsp),
-      loginHandler,
-    );
+    Runtime.setObserve(observe);
   }
 
   void navigate(String page) {
-    print('navigate to $page');
-    Runtime.hook.unRegister(Routing.key(
-        major: Major.sms, minor: Minor.sms.sendVerificationCodeRsp));
-    Runtime.hook.unRegister(
-        Routing.key(major: Major.account, minor: Minor.account.loginRsp));
-
+    print('Login.navigate to $page');
     // Runtime.hook.clear();
     Navigate.to(context, Screen.build(page));
   }
 
-  void progress() async {
-    return;
-  }
-
   @override
   void dispose() {
-    print('login.dispose');
+    print('Login.dispose');
     if (timer != null) {
       if (timer!.isActive) {
-        print('login.timer.cancel');
+        print('Login.timer.cancel');
         timer!.cancel();
       }
     }
@@ -133,9 +137,8 @@ class _State extends State<Login> {
 
   @override
   void initState() {
-    print('login.initState');
+    print('Login.initState');
     setup();
-    progress();
     super.initState();
   }
 

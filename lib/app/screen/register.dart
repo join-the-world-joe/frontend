@@ -5,7 +5,6 @@ import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/route/sms.dart';
-import 'package:flutter_framework/framework/routing.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'dart:async';
@@ -14,6 +13,7 @@ import 'package:flutter_framework/common/business/sms/send_verification_code.dar
 import 'package:flutter_framework/utils/navigate.dart';
 import '../../validator/mobile.dart';
 import '../screen/screen.dart';
+import 'package:flutter_framework/framework/packet_client.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -31,6 +31,27 @@ class _State extends State<Register> {
   String smsButtonLabel = '获取';
   Timer? timer;
   double textFieldWidth = 310.0;
+
+
+  void observe(PacketClient packet) {
+    var major = packet.getHeader().getMajor();
+    var minor = packet.getHeader().getMinor();
+    var body = packet.getBody();
+    print("Register.observe: major: $major, minor: $minor");
+    try {
+      if (major == Major.sms && minor == Minor.sms.sendVerificationCodeRsp) {
+        smsHandler(body);
+      } else if (major == Major.account && minor == Minor.account.registerRsp) {
+        registerhandler(body);
+      } else {
+        print("Register.observe warning: $major-$minor doesn't matched");
+      }
+      return;
+    } catch (e) {
+      print('Register.observe($major-$minor).e: ${e.toString()}');
+      return;
+    }
+  }
 
   void smsHandler(Map<String, dynamic> body) {
     try {
@@ -94,38 +115,21 @@ class _State extends State<Register> {
   }
 
   void setup() {
-    Runtime.hook.register(
-      Routing.key(major: Major.sms, minor: Minor.sms.sendVerificationCodeRsp),
-      smsHandler,
-    );
-    Runtime.hook.register(
-      Routing.key(major: Major.account, minor: Minor.account.registerRsp),
-      registerhandler,
-    );
+    Runtime.setObserve(observe);
   }
 
   void navigate(String page) {
-    print('navigate to $page');
-    Runtime.hook.unRegister(
-      Routing.key(major: Major.sms, minor: Minor.sms.sendVerificationCodeRsp),
-    );
-    Runtime.hook.unRegister(
-      Routing.key(major: Major.account, minor: Minor.account.registerRsp),
-    );
+    print('Register.navigate to $page');
 
     Navigate.to(context, Screen.build(page));
   }
 
-  void progress() async {
-    return;
-  }
-
   @override
   void dispose() {
-    print('register.dispose');
+    print('Register.dispose');
     if (timer != null) {
       if (timer!.isActive) {
-        print('register.timer.cancel');
+        print('Register.timer.cancel');
         timer!.cancel();
       }
     }
@@ -134,9 +138,8 @@ class _State extends State<Register> {
 
   @override
   void initState() {
-    print('register.initState');
+    print('Register.initState');
     setup();
-    progress();
     super.initState();
   }
 

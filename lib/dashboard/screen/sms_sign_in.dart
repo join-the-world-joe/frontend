@@ -13,8 +13,8 @@ import 'package:flutter_framework/common/business/sms/send_verification_code.dar
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
-import 'package:flutter_framework/framework/routing.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
+import 'package:flutter_framework/framework/packet_client.dart';
 
 class SMSSignIn extends StatefulWidget {
   const SMSSignIn({Key? key}) : super(key: key);
@@ -32,7 +32,28 @@ class _State extends State<SMSSignIn> {
   final phoneNumberControl = TextEditingController();
   final verificationCodeControl = TextEditingController();
 
+  void observe(PacketClient packet) {
+    var major = packet.getHeader().getMajor();
+    var minor = packet.getHeader().getMinor();
+    var body = packet.getBody();
+    print("SMSSignIn.observe: major: $major, minor: $minor");
+    try {
+      if (major == Major.sms && minor == Minor.sms.sendVerificationCodeRsp) {
+        smsHandler(body);
+      } else if (major == Major.backend && minor == Minor.backend.signInRsp) {
+        signInHandler(body);
+      } else {
+        print("SMSSignIn.observe warning: $major-$minor doesn't matched");
+      }
+      return;
+    } catch (e) {
+      print('SMSSignIn.observe($major-$minor).e: ${e.toString()}');
+      return;
+    }
+  }
+
   void smsHandler(Map<String, dynamic> body) {
+    print('SMSSignIn.smsHandler');
     try {
       SendVerificationCodeRsp rsp = SendVerificationCodeRsp.fromJson(body);
       if (rsp.code == Code.oK) {
@@ -64,11 +85,12 @@ class _State extends State<SMSSignIn> {
         return;
       }
     } catch (e) {
-      print("sms_sign_in.smsHandler failure, $e");
+      print("SMSSignIn.smsHandler failure, $e");
     }
   }
 
   void signInHandler(Map<String, dynamic> body) {
+    print('SMSSignIn.signInHandler');
     try {
       SignInRsp rsp = SignInRsp.fromJson(body);
       if (rsp.code == Code.oK) {
@@ -86,44 +108,32 @@ class _State extends State<SMSSignIn> {
       }
       return;
     } catch (e) {
-      print("sms_sign_in.signInHandler failure, $e");
+      print("SMSSignIn.signInHandler failure, $e");
       return;
     }
   }
 
   void refresh() {
+    print('SMSSignIn.refresh');
     setState(() {});
   }
 
   void navigate(String page) {
-    print('navigate to $page');
-    Runtime.hook.unRegister(
-      Routing.key(major: Major.sms, minor: Minor.sms.sendVerificationCodeRsp),
-    );
-    Runtime.hook.unRegister(
-      Routing.key(major: Major.backend, minor: Minor.backend.signInRsp),
-    );
-
+    print('SMSSignIn.navigate to $page');
     Navigate.to(context, Screen.build(page));
   }
 
   void setup() {
-    Runtime.hook.register(
-      Routing.key(major: Major.sms, minor: Minor.sms.sendVerificationCodeRsp),
-      smsHandler,
-    );
-    Runtime.hook.register(
-      Routing.key(major: Major.backend, minor: Minor.backend.signInRsp),
-      signInHandler,
-    );
+    print('SMSSignIn.setup');
+    Runtime.setObserve(observe);
   }
 
   @override
   void dispose() {
-    print('sms_sign_in.dispose');
+    print('SMSSignIn.dispose');
     if (timer != null) {
       if (timer!.isActive) {
-        print('register.timer.cancel');
+        print('SMSSignIn.timer.cancel');
         timer!.cancel();
       }
     }
@@ -132,6 +142,7 @@ class _State extends State<SMSSignIn> {
 
   @override
   void initState() {
+    print('SMSSignIn.initState');
     setup();
     super.initState();
   }
