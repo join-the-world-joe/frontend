@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_framework/common/business/backend/fetch_menu_list_of_role.dart';
+import 'package:flutter_framework/common/business/backend/fetch_menu_list_of_role_list.dart';
 import 'package:flutter_framework/dashboard/component/field.dart';
 import 'package:flutter_framework/dashboard/component/menu.dart';
 import 'package:flutter_framework/dashboard/component/permission.dart';
@@ -21,6 +21,7 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../setup.dart';
+import 'package:flutter_framework/framework/packet_client.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -72,21 +73,41 @@ class _State extends State<Home> {
     }
   }
 
-  void fetchMenuListOfRoleHandler(Map<String, dynamic> body) {
-    print('Home.fetchMenuListOfRoleHandler');
+  void observe(PacketClient packet) {
+    var major = packet.getHeader().getMajor();
+    var minor = packet.getHeader().getMinor();
+    var body = packet.getBody();
+    print("Home.observe: major: $major, minor: $minor");
     try {
-      FetchMenuListOfRoleRsp rsp = FetchMenuListOfRoleRsp.fromJson(body);
+      if (major == Major.backend &&
+          minor == Minor.backend.fetchMenuListOfRoleListRsp) {
+        fetchMenuListOfRoleListHandler(body);
+      } else {
+        print("Home.observe warning: $major-$minor doesn't matched");
+      }
+      return;
+    } catch (e) {
+      print('Home.observe($major-$minor).e: ${e.toString()}');
+      return;
+    }
+  }
+
+  void fetchMenuListOfRoleListHandler(Map<String, dynamic> body) {
+    print('Home.fetchMenuListOfRoleListHandler');
+    try {
+      FetchMenuListOfRoleListRsp rsp =
+          FetchMenuListOfRoleListRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         Cache.setMenuList(MenuList.fromJson(rsp.body));
         curStage = 1;
         refresh();
         return;
       } else {
-        print('Home.fetchMenuListOfRoleHandler failure: ${rsp.code}');
+        print('Home.fetchMenuListOfRoleListHandler failure: ${rsp.code}');
         return;
       }
     } catch (e) {
-      print("Home.fetchMenuListOfRoleHandler failure, $e");
+      print("Home.fetchMenuListOfRoleListHandler failure, $e");
       return;
     }
   }
@@ -103,6 +124,8 @@ class _State extends State<Home> {
 
   void setup() {
     print('home.setup');
+    Runtime.setObserve(observe);
+    fetchMenuListOfRoleList(conditionOfRoleList: []);
   }
 
   void progress() async {
@@ -132,7 +155,7 @@ class _State extends State<Home> {
     print('home.initState');
     setup();
     progress();
-    debug();
+    // debug();
     super.initState();
   }
 
@@ -216,13 +239,16 @@ class _State extends State<Home> {
         centerTitle: true,
       ),
       body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (Responsive.isLarge(width))
             Builder(
               builder: (BuildContext context) {
                 return SizedBox(
                   width: 150,
-                  child: sideMenu(),
+                  child: SingleChildScrollView(
+                    child: sideMenu(),
+                  ),
                 );
               },
             ),
@@ -244,7 +270,7 @@ class _State extends State<Home> {
                     return const Field();
                   } else if (Cache.getContent() == Track.content) {
                     return const Track();
-                  }else {
+                  } else {
                     return const Text('Unknown');
                   }
                 }

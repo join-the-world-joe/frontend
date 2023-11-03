@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_framework/common/business/backend/fetch_menu_list_of_role.dart';
+import 'package:flutter_framework/common/business/backend/fetch_menu_list_of_role_list.dart';
 import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/utils/convert.dart';
 
@@ -15,12 +15,12 @@ class LogicTest extends StatelessWidget {
   Widget build(BuildContext context) {
     var temp = jsonDecode(data);
     print('temp: $temp');
-    var rsp = FetchMenuListOfRoleRsp.fromJson(temp);
-    print(rsp.toString());
+    // var rsp = FetchMenuListOfRoleListReq([]).fromJson(temp);
+    // print(rsp.toString());
     // print(rsp.body.toString());
-    print(Convert.toBytes(rsp.body));
-    var ml = MenuList.fromJson(rsp.body);
-    print(ml);
+    // print(Convert.toBytes(rsp.body));
+    // var ml = MenuList.fromJson(rsp.body);
+    // print(ml);
     return const Text('LogicTest');
   }
 }

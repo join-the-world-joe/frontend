@@ -31,24 +31,9 @@ class SignInReq {
 
 class SignInRsp {
   late int code;
-  late String token;
-  late int userId;
-  late String role;
 
   int getCode() {
     return code;
-  }
-
-  String getToken() {
-    return token;
-  }
-
-  int getUserId() {
-    return userId;
-  }
-
-  String getRole() {
-    return role;
   }
 
   Uint8List toBytes() {
@@ -62,16 +47,10 @@ class SignInRsp {
 
   Map<String, dynamic> toJson() => {
         'code': code,
-        'token': token,
-        'user_id': userId,
-        'role': role,
       };
 
   SignInRsp.fromJson(Map<String, dynamic> json)
-      : code = json['code'] ?? -1,
-        token = json['token'] ?? '',
-        userId = json['user_id'] ?? -1,
-        role = json['role'] ?? '';
+      : code = json['code'] ?? -1;
 }
 
 void signIn(

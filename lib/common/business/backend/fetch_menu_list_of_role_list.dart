@@ -6,15 +6,13 @@ import '../../route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
-class FetchMenuListOfRoleReq {
-  String role = '';
-  late String query;
+class FetchMenuListOfRoleListReq {
+  final List<String> _conditionOfRoleList;
 
-  FetchMenuListOfRoleReq(this.query);
+  FetchMenuListOfRoleListReq(this._conditionOfRoleList);
 
   Map<String, dynamic> toJson() => {
-        'role': role,
-        'query': query,
+        'condition_of_role_list': _conditionOfRoleList,
       };
 
   Uint8List toBytes() {
@@ -22,23 +20,23 @@ class FetchMenuListOfRoleReq {
   }
 }
 
-class FetchMenuListOfRoleRsp {
+class FetchMenuListOfRoleListRsp {
   late int code;
   late dynamic body;
 
-  FetchMenuListOfRoleRsp.fromJson(Map<String, dynamic> json) {
+  FetchMenuListOfRoleListRsp.fromJson(Map<String, dynamic> json) {
     code = json['code'] ?? -1;
     body = json['body'] ?? '';
   }
 }
 
-void fetchMenuListOfRole({
-  required String query,
+void fetchMenuListOfRoleList({
+  required List<String> conditionOfRoleList,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchMenuListOfRoleReq req = FetchMenuListOfRoleReq(query);
+  FetchMenuListOfRoleListReq req = FetchMenuListOfRoleListReq(conditionOfRoleList);
   packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.fetchMenuListOfRoleReq);
+  packet.getHeader().setMinor(Minor.backend.fetchMenuListOfRoleListReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

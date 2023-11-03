@@ -31,8 +31,6 @@ class _State extends State<PasswordSignIn> {
       print('PasswordSignIn.signInHandler');
       SignInRsp rsp = SignInRsp.fromJson(body);
       if (rsp.code == Code.oK) {
-        print('user_id: ${rsp.userId}');
-        print('role: ${rsp.role}');
       }
       return rsp.code;
     } catch (e) {
