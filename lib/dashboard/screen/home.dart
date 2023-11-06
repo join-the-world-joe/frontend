@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_framework/common/business/backend/fetch_menu_list_of_role_list.dart';
+import 'package:flutter_framework/common/business/backend/fetch_menu_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/component/field.dart';
 import 'package:flutter_framework/dashboard/component/menu.dart';
 import 'package:flutter_framework/dashboard/component/permission.dart';
@@ -80,8 +80,8 @@ class _State extends State<Home> {
     print("Home.observe: major: $major, minor: $minor");
     try {
       if (major == Major.backend &&
-          minor == Minor.backend.fetchMenuListOfRoleListRsp) {
-        fetchMenuListOfRoleListHandler(body);
+          minor == Minor.backend.fetchMenuListOfConditionRsp) {
+        fetchMenuListOfConditionHandler(body);
       } else {
         print("Home.observe warning: $major-$minor doesn't matched");
       }
@@ -92,22 +92,22 @@ class _State extends State<Home> {
     }
   }
 
-  void fetchMenuListOfRoleListHandler(Map<String, dynamic> body) {
-    print('Home.fetchMenuListOfRoleListHandler');
+  void fetchMenuListOfConditionHandler(Map<String, dynamic> body) {
+    print('Home.fetchMenuListOfConditionHandler');
     try {
-      FetchMenuListOfRoleListRsp rsp =
-          FetchMenuListOfRoleListRsp.fromJson(body);
+      FetchMenuListOfConditionRsp rsp =
+          FetchMenuListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         Cache.setMenuList(MenuList.fromJson(rsp.body));
         curStage = 1;
         refresh();
         return;
       } else {
-        print('Home.fetchMenuListOfRoleListHandler failure: ${rsp.code}');
+        print('Home.fetchMenuListOfConditionHandler failure: ${rsp.code}');
         return;
       }
     } catch (e) {
-      print("Home.fetchMenuListOfRoleListHandler failure, $e");
+      print("Home.fetchMenuListOfConditionHandler failure, $e");
       return;
     }
   }
@@ -125,7 +125,7 @@ class _State extends State<Home> {
   void setup() {
     print('home.setup');
     Runtime.setObserve(observe);
-    fetchMenuListOfRoleList(conditionOfRoleList: []);
+    fetchMenuListOfCondition(conditionOfRoleList: []);
   }
 
   void progress() async {

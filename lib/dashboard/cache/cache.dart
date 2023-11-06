@@ -1,3 +1,4 @@
+import 'package:flutter_framework/dashboard/model/user.dart';
 import '../model/menu_list.dart';
 
 class Cache {
@@ -6,6 +7,15 @@ class Cache {
   static late int _userId;
   static late MenuList _menuList;
   static String _content = '';
+  static List<User> userList = [];
+
+  static setUserList(List<User> any) {
+    userList = any;
+  }
+
+  static List<User> getUserList() {
+    return userList;
+  }
 
   static setToken(String any) {
     _token = any;

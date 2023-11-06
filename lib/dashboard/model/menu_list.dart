@@ -14,11 +14,12 @@ class MenuList {
     try {
       json.forEach(
         (key, value) {
-          // print("key: $key");
-          // print("value: $value");
-          List<String> item = [];
-          item = List<String>.from(value as List);
-          ml.add(Menu(key, item));
+          print("key: $key");
+          print("value: $value");
+          List<String> itemList = List<String>.from(value['Item'] as List);
+          List<String> descList =
+              List<String>.from(value['Description'] as List);
+          ml.add(Menu(key, itemList, descList));
         },
       );
     } catch (e) {
