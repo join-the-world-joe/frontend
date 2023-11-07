@@ -66,7 +66,7 @@ class _State extends State<Home> {
                   size: 50,
                   color: Colors.red,
                 ),
-                label: '技师',
+                label: '教师',
               ),
               NavigationDestination(
                 selectedIcon: Icon(Icons.school),

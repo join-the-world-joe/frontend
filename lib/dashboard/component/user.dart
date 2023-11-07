@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/business/fetch_permission_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/business/fetch_role_list_of_condition.dart';
@@ -55,17 +57,13 @@ class _State extends State<User> {
 
     try {
       print("User.observe: major: $major, minor: $minor");
-      if (major == Major.backend &&
-          minor == Minor.backend.fetchUserListOfConditionRsp) {
+      if (major == Major.backend && minor == Minor.backend.fetchUserListOfConditionRsp) {
         fetchUserListOfConditionHandler(body);
-      } else if (major == Major.backend &&
-          minor == Minor.backend.fetchRoleListOfConditionRsp) {
+      } else if (major == Major.backend && minor == Minor.backend.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(body);
-      } else if (major == Major.backend &&
-          minor == Minor.backend.fetchMenuListOfConditionRsp) {
+      } else if (major == Major.backend && minor == Minor.backend.fetchMenuListOfConditionRsp) {
         fetchMenuListOfConditionHandler(body);
-      } else if (major == Major.backend &&
-          minor == Minor.backend.fetchPermissionListOfConditionRsp) {
+      } else if (major == Major.backend && minor == Minor.backend.fetchPermissionListOfConditionRsp) {
         fetchPermissionListOfConditionHandler(body);
       } else {
         print("User.observe warning: $major-$minor doesn't matched");
@@ -80,8 +78,7 @@ class _State extends State<User> {
   void fetchRoleListOfConditionHandler(Map<String, dynamic> body) {
     print('User.fetchRoleListOfConditionHandler');
     try {
-      FetchRoleListOfConditionRsp rsp =
-          FetchRoleListOfConditionRsp.fromJson(body);
+      FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         print(rsp.body.toString());
         RoleList roleList = RoleList.fromJson(rsp.body['role_list']);
@@ -89,8 +86,7 @@ class _State extends State<User> {
           Cache.setRoleList(roleList);
           fetchMenuListOfCondition(roleList: roleList);
           return;
-        } else if (Cache.getLastRequest() ==
-            fetchPermissionListOfCondition.toString()) {
+        } else if (Cache.getLastRequest() == fetchPermissionListOfCondition.toString()) {
           Cache.setRoleList(roleList);
           fetchPermissionListOfCondition(roleList: roleList);
           return;
@@ -114,8 +110,7 @@ class _State extends State<User> {
   void fetchPermissionListOfConditionHandler(Map<String, dynamic> body) {
     print('User.fetchPermissionListOfConditionHandler');
     try {
-      FetchPermissionListOfConditionRsp rsp =
-          FetchPermissionListOfConditionRsp.fromJson(body);
+      FetchPermissionListOfConditionRsp rsp = FetchPermissionListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         print(rsp.body.toString());
         Cache.setPermissionList(PermissionList.fromJson(rsp.body));
@@ -139,8 +134,7 @@ class _State extends State<User> {
   void fetchMenuListOfConditionHandler(Map<String, dynamic> body) {
     print('User.fetchMenuListOfConditionHandler');
     try {
-      FetchMenuListOfConditionRsp rsp =
-          FetchMenuListOfConditionRsp.fromJson(body);
+      FetchMenuListOfConditionRsp rsp = FetchMenuListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         print(rsp.body.toString());
         Cache.setMenuList(MenuList.fromJson(rsp.body));
@@ -160,8 +154,7 @@ class _State extends State<User> {
   void fetchUserListOfConditionHandler(Map<String, dynamic> body) {
     print('User.fetchUserListOfConditionHandler');
     try {
-      FetchUserListOfConditionRsp rsp =
-          FetchUserListOfConditionRsp.fromJson(body);
+      FetchUserListOfConditionRsp rsp = FetchUserListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         Cache.setUserList([]);
         print('body: ${rsp.body.toString()}');
@@ -171,16 +164,7 @@ class _State extends State<User> {
         userList.forEach(
           (e) {
             Cache.userList.add(
-              usr.User(
-                  e['id'],
-                  e['name'],
-                  e['account'],
-                  e['email'],
-                  e['department'],
-                  e['country_code'],
-                  e['phone_number'],
-                  e['status'],
-                  e['created_at']),
+              usr.User(e['id'], e['name'], e['account'], e['email'], e['department'], e['country_code'], e['phone_number'], e['status'], e['created_at']),
             );
           },
         );
@@ -255,9 +239,9 @@ class _State extends State<User> {
                     width: 110,
                     child: TextFormField(
                       controller: phoneNumberControl,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '手机号',
+                      decoration: InputDecoration(
+                        // border: const UnderlineInputBorder(),
+                        labelText: Translator.translate(Language.fPhoneNumber),
                       ),
                     ),
                   ),
@@ -266,9 +250,9 @@ class _State extends State<User> {
                     width: 110,
                     child: TextFormField(
                       controller: nameControl,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '姓名',
+                      decoration: InputDecoration(
+                        // border: const UnderlineInputBorder(),
+                        labelText: Translator.translate(Language.fName),
                       ),
                     ),
                   ),
@@ -277,9 +261,9 @@ class _State extends State<User> {
                     width: 110,
                     child: TextFormField(
                       controller: roleControl,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '角色',
+                      decoration: InputDecoration(
+                        // border: const UnderlineInputBorder(),
+                        labelText: Translator.translate(Language.fRole),
                       ),
                     ),
                   ),
@@ -291,14 +275,15 @@ class _State extends State<User> {
                       onPressed: () {
                         Cache.setUserList([]);
                         fetchUserListOfCondition(
-                            name: nameControl.text,
-                            role: roleControl.text,
-                            phoneNumber: phoneNumberControl.text);
+                          name: nameControl.text,
+                          role: roleControl.text,
+                          phoneNumber: phoneNumberControl.text,
+                        );
                         refresh();
                       },
-                      child: const Text(
-                        '查询',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      child: Text(
+                        Translator.translate(Language.search),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
                   ),
@@ -311,9 +296,9 @@ class _State extends State<User> {
                         phoneNumberControl.text = '18629300170';
                         refresh();
                       },
-                      child: const Text(
-                        '重置',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      child: Text(
+                        Translator.translate(Language.reset),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
                   ),
@@ -325,32 +310,28 @@ class _State extends State<User> {
                   ElevatedButton.icon(
                     icon: const Icon(Icons.add),
                     onPressed: () async {
-                      var wholeRoleList = RoleList([
-                        Role('Manager', ''),
-                        Role('Sales', ''),
-                        Role('Worker', '')
-                      ]);
+                      var wholeRoleList = RoleList([Role('Manager', ''), Role('Sales', ''), Role('Worker', '')]);
                       var roleList = RoleList([Role('Worker', '')]);
                       showInsertUserDialog(context, wholeRoleList, roleList);
                     },
-                    label: const Text(
-                      '新增用户',
-                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    label: Text(
+                      Translator.translate(Language.newUser),
+                      style: const TextStyle(color: Colors.white, fontSize: 15),
                     ),
                   ),
                 ],
                 source: Source(context),
-                header: const Text('用户列表'),
-                columns: const [
-                  DataColumn(label: Text('手机号')),
-                  DataColumn(label: Text('姓名')),
-                  DataColumn(label: Text('状态')),
-                  DataColumn(label: Text('角色列表')),
-                  DataColumn(label: Text('权限列表')),
-                  DataColumn(label: Text('菜单列表')),
+                header: Text(Translator.translate(Language.userList)),
+                columns: [
+                  DataColumn(label: Text(Translator.translate(Language.fPhoneNumber))),
+                  DataColumn(label: Text(Translator.translate(Language.fName))),
+                  DataColumn(label: Text(Translator.translate(Language.fStatus))),
+                  DataColumn(label: Text(Translator.translate(Language.roleList))),
+                  DataColumn(label: Text(Translator.translate(Language.permissionList))),
+                  DataColumn(label: Text(Translator.translate(Language.menuList))),
                   // DataColumn(label: Text('字段列表')),
-                  DataColumn(label: Text('创建时间')),
-                  DataColumn(label: Text('     操作')),
+                  DataColumn(label: Text(Translator.translate(Language.fCreatedAt))),
+                  DataColumn(label: Text(Translator.translate(Language.operation))),
                 ],
                 columnSpacing: 60,
                 horizontalMargin: 10,
@@ -390,9 +371,7 @@ class Source extends DataTableSource {
       cells: [
         DataCell(Text(_data[index].getPhoneNumber())),
         DataCell(Text(_data[index].getName())),
-        DataCell(_data[index].getStatus() == '1'
-            ? const Icon(Icons.done, color: Colors.lightGreen)
-            : const Icon(Icons.close)),
+        DataCell(_data[index].getStatus() == '1' ? const Icon(Icons.done, color: Colors.lightGreen) : const Icon(Icons.close)),
         DataCell(
           IconButton(
             tooltip: "查看角色列表",
@@ -452,14 +431,9 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.edit),
                 tooltip: '更新资料',
                 onPressed: () async {
-                  var wholeRoleList = RoleList([
-                    Role('Manager', ''),
-                    Role('Sales', ''),
-                    Role('Worker', '')
-                  ]);
+                  var wholeRoleList = RoleList([Role('Manager', ''), Role('Sales', ''), Role('Worker', '')]);
                   var roleList = RoleList([Role('Worker', '')]);
-                  showModifyUserDialog(
-                      context, _data[index], wholeRoleList, roleList);
+                  showModifyUserDialog(context, _data[index], wholeRoleList, roleList);
                 },
               ),
               IconButton(

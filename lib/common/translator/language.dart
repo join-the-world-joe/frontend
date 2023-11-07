@@ -1,0 +1,33 @@
+class Language {
+  static String admission = 'Admission';
+  static String user = 'User';
+  static String menu = 'Menu';
+  static String permission = 'Permission';
+  static String role = 'Role';
+  static String field = 'Field';
+  static String track = 'Track';
+  static String search = 'Search';
+  static String reset = 'Reset';
+  static String userList = 'User List';
+  static String fPhoneNumber = 'field of Phone Number';
+  static String fCountryCode = 'field of Country Code';
+  static String fName = 'field of Name';
+  static String fRole = 'field of Role';
+  static String fStatus = 'field of Status';
+  static String fCreatedAt = 'field of CreatedAt';
+  static String roleList = 'Role List';
+  static String permissionList = 'Permission List';
+  static String menuList = 'Menu List';
+  static String operation = 'Operation';
+  static String newUser = 'New User';
+  static String cancel = 'Cancel';
+  static String confirm = 'Confirm';
+  static String enable = 'Enable';
+  static String disable = 'Disable';
+  static String china = 'China';
+  static String philipine = 'Philipine';
+  static String password = 'Password';
+  static String confirmPassword = 'Confirm Password';
+  static String modifyUser = 'Modify User';
+  static String dashboard = 'Dashboard';
+}

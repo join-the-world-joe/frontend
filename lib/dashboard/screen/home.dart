@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/component/field.dart';
 import 'package:flutter_framework/dashboard/component/menu.dart';
@@ -33,14 +35,12 @@ class Home extends StatefulWidget {
 
 class _State extends State<Home> {
   int curStage = 0;
-  final String title = Config.title;
   int _selectedIndex = 0;
   int selected = 0;
   Timer? fetchMenuListOfRoleTimer;
   bool isDrawerOpen = false;
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     Text(
       'Index 0: Home',
@@ -80,8 +80,7 @@ class _State extends State<Home> {
     var body = packet.getBody();
     print("Home.observe: major: $major, minor: $minor");
     try {
-      if (major == Major.backend &&
-          minor == Minor.backend.fetchMenuListOfConditionRsp) {
+      if (major == Major.backend && minor == Minor.backend.fetchMenuListOfConditionRsp) {
         fetchMenuListOfConditionHandler(body);
       } else {
         print("Home.observe warning: $major-$minor doesn't matched");
@@ -96,8 +95,7 @@ class _State extends State<Home> {
   void fetchMenuListOfConditionHandler(Map<String, dynamic> body) {
     print('Home.fetchMenuListOfConditionHandler');
     try {
-      FetchMenuListOfConditionRsp rsp =
-          FetchMenuListOfConditionRsp.fromJson(body);
+      FetchMenuListOfConditionRsp rsp = FetchMenuListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         Cache.setMenuList(MenuList.fromJson(rsp.body));
         curStage = 1;
@@ -136,8 +134,7 @@ class _State extends State<Home> {
 
   void debug() async {
     print('home.debug');
-    var body =
-        '{"Admission":["User","Role","Permission","Menu","Track", "Field"],"Menu1":["item1","item2","item3","item4","item5"]}';
+    var body = '{"Admission":["User","Role","Permission","Menu","Track", "Field"],"Menu1":["item1","item2","item3","item4","item5"]}';
     Cache.setMenuList(MenuList.fromJson(jsonDecode(body)));
 
     await Future.delayed(const Duration(seconds: 1));
@@ -177,11 +174,11 @@ class _State extends State<Home> {
       (element) {
         widgets.add(
           ExpansionTile(
-            title: Text(element.getTitle()),
+            title: Text(Translator.translate(element.getTitle())),
             children: element
                 .getItemList()
                 .map((title) => ListTile(
-                      title: Text(title),
+                      title: Text(Translator.translate(title)),
                       onTap: () {
                         // print('onTap: $title');
                         Cache.setContent(title);
@@ -232,11 +229,9 @@ class _State extends State<Home> {
         // print('onEndDrawerChanged: $isOpened');
         isDrawerOpen = isOpened;
       },
-      drawer: Responsive.isMedium(width) || Responsive.isSmall(width)
-          ? drawer
-          : null,
+      drawer: Responsive.isMedium(width) || Responsive.isSmall(width) ? drawer : null,
       appBar: AppBar(
-        title: Text(title),
+        title: Text(Translator.translate(Language.dashboard)),
         centerTitle: true,
       ),
       body: Row(

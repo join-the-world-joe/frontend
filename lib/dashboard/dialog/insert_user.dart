@@ -4,9 +4,10 @@ import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 
-Future<int> showInsertUserDialog(
-    BuildContext context, RoleList wholeRoleList, RoleList roleList) async {
+Future<int> showInsertUserDialog(BuildContext context, RoleList wholeRoleList, RoleList roleList) async {
   String? _method;
   var _nameController = TextEditingController();
   var _accountController = TextEditingController();
@@ -21,8 +22,7 @@ Future<int> showInsertUserDialog(
   for (var i = 0; i < wholeRoleList.getBody().length; i++) {
     roleStatus[wholeRoleList.getBody()[i]] = false;
     for (var j = 0; j < roleList.getBody().length; j++) {
-      if (roleList.getBody()[j].getName() ==
-          wholeRoleList.getBody()[i].getName()) {
+      if (roleList.getBody()[j].getName() == wholeRoleList.getBody()[i].getName()) {
         roleStatus[wholeRoleList.getBody()[i]] = true;
         break;
       }
@@ -34,16 +34,15 @@ Future<int> showInsertUserDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('新增用户'),
+          title: Text(Translator.translate(Language.newUser)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, null),
-              child: const Text('取消'),
+              child: Text(Translator.translate(Language.cancel)),
             ),
             TextButton(
               onPressed: () async {
-                if (_passwordController.text !=
-                    _verifyPasswordController.text) {
+                if (_passwordController.text != _verifyPasswordController.text) {
                   await showWarningDialog(context, '两次输入的密码不一致');
                   return;
                 }
@@ -59,7 +58,7 @@ Future<int> showInsertUserDialog(
                   return roleList;
                 }();
               },
-              child: const Text('确定'),
+              child: Text(Translator.translate(Language.confirm)),
             ),
             // Spacing.AddVerticalSpace(50),
           ],
@@ -76,7 +75,7 @@ Future<int> showInsertUserDialog(
                         child: Row(
                           children: [
                             Spacing.addHorizontalSpace(85),
-                            const Text('启用'),
+                            Text(Translator.translate(Language.enable)),
                             Radio<int?>(
                                 value: 1,
                                 groupValue: statusGroup,
@@ -87,7 +86,7 @@ Future<int> showInsertUserDialog(
                                   // print("status: $b");
                                 }),
                             Spacing.addHorizontalSpace(50),
-                            const Text('停用'),
+                            Text(Translator.translate(Language.disable)),
                             Radio<int?>(
                               value: 0,
                               groupValue: statusGroup,
@@ -105,19 +104,19 @@ Future<int> showInsertUserDialog(
                       SizedBox(
                         width: 350,
                         child: DropdownButtonFormField<String>(
-                          hint: const Text(
-                            '国家地区码',
+                          hint: Text(
+                            Translator.translate(Language.fCountryCode),
                           ),
                           isExpanded: true,
                           value: _method,
-                          items: const [
+                          items: [
                             DropdownMenuItem<String>(
                               value: '86',
-                              child: Text('中国'),
+                              child: Text(Translator.translate(Language.china)),
                             ),
                             DropdownMenuItem<String>(
                               value: '63',
-                              child: Text('菲律宾'),
+                              child: Text(Translator.translate(Language.philipine)),
                             ),
                           ],
                           onChanged: (method) {
@@ -131,9 +130,9 @@ Future<int> showInsertUserDialog(
                         width: 350,
                         child: TextFormField(
                           controller: _nameController,
-                          decoration: const InputDecoration(
-                            border: UnderlineInputBorder(),
-                            labelText: '手机号',
+                          decoration: InputDecoration(
+                            // border: UnderlineInputBorder(),
+                            labelText: Translator.translate(Language.fPhoneNumber),
                           ),
                         ),
                       ),
@@ -142,9 +141,9 @@ Future<int> showInsertUserDialog(
                         width: 350,
                         child: TextFormField(
                           controller: _nameController,
-                          decoration: const InputDecoration(
-                            border: UnderlineInputBorder(),
-                            labelText: '姓名',
+                          decoration: InputDecoration(
+                            // border: UnderlineInputBorder(),
+                            labelText: Translator.translate(Language.fName),
                           ),
                         ),
                       ),
@@ -154,9 +153,9 @@ Future<int> showInsertUserDialog(
                         child: TextFormField(
                           obscureText: true,
                           controller: _passwordController,
-                          decoration: const InputDecoration(
-                            border: UnderlineInputBorder(),
-                            labelText: '密码',
+                          decoration: InputDecoration(
+                            // border: UnderlineInputBorder(),
+                            labelText: Translator.translate(Language.password),
                           ),
                         ),
                       ),
@@ -166,14 +165,14 @@ Future<int> showInsertUserDialog(
                         child: TextFormField(
                           obscureText: true,
                           controller: _verifyPasswordController,
-                          decoration: const InputDecoration(
-                            border: UnderlineInputBorder(),
-                            labelText: '确认密码',
+                          decoration: InputDecoration(
+                            // border: UnderlineInputBorder(),
+                            labelText: Translator.translate(Language.confirmPassword),
                           ),
                         ),
                       ),
                       Spacing.addVerticalSpace(10),
-                      _buildRoleChip('角色'),
+                      _buildRoleChip(Translator.translate(Language.fRole)),
                       Spacing.addVerticalSpace(10),
                       SizedBox(
                         width: 380,
@@ -185,9 +184,7 @@ Future<int> showInsertUserDialog(
                                 spacing: 6.0,
                                 runSpacing: 6.0,
                                 children: () {
-                                  List<Widget> widgets = [
-                                    const Text('获取用户角色列表失败')
-                                  ];
+                                  List<Widget> widgets = [const Text('获取用户角色列表失败')];
                                   if (roleStatus.isEmpty) {
                                     return widgets;
                                   }
@@ -197,8 +194,7 @@ Future<int> showInsertUserDialog(
                                       widgets.add(
                                         InputChip(
                                           padding: const EdgeInsets.all(8.0),
-                                          labelPadding:
-                                              const EdgeInsets.all(2.0),
+                                          labelPadding: const EdgeInsets.all(2.0),
                                           selectedColor: Colors.green,
                                           selected: roleStatus[key]!,
                                           onPressed: () {

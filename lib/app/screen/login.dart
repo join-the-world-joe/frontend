@@ -97,7 +97,7 @@ class _State extends State<Login> {
         print('token: ${rsp.token}');
         print('user_id: ${rsp.userId}');
         Runtime.setToken(rsp.token);
-        navigate(Screen.register);
+        navigate(Screen.home);
         return;
       } else {
         showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');

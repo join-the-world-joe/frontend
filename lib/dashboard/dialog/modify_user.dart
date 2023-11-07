@@ -3,9 +3,10 @@ import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 
-Future<int> showModifyUserDialog(BuildContext context, User user,
-    RoleList wholeRoleList, RoleList roleList) async {
+Future<int> showModifyUserDialog(BuildContext context, User user, RoleList wholeRoleList, RoleList roleList) async {
   int? statusGroup = int.parse(user.getStatus());
   Map<Role, bool> roleStatus = {}; // key: role_name, value: bool
   var _nameController = TextEditingController(text: user.getName());
@@ -15,8 +16,7 @@ Future<int> showModifyUserDialog(BuildContext context, User user,
   for (var i = 0; i < wholeRoleList.getBody().length; i++) {
     roleStatus[wholeRoleList.getBody()[i]] = false;
     for (var j = 0; j < roleList.getBody().length; j++) {
-      if (roleList.getBody()[j].getName() ==
-          wholeRoleList.getBody()[i].getName()) {
+      if (roleList.getBody()[j].getName() == wholeRoleList.getBody()[i].getName()) {
         roleStatus[wholeRoleList.getBody()[i]] = true;
         break;
       }
@@ -28,15 +28,15 @@ Future<int> showModifyUserDialog(BuildContext context, User user,
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: const Text('更改用户资料'),
+        title:  Text(Translator.translate(Language.modifyUser)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, null),
-            child: const Text('取消'),
+            child: Text(Translator.translate(Language.cancel)),
           ),
           TextButton(
             onPressed: () async {},
-            child: const Text('确定'),
+            child:  Text(Translator.translate(Language.confirm)),
           ),
           Spacing.addVerticalSpace(50),
         ],
@@ -54,7 +54,7 @@ Future<int> showModifyUserDialog(BuildContext context, User user,
                       child: Row(
                         children: [
                           Spacing.addHorizontalSpace(85),
-                          const Text('启用'),
+                           Text(Translator.translate(Language.enable)),
                           Radio<int?>(
                             value: 1,
                             groupValue: statusGroup,
@@ -67,7 +67,7 @@ Future<int> showModifyUserDialog(BuildContext context, User user,
                             },
                           ),
                           Spacing.addHorizontalSpace(50),
-                          const Text('停用'),
+                           Text(Translator.translate(Language.disable)),
                           Radio<int?>(
                             value: 0,
                             groupValue: statusGroup,
@@ -86,9 +86,8 @@ Future<int> showModifyUserDialog(BuildContext context, User user,
                       width: 350,
                       child: TextFormField(
                         controller: _nameController,
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: '用户名',
+                        decoration:  InputDecoration(
+                          labelText: Translator.translate(Language.fName),
                         ),
                       ),
                     ),
@@ -97,9 +96,8 @@ Future<int> showModifyUserDialog(BuildContext context, User user,
                       width: 350,
                       child: TextFormField(
                         controller: _passwordController,
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: '密码',
+                        decoration:  InputDecoration(
+                          labelText: Translator.translate(Language.password),
                         ),
                       ),
                     ),
@@ -108,14 +106,13 @@ Future<int> showModifyUserDialog(BuildContext context, User user,
                       width: 350,
                       child: TextFormField(
                         controller: _verifiedPasswordController,
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: '确认密码',
+                        decoration:  InputDecoration(
+                          labelText: Translator.translate(Language.confirmPassword),
                         ),
                       ),
                     ),
                     Spacing.addVerticalSpace(10),
-                    _buildRoleChip('角色'),
+                    _buildRoleChip(Translator.translate(Language.fRole)),
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 380,
@@ -126,9 +123,7 @@ Future<int> showModifyUserDialog(BuildContext context, User user,
                               spacing: 6.0,
                               runSpacing: 6.0,
                               children: () {
-                                List<Widget> widgets = [
-                                  const Text('获取用户角色列表失败')
-                                ];
+                                List<Widget> widgets = [const Text('获取用户角色列表失败')];
                                 if (roleStatus.isEmpty) {
                                   return widgets;
                                 }
