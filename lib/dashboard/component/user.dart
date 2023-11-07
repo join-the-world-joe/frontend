@@ -326,9 +326,9 @@ class _State extends State<User> {
                   DataColumn(label: Text(Translator.translate(Language.fPhoneNumber))),
                   DataColumn(label: Text(Translator.translate(Language.fName))),
                   DataColumn(label: Text(Translator.translate(Language.fStatus))),
-                  DataColumn(label: Text(Translator.translate(Language.roleList))),
-                  DataColumn(label: Text(Translator.translate(Language.permissionList))),
-                  DataColumn(label: Text(Translator.translate(Language.menuList))),
+                  DataColumn(label: Text(Translator.translate(Language.fRole))),
+                  DataColumn(label: Text(Translator.translate(Language.fPermission))),
+                  DataColumn(label: Text(Translator.translate(Language.fMenu))),
                   // DataColumn(label: Text('字段列表')),
                   DataColumn(label: Text(Translator.translate(Language.fCreatedAt))),
                   DataColumn(label: Text(Translator.translate(Language.operation))),
@@ -374,7 +374,7 @@ class Source extends DataTableSource {
         DataCell(_data[index].getStatus() == '1' ? const Icon(Icons.done, color: Colors.lightGreen) : const Icon(Icons.close)),
         DataCell(
           IconButton(
-            tooltip: "查看角色列表",
+            tooltip: Translator.translate(Language.viewRoleList),
             icon: const Icon(Icons.people_alt_rounded),
             onPressed: () {
               Cache.clearLastRequest();
@@ -388,7 +388,7 @@ class Source extends DataTableSource {
         ),
         DataCell(
           IconButton(
-            tooltip: "查看权限列表",
+            tooltip: Translator.translate(Language.viewPermissionList),
             icon: const Icon(Icons.verified_user_outlined),
             onPressed: () {
               fetchRoleListOfCondition(
@@ -403,7 +403,7 @@ class Source extends DataTableSource {
         ),
         DataCell(
           IconButton(
-            tooltip: "查看菜单列表",
+            tooltip: Translator.translate(Language.viewMenuList),
             icon: const Icon(Icons.menu),
             onPressed: () {
               fetchRoleListOfCondition(
@@ -429,7 +429,7 @@ class Source extends DataTableSource {
             children: [
               IconButton(
                 icon: const Icon(Icons.edit),
-                tooltip: '更新资料',
+                tooltip: Translator.translate(Language.update),
                 onPressed: () async {
                   var wholeRoleList = RoleList([Role('Manager', ''), Role('Sales', ''), Role('Worker', '')]);
                   var roleList = RoleList([Role('Worker', '')]);
@@ -438,7 +438,7 @@ class Source extends DataTableSource {
               ),
               IconButton(
                 icon: const Icon(Icons.delete),
-                tooltip: '删除用户',
+                tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
                   showRemoveUserDialog(context, _data[index]);
                 },

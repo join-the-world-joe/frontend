@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -76,9 +78,8 @@ class _State extends State<Menu> {
                     width: 110,
                     child: TextFormField(
                       // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '菜单',
+                      decoration: InputDecoration(
+                        labelText: Translator.translate(Language.subMenu),
                       ),
                     ),
                   ),
@@ -87,9 +88,8 @@ class _State extends State<Menu> {
                     width: 110,
                     child: TextFormField(
                       // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '父级菜单',
+                      decoration: InputDecoration(
+                        labelText: Translator.translate(Language.fMenu),
                       ),
                     ),
                   ),
@@ -99,9 +99,9 @@ class _State extends State<Menu> {
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: const Text(
-                        '查询',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      child: Text(
+                        Translator.translate(Language.search),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
                   ),
@@ -111,9 +111,9 @@ class _State extends State<Menu> {
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: const Text(
-                        '重置',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      child: Text(
+                        Translator.translate(Language.reset),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
                   ),
@@ -122,11 +122,11 @@ class _State extends State<Menu> {
               Spacing.addVerticalSpace(20),
               PaginatedDataTable(
                 source: Source(context),
-                header: const Text('菜单列表'),
-                columns: const [
-                  DataColumn(label: Text('菜单')),
-                  DataColumn(label: Text('父级菜单')),
-                  DataColumn(label: Text('描述')),
+                header: Text(Translator.translate(Language.menuList)),
+                columns: [
+                  DataColumn(label: Text(Translator.translate(Language.subMenu))),
+                  DataColumn(label: Text(Translator.translate(Language.fMenu))),
+                  DataColumn(label: Text(Translator.translate(Language.description))),
                 ],
                 columnSpacing: 60,
                 horizontalMargin: 10,

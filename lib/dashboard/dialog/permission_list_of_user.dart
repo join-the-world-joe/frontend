@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/model/permission_list.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 
-Future<int> showPermissionListOfUserDialog(
-    BuildContext context, PermissionList permissionList) async {
+Future<int> showPermissionListOfUserDialog(BuildContext context, PermissionList permissionList) async {
   List<Widget> roleWidgets = [];
 
   for (var i = 0; i < permissionList.getBody().length; i++) {
     var name = permissionList.getBody()[i].getName();
     var major = permissionList.getBody()[i].getMajor();
     var minor = permissionList.getBody()[i].getMinor();
-    roleWidgets.add(_buildFilterChip(
-        label: name, textColor: Colors.white, tooltip: '$major-$minor'));
+    roleWidgets.add(_buildFilterChip(label: name, textColor: Colors.white, tooltip: '$major-$minor'));
   }
 
   await showDialog(
@@ -20,11 +20,10 @@ Future<int> showPermissionListOfUserDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        // title: const Text('角色列表'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('确定'),
+            child: Text(Translator.translate(Language.ok)),
           ),
           Spacing.addVerticalSpace(50),
         ],
@@ -38,7 +37,10 @@ Future<int> showPermissionListOfUserDialog(
                   children: [
                     Spacing.addVerticalSpace(10),
                     const Divider(),
-                    _buildChip(label: '权限列表', textColor: Colors.white),
+                    _buildChip(
+                      label: Translator.translate(Language.permissionList),
+                      textColor: Colors.white,
+                    ),
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 380,
@@ -87,10 +89,7 @@ Chip _buildChip({required String label, required Color textColor}) {
   );
 }
 
-Widget _buildFilterChip(
-    {required String label,
-    required Color textColor,
-    required String tooltip}) {
+Widget _buildFilterChip({required String label, required Color textColor, required String tooltip}) {
   return FilterChip(
     tooltip: tooltip,
     onSelected: (b) {},

@@ -10,8 +10,6 @@ import 'package:flutter_framework/common/translator/translator.dart';
 Future<int> showInsertUserDialog(BuildContext context, RoleList wholeRoleList, RoleList roleList) async {
   String? _method;
   var _nameController = TextEditingController();
-  var _accountController = TextEditingController();
-  var _descriptionController = TextEditingController();
   var _passwordController = TextEditingController();
   var _verifyPasswordController = TextEditingController();
 

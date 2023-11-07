@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -10,7 +12,7 @@ Future<int> showRemoveUserDialog(BuildContext context, User user) async {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('确认删除?'),
+          title: Text(Translator.translate(Language.confirmYourDeletion)),
           actions: [
             Column(
               children: [
@@ -20,9 +22,9 @@ Future<int> showRemoveUserDialog(BuildContext context, User user) async {
                   children: [
                     Text('ID ：${user.getId()}'),
                     Spacing.addVerticalSpace(20),
-                    Text('姓名 ：${user.getName()}'),
+                    Text('${Translator.translate(Language.fName)} ：${user.getName()}'),
                     Spacing.addVerticalSpace(20),
-                    Text('手机号 ：${user.getPhoneNumber()}'),
+                    Text('${Translator.translate(Language.fPhoneNumber)} ：${user.getPhoneNumber()}'),
                     Spacing.addVerticalSpace(20),
                   ],
                 ),
@@ -31,11 +33,11 @@ Future<int> showRemoveUserDialog(BuildContext context, User user) async {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context, null),
-                      child: const Text('取消'),
+                      child: Text(Translator.translate(Language.cancel)),
                     ),
                     TextButton(
                       onPressed: () {},
-                      child: const Text('确定'),
+                      child: Text(Translator.translate(Language.confirm)),
                     ),
                     Spacing.addVerticalSpace(50),
                   ],

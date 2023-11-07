@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -76,9 +78,8 @@ class _State extends State<Role> {
                     width: 110,
                     child: TextFormField(
                       // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '角色',
+                      decoration: InputDecoration(
+                        labelText: Translator.translate(Language.fRole),
                       ),
                     ),
                   ),
@@ -87,9 +88,8 @@ class _State extends State<Role> {
                     width: 110,
                     child: TextFormField(
                       // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '等级',
+                      decoration: InputDecoration(
+                        labelText: Translator.translate(Language.level),
                       ),
                     ),
                   ),
@@ -99,9 +99,9 @@ class _State extends State<Role> {
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: const Text(
-                        '查询',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      child: Text(
+                        Translator.translate(Language.search),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
                   ),
@@ -111,9 +111,9 @@ class _State extends State<Role> {
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: const Text(
-                        '重置',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      child: Text(
+                        Translator.translate(Language.reset),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
                   ),
@@ -122,13 +122,13 @@ class _State extends State<Role> {
               Spacing.addVerticalSpace(20),
               PaginatedDataTable(
                 source: Source(context),
-                header: const Text('角色列表'),
-                columns: const [
-                  DataColumn(label: Text('角色')),
-                  DataColumn(label: Text('等级')),
-                  DataColumn(label: Text('权限列表')),
-                  DataColumn(label: Text('菜单列表')),
-                  DataColumn(label: Text('描述')),
+                header: Text(Translator.translate(Language.roleList)),
+                columns: [
+                  DataColumn(label: Text(Translator.translate(Language.fRole))),
+                  DataColumn(label: Text(Translator.translate(Language.level))),
+                  DataColumn(label: Text(Translator.translate(Language.permissionList))),
+                  DataColumn(label: Text(Translator.translate(Language.menuList))),
+                  DataColumn(label: Text(Translator.translate(Language.description))),
                 ],
                 columnSpacing: 60,
                 horizontalMargin: 10,
@@ -170,7 +170,7 @@ class Source extends DataTableSource {
         DataCell(Text('')),
         DataCell(
           IconButton(
-            tooltip: "查看权限列表",
+            tooltip: Translator.translate(Language.viewPermissionList),
             icon: const Icon(Icons.verified_user_outlined),
             onPressed: () {
               //   fetchRoleListOfCondition(
@@ -185,17 +185,9 @@ class Source extends DataTableSource {
         ),
         DataCell(
           IconButton(
-            tooltip: "查看菜单列表",
+            tooltip: Translator.translate(Language.viewMenuList),
             icon: const Icon(Icons.menu),
-            onPressed: () {
-              // fetchRoleListOfCondition(
-              //   userIdList: [int.parse(_data[index].getId())],
-              //   userName: '',
-              //   phoneNumber: '',
-              // );
-              // print(fetchMenuListOfCondition.toString());
-              // Cache.setLastRequest(fetchMenuListOfCondition.toString());
-            },
+            onPressed: () {},
           ),
         ),
         DataCell(

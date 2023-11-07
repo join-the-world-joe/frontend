@@ -12,8 +12,8 @@ void setup_() {
       publicKey: Config.rsaPublicKey, privateKey: Config.rsaPrivateKey);
   Runtime.aes = AESCrypto(key: Config.aesKey, iv: Config.aesIV);
 
-  // Translator.setNative(Chinese.getName());
-  Translator.setNative(English.getName());
+  Translator.setNative(Chinese.getName());
+  // Translator.setNative(English.getName());
 
   Runtime.wsClient.setUrl(Config.url);
   Runtime.wsClient.connect();

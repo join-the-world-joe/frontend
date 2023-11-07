@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 
 Future<void> showWarningDialog(BuildContext context, String info) async {
   await showDialog<String>(
@@ -15,7 +17,7 @@ Future<void> showWarningDialog(BuildContext context, String info) async {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('确定'),
+          child:  Text(Translator.translate(Language.ok)),
         ),
       ],
     ),

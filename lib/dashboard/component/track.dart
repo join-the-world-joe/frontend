@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -76,9 +78,8 @@ class _State extends State<Track> {
                     width: 110,
                     child: TextFormField(
                       // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '操作人',
+                      decoration: InputDecoration(
+                        labelText: Translator.translate(Language.operator),
                       ),
                     ),
                   ),
@@ -87,9 +88,8 @@ class _State extends State<Track> {
                     width: 110,
                     child: TextFormField(
                       // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '权限',
+                      decoration: InputDecoration(
+                        labelText: Translator.translate(Language.fPermission),
                       ),
                     ),
                   ),
@@ -98,9 +98,8 @@ class _State extends State<Track> {
                     width: 110,
                     child: TextFormField(
                       // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '主业务号',
+                      decoration: InputDecoration(
+                        labelText: Translator.translate(Language.major),
                       ),
                     ),
                   ),
@@ -109,9 +108,8 @@ class _State extends State<Track> {
                     width: 110,
                     child: TextFormField(
                       // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '次业务号',
+                      decoration: InputDecoration(
+                        labelText: Translator.translate(Language.minor),
                       ),
                     ),
                   ),
@@ -121,9 +119,9 @@ class _State extends State<Track> {
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: const Text(
-                        '查询',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      child: Text(
+                        Translator.translate(Language.search),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
                   ),
@@ -133,9 +131,9 @@ class _State extends State<Track> {
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: const Text(
-                        '重置',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      child: Text(
+                        Translator.translate(Language.reset),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
                   ),
@@ -144,14 +142,14 @@ class _State extends State<Track> {
               Spacing.addVerticalSpace(20),
               PaginatedDataTable(
                 source: Source(context),
-                header: const Text('操作日志列表'),
-                columns: const [
-                  DataColumn(label: Text('操作人')),
-                  DataColumn(label: Text('主业务号')),
-                  DataColumn(label: Text('次业务号')),
-                  DataColumn(label: Text('请求')),
-                  DataColumn(label: Text('回应')),
-                  DataColumn(label: Text('操作时间')),
+                header: Text(Translator.translate(Language.operationLog)),
+                columns: [
+                  DataColumn(label: Text(Translator.translate(Language.operator))),
+                  DataColumn(label: Text(Translator.translate(Language.major))),
+                  DataColumn(label: Text(Translator.translate(Language.minor))),
+                  DataColumn(label: Text(Translator.translate(Language.request))),
+                  DataColumn(label: Text(Translator.translate(Language.response))),
+                  DataColumn(label: Text(Translator.translate(Language.operationTimestamp))),
                 ],
                 columnSpacing: 60,
                 horizontalMargin: 10,
@@ -203,7 +201,7 @@ class Source extends DataTableSource {
             children: [
               IconButton(
                 icon: const Icon(Icons.menu),
-                tooltip: '查看用户菜单',
+                tooltip: Translator.translate(Language.viewMenuList),
                 onPressed: () async {},
               ),
               IconButton(

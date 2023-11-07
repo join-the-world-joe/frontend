@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/component/menu.dart';
 import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 
-Future<int> showMenuListOfUserDialog(
-    BuildContext context, MenuList menuList) async {
+Future<int> showMenuListOfUserDialog(BuildContext context, MenuList menuList) async {
   List<Widget> menuWidgets = [];
 
   for (var i = 0; i < menuList.getBody().length; i++) {
     menuWidgets.add(Spacing.addVerticalSpace(10));
     menuWidgets.add(const Divider());
-    menuWidgets.add(_buildChip(
-        label: menuList.getBody()[i].getTitle(), textColor: Colors.white));
+    menuWidgets.add(_buildChip(label: menuList.getBody()[i].getTitle(), textColor: Colors.white));
     menuWidgets.add(Spacing.addVerticalSpace(10));
     List<Widget> chips = [];
     for (var j = 0; j < menuList.getBody()[i].getItemList().length; j++) {
-      chips.add(_buildFilterChip(
-          label: menuList.getBody()[i].getItemList()[j],
-          textColor: Colors.white,
-          tooltip: menuList.getBody()[i].getDescList()[j]));
+      chips.add(_buildFilterChip(label: menuList.getBody()[i].getItemList()[j], textColor: Colors.white, tooltip: menuList.getBody()[i].getDescList()[j]));
     }
     menuWidgets.add(SizedBox(
       width: 380,
@@ -47,7 +44,7 @@ Future<int> showMenuListOfUserDialog(
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('确定'),
+            child: Text(Translator.translate(Language.ok)),
           ),
           Spacing.addVerticalSpace(50),
         ],
@@ -72,10 +69,6 @@ Future<int> showMenuListOfUserDialog(
 
 Chip _buildChip({required String label, required Color textColor}) {
   return Chip(
-    // avatar: const CircleAvatar(
-    //   backgroundColor: Colors.orangeAccent,
-    //   child: Text('角色'),
-    // ),
     labelPadding: const EdgeInsets.all(2.0),
     label: Text(
       label,
@@ -90,10 +83,7 @@ Chip _buildChip({required String label, required Color textColor}) {
   );
 }
 
-Widget _buildFilterChip(
-    {required String label,
-    required Color textColor,
-    required String tooltip}) {
+Widget _buildFilterChip({required String label, required Color textColor, required String tooltip}) {
   return FilterChip(
     tooltip: tooltip,
     onSelected: (b) {},

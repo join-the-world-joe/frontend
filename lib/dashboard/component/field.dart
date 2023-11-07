@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -76,9 +78,8 @@ class _State extends State<Field> {
                     width: 110,
                     child: TextFormField(
                       // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '字段',
+                      decoration: InputDecoration(
+                        labelText: Translator.translate(Language.fField),
                       ),
                     ),
                   ),
@@ -87,9 +88,8 @@ class _State extends State<Field> {
                     width: 110,
                     child: TextFormField(
                       // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '数据表',
+                      decoration: InputDecoration(
+                        labelText: Translator.translate(Language.table),
                       ),
                     ),
                   ),
@@ -98,9 +98,8 @@ class _State extends State<Field> {
                     width: 110,
                     child: TextFormField(
                       // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '角色',
+                      decoration: InputDecoration(
+                        labelText: Translator.translate(Language.fRole),
                       ),
                     ),
                   ),
@@ -110,9 +109,9 @@ class _State extends State<Field> {
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: const Text(
-                        '查询',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      child: Text(
+                        Translator.translate(Language.search),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
                   ),
@@ -122,9 +121,9 @@ class _State extends State<Field> {
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: const Text(
-                        '重置',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      child: Text(
+                        Translator.translate(Language.reset),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
                   ),
@@ -133,11 +132,11 @@ class _State extends State<Field> {
               Spacing.addVerticalSpace(20),
               PaginatedDataTable(
                 source: Source(context),
-                header: const Text('字段列表'),
-                columns: const [
-                  DataColumn(label: Text('字段')),
-                  DataColumn(label: Text('数据表')),
-                  DataColumn(label: Text('描述')),
+                header: Text(Translator.translate(Language.fieldList)),
+                columns: [
+                  DataColumn(label: Text(Translator.translate(Language.fField))),
+                  DataColumn(label: Text(Translator.translate(Language.table))),
+                  DataColumn(label: Text(Translator.translate(Language.description))),
                 ],
                 columnSpacing: 60,
                 horizontalMargin: 10,

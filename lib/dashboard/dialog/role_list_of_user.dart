@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 
-Future<int> showRoleListOfUserDialog(
-    BuildContext context, RoleList roleList) async {
+Future<int> showRoleListOfUserDialog(BuildContext context, RoleList roleList) async {
   List<Widget> roleWidgets = [];
 
   for (var i = 0; i < roleList.getBody().length; i++) {
     var name = roleList.getBody()[i].getName();
     var desc = roleList.getBody()[i].getDescription();
-    roleWidgets.add(_buildFilterChip(
-        label: name,
-        textColor: Colors.white,
-        tooltip: desc));
+    roleWidgets.add(_buildFilterChip(label: name, textColor: Colors.white, tooltip: desc));
   }
 
   await showDialog(
@@ -21,11 +19,10 @@ Future<int> showRoleListOfUserDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        // title: const Text('角色列表'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('确定'),
+            child: Text(Translator.translate(Language.ok)),
           ),
           Spacing.addVerticalSpace(50),
         ],
@@ -39,7 +36,10 @@ Future<int> showRoleListOfUserDialog(
                   children: [
                     Spacing.addVerticalSpace(10),
                     const Divider(),
-                    _buildChip(label: '角色列表', textColor: Colors.white),
+                    _buildChip(
+                      label: Translator.translate(Language.roleList),
+                      textColor: Colors.white,
+                    ),
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 380,
@@ -88,10 +88,7 @@ Chip _buildChip({required String label, required Color textColor}) {
   );
 }
 
-Widget _buildFilterChip(
-    {required String label,
-    required Color textColor,
-    required String tooltip}) {
+Widget _buildFilterChip({required String label, required Color textColor, required String tooltip}) {
   return FilterChip(
     tooltip: tooltip,
     onSelected: (b) {},

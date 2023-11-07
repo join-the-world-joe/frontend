@@ -30,4 +30,27 @@ class Language {
   static String confirmPassword = 'Confirm Password';
   static String modifyUser = 'Modify User';
   static String dashboard = 'Dashboard';
+  static String ok = 'OK';
+  static String level = 'Level';
+  static String description = 'Description';
+  static String viewPermissionList = 'View Permission List';
+  static String viewMenuList = 'View Menu List';
+  static String viewRoleList = 'View Role List';
+  static String removeUser = 'Remove User';
+  static String update = 'Update';
+  static String remove = 'Remove';
+  static String confirmYourDeletion = 'Confirm Your Deletion';
+  static String fPermission = 'field of Permission';
+  static String major = 'Major';
+  static String minor = 'Minor';
+  static String fMenu = 'field of Menu';
+  static String subMenu = 'sub Menu';
+  static String operator = 'Operator';
+  static String request = 'Request';
+  static String response = 'Response';
+  static String operationTimestamp = 'Operation Timestamp';
+  static String operationLog = 'Operation List';
+  static String table = 'Table';
+  static String fField = 'field of field';
+  static String fieldList = 'Field List';
 }
