@@ -78,29 +78,18 @@ class _State extends State<Role> {
                       // controller: _accountController,
                       decoration: const InputDecoration(
                         border: UnderlineInputBorder(),
-                        labelText: '手机号',
-                      ),
-                    ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
-                    width: 110,
-                    child: TextFormField(
-                      // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '姓名',
-                      ),
-                    ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
-                    width: 110,
-                    child: TextFormField(
-                      // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
                         labelText: '角色',
+                      ),
+                    ),
+                  ),
+                  Spacing.addHorizontalSpace(20),
+                  SizedBox(
+                    width: 110,
+                    child: TextFormField(
+                      // controller: _accountController,
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: '等级',
                       ),
                     ),
                   ),
@@ -136,7 +125,10 @@ class _State extends State<Role> {
                 header: const Text('角色列表'),
                 columns: const [
                   DataColumn(label: Text('角色')),
-                  DataColumn(label: Text('     操作')),
+                  DataColumn(label: Text('等级')),
+                  DataColumn(label: Text('权限列表')),
+                  DataColumn(label: Text('菜单列表')),
+                  DataColumn(label: Text('描述')),
                 ],
                 columnSpacing: 60,
                 horizontalMargin: 10,
@@ -175,39 +167,39 @@ class Source extends DataTableSource {
       onSelectChanged: (selected) {},
       cells: [
         DataCell(Text('')),
+        DataCell(Text('')),
         DataCell(
-          FutureBuilder(
-            future: null,
-            builder: (context, snapshot) {
-              return const CircularProgressIndicator();
+          IconButton(
+            tooltip: "查看权限列表",
+            icon: const Icon(Icons.verified_user_outlined),
+            onPressed: () {
+              //   fetchRoleListOfCondition(
+              //     userIdList: [int.parse(_data[index].getId())],
+              //     userName: '',
+              //     phoneNumber: '',
+              //   );
+              //   print(fetchPermissionListOfCondition.toString());
+              //   Cache.setLastRequest(fetchPermissionListOfCondition.toString());
             },
           ),
         ),
         DataCell(
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.menu),
-                tooltip: '查看用户菜单',
-                onPressed: () async {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.remove_red_eye_outlined),
-                tooltip: '查看用户详情',
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.edit),
-                tooltip: '修改用户资料',
-                onPressed: () async {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                tooltip: '删除用户',
-                onPressed: () async {},
-              ),
-            ],
+          IconButton(
+            tooltip: "查看菜单列表",
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              // fetchRoleListOfCondition(
+              //   userIdList: [int.parse(_data[index].getId())],
+              //   userName: '',
+              //   phoneNumber: '',
+              // );
+              // print(fetchMenuListOfCondition.toString());
+              // Cache.setLastRequest(fetchMenuListOfCondition.toString());
+            },
           ),
+        ),
+        DataCell(
+          Text(''),
         ),
       ],
     );

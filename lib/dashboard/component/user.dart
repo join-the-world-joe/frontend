@@ -3,12 +3,22 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_framework/common/business/backend/fetch_role_list_of_condition.dart';
-import 'package:flutter_framework/common/business/backend/fetch_user_list_of_condition.dart';
+import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
+import 'package:flutter_framework/dashboard/business/fetch_permission_list_of_condition.dart';
+import 'package:flutter_framework/dashboard/business/fetch_role_list_of_condition.dart';
+import 'package:flutter_framework/dashboard/business/fetch_user_list_of_condition.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/dashboard/component/permission.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
+import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
+import 'package:flutter_framework/dashboard/dialog/menu_list_of_user.dart';
+import 'package:flutter_framework/dashboard/dialog/modify_user.dart';
+import 'package:flutter_framework/dashboard/dialog/permission_list_of_user.dart';
+import 'package:flutter_framework/dashboard/dialog/remove_user.dart';
 import 'package:flutter_framework/dashboard/dialog/role_list_of_user.dart';
 import 'package:flutter_framework/dashboard/model/menu_list.dart';
+import 'package:flutter_framework/dashboard/model/permission_list.dart';
+import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/dashboard/model/user.dart' as usr;
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -21,6 +31,7 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
+import 'package:flutter_framework/dashboard/model/role.dart';
 import '../setup.dart';
 
 class User extends StatefulWidget {
@@ -41,14 +52,21 @@ class _State extends State<User> {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
-    print("User.observe: major: $major, minor: $minor");
+
     try {
+      print("User.observe: major: $major, minor: $minor");
       if (major == Major.backend &&
           minor == Minor.backend.fetchUserListOfConditionRsp) {
         fetchUserListOfConditionHandler(body);
       } else if (major == Major.backend &&
           minor == Minor.backend.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(body);
+      } else if (major == Major.backend &&
+          minor == Minor.backend.fetchMenuListOfConditionRsp) {
+        fetchMenuListOfConditionHandler(body);
+      } else if (major == Major.backend &&
+          minor == Minor.backend.fetchPermissionListOfConditionRsp) {
+        fetchPermissionListOfConditionHandler(body);
       } else {
         print("User.observe warning: $major-$minor doesn't matched");
       }
@@ -66,8 +84,19 @@ class _State extends State<User> {
           FetchRoleListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         print(rsp.body.toString());
+        RoleList roleList = RoleList.fromJson(rsp.body['role_list']);
+        if (Cache.getLastRequest() == fetchMenuListOfCondition.toString()) {
+          Cache.setRoleList(roleList);
+          fetchMenuListOfCondition(roleList: roleList);
+          return;
+        } else if (Cache.getLastRequest() ==
+            fetchPermissionListOfCondition.toString()) {
+          Cache.setRoleList(roleList);
+          fetchPermissionListOfCondition(roleList: roleList);
+          return;
+        }
         refresh();
-        showRoleListOfUserDialog(context, ['Manager', 'Worker', 'Sales']);
+        showRoleListOfUserDialog(context, roleList);
         return;
       } else if (rsp.code == Code.accessDenied) {
         showMessageDialog(context, '温馨提示：', '没有权限.');
@@ -79,6 +108,52 @@ class _State extends State<User> {
       }
     } catch (e) {
       print("User.fetchRoleListOfConditionHandler failure, $e");
+    }
+  }
+
+  void fetchPermissionListOfConditionHandler(Map<String, dynamic> body) {
+    print('User.fetchPermissionListOfConditionHandler');
+    try {
+      FetchPermissionListOfConditionRsp rsp =
+          FetchPermissionListOfConditionRsp.fromJson(body);
+      if (rsp.code == Code.oK) {
+        print(rsp.body.toString());
+        Cache.setPermissionList(PermissionList.fromJson(rsp.body));
+        Cache.clearLastRequest();
+        showPermissionListOfUserDialog(context, Cache.getPermissionList());
+        return;
+      } else if (rsp.code == Code.accessDenied) {
+        showMessageDialog(context, '温馨提示：', '没有权限.');
+        refresh();
+        return;
+      } else {
+        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        return;
+      }
+    } catch (e) {
+      print("User.fetchPermissionListOfConditionHandler failure, $e");
+      return;
+    }
+  }
+
+  void fetchMenuListOfConditionHandler(Map<String, dynamic> body) {
+    print('User.fetchMenuListOfConditionHandler');
+    try {
+      FetchMenuListOfConditionRsp rsp =
+          FetchMenuListOfConditionRsp.fromJson(body);
+      if (rsp.code == Code.oK) {
+        print(rsp.body.toString());
+        Cache.setMenuList(MenuList.fromJson(rsp.body));
+        Cache.clearLastRequest();
+        showMenuListOfUserDialog(context, Cache.getMenuList());
+        return;
+      } else {
+        print('User.fetchMenuListOfConditionHandler failure: ${rsp.code}');
+        return;
+      }
+    } catch (e) {
+      print("User.fetchMenuListOfConditionHandler failure, $e");
+      return;
     }
   }
 
@@ -97,15 +172,15 @@ class _State extends State<User> {
           (e) {
             Cache.userList.add(
               usr.User(
-                  id: e['id'],
-                  name: e['name'],
-                  account: e['account'],
-                  email: e['email'],
-                  department: e['department'],
-                  countryCode: e['country_code'],
-                  phoneNumber: e['phone_number'],
-                  status: e['status'],
-                  createdAt: e['created_at']),
+                  e['id'],
+                  e['name'],
+                  e['account'],
+                  e['email'],
+                  e['department'],
+                  e['country_code'],
+                  e['phone_number'],
+                  e['status'],
+                  e['created_at']),
             );
           },
         );
@@ -249,7 +324,15 @@ class _State extends State<User> {
                 actions: [
                   ElevatedButton.icon(
                     icon: const Icon(Icons.add),
-                    onPressed: () async {},
+                    onPressed: () async {
+                      var wholeRoleList = RoleList([
+                        Role('Manager', ''),
+                        Role('Sales', ''),
+                        Role('Worker', '')
+                      ]);
+                      var roleList = RoleList([Role('Worker', '')]);
+                      showInsertUserDialog(context, wholeRoleList, roleList);
+                    },
                     label: const Text(
                       '新增用户',
                       style: TextStyle(color: Colors.white, fontSize: 15),
@@ -263,6 +346,9 @@ class _State extends State<User> {
                   DataColumn(label: Text('姓名')),
                   DataColumn(label: Text('状态')),
                   DataColumn(label: Text('角色列表')),
+                  DataColumn(label: Text('权限列表')),
+                  DataColumn(label: Text('菜单列表')),
+                  // DataColumn(label: Text('字段列表')),
                   DataColumn(label: Text('创建时间')),
                   DataColumn(label: Text('     操作')),
                 ],
@@ -302,9 +388,9 @@ class Source extends DataTableSource {
       selected: false,
       onSelectChanged: (selected) {},
       cells: [
-        DataCell(Text(_data[index].phoneNumber)),
-        DataCell(Text(_data[index].name)),
-        DataCell(_data[index].status == '1'
+        DataCell(Text(_data[index].getPhoneNumber())),
+        DataCell(Text(_data[index].getName())),
+        DataCell(_data[index].getStatus() == '1'
             ? const Icon(Icons.done, color: Colors.lightGreen)
             : const Icon(Icons.close)),
         DataCell(
@@ -312,42 +398,76 @@ class Source extends DataTableSource {
             tooltip: "查看角色列表",
             icon: const Icon(Icons.people_alt_rounded),
             onPressed: () {
+              Cache.clearLastRequest();
               fetchRoleListOfCondition(
-                userIdList: [int.parse(_data[index].id)],
+                userIdList: [int.parse(_data[index].getId())],
                 userName: '',
                 phoneNumber: '',
               );
             },
           ),
         ),
-        DataCell(Text(_data[index].createdAt)),
+        DataCell(
+          IconButton(
+            tooltip: "查看权限列表",
+            icon: const Icon(Icons.verified_user_outlined),
+            onPressed: () {
+              fetchRoleListOfCondition(
+                userIdList: [int.parse(_data[index].getId())],
+                userName: '',
+                phoneNumber: '',
+              );
+              print(fetchPermissionListOfCondition.toString());
+              Cache.setLastRequest(fetchPermissionListOfCondition.toString());
+            },
+          ),
+        ),
+        DataCell(
+          IconButton(
+            tooltip: "查看菜单列表",
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              fetchRoleListOfCondition(
+                userIdList: [int.parse(_data[index].getId())],
+                userName: '',
+                phoneNumber: '',
+              );
+              print(fetchMenuListOfCondition.toString());
+              Cache.setLastRequest(fetchMenuListOfCondition.toString());
+            },
+          ),
+        ),
+        // DataCell(
+        //   IconButton(
+        //     tooltip: "查看字段列表",
+        //     icon: const Icon(Icons.table_view_sharp),
+        //     onPressed: () {},
+        //   ),
+        // ),
+        DataCell(Text(_data[index].getCreatedAt())),
         DataCell(
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.verified_user_outlined),
-                tooltip: '查看权限',
-                onPressed: () async {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.menu),
-                tooltip: '查看菜单',
-                onPressed: () async {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.table_view_sharp),
-                tooltip: '查看数据域',
-                onPressed: () async {},
-              ),
-              IconButton(
                 icon: const Icon(Icons.edit),
                 tooltip: '更新资料',
-                onPressed: () async {},
+                onPressed: () async {
+                  var wholeRoleList = RoleList([
+                    Role('Manager', ''),
+                    Role('Sales', ''),
+                    Role('Worker', '')
+                  ]);
+                  var roleList = RoleList([Role('Worker', '')]);
+                  showModifyUserDialog(
+                      context, _data[index], wholeRoleList, roleList);
+                },
               ),
               IconButton(
                 icon: const Icon(Icons.delete),
                 tooltip: '删除用户',
-                onPressed: () async {},
+                onPressed: () async {
+                  showRemoveUserDialog(context, _data[index]);
+                },
               ),
             ],
           ),

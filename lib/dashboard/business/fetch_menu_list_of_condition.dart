@@ -1,18 +1,20 @@
 import 'dart:typed_data';
-import '../../../../utils/convert.dart';
+import 'package:flutter_framework/dashboard/model/role_list.dart';
+
+import '../../../utils/convert.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
-import '../../route/major.dart';
-import '../../route/minor.dart';
+import '../../common/route/major.dart';
+import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class FetchMenuListOfConditionReq {
-  final List<String> _roleList;
+  final RoleList _roleList;
 
   FetchMenuListOfConditionReq(this._roleList);
 
   Map<String, dynamic> toJson() => {
-        'role_list': _roleList,
+        'role_list': _roleList.getNameList(),
       };
 
   Uint8List toBytes() {
@@ -31,11 +33,10 @@ class FetchMenuListOfConditionRsp {
 }
 
 void fetchMenuListOfCondition({
-  required List<String> conditionOfRoleList,
+  required RoleList roleList,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchMenuListOfConditionReq req =
-      FetchMenuListOfConditionReq(conditionOfRoleList);
+  FetchMenuListOfConditionReq req = FetchMenuListOfConditionReq(roleList);
   packet.getHeader().setMajor(Major.backend);
   packet.getHeader().setMinor(Minor.backend.fetchMenuListOfConditionReq);
   packet.setBody(req.toJson());

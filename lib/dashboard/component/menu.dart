@@ -95,17 +95,6 @@ class _State extends State<Menu> {
                   ),
                   Spacing.addHorizontalSpace(20),
                   SizedBox(
-                    width: 110,
-                    child: TextFormField(
-                      // controller: _accountController,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '角色',
-                      ),
-                    ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
                     height: 30,
                     width: 100,
                     child: ElevatedButton(
@@ -137,7 +126,7 @@ class _State extends State<Menu> {
                 columns: const [
                   DataColumn(label: Text('菜单')),
                   DataColumn(label: Text('父级菜单')),
-                  DataColumn(label: Text('     操作')),
+                  DataColumn(label: Text('描述')),
                 ],
                 columnSpacing: 60,
                 horizontalMargin: 10,
@@ -177,40 +166,7 @@ class Source extends DataTableSource {
       cells: [
         DataCell(Text('')),
         DataCell(Text('')),
-        DataCell(
-          FutureBuilder(
-            future: null,
-            builder: (context, snapshot) {
-              return const CircularProgressIndicator();
-            },
-          ),
-        ),
-        DataCell(
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.menu),
-                tooltip: '查看用户菜单',
-                onPressed: () async {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.remove_red_eye_outlined),
-                tooltip: '查看用户详情',
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.edit),
-                tooltip: '修改用户资料',
-                onPressed: () async {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                tooltip: '删除用户',
-                onPressed: () async {},
-              ),
-            ],
-          ),
-        ),
+        DataCell(Text('')),
       ],
     );
   }

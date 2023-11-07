@@ -1,25 +1,49 @@
 class User {
-  String id;
-  String name;
-  String account;
-  String email;
-  String department;
-  String countryCode;
-  String phoneNumber;
-  String status;
-  String createdAt;
+  String _id;
+  String _name;
+  String _account;
+  String _email;
+  String _department;
+  String _countryCode;
+  String _phoneNumber;
+  String _status;
+  String _createdAt;
 
-  User({
-    required this.id,
-    required this.name,
-    required this.account,
-    required this.email,
-    required this.department,
-    required this.countryCode,
-    required this.phoneNumber,
-    required this.status,
-    required this.createdAt,
-  });
+  String getId() {
+    return _id;
+  }
+
+  String getName() {
+    return _name;
+  }
+
+  String getCreatedAt() {
+    return _createdAt;
+  }
+
+  String getCountryCode() {
+    return _countryCode;
+  }
+
+  String getPhoneNumber() {
+    return _phoneNumber;
+  }
+
+  String getStatus() {
+    return _status;
+  }
+
+  User(
+    this._id,
+    this._name,
+    this._account,
+    this._email,
+    this._department,
+    this._countryCode,
+    this._phoneNumber,
+    this._status,
+    this._createdAt,
+  );
 
   factory User.fromJson(Map<String, dynamic> json) {
     String id = 'null',
@@ -45,15 +69,15 @@ class User {
       print('e: $e');
     }
     return User(
-      id: id,
-      name: name,
-      account: account,
-      email: email,
-      department: department,
-      countryCode: countryCode,
-      phoneNumber: phoneNumber,
-      status: status,
-      createdAt: createdAt,
+      id,
+      name,
+      account,
+      email,
+      department,
+      countryCode,
+      phoneNumber,
+      status,
+      createdAt,
     );
   }
 }

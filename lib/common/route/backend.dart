@@ -7,4 +7,6 @@ class Backend {
   String fetchUserListOfConditionRsp = '6';
   String fetchRoleListOfConditionReq = '7';
   String fetchRoleListOfConditionRsp = '8';
+  String fetchPermissionListOfConditionReq = '9';
+  String fetchPermissionListOfConditionRsp = '10';
 }

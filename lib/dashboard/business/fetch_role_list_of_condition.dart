@@ -1,8 +1,8 @@
 import 'dart:typed_data';
-import '../../../../utils/convert.dart';
+import '../../../utils/convert.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
-import '../../route/major.dart';
-import '../../route/minor.dart';
+import '../../common/route/major.dart';
+import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class FetchRoleListOfConditionReq {

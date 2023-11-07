@@ -1,8 +1,16 @@
 class Role {
-  String name;
-  String description;
+  String _name;
+  String _description;
 
-  Role({required this.name, required this.description});
+  String getName() {
+    return _name;
+  }
+
+  String getDescription() {
+    return _description;
+  }
+
+  Role(this._name, this._description);
 
   factory Role.fromJson(Map<String, dynamic> json) {
     String name = 'null', description = 'null';
@@ -13,8 +21,8 @@ class Role {
       print('e: $e');
     }
     return Role(
-      name: name,
-      description: description,
+      name,
+      description,
     );
   }
 }

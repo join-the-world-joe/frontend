@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/dashboard/model/role_list.dart';
+import 'package:flutter_framework/dashboard/model/permission_list.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 
-Future<int> showRoleListOfUserDialog(
-    BuildContext context, RoleList roleList) async {
+Future<int> showPermissionListOfUserDialog(
+    BuildContext context, PermissionList permissionList) async {
   List<Widget> roleWidgets = [];
 
-  for (var i = 0; i < roleList.getBody().length; i++) {
-    var name = roleList.getBody()[i].getName();
-    var desc = roleList.getBody()[i].getDescription();
+  for (var i = 0; i < permissionList.getBody().length; i++) {
+    var name = permissionList.getBody()[i].getName();
+    var major = permissionList.getBody()[i].getMajor();
+    var minor = permissionList.getBody()[i].getMinor();
     roleWidgets.add(_buildFilterChip(
-        label: name,
-        textColor: Colors.white,
-        tooltip: desc));
+        label: name, textColor: Colors.white, tooltip: '$major-$minor'));
   }
 
   await showDialog(
@@ -39,7 +38,7 @@ Future<int> showRoleListOfUserDialog(
                   children: [
                     Spacing.addVerticalSpace(10),
                     const Divider(),
-                    _buildChip(label: '角色列表', textColor: Colors.white),
+                    _buildChip(label: '权限列表', textColor: Colors.white),
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 380,

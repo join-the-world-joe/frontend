@@ -1,19 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/dashboard/model/role_list.dart';
+import 'package:flutter_framework/dashboard/component/menu.dart';
+import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 
-Future<int> showRoleListOfUserDialog(
-    BuildContext context, RoleList roleList) async {
-  List<Widget> roleWidgets = [];
+Future<int> showMenuListOfUserDialog(
+    BuildContext context, MenuList menuList) async {
+  List<Widget> menuWidgets = [];
 
-  for (var i = 0; i < roleList.getBody().length; i++) {
-    var name = roleList.getBody()[i].getName();
-    var desc = roleList.getBody()[i].getDescription();
-    roleWidgets.add(_buildFilterChip(
-        label: name,
-        textColor: Colors.white,
-        tooltip: desc));
+  for (var i = 0; i < menuList.getBody().length; i++) {
+    menuWidgets.add(Spacing.addVerticalSpace(10));
+    menuWidgets.add(const Divider());
+    menuWidgets.add(_buildChip(
+        label: menuList.getBody()[i].getTitle(), textColor: Colors.white));
+    menuWidgets.add(Spacing.addVerticalSpace(10));
+    List<Widget> chips = [];
+    for (var j = 0; j < menuList.getBody()[i].getItemList().length; j++) {
+      chips.add(_buildFilterChip(
+          label: menuList.getBody()[i].getItemList()[j],
+          textColor: Colors.white,
+          tooltip: menuList.getBody()[i].getDescList()[j]));
+    }
+    menuWidgets.add(SizedBox(
+      width: 380,
+      child: Row(
+        children: [
+          Expanded(
+            child: Wrap(
+              spacing: 6.0,
+              runSpacing: 6.0,
+              children: chips,
+            ),
+          ),
+        ],
+      ),
+    ));
+    menuWidgets.add(const Divider());
   }
 
   await showDialog(
@@ -36,27 +58,7 @@ Future<int> showRoleListOfUserDialog(
               height: 250,
               child: SingleChildScrollView(
                 child: Column(
-                  children: [
-                    Spacing.addVerticalSpace(10),
-                    const Divider(),
-                    _buildChip(label: '角色列表', textColor: Colors.white),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 380,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Wrap(
-                              spacing: 6.0,
-                              runSpacing: 6.0,
-                              children: roleWidgets,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Divider(),
-                  ],
+                  children: menuWidgets,
                 ),
               ),
             );

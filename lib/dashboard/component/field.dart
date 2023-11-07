@@ -137,7 +137,7 @@ class _State extends State<Field> {
                 columns: const [
                   DataColumn(label: Text('字段')),
                   DataColumn(label: Text('数据表')),
-                  DataColumn(label: Text('     操作')),
+                  DataColumn(label: Text('描述')),
                 ],
                 columnSpacing: 60,
                 horizontalMargin: 10,
@@ -176,40 +176,8 @@ class Source extends DataTableSource {
       onSelectChanged: (selected) {},
       cells: [
         DataCell(Text('')),
-        DataCell(
-          FutureBuilder(
-            future: null,
-            builder: (context, snapshot) {
-              return const CircularProgressIndicator();
-            },
-          ),
-        ),
-        DataCell(
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.menu),
-                tooltip: '查看用户菜单',
-                onPressed: () async {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.remove_red_eye_outlined),
-                tooltip: '查看用户详情',
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.edit),
-                tooltip: '修改用户资料',
-                onPressed: () async {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                tooltip: '删除用户',
-                onPressed: () async {},
-              ),
-            ],
-          ),
-        ),
+        DataCell(Text('')),
+        DataCell(Text('')),
       ],
     );
   }
