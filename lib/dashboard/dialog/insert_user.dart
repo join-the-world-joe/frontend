@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/dashboard/business/insert_user_record.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
+import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 
-Future<int> showInsertUserDialog(BuildContext context, RoleList wholeRoleList, RoleList roleList) async {
-  String? _method;
+Future<void> showInsertUserDialog(BuildContext context, RoleList wholeRoleList, RoleList roleList) async {
+  String? _countryCode;
   var _nameController = TextEditingController();
+  var _phoneNumberController = TextEditingController();
   var _passwordController = TextEditingController();
   var _verifyPasswordController = TextEditingController();
 
   bool bAccountAlreadyExist = false;
-  int? statusGroup = int.parse('1');
+  int status = int.parse('1');
   Map<Role, bool> roleStatus = {}; // key: role_name, value: bool
 
   for (var i = 0; i < wholeRoleList.getBody().length; i++) {
@@ -44,17 +47,27 @@ Future<int> showInsertUserDialog(BuildContext context, RoleList wholeRoleList, R
                   await showWarningDialog(context, '两次输入的密码不一致');
                   return;
                 }
-                var roleList = () {
-                  List<Role> roleList = [];
+                List<String> roleList = () {
+                  List<String> roleList = [];
                   roleStatus.forEach(
                     (key, value) {
                       if (value) {
-                        roleList.add(key);
+                        roleList.add(key.getName());
                       }
                     },
                   );
+                  print('selected: $roleList');
                   return roleList;
                 }();
+                insertUserRecord(
+                  name: _nameController.text,
+                  phoneNumber: _phoneNumberController.text,
+                  countryCode: _countryCode ?? '86',
+                  status: status,
+                  password: Runtime.rsa.encrypt(_passwordController.text),
+                  roleList: roleList,
+                );
+                Navigator.pop(context, null);
               },
               child: Text(Translator.translate(Language.confirm)),
             ),
@@ -76,21 +89,21 @@ Future<int> showInsertUserDialog(BuildContext context, RoleList wholeRoleList, R
                             Text(Translator.translate(Language.enable)),
                             Radio<int?>(
                                 value: 1,
-                                groupValue: statusGroup,
+                                groupValue: status,
                                 onChanged: (b) {
                                   setState(() {
-                                    statusGroup = b;
+                                    status = b!;
                                   });
                                   // print("status: $b");
                                 }),
                             Spacing.addHorizontalSpace(50),
                             Text(Translator.translate(Language.disable)),
                             Radio<int?>(
-                              value: 0,
-                              groupValue: statusGroup,
+                              value: 2,
+                              groupValue: status,
                               onChanged: (b) {
                                 setState(() {
-                                  statusGroup = b;
+                                  status = b!;
                                 });
                                 // print("status: $b");
                               },
@@ -106,7 +119,7 @@ Future<int> showInsertUserDialog(BuildContext context, RoleList wholeRoleList, R
                             Translator.translate(Language.fCountryCode),
                           ),
                           isExpanded: true,
-                          value: _method,
+                          value: _countryCode,
                           items: [
                             DropdownMenuItem<String>(
                               value: '86',
@@ -117,8 +130,8 @@ Future<int> showInsertUserDialog(BuildContext context, RoleList wholeRoleList, R
                               child: Text(Translator.translate(Language.philipine)),
                             ),
                           ],
-                          onChanged: (method) {
-                            _method = method ?? '';
+                          onChanged: (countryCode) {
+                            _countryCode = countryCode ?? '';
                             setState(() {});
                           },
                         ),
@@ -127,7 +140,7 @@ Future<int> showInsertUserDialog(BuildContext context, RoleList wholeRoleList, R
                       SizedBox(
                         width: 350,
                         child: TextFormField(
-                          controller: _nameController,
+                          controller: _phoneNumberController,
                           decoration: InputDecoration(
                             // border: UnderlineInputBorder(),
                             labelText: Translator.translate(Language.fPhoneNumber),

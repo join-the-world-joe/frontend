@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import '../../../utils/convert.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -8,14 +9,12 @@ import 'package:flutter_framework/common/code/code.dart';
 
 class FetchUserListOfConditionReq {
   final String _name;
-  final String _role;
   final String _phoneNumber;
 
-  FetchUserListOfConditionReq(this._name, this._role, this._phoneNumber);
+  FetchUserListOfConditionReq(this._name, this._phoneNumber);
 
   Map<String, dynamic> toJson() => {
-        'name': _name,
-        'role': _role,
+        'name': utf8.encode(_name),
         'phone_number': _phoneNumber,
       };
 
@@ -36,12 +35,10 @@ class FetchUserListOfConditionRsp {
 
 void fetchUserListOfCondition({
   required String name,
-  required String role,
   required String phoneNumber,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchUserListOfConditionReq req =
-      FetchUserListOfConditionReq(name, role, phoneNumber);
+  FetchUserListOfConditionReq req = FetchUserListOfConditionReq(name, phoneNumber);
   packet.getHeader().setMajor(Major.backend);
   packet.getHeader().setMinor(Minor.backend.fetchUserListOfConditionReq);
   packet.setBody(req.toJson());

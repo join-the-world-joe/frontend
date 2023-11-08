@@ -6,7 +6,7 @@ import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 
-Future<int> showRemoveUserDialog(BuildContext context, User user) async {
+Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
   return await showDialog(
       barrierDismissible: false,
       context: context,
@@ -32,11 +32,11 @@ Future<int> showRemoveUserDialog(BuildContext context, User user) async {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                      onPressed: () => Navigator.pop(context, null),
+                      onPressed: () => Navigator.pop(context, false),
                       child: Text(Translator.translate(Language.cancel)),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () => Navigator.pop(context, true),
                       child: Text(Translator.translate(Language.confirm)),
                     ),
                     Spacing.addVerticalSpace(50),

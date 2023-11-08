@@ -43,6 +43,7 @@ class Websocket {
   Future<String> sendPacket(PacketClient packet) async {
     var list = Uint8List(0);
     try {
+      // print('sendPacket: ${packet.toString()}');
       if (_encryption) {
         list = _aes!.Encrypt(packet.toString());
       } else {

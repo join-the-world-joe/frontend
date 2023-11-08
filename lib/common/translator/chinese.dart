@@ -40,7 +40,7 @@ class Chinese {
     Language.viewPermissionList: '查看权限列表',
     Language.viewMenuList: '查看菜单列表',
     Language.viewRoleList: '查看角色列表',
-    Language.removeUser : '删除用户',
+    Language.removeUser: '删除用户',
     Language.update: '更新',
     Language.remove: '删除',
     Language.confirmYourDeletion: '确认删除?',
@@ -49,14 +49,22 @@ class Chinese {
     Language.minor: '次业务号',
     Language.fMenu: '父级菜单',
     Language.subMenu: '菜单',
-    Language.operator:'操作人',
+    Language.operator: '操作人',
     Language.request: '请求',
     Language.response: '应答',
-    Language.operationTimestamp:'操作时间',
-    Language.operationLog : '操作日志列表',
+    Language.operationTimestamp: '操作时间',
+    Language.operationLog: '操作日志列表',
     Language.table: '数据表',
     Language.fField: '字段',
-    Language.fieldList:'字段列表',
+    Language.fieldList: '字段列表',
+    Language.tMenu: '菜单',
+
+    // permission
+    Language.fetchMenuListOfCondition: '获取菜单列表',
+    Language.fetchUserListOfCondition: '获取用户列表',
+    Language.fetchRoleListOfCondition: '获取角色列表',
+    Language.fetchPermissionListOfCondition: '获取权限列表',
+    Language.insertUserRecord : '新增用户',
   };
 
   static String getName() {

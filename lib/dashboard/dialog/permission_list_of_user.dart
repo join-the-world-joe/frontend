@@ -12,7 +12,9 @@ Future<int> showPermissionListOfUserDialog(BuildContext context, PermissionList 
     var name = permissionList.getBody()[i].getName();
     var major = permissionList.getBody()[i].getMajor();
     var minor = permissionList.getBody()[i].getMinor();
-    roleWidgets.add(_buildFilterChip(label: name, textColor: Colors.white, tooltip: '$major-$minor'));
+    roleWidgets.add(
+      _buildFilterChip(label: Translator.translate(name), textColor: Colors.white, tooltip: '$major-$minor'),
+    );
   }
 
   await showDialog(

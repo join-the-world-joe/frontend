@@ -10,6 +10,7 @@ import 'package:flutter_framework/dashboard/business/fetch_permission_list_of_co
 import 'package:flutter_framework/dashboard/business/fetch_role_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/business/fetch_user_list_of_condition.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/dashboard/business/soft_delete_user_recode.dart';
 import 'package:flutter_framework/dashboard/component/permission.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
@@ -35,6 +36,7 @@ import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
 import '../setup.dart';
+import 'package:flutter_framework/dashboard/business/insert_user_record.dart';
 
 class User extends StatefulWidget {
   const User({Key? key}) : super(key: key);
@@ -65,12 +67,54 @@ class _State extends State<User> {
         fetchMenuListOfConditionHandler(body);
       } else if (major == Major.backend && minor == Minor.backend.fetchPermissionListOfConditionRsp) {
         fetchPermissionListOfConditionHandler(body);
+      } else if (major == Major.backend && minor == Minor.backend.insertUserRecordRsp) {
+        insertUserRecordHandler(body);
+      } else if (major == Major.backend && minor == Minor.backend.softDeleteUserRecordRsp) {
+        softDeleteUserRecordHandler(body);
       } else {
         print("User.observe warning: $major-$minor doesn't matched");
       }
       return;
     } catch (e) {
       print('User.observe($major-$minor).e: ${e.toString()}');
+      return;
+    }
+  }
+
+  void softDeleteUserRecordHandler(Map<String, dynamic> body) {
+    print('User.softDeleteUserRecordHandler');
+    try {
+      SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
+      if (rsp.code == Code.oK) {
+        // Cache.setMenuList(MenuList.fromJson(rsp.body));
+        Cache.clearLastRequest();
+        showMessageDialog(context, '温馨提示：', '删除成功');
+        return;
+      } else {
+        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        return;
+      }
+    } catch (e) {
+      print("User.softDeleteUserRecordHandler failure, $e");
+      return;
+    }
+  }
+
+  void insertUserRecordHandler(Map<String, dynamic> body) {
+    print('User.insertUserRecordHandler');
+    try {
+      InsertUserRecordRsp rsp = InsertUserRecordRsp.fromJson(body);
+      if (rsp.code == Code.oK) {
+        // Cache.setMenuList(MenuList.fromJson(rsp.body));
+        Cache.clearLastRequest();
+        showMessageDialog(context, '温馨提示：', '成功');
+        return;
+      } else {
+        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        return;
+      }
+    } catch (e) {
+      print("User.insertUserRecordHandler failure, $e");
       return;
     }
   }
@@ -89,6 +133,10 @@ class _State extends State<User> {
         } else if (Cache.getLastRequest() == fetchPermissionListOfCondition.toString()) {
           Cache.setRoleList(roleList);
           fetchPermissionListOfCondition(roleList: roleList);
+          return;
+        } else if (Cache.getLastRequest() == insertUserRecord.toString()) {
+          var wholeRoleList = roleList;
+          showInsertUserDialog(context, wholeRoleList, RoleList([]));
           return;
         }
         refresh();
@@ -258,25 +306,14 @@ class _State extends State<User> {
                   ),
                   Spacing.addHorizontalSpace(20),
                   SizedBox(
-                    width: 110,
-                    child: TextFormField(
-                      controller: roleControl,
-                      decoration: InputDecoration(
-                        // border: const UnderlineInputBorder(),
-                        labelText: Translator.translate(Language.fRole),
-                      ),
-                    ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
                     height: 30,
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {
                         Cache.setUserList([]);
+                        print('name: ${nameControl.text}');
                         fetchUserListOfCondition(
                           name: nameControl.text,
-                          role: roleControl.text,
                           phoneNumber: phoneNumberControl.text,
                         );
                         refresh();
@@ -293,7 +330,9 @@ class _State extends State<User> {
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {
-                        phoneNumberControl.text = '18629300170';
+                        phoneNumberControl.text = '';
+                        nameControl.text = '';
+                        Cache.setUserList([]);
                         refresh();
                       },
                       child: Text(
@@ -310,9 +349,13 @@ class _State extends State<User> {
                   ElevatedButton.icon(
                     icon: const Icon(Icons.add),
                     onPressed: () async {
-                      var wholeRoleList = RoleList([Role('Manager', ''), Role('Sales', ''), Role('Worker', '')]);
-                      var roleList = RoleList([Role('Worker', '')]);
-                      showInsertUserDialog(context, wholeRoleList, roleList);
+                      fetchRoleListOfCondition(
+                        userIdList: [],
+                        userName: '',
+                        phoneNumber: '',
+                      );
+                      // print(insertUserRecord.toString());
+                      Cache.setLastRequest(insertUserRecord.toString());
                     },
                     label: Text(
                       Translator.translate(Language.newUser),
@@ -328,7 +371,7 @@ class _State extends State<User> {
                   DataColumn(label: Text(Translator.translate(Language.fStatus))),
                   DataColumn(label: Text(Translator.translate(Language.fRole))),
                   DataColumn(label: Text(Translator.translate(Language.fPermission))),
-                  DataColumn(label: Text(Translator.translate(Language.fMenu))),
+                  DataColumn(label: Text(Translator.translate(Language.tMenu))),
                   // DataColumn(label: Text('字段列表')),
                   DataColumn(label: Text(Translator.translate(Language.fCreatedAt))),
                   DataColumn(label: Text(Translator.translate(Language.operation))),
@@ -357,17 +400,24 @@ class Source extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => _data.length;
+  int get rowCount => getLength();
+
+  int getLength() {
+    print('length: ${_data.length}');
+    return _data.length;
+  }
 
   @override
   int get selectedRowCount => 0;
 
   @override
   DataRow getRow(int index) {
-    // print("getRow: $index");
+    print("getRow: $index");
     return DataRow(
       selected: false,
-      onSelectChanged: (selected) {},
+      onSelectChanged: (selected) {
+        print('selected: $selected');
+      },
       cells: [
         DataCell(Text(_data[index].getPhoneNumber())),
         DataCell(Text(_data[index].getName())),
@@ -396,7 +446,7 @@ class Source extends DataTableSource {
                 userName: '',
                 phoneNumber: '',
               );
-              print(fetchPermissionListOfCondition.toString());
+              // print(fetchPermissionListOfCondition.toString());
               Cache.setLastRequest(fetchPermissionListOfCondition.toString());
             },
           ),
@@ -411,18 +461,11 @@ class Source extends DataTableSource {
                 userName: '',
                 phoneNumber: '',
               );
-              print(fetchMenuListOfCondition.toString());
+              // print(fetchMenuListOfCondition.toString());
               Cache.setLastRequest(fetchMenuListOfCondition.toString());
             },
           ),
         ),
-        // DataCell(
-        //   IconButton(
-        //     tooltip: "查看字段列表",
-        //     icon: const Icon(Icons.table_view_sharp),
-        //     onPressed: () {},
-        //   ),
-        // ),
         DataCell(Text(_data[index].getCreatedAt())),
         DataCell(
           Row(
@@ -440,7 +483,10 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.delete),
                 tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
-                  showRemoveUserDialog(context, _data[index]);
+                  var b = await showRemoveUserDialog(context, _data[index]);
+                  if (b) {
+                    softDeleteUserRecord(userList: [int.parse(_data[index].getId())]);
+                  }
                 },
               ),
             ],

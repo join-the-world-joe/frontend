@@ -69,4 +69,3 @@ class PacketClient {
         body: json['body'],
       );
 }
-

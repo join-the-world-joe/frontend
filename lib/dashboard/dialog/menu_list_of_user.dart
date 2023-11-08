@@ -12,11 +12,19 @@ Future<int> showMenuListOfUserDialog(BuildContext context, MenuList menuList) as
   for (var i = 0; i < menuList.getBody().length; i++) {
     menuWidgets.add(Spacing.addVerticalSpace(10));
     menuWidgets.add(const Divider());
-    menuWidgets.add(_buildChip(label: menuList.getBody()[i].getTitle(), textColor: Colors.white));
+    menuWidgets.add(
+      _buildChip(label: Translator.translate(menuList.getBody()[i].getTitle()), textColor: Colors.white),
+    );
     menuWidgets.add(Spacing.addVerticalSpace(10));
     List<Widget> chips = [];
     for (var j = 0; j < menuList.getBody()[i].getItemList().length; j++) {
-      chips.add(_buildFilterChip(label: menuList.getBody()[i].getItemList()[j], textColor: Colors.white, tooltip: menuList.getBody()[i].getDescList()[j]));
+      chips.add(
+        _buildFilterChip(
+          label: Translator.translate(menuList.getBody()[i].getItemList()[j]),
+          textColor: Colors.white,
+          tooltip: menuList.getBody()[i].getDescList()[j],
+        ),
+      );
     }
     menuWidgets.add(SizedBox(
       width: 380,

@@ -9,4 +9,8 @@ class Backend {
   String fetchRoleListOfConditionRsp = '8';
   String fetchPermissionListOfConditionReq = '9';
   String fetchPermissionListOfConditionRsp = '10';
+  String insertUserRecordReq = '11';
+  String insertUserRecordRsp = '12';
+  String softDeleteUserRecordReq = '13';
+  String softDeleteUserRecordRsp = '14';
 }

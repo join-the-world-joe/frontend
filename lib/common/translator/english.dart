@@ -57,6 +57,14 @@ class English {
     Language.table: 'Table',
     Language.fField: 'Field',
     Language.fieldList: 'Field List',
+    Language.tMenu:'Menu',
+
+    // permission
+    Language.fetchMenuListOfCondition: 'Fetch Menu List',
+    Language.fetchUserListOfCondition: 'Fetch User List',
+    Language.fetchRoleListOfCondition: 'Fetch Role List',
+    Language.fetchPermissionListOfCondition: 'Fetch Permission List',
+    Language.insertUserRecord : 'Insert User',
   };
 
   static String getName() {

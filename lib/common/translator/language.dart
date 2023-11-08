@@ -53,4 +53,12 @@ class Language {
   static String table = 'Table';
   static String fField = 'field of field';
   static String fieldList = 'Field List';
+  static String tMenu = 'title of Menu';
+
+  // permission
+  static String fetchMenuListOfCondition = 'FetchMenuListOfCondition';
+  static String fetchUserListOfCondition = 'FetchUserListOfCondition';
+  static String fetchRoleListOfCondition = 'FetchRoleListOfCondition';
+  static String fetchPermissionListOfCondition = 'FetchPermissionListOfCondition';
+  static String insertUserRecord = 'InsertUserRecord';
 }
