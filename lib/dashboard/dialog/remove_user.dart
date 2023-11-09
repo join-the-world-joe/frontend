@@ -15,11 +15,10 @@ import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 
 Future<int> showRemoveUserDialog(BuildContext context, User user) async {
-  bool requested = false;
   var oriObserve = Runtime.getObserve();
 
   void softDeleteUserRecordHandler(Map<String, dynamic> body) {
-    print('showRemoveUserDialog');
+    print('showRemoveUserDialog.softDeleteUserRecordHandler');
     try {
       SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
       if (rsp.code == Code.oK) {
@@ -32,9 +31,11 @@ Future<int> showRemoveUserDialog(BuildContext context, User user) async {
         );
       } else {
         showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        return;
       }
     } catch (e) {
       print("showRemoveUserDialog failure, $e");
+      return;
     }
   }
 
@@ -47,7 +48,6 @@ Future<int> showRemoveUserDialog(BuildContext context, User user) async {
       print("showRemoveUserDialog.observe: major: $major, minor: $minor");
       if (major == Major.backend && minor == Minor.backend.softDeleteUserRecordRsp) {
         softDeleteUserRecordHandler(body);
-        print('after softDeleteUserRecordHandler');
       } else {
         print("showRemoveUserDialog.observe warning: $major-$minor doesn't matched");
       }
@@ -93,11 +93,7 @@ Future<int> showRemoveUserDialog(BuildContext context, User user) async {
                   ),
                   TextButton(
                     onPressed: () {
-                      if (requested) {
-                        return;
-                      }
                       softDeleteUserRecord(userList: [int.parse(user.getId())]);
-                      requested = true;
                     },
                     child: Text(Translator.translate(Language.confirm)),
                   ),

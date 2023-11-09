@@ -81,9 +81,9 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
     context: context,
     builder: (context) {
       fetchRoleListOfCondition(
-        userIdList: [int.parse(user.getId())],
-        userName: '',
-        phoneNumber: '',
+        behavior: 2,
+        userId: int.parse(user.getId()),
+        roleNameList: [''],
       );
       return AlertDialog(
         actions: [
@@ -121,6 +121,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
     },
   ).then((value) {
     closed = true;
+    Runtime.setObserve(oriObserve);
   });
   return Code.oK;
 }
@@ -160,39 +161,6 @@ List<Widget> _buildWidgetList(RoleList roleList) {
   );
   widgetList.add(const Divider());
   return widgetList;
-  //
-  // SizedBox(
-  //   width: 400,
-  //   height: 250,
-  //   child: SingleChildScrollView(
-  //     child: Column(
-  //       children: [
-  //         Spacing.addVerticalSpace(10),
-  //         const Divider(),
-  //         _buildChip(
-  //           label: Translator.translate(Language.roleList),
-  //           textColor: Colors.white,
-  //         ),
-  //         Spacing.addVerticalSpace(10),
-  //         SizedBox(
-  //           width: 380,
-  //           child: Row(
-  //             children: [
-  //               Expanded(
-  //                 child: Wrap(
-  //                   spacing: 6.0,
-  //                   runSpacing: 6.0,
-  //                   children: roleWidgets,
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //         const Divider(),
-  //       ],
-  //     ),
-  //   ),
-  // );
 }
 
 Chip _buildChip({required String label, required Color textColor}) {

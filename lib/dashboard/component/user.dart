@@ -61,54 +61,12 @@ class _State extends State<User> {
       print("User.observe: major: $major, minor: $minor");
       if (major == Major.backend && minor == Minor.backend.fetchUserListOfConditionRsp) {
         fetchUserListOfConditionHandler(body);
-      }  else if (major == Major.backend && minor == Minor.backend.insertUserRecordRsp) {
-        insertUserRecordHandler(body);
-      } else if (major == Major.backend && minor == Minor.backend.softDeleteUserRecordRsp) {
-        softDeleteUserRecordHandler(body);
       } else {
         print("User.observe warning: $major-$minor doesn't matched");
       }
       return;
     } catch (e) {
       print('User.observe($major-$minor).e: ${e.toString()}');
-      return;
-    }
-  }
-
-  void softDeleteUserRecordHandler(Map<String, dynamic> body) {
-    print('User.softDeleteUserRecordHandler');
-    try {
-      SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        // Cache.setMenuList(MenuList.fromJson(rsp.body));
-        Cache.clearLastRequest();
-        showMessageDialog(context, '温馨提示：', '删除成功');
-        return;
-      } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
-        return;
-      }
-    } catch (e) {
-      print("User.softDeleteUserRecordHandler failure, $e");
-      return;
-    }
-  }
-
-  void insertUserRecordHandler(Map<String, dynamic> body) {
-    print('User.insertUserRecordHandler');
-    try {
-      InsertUserRecordRsp rsp = InsertUserRecordRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        // Cache.setMenuList(MenuList.fromJson(rsp.body));
-        Cache.clearLastRequest();
-        showMessageDialog(context, '温馨提示：', '成功');
-        return;
-      } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
-        return;
-      }
-    } catch (e) {
-      print("User.insertUserRecordHandler failure, $e");
       return;
     }
   }
@@ -230,7 +188,6 @@ class _State extends State<User> {
                           name: nameControl.text,
                           phoneNumber: phoneNumberControl.text,
                         );
-                        refresh();
                       },
                       child: Text(
                         Translator.translate(Language.search),
@@ -263,13 +220,7 @@ class _State extends State<User> {
                   ElevatedButton.icon(
                     icon: const Icon(Icons.add),
                     onPressed: () async {
-                      fetchRoleListOfCondition(
-                        userIdList: [],
-                        userName: '',
-                        phoneNumber: '',
-                      );
-                      // print(insertUserRecord.toString());
-                      Cache.setLastRequest(insertUserRecord.toString());
+                      showInsertUserDialog(context);
                     },
                     label: Text(
                       Translator.translate(Language.newUser),

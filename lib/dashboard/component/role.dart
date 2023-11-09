@@ -85,16 +85,6 @@ class _State extends State<Role> {
                   ),
                   Spacing.addHorizontalSpace(20),
                   SizedBox(
-                    width: 110,
-                    child: TextFormField(
-                      // controller: _accountController,
-                      decoration: InputDecoration(
-                        labelText: Translator.translate(Language.level),
-                      ),
-                    ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
                     height: 30,
                     width: 100,
                     child: ElevatedButton(

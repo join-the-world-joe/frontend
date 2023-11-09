@@ -1,3 +1,5 @@
+import 'dart:js_util';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/translator/language.dart';
@@ -127,23 +129,11 @@ Future<int> showPermissionListOfUserDialog(BuildContext context, User user) asyn
           },
           stream: yeildData(),
         ),
-        // content: StatefulBuilder(
-        //   builder: (BuildContext context, StateSetter setState) {
-        //     return SizedBox(
-        //       width: 400,
-        //       height: 250,
-        //       child: SingleChildScrollView(
-        //         child: Column(
-        //           children: widgetList,
-        //         ),
-        //       ),
-        //     );
-        //   },
-        // ),
       );
     },
   ).then((value) {
     closed = true;
+    Runtime.setObserve(oriObserve);
   });
   return Code.oK;
 }

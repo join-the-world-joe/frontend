@@ -10,7 +10,6 @@ class Cache {
   static late MenuList _menuList;
   static String _content = '';
   static List<User> userList = [];
-  static String _lastRequest = '';
   static late RoleList _roleList;
 
   static late PermissionList _permissionList;
@@ -29,18 +28,6 @@ class Cache {
 
   static RoleList getRoleList() {
     return _roleList;
-  }
-
-  static setLastRequest(String request) {
-    _lastRequest = request;
-  }
-
-  static clearLastRequest() {
-    _lastRequest = '';
-  }
-
-  static String getLastRequest() {
-    return _lastRequest;
   }
 
   static setUserList(List<User> any) {

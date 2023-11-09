@@ -91,7 +91,6 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
         actions: [
           TextButton(
             onPressed: () {
-              Runtime.setObserve(oriObserve);
               Navigator.pop(context);
             },
             child: Text(Translator.translate(Language.ok)),
@@ -124,6 +123,7 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
     },
   ).then((value) {
     closed = true;
+    Runtime.setObserve(oriObserve);
   });
   return Code.oK;
 }
