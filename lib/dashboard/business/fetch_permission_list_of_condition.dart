@@ -9,11 +9,21 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class FetchPermissionListOfConditionReq {
+  final String _name; // the name of permission
+  final int _major;
+  final int _minor;
+  final int _userId;
+  final int _behavior;
   final RoleList _roleList;
 
-  FetchPermissionListOfConditionReq(this._roleList);
+  FetchPermissionListOfConditionReq(this._name, this._major, this._minor, this._userId, this._behavior, this._roleList);
 
   Map<String, dynamic> toJson() => {
+        'name': _name,
+        'major': _major,
+        'minor': _minor,
+        'user_id': _userId,
+        'behavior': _behavior,
         'role_list': _roleList.getNameList(),
       };
 
@@ -33,11 +43,15 @@ class FetchPermissionListOfConditionRsp {
 }
 
 void fetchPermissionListOfCondition({
+  required String name,
+  required int major,
+  required int minor,
+  required int userId,
+  required int behavior,
   required RoleList roleList,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchPermissionListOfConditionReq req =
-      FetchPermissionListOfConditionReq(roleList);
+  FetchPermissionListOfConditionReq req = FetchPermissionListOfConditionReq(name, major, minor, userId, behavior, roleList);
   packet.getHeader().setMajor(Major.backend);
   packet.getHeader().setMinor(Minor.backend.fetchPermissionListOfConditionReq);
   packet.setBody(req.toJson());

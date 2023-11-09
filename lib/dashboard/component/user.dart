@@ -61,13 +61,7 @@ class _State extends State<User> {
       print("User.observe: major: $major, minor: $minor");
       if (major == Major.backend && minor == Minor.backend.fetchUserListOfConditionRsp) {
         fetchUserListOfConditionHandler(body);
-      } else if (major == Major.backend && minor == Minor.backend.fetchRoleListOfConditionRsp) {
-        fetchRoleListOfConditionHandler(body);
-      } else if (major == Major.backend && minor == Minor.backend.fetchMenuListOfConditionRsp) {
-        fetchMenuListOfConditionHandler(body);
-      } else if (major == Major.backend && minor == Minor.backend.fetchPermissionListOfConditionRsp) {
-        fetchPermissionListOfConditionHandler(body);
-      } else if (major == Major.backend && minor == Minor.backend.insertUserRecordRsp) {
+      }  else if (major == Major.backend && minor == Minor.backend.insertUserRecordRsp) {
         insertUserRecordHandler(body);
       } else if (major == Major.backend && minor == Minor.backend.softDeleteUserRecordRsp) {
         softDeleteUserRecordHandler(body);
@@ -115,86 +109,6 @@ class _State extends State<User> {
       }
     } catch (e) {
       print("User.insertUserRecordHandler failure, $e");
-      return;
-    }
-  }
-
-  void fetchRoleListOfConditionHandler(Map<String, dynamic> body) {
-    print('User.fetchRoleListOfConditionHandler');
-    try {
-      FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print(rsp.body.toString());
-        RoleList roleList = RoleList.fromJson(rsp.body['role_list']);
-        if (Cache.getLastRequest() == fetchMenuListOfCondition.toString()) {
-          Cache.setRoleList(roleList);
-          fetchMenuListOfCondition(roleList: roleList);
-          return;
-        } else if (Cache.getLastRequest() == fetchPermissionListOfCondition.toString()) {
-          Cache.setRoleList(roleList);
-          fetchPermissionListOfCondition(roleList: roleList);
-          return;
-        } else if (Cache.getLastRequest() == insertUserRecord.toString()) {
-          var wholeRoleList = roleList;
-          showInsertUserDialog(context, wholeRoleList, RoleList([]));
-          return;
-        }
-        refresh();
-        showRoleListOfUserDialog(context, roleList);
-        return;
-      } else if (rsp.code == Code.accessDenied) {
-        showMessageDialog(context, '温馨提示：', '没有权限.');
-        refresh();
-        return;
-      } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
-        return;
-      }
-    } catch (e) {
-      print("User.fetchRoleListOfConditionHandler failure, $e");
-    }
-  }
-
-  void fetchPermissionListOfConditionHandler(Map<String, dynamic> body) {
-    print('User.fetchPermissionListOfConditionHandler');
-    try {
-      FetchPermissionListOfConditionRsp rsp = FetchPermissionListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print(rsp.body.toString());
-        Cache.setPermissionList(PermissionList.fromJson(rsp.body));
-        Cache.clearLastRequest();
-        showPermissionListOfUserDialog(context, Cache.getPermissionList());
-        return;
-      } else if (rsp.code == Code.accessDenied) {
-        showMessageDialog(context, '温馨提示：', '没有权限.');
-        refresh();
-        return;
-      } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
-        return;
-      }
-    } catch (e) {
-      print("User.fetchPermissionListOfConditionHandler failure, $e");
-      return;
-    }
-  }
-
-  void fetchMenuListOfConditionHandler(Map<String, dynamic> body) {
-    print('User.fetchMenuListOfConditionHandler');
-    try {
-      FetchMenuListOfConditionRsp rsp = FetchMenuListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print(rsp.body.toString());
-        Cache.setMenuList(MenuList.fromJson(rsp.body));
-        Cache.clearLastRequest();
-        showMenuListOfUserDialog(context, Cache.getMenuList());
-        return;
-      } else {
-        print('User.fetchMenuListOfConditionHandler failure: ${rsp.code}');
-        return;
-      }
-    } catch (e) {
-      print("User.fetchMenuListOfConditionHandler failure, $e");
       return;
     }
   }
@@ -427,12 +341,7 @@ class Source extends DataTableSource {
             tooltip: Translator.translate(Language.viewRoleList),
             icon: const Icon(Icons.people_alt_rounded),
             onPressed: () {
-              Cache.clearLastRequest();
-              fetchRoleListOfCondition(
-                userIdList: [int.parse(_data[index].getId())],
-                userName: '',
-                phoneNumber: '',
-              );
+              showRoleListOfUserDialog(context, _data[index]);
             },
           ),
         ),
@@ -441,13 +350,7 @@ class Source extends DataTableSource {
             tooltip: Translator.translate(Language.viewPermissionList),
             icon: const Icon(Icons.verified_user_outlined),
             onPressed: () {
-              fetchRoleListOfCondition(
-                userIdList: [int.parse(_data[index].getId())],
-                userName: '',
-                phoneNumber: '',
-              );
-              // print(fetchPermissionListOfCondition.toString());
-              Cache.setLastRequest(fetchPermissionListOfCondition.toString());
+              showPermissionListOfUserDialog(context, _data[index]);
             },
           ),
         ),
@@ -456,13 +359,7 @@ class Source extends DataTableSource {
             tooltip: Translator.translate(Language.viewMenuList),
             icon: const Icon(Icons.menu),
             onPressed: () {
-              fetchRoleListOfCondition(
-                userIdList: [int.parse(_data[index].getId())],
-                userName: '',
-                phoneNumber: '',
-              );
-              // print(fetchMenuListOfCondition.toString());
-              Cache.setLastRequest(fetchMenuListOfCondition.toString());
+              showMenuListOfUserDialog(context, _data[index]);
             },
           ),
         ),
@@ -483,10 +380,15 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.delete),
                 tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
-                  var b = await showRemoveUserDialog(context, _data[index]);
-                  if (b) {
-                    softDeleteUserRecord(userList: [int.parse(_data[index].getId())]);
-                  }
+                  await showRemoveUserDialog(context, _data[index]).then(
+                    (value) => () {
+                      print('value: $value');
+                      if (value > 0) {
+                        _data.removeAt(index);
+                        notifyListeners();
+                      }
+                    }(),
+                  );
                 },
               ),
             ],

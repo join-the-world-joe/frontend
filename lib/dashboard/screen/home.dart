@@ -124,7 +124,7 @@ class _State extends State<Home> {
   void setup() {
     print('home.setup');
     Runtime.setObserve(observe);
-    fetchMenuListOfCondition(roleList: RoleList([]));
+    fetchMenuListOfCondition(behavior: 1, userId: 0, roleList: RoleList([]));
   }
 
   void progress() async {

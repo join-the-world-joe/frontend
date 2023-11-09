@@ -85,32 +85,11 @@ class _State extends State<Permission> {
                   ),
                   Spacing.addHorizontalSpace(20),
                   SizedBox(
-                    width: 110,
-                    child: TextFormField(
-                      // controller: _accountController,
-                      decoration: InputDecoration(
-                        labelText: Translator.translate(Language.major),
-                      ),
-                    ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
-                    width: 110,
-                    child: TextFormField(
-                      // controller: _accountController,
-                      decoration:  InputDecoration(
-
-                        labelText: Translator.translate(Language.minor),
-                      ),
-                    ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
                     height: 30,
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child:  Text(
+                      child: Text(
                         Translator.translate(Language.search),
                         style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
@@ -122,7 +101,7 @@ class _State extends State<Permission> {
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child:  Text(
+                      child: Text(
                         Translator.translate(Language.reset),
                         style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
@@ -133,8 +112,8 @@ class _State extends State<Permission> {
               Spacing.addVerticalSpace(20),
               PaginatedDataTable(
                 source: Source(context),
-                header:  Text(Translator.translate(Language.permissionList)),
-                columns:  [
+                header: Text(Translator.translate(Language.permissionList)),
+                columns: [
                   DataColumn(label: Text(Translator.translate(Language.fPermission))),
                   DataColumn(label: Text(Translator.translate(Language.major))),
                   DataColumn(label: Text(Translator.translate(Language.minor))),

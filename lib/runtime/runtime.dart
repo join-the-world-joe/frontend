@@ -37,6 +37,10 @@ class Runtime {
     _observe = callback;
   }
 
+  static Function? getObserve() {
+    return _observe;
+  }
+
   static Websocket wsClient = Websocket(
     encryption: encryption,
     aes: aes,
