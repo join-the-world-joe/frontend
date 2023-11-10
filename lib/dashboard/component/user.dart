@@ -217,8 +217,7 @@ class _State extends State<User> {
             Spacing.addVerticalSpace(20),
             Scrollbar(
               controller: scrollController,
-              thumbVisibility: false,
-              trackVisibility: false,
+              thumbVisibility: true,
               scrollbarOrientation: ScrollbarOrientation.bottom,
               child: PaginatedDataTable(
                 controller: scrollController,
