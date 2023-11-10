@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/dashboard/component/test.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/screen/password_sign_in.dart';
 import 'package:flutter_framework/dashboard/screen/sms_sign_in.dart';
@@ -27,6 +28,9 @@ class _State extends State<Entry> {
       ),
       initialRoute: '/loading',
       routes: {
+        '/test': (context) {
+          return  Test();
+        },
         '/logic_test': (context) {
           return  LogicTest();
         },

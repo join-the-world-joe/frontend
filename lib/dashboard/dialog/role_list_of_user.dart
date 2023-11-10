@@ -25,7 +25,6 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
-        // print('showRoleListOfUserDialog.last: $lastStage');
         yield lastStage;
       }
     }
@@ -39,15 +38,21 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
         print(rsp.body.toString());
         RoleList roleList = RoleList.fromJson(rsp.body['role_list']);
         widgetList = _buildWidgetList(roleList);
-        curStage = 1;
+        curStage++;
         return;
       } else if (rsp.code == Code.accessDenied) {
-        showMessageDialog(context, '温馨提示：', '没有权限.');
-        curStage = -1;
+        showMessageDialog(context, '温馨提示：', '没有权限.').then(
+          (value) {
+            Navigator.pop(context);
+          },
+        );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
-        curStage = -1;
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}').then(
+          (value) {
+            Navigator.pop(context);
+          },
+        );
         return;
       }
     } catch (e) {
@@ -99,6 +104,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
           builder: (context, snap) {
             print('data: ${snap.data}');
             if (snap.data != null) {
+              print('data: ${snap.data}');
               return SizedBox(
                 width: 400,
                 height: 250,

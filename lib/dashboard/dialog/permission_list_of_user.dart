@@ -49,15 +49,17 @@ Future<int> showPermissionListOfUserDialog(BuildContext context, User user) asyn
         print(rsp.body.toString());
         var permissionList = PermissionList.fromJson(rsp.body);
         widgetList = _buildWidgetList(permissionList);
-        curStage = 1;
+        curStage++;
         return;
       } else if (rsp.code == Code.accessDenied) {
-        showMessageDialog(context, '温馨提示：', '没有权限.');
-        curStage = -1;
+        showMessageDialog(context, '温馨提示：', '没有权限.').then((value) {
+          Navigator.pop(context);
+        });
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
-        curStage = -1;
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}').then((value) {
+          Navigator.pop(context);
+        });
         return;
       }
     } catch (e) {
@@ -180,10 +182,6 @@ List<Widget> _buildWidgetList(PermissionList permissionList) {
 
 Chip _buildChip({required String label, required Color textColor}) {
   return Chip(
-    // avatar: const CircleAvatar(
-    //   backgroundColor: Colors.orangeAccent,
-    //   child: Text('角色'),
-    // ),
     labelPadding: const EdgeInsets.all(2.0),
     label: Text(
       label,

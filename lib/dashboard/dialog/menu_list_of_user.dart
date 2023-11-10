@@ -40,7 +40,7 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
         print('body: ${rsp.body}');
         var menuList = MenuList.fromJson(rsp.body);
         widgetList = _buildWidgetList(menuList);
-        curStage = 1;
+        curStage++;
         return;
       } else {
         print('showMenuListOfUserDialog.fetchMenuListOfConditionHandler failure: ${rsp.code}');
@@ -87,7 +87,6 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
         roleList: RoleList([]),
       );
       return AlertDialog(
-        // title: const Text('角色列表'),
         actions: [
           TextButton(
             onPressed: () {
@@ -131,7 +130,7 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
 List<Widget> _buildWidgetList(MenuList menuList) {
   List<Widget> widgetList = [];
   if (menuList.getBody().isEmpty) {
-    widgetList.add(Text('没有菜单数据'));
+    widgetList.add(const Text('没有菜单数据'));
     return widgetList;
   }
 

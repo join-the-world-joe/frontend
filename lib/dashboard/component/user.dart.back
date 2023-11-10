@@ -51,7 +51,6 @@ class _State extends State<User> {
   final nameControl = TextEditingController();
   final roleControl = TextEditingController();
   final phoneNumberControl = TextEditingController();
-  final scrollController = ScrollController();
 
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
@@ -148,80 +147,76 @@ class _State extends State<User> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                SizedBox(
-                  width: 110,
-                  child: TextFormField(
-                    controller: phoneNumberControl,
-                    decoration: InputDecoration(
-                      // border: const UnderlineInputBorder(),
-                      labelText: Translator.translate(Language.fPhoneNumber),
+        child: Scrollbar(
+          child: ListView(
+            // scrollDirection: Axis.vertical,
+            // scrollDirection: Axis.horizontal,
+            // shrinkWrap: true,
+            children: <Widget>[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: 110,
+                    child: TextFormField(
+                      controller: phoneNumberControl,
+                      decoration: InputDecoration(
+                        // border: const UnderlineInputBorder(),
+                        labelText: Translator.translate(Language.fPhoneNumber),
+                      ),
                     ),
                   ),
-                ),
-                Spacing.addHorizontalSpace(20),
-                SizedBox(
-                  width: 110,
-                  child: TextFormField(
-                    controller: nameControl,
-                    decoration: InputDecoration(
-                      // border: const UnderlineInputBorder(),
-                      labelText: Translator.translate(Language.fName),
+                  Spacing.addHorizontalSpace(20),
+                  SizedBox(
+                    width: 110,
+                    child: TextFormField(
+                      controller: nameControl,
+                      decoration: InputDecoration(
+                        // border: const UnderlineInputBorder(),
+                        labelText: Translator.translate(Language.fName),
+                      ),
                     ),
                   ),
-                ),
-                Spacing.addHorizontalSpace(20),
-                SizedBox(
-                  height: 30,
-                  width: 100,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Cache.setUserList([]);
-                      print('name: ${nameControl.text}');
-                      fetchUserListOfCondition(
-                        name: nameControl.text,
-                        phoneNumber: phoneNumberControl.text,
-                      );
-                    },
-                    child: Text(
-                      Translator.translate(Language.search),
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
+                  Spacing.addHorizontalSpace(20),
+                  SizedBox(
+                    height: 30,
+                    width: 100,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Cache.setUserList([]);
+                        print('name: ${nameControl.text}');
+                        fetchUserListOfCondition(
+                          name: nameControl.text,
+                          phoneNumber: phoneNumberControl.text,
+                        );
+                      },
+                      child: Text(
+                        Translator.translate(Language.search),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
+                      ),
                     ),
                   ),
-                ),
-                Spacing.addHorizontalSpace(20),
-                SizedBox(
-                  height: 30,
-                  width: 100,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      phoneNumberControl.text = '';
-                      nameControl.text = '';
-                      Cache.setUserList([]);
-                      refresh();
-                    },
-                    child: Text(
-                      Translator.translate(Language.reset),
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
+                  Spacing.addHorizontalSpace(20),
+                  SizedBox(
+                    height: 30,
+                    width: 100,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        phoneNumberControl.text = '';
+                        nameControl.text = '';
+                        Cache.setUserList([]);
+                        refresh();
+                      },
+                      child: Text(
+                        Translator.translate(Language.reset),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Spacing.addVerticalSpace(20),
-            Scrollbar(
-              controller: scrollController,
-              thumbVisibility: false,
-              trackVisibility: false,
-              scrollbarOrientation: ScrollbarOrientation.bottom,
-              child: PaginatedDataTable(
-                controller: scrollController,
+                ],
+              ),
+              Spacing.addVerticalSpace(20),
+              PaginatedDataTable(
                 actions: [
                   ElevatedButton.icon(
                     icon: const Icon(Icons.add),
@@ -252,8 +247,8 @@ class _State extends State<User> {
                 rowsPerPage: 5,
                 showCheckboxColumn: false,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

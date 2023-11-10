@@ -17,10 +17,9 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 
 Future<void> showInsertUserDialog(BuildContext context) async {
-  String? _countryCode;
+  String? countryCode;
   bool closed = false;
   int curStage = 0;
-  List<Widget> widgetList = [];
   RoleList wholeRoleList;
   Map<Role, bool> roleStatus = {};
   RoleList roleList = RoleList([]);
@@ -28,15 +27,15 @@ Future<void> showInsertUserDialog(BuildContext context) async {
   int status = int.parse('1');
 
   var oriObserve = Runtime.getObserve();
-  var _nameController = TextEditingController();
-  var _phoneNumberController = TextEditingController();
-  var _passwordController = TextEditingController();
-  var _verifyPasswordController = TextEditingController();
+  var nameController = TextEditingController();
+  var phoneNumberController = TextEditingController();
+  var passwordController = TextEditingController();
+  var verifyPasswordController = TextEditingController();
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('showInsertUserDialog, last: $lastStage, cur: ${curStage}');
+      print('showInsertUserDialog, last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
@@ -61,7 +60,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
             }
           }
         }
-        curStage = 1;
+        curStage++;
         return;
       } else if (rsp.code == Code.accessDenied) {
         showMessageDialog(context, '温馨提示：', '没有权限.');
@@ -83,7 +82,6 @@ Future<void> showInsertUserDialog(BuildContext context) async {
       if (rsp.code == Code.oK) {
         showMessageDialog(context, '温馨提示：', '插入成功').then(
           (value) {
-            Runtime.setObserve(oriObserve);
             Navigator.pop(context, null);
           },
         );
@@ -107,8 +105,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
       print("showInsertUserDialog.observe: major: $major, minor: $minor");
       if (major == Major.backend && minor == Minor.backend.insertUserRecordRsp) {
         insertUserRecordHandler(body);
-      }
-      if (major == Major.backend && minor == Minor.backend.fetchRoleListOfConditionRsp) {
+      } else if (major == Major.backend && minor == Minor.backend.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(body);
       } else {
         print("showInsertUserDialog.observe warning: $major-$minor doesn't matched");
@@ -140,7 +137,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
           ),
           TextButton(
             onPressed: () async {
-              if (_passwordController.text != _verifyPasswordController.text) {
+              if (passwordController.text != verifyPasswordController.text) {
                 await showWarningDialog(context, '两次输入的密码不一致');
                 return;
               }
@@ -157,11 +154,11 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                 return roleList;
               }();
               insertUserRecord(
-                name: _nameController.text,
-                phoneNumber: _phoneNumberController.text,
-                countryCode: _countryCode ?? '86',
+                name: nameController.text,
+                phoneNumber: phoneNumberController.text,
+                countryCode: countryCode ?? '86',
                 status: status,
-                password: Runtime.rsa.encrypt(_passwordController.text),
+                password: Runtime.rsa.encrypt(passwordController.text),
                 roleList: roleList,
               );
             },
@@ -169,11 +166,12 @@ Future<void> showInsertUserDialog(BuildContext context) async {
           ),
           // Spacing.AddVerticalSpace(50),
         ],
-        content: StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
+        content: StreamBuilder(
+          stream: yeildData(),
+          builder: (context, snap) {
             return SizedBox(
               width: 450,
-              height: 400,
+              height: 435,
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -187,9 +185,8 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                               value: 1,
                               groupValue: status,
                               onChanged: (b) {
-                                setState(() {
-                                  status = b!;
-                                });
+                                status = b!;
+                                curStage++;
                                 // print("status: $b");
                               }),
                           Spacing.addHorizontalSpace(50),
@@ -198,9 +195,8 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                             value: 2,
                             groupValue: status,
                             onChanged: (b) {
-                              setState(() {
-                                status = b!;
-                              });
+                              status = b!;
+                              curStage++;
                               // print("status: $b");
                             },
                           ),
@@ -215,7 +211,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                           Translator.translate(Language.fCountryCode),
                         ),
                         isExpanded: true,
-                        value: _countryCode,
+                        value: countryCode,
                         items: [
                           DropdownMenuItem<String>(
                             value: '86',
@@ -227,8 +223,8 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                           ),
                         ],
                         onChanged: (countryCode) {
-                          _countryCode = countryCode ?? '';
-                          setState(() {});
+                          countryCode = countryCode ?? '';
+                          curStage++;
                         },
                       ),
                     ),
@@ -236,9 +232,8 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: _phoneNumberController,
+                        controller: phoneNumberController,
                         decoration: InputDecoration(
-                          // border: UnderlineInputBorder(),
                           labelText: Translator.translate(Language.fPhoneNumber),
                         ),
                       ),
@@ -247,9 +242,8 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: _nameController,
+                        controller: nameController,
                         decoration: InputDecoration(
-                          // border: UnderlineInputBorder(),
                           labelText: Translator.translate(Language.fName),
                         ),
                       ),
@@ -259,9 +253,8 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                       width: 350,
                       child: TextFormField(
                         obscureText: true,
-                        controller: _passwordController,
+                        controller: passwordController,
                         decoration: InputDecoration(
-                          // border: UnderlineInputBorder(),
                           labelText: Translator.translate(Language.password),
                         ),
                       ),
@@ -271,9 +264,8 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                       width: 350,
                       child: TextFormField(
                         obscureText: true,
-                        controller: _verifyPasswordController,
+                        controller: verifyPasswordController,
                         decoration: InputDecoration(
-                          // border: UnderlineInputBorder(),
                           labelText: Translator.translate(Language.confirmPassword),
                         ),
                       ),
@@ -285,13 +277,12 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                       width: 380,
                       child: Row(
                         children: [
-                          // const Text('角色 : '),
                           Expanded(
                             child: Wrap(
                               spacing: 6.0,
                               runSpacing: 6.0,
                               children: () {
-                                List<Widget> widgets = [const Text('获取用户角色列表失败')];
+                                List<Widget> widgets = [];
                                 if (roleStatus.isEmpty) {
                                   return widgets;
                                 }
@@ -306,7 +297,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                                         selected: roleStatus[key]!,
                                         onPressed: () {
                                           roleStatus[key] = !roleStatus[key]!;
-                                          setState(() {});
+                                          curStage++;
                                         },
                                         label: Text(key.getName()),
                                       ),
@@ -328,11 +319,12 @@ Future<void> showInsertUserDialog(BuildContext context) async {
         ),
       );
     },
+  ).then(
+    (value) {
+      closed = true;
+      Runtime.setObserve(oriObserve);
+    },
   );
-}
-
-List<Widget> _buildWidgetList() {
-
 }
 
 Chip _buildRoleChip(String label) {

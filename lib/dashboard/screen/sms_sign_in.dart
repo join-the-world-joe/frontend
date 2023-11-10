@@ -29,8 +29,8 @@ class _State extends State<SMSSignIn> {
   bool hasSentSMS = false;
   String smsButtonLabel = '获取';
   final countryCodeControl = TextEditingController();
-  final phoneNumberControl = TextEditingController();
-  final verificationCodeControl = TextEditingController();
+  final phoneNumberControl = TextEditingController(text: '18629300173');
+  final verificationCodeControl = TextEditingController(text: '1111');
 
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
