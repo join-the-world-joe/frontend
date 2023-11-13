@@ -25,11 +25,14 @@ class SMSSignIn extends StatefulWidget {
 
 class _State extends State<SMSSignIn> {
   late int countdown = 0;
-  Timer? timer;
-  bool hasSentSMS = false;
+  Timer? countdownTimer;
+  Timer? disableLoginTimer;
+  bool fSent = false;
+  bool fLoginBusy = false;
   String smsButtonLabel = '获取';
+  Duration loginBusyDuration = const Duration(seconds: 10);
   final countryCodeControl = TextEditingController();
-  final phoneNumberControl = TextEditingController(text: '18629300173');
+  final phoneNumberControl = TextEditingController(text: '18629309942');
   final verificationCodeControl = TextEditingController(text: '1111');
 
   void observe(PacketClient packet) {
@@ -58,17 +61,17 @@ class _State extends State<SMSSignIn> {
       SendVerificationCodeRsp rsp = SendVerificationCodeRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         // sent sms successfully
-        countdown = 10;
-        timer = Timer.periodic(
+        countdown = 60;
+        countdownTimer = Timer.periodic(
           const Duration(seconds: 1),
-              (timer) {
+          (timer) {
             countdown--;
             // print('countdown: $countdown');
             smsButtonLabel = '$countdown';
             if (countdown <= 0) {
               timer.cancel();
               countdown = 0;
-              hasSentSMS = false;
+              fSent = false;
               smsButtonLabel = '获取';
             }
             refresh();
@@ -77,7 +80,7 @@ class _State extends State<SMSSignIn> {
         return;
       } else if (rsp.code == Code.invalidDataType) {
         showMessageDialog(context, '温馨提示：', '您输入的手机号不正确.');
-        hasSentSMS = false;
+        fSent = false;
         refresh();
         return;
       } else {
@@ -94,15 +97,15 @@ class _State extends State<SMSSignIn> {
     try {
       SignInRsp rsp = SignInRsp.fromJson(body);
       if (rsp.code == Code.oK) {
-        showMessageDialog(context, '温馨提示：', '成功')
-            .then((value) => navigate(Screen.home));
+        navigate(Screen.home);
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
         return;
       }
       return;
     } catch (e) {
       print("SMSSignIn.signInHandler failure, $e");
+      showMessageDialog(context, '温馨提示：', '未知错误');
       return;
     }
   }
@@ -125,10 +128,16 @@ class _State extends State<SMSSignIn> {
   @override
   void dispose() {
     print('SMSSignIn.dispose');
-    if (timer != null) {
-      if (timer!.isActive) {
-        print('SMSSignIn.timer.cancel');
-        timer!.cancel();
+    if (countdownTimer != null) {
+      if (countdownTimer!.isActive) {
+        print('SMSSignIn.countdownTimer.cancel');
+        countdownTimer!.cancel();
+      }
+    }
+    if (disableLoginTimer != null) {
+      if (disableLoginTimer!.isActive) {
+        print('SMSSignIn.disableLoginTimer.cancel');
+        disableLoginTimer!.cancel();
       }
     }
     super.dispose();
@@ -159,13 +168,16 @@ class _State extends State<SMSSignIn> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       fixedSize: const Size(85, 35),
-                      foregroundColor: Colors.lightBlue,
-                      backgroundColor: Colors.lightBlue,
+                      foregroundColor: fLoginBusy ? Colors.grey : Colors.lightBlueAccent,
+                      backgroundColor: fLoginBusy ? Colors.grey : Colors.lightBlueAccent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),
                     ),
                     onPressed: () {
+                      if (fLoginBusy) {
+                        return;
+                      }
                       navigate(Screen.passwordSignIn);
                     },
                     child: const Row(
@@ -174,15 +186,10 @@ class _State extends State<SMSSignIn> {
                         Text(
                           '密码登录',
                           style: TextStyle(
-                            color: Colors.black,
+                            color: Colors.white,
                             fontSize: 20,
                           ),
                         ),
-                        // Icon(
-                        //   Icons.vpn_key,
-                        //   size: 25.0,
-                        //   color: Colors.black,
-                        // ),
                       ],
                     ),
                   ),
@@ -199,7 +206,7 @@ class _State extends State<SMSSignIn> {
                   child: Text(
                     '验证码登录',
                     style: TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontSize: 27,
                     ),
                   ),
@@ -240,12 +247,12 @@ class _State extends State<SMSSignIn> {
                             prefixIcon: Icon(
                               Icons.add,
                               size: 25,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                             suffixIcon: Icon(
                               Icons.remove,
                               size: 25.0,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                             counterText: '',
                             isDense: true,
@@ -253,8 +260,7 @@ class _State extends State<SMSSignIn> {
                           ),
                         ),
                       ),
-                      prefixIconConstraints:
-                          const BoxConstraints(minWidth: 0, minHeight: 0),
+                      prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
                     ),
                   ),
                 ),
@@ -285,19 +291,14 @@ class _State extends State<SMSSignIn> {
                           fontSize: 25.0,
                         ),
                       ),
-                      prefixIconConstraints:
-                          const BoxConstraints(minWidth: 0, minHeight: 0),
+                      prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
                       suffixIcon: Container(
                         margin: const EdgeInsets.all(8),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(85, 35),
-                            foregroundColor: hasSentSMS
-                                ? Colors.grey
-                                : Colors.lightBlueAccent,
-                            backgroundColor: hasSentSMS
-                                ? Colors.grey
-                                : Colors.lightBlueAccent,
+                            foregroundColor: fSent ? Colors.grey : Colors.lightBlueAccent,
+                            backgroundColor: fSent ? Colors.grey : Colors.lightBlueAccent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5.0),
                             ),
@@ -313,13 +314,11 @@ class _State extends State<SMSSignIn> {
                             print('onPressed');
                             var countryCode = countryCodeControl.text;
                             var phoneNumber = phoneNumberControl.text;
-                            if (isMobileValid(countryCode, phoneNumber) !=
-                                Code.oK) {
-                              showMessageDialog(
-                                  context, '温馨提示：', '请输入正确的移动电话号码');
+                            if (isMobileValid(countryCode, phoneNumber) != Code.oK) {
+                              showMessageDialog(context, '温馨提示：', '请输入正确的移动电话号码');
                               return;
                             }
-                            if (hasSentSMS) {
+                            if (fSent) {
                               return;
                             }
                             sendVerificationCode(
@@ -327,7 +326,15 @@ class _State extends State<SMSSignIn> {
                               countryCode: countryCodeControl.text,
                               phoneNumber: phoneNumberControl.text,
                             );
-                            hasSentSMS = true;
+                            fSent = true;
+                            fLoginBusy = true;
+                            disableLoginTimer = Timer.periodic(
+                              loginBusyDuration,
+                              (timer) {
+                                fLoginBusy = false;
+                                refresh();
+                              },
+                            );
                             refresh();
                           },
                         ),
@@ -346,17 +353,41 @@ class _State extends State<SMSSignIn> {
                   width: 350,
                   child: ElevatedButton(
                     onPressed: () {
+                      if (fLoginBusy) {
+                        return;
+                      }
                       signIn(
+                        behavior: 2,
                         verificationCode: verificationCodeControl.text,
                         countryCode: countryCodeControl.text,
                         phoneNumber: phoneNumberControl.text,
+                        email: '',
+                        account: '',
                         token: '',
                         password: Uint8List.fromList([]),
                       );
+                      fLoginBusy = true;
+                      disableLoginTimer = Timer.periodic(
+                        loginBusyDuration,
+                        (timer) {
+                          fLoginBusy = false;
+                          refresh();
+                        },
+                      );
+                      refresh();
                     },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(85, 35),
+                      foregroundColor: fLoginBusy ? Colors.grey : Colors.lightBlueAccent,
+                      backgroundColor: fLoginBusy ? Colors.grey : Colors.lightBlueAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
                     child: const Text(
                       '登录',
                       style: TextStyle(
+                        color: Colors.white,
                         fontSize: 25.0,
                       ),
                     ),

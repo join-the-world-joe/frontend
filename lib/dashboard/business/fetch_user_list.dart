@@ -42,7 +42,7 @@ class FetchUserListRsp {
 
   @override
   String toString() {
-    return Convert.Bytes2String(Convert.toBytes(this));
+    return Convert.bytes2String(Convert.toBytes(this));
   }
 
   FetchUserListRsp.fromJson(Map<String, dynamic> json) {

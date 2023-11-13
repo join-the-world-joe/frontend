@@ -15,7 +15,7 @@ import 'package:flutter_framework/dashboard/component/permission.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/dialog/menu_list_of_user.dart';
-import 'package:flutter_framework/dashboard/dialog/modify_user.dart';
+import 'package:flutter_framework/dashboard/dialog/update_user.dart';
 import 'package:flutter_framework/dashboard/dialog/permission_list_of_user.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_user.dart';
 import 'package:flutter_framework/dashboard/dialog/role_list_of_user.dart';
@@ -83,9 +83,18 @@ class _State extends State<User> {
         // var body = rsp.body as Map<String, List<dynamic>>;
         var userList = rsp.body['user_list'] as List<dynamic>;
         userList.forEach(
-          (e) {
+              (e) {
             Cache.userList.add(
-              usr.User(e['id'], e['name'], e['account'], e['email'], e['department'], e['country_code'], e['phone_number'], e['status'], e['created_at']),
+              usr.User(
+                  e['id'],
+                  e['name'],
+                  e['account'],
+                  e['email'],
+                  e['department'],
+                  e['country_code'],
+                  e['phone_number'],
+                  e['status'],
+                  e['created_at']),
             );
           },
         );
@@ -327,7 +336,7 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.edit),
                 tooltip: Translator.translate(Language.update),
                 onPressed: () async {
-                  showModifyUserDialog(context, _data[index]);
+                  showUpdateUserDialog(context, _data[index]);
                 },
               ),
               IconButton(
@@ -335,13 +344,14 @@ class Source extends DataTableSource {
                 tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
                   await showRemoveUserDialog(context, _data[index]).then(
-                    (value) => () {
-                      print('value: $value');
-                      if (value) {
-                        _data.removeAt(index);
-                        notifyListeners();
-                      }
-                    }(),
+                        (value) =>
+                            () {
+                          print('value: $value');
+                          if (value) {
+                            _data.removeAt(index);
+                            notifyListeners();
+                          }
+                        }(),
                   );
                 },
               ),

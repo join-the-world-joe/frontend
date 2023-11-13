@@ -18,7 +18,7 @@ class AESCrypto extends Crypto {
 
   @override
   Uint8List Encrypt(String plainText) {
-    // note: AES不限制明文长度，得限制密钥长度，只支持 128，192，256 此三种
+    // note: AES虽然不限制明文长度，但只支持 128，192，256 此三种，得限制密钥长度
     final encrypter = Encrypter(
       AES(_key!, mode: AESMode.cbc, padding: 'PKCS7'),
     );

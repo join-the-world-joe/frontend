@@ -15,7 +15,6 @@ import 'package:flutter_framework/dashboard/component/permission.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/dialog/menu_list_of_user.dart';
-import 'package:flutter_framework/dashboard/dialog/modify_user.dart';
 import 'package:flutter_framework/dashboard/dialog/permission_list_of_user.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_user.dart';
 import 'package:flutter_framework/dashboard/dialog/role_list_of_user.dart';

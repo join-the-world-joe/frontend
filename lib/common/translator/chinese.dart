@@ -65,6 +65,7 @@ class Chinese {
     Language.fetchRoleListOfCondition: '获取角色列表',
     Language.fetchPermissionListOfCondition: '获取权限列表',
     Language.insertUserRecord : '新增用户',
+    Language.softDeleteUserRecord : '删除用户',
   };
 
   static String getName() {

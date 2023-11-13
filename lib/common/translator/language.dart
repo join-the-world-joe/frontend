@@ -61,4 +61,5 @@ class Language {
   static String fetchRoleListOfCondition = 'FetchRoleListOfCondition';
   static String fetchPermissionListOfCondition = 'FetchPermissionListOfCondition';
   static String insertUserRecord = 'InsertUserRecord';
+  static String softDeleteUserRecord = 'SoftDeleteUserRecord';
 }

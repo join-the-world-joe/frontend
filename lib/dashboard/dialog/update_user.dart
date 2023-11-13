@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/dashboard/business/update_user_record.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -23,9 +24,9 @@ import 'package:flutter_framework/dashboard/model/user.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 
-Future<bool> showModifyUserDialog(BuildContext context, User user) async {
+Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
   String countryCode = user.getCountryCode();
-  int? statusGroup = int.parse(user.getStatus()) == 1 ? 1 : 0;
+  int status = int.parse(user.getStatus()) == 1 ? 1 : 0;
   Map<Role, bool> roleStatus = {}; // key: role_name, value: bool
   RoleList wholeRoleList = RoleList([]);
   RoleList roleList = RoleList([]);
@@ -46,6 +47,26 @@ Future<bool> showModifyUserDialog(BuildContext context, User user) async {
         lastStage = curStage;
         yield lastStage;
       }
+    }
+  }
+
+  void updateUserRecordHandler(Map<String, dynamic> body) {
+    try {
+      UpdateUserRecordRsp rsp = UpdateUserRecordRsp.fromJson(body);
+      if (rsp.code == Code.oK) {
+        showMessageDialog(context, '温馨提示：', '更新成功').then(
+          (value) {
+            Navigator.pop(context, null);
+          },
+        );
+        return;
+      } else {
+        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        return;
+      }
+    } catch (e) {
+      print("insertUserRecordHandler.insertUserRecordHandler failure, $e");
+      return;
     }
   }
 
@@ -94,6 +115,9 @@ Future<bool> showModifyUserDialog(BuildContext context, User user) async {
       print("showInsertUserDialog.observe: major: $major, minor: $minor");
       if (major == Major.backend && minor == Minor.backend.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(body);
+      }
+      if (major == Major.backend && minor == Minor.backend.updateUserRecordRsp) {
+        updateUserRecordHandler(body);
       } else {
         print("showInsertUserDialog.observe warning: $major-$minor doesn't matched");
       }
@@ -144,7 +168,29 @@ Future<bool> showModifyUserDialog(BuildContext context, User user) async {
             child: Text(Translator.translate(Language.cancel)),
           ),
           TextButton(
-            onPressed: () async {},
+            onPressed: () async {
+              List<String> roleList = () {
+                List<String> roleList = [];
+                roleStatus.forEach(
+                  (key, value) {
+                    if (value) {
+                      roleList.add(key.getName());
+                    }
+                  },
+                );
+                print('selected: $roleList');
+                return roleList;
+              }();
+              updateUserRecord(
+                name: nameController.text,
+                userId: int.parse(user.getId()),
+                phoneNumber: phoneNumberController.text,
+                countryCode: countryCode,
+                status: status,
+                password: Runtime.rsa.encrypt(passwordController.text),
+                roleList: roleList,
+              );
+            },
             child: Text(Translator.translate(Language.confirm)),
           ),
           Spacing.addVerticalSpace(50),
@@ -167,9 +213,9 @@ Future<bool> showModifyUserDialog(BuildContext context, User user) async {
                           Text(Translator.translate(Language.enable)),
                           Radio<int?>(
                             value: 1,
-                            groupValue: statusGroup,
+                            groupValue: status,
                             onChanged: (b) {
-                              statusGroup = b;
+                              status = b!;
                               curStage++;
                             },
                           ),
@@ -177,9 +223,9 @@ Future<bool> showModifyUserDialog(BuildContext context, User user) async {
                           Text(Translator.translate(Language.disable)),
                           Radio<int?>(
                             value: 0,
-                            groupValue: statusGroup,
+                            groupValue: status,
                             onChanged: (b) {
-                              statusGroup = b;
+                              status = b!;
                               curStage++;
                             },
                           ),

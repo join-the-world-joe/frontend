@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'header.dart';
 import '../../../utils/convert.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'header.dart';
 
 class PacketClient {
   Header _header = Header();
@@ -48,14 +51,14 @@ class PacketClient {
 
   @override
   String toString() {
-    return Convert.Bytes2String(Convert.toBytes(this));
+    return Convert.bytes2String(Convert.toBytes(this));
   }
 
   static PacketClient fromBytes(Uint8List list) {
     try {
-      return PacketClient.fromJson(jsonDecode(Convert.Bytes2String(list)));
+      return PacketClient.fromJson(jsonDecode(Convert.bytes2String(list)));
     } catch (e) {
-      // print('PacketClient.fromBytes.e: $e');
+      print('PacketClient.fromBytes.e: $e');
       return _instance;
     }
   }

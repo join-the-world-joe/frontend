@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'dart:convert';
 
@@ -10,26 +9,23 @@ class Convert {
         return object;
       case String:
         try {
-          list =  Uint8List.fromList(object.codeUnits);
-        }
-        catch(e) {
-          // print('e: $e');
+          list = Uint8List.fromList(object.codeUnits);
+        } catch (e) {
+          print('Convert failure, e: $e');
         }
         break;
       default:
         try {
           list = Uint8List.fromList(jsonEncode(object).codeUnits);
-        }
-        catch(e) {
-          // print('e: $e');
+        } catch (e) {
+          print('Convert failure, e: $e');
         }
         break;
     }
     return list;
   }
 
-  static String Bytes2String(Uint8List list) {
+  static String bytes2String(Uint8List list) {
     return utf8.decode(list);
   }
 }
-

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:flutter_framework/framework/rate_limiter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../plugin/crypto/rsa.dart';
@@ -16,6 +18,19 @@ class Runtime {
   static bool connected = false;
   static late String token;
   static Function? _observe;
+  static Map<String, RateLimiter> rateLimiter = {};
+
+  static bool allow({required String permission}) {
+    if (!rateLimiter.containsKey(permission)) {
+      rateLimiter[permission] = RateLimiter(const Duration(milliseconds: 1000)); // default, one seconds
+      return rateLimiter[permission]!.allow();
+    }
+    return rateLimiter[permission]!.allow();
+  }
+
+  static updateRateLimiter(Map<String, RateLimiter> any) {
+    rateLimiter = any;
+  }
 
   static setConnectivity(bool b) {
     connected = b;
@@ -46,11 +61,18 @@ class Runtime {
     aes: aes,
     onReceive: (data) {
       try {
-        var packet = PacketClient.fromBytes(
-          encryption ? Convert.toBytes(aes.Decrypt(data)) : data,
-        );
-        if (isPacketClientValid(packet) == Code.oK) {
-          _observe?.call(packet);
+        if (encryption) {
+          var packet = PacketClient.fromJson(jsonDecode(aes.Decrypt(data)));
+          if (isPacketClientValid(packet) == Code.oK) {
+            _observe?.call(packet);
+          }
+          return;
+        } else {
+          var packet = PacketClient.fromBytes(data);
+          if (isPacketClientValid(packet) == Code.oK) {
+            _observe?.call(packet);
+          }
+          return;
         }
       } catch (e) {
         print('wsClient.OnReceive.e: $e');

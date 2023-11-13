@@ -47,7 +47,7 @@ class SendVerificationCodeRsp {
 
   @override
   String toString() {
-    return Convert.Bytes2String(Convert.toBytes(this));
+    return Convert.bytes2String(Convert.toBytes(this));
   }
 
   Map<String, dynamic> toJson() => {

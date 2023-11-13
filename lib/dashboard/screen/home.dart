@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
@@ -37,30 +38,9 @@ class _State extends State<Home> {
   int curStage = 0;
   int _selectedIndex = 0;
   int selected = 0;
-  Timer? fetchMenuListOfRoleTimer;
+  Duration fetchMenuDuration = const Duration(seconds: 3);
+  Timer? fetchMenuTimer;
   bool isDrawerOpen = false;
-
-  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   Stream<String>? yeildData() async* {
     var lastContent = '';
@@ -98,11 +78,19 @@ class _State extends State<Home> {
       FetchMenuListOfConditionRsp rsp = FetchMenuListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         Cache.setMenuList(MenuList.fromJson(rsp.body));
-        curStage = 1;
+        curStage++;
+        refresh();
+        return;
+      } else if (rsp.code == Code.accessDenied) {
+        showMessageDialog(context, '温馨提示：', '没有权限.');
+        curStage = -1;
         refresh();
         return;
       } else {
         print('Home.fetchMenuListOfConditionHandler failure: ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '没有权限.');
+        curStage = -1;
+        refresh();
         return;
       }
     } catch (e) {
@@ -145,6 +133,12 @@ class _State extends State<Home> {
   @override
   void dispose() {
     print('home.dispose');
+    if (fetchMenuTimer != null) {
+      if (fetchMenuTimer!.isActive) {
+        print('Home.dispose.fetchMenuTimer.cancel');
+        fetchMenuTimer!.cancel();
+      }
+    }
     super.dispose();
   }
 
@@ -177,17 +171,19 @@ class _State extends State<Home> {
             title: Text(Translator.translate(element.getTitle())),
             children: element
                 .getItemList()
-                .map((title) => ListTile(
-                      title: Text(Translator.translate(title)),
-                      onTap: () {
-                        // print('onTap: $title');
-                        Cache.setContent(title);
-                        if (isDrawerOpen) {
-                          // print('drawer is open now');
-                          Navigator.of(context).pop();
-                        }
-                      },
-                    ))
+                .map(
+                  (title) => ListTile(
+                    title: Text(Translator.translate(title)),
+                    onTap: () {
+                      // print('onTap: $title');
+                      Cache.setContent(title);
+                      if (isDrawerOpen) {
+                        // print('drawer is open now');
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
+                )
                 .toList(),
           ),
         );
@@ -197,8 +193,6 @@ class _State extends State<Home> {
     return Column(
       children: widgets,
     );
-
-    return Text('sideMenu default');
   }
 
   @override
@@ -219,6 +213,13 @@ class _State extends State<Home> {
         ],
       ),
     );
+
+    fetchMenuTimer = Timer(fetchMenuDuration, () {
+      if (curStage == 0) {
+        curStage--;
+        refresh();
+      }
+    });
 
     return Scaffold(
       onDrawerChanged: (isOpened) {

@@ -13,4 +13,6 @@ class Backend {
   String insertUserRecordRsp = '12';
   String softDeleteUserRecordReq = '13';
   String softDeleteUserRecordRsp = '14';
+  String updateUserRecordReq = '15';
+  String updateUserRecordRsp = '16';
 }

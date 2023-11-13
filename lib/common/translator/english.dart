@@ -65,6 +65,7 @@ class English {
     Language.fetchRoleListOfCondition: 'Fetch Role List',
     Language.fetchPermissionListOfCondition: 'Fetch Permission List',
     Language.insertUserRecord : 'Insert User',
+    Language.softDeleteUserRecord : 'Remove User',
   };
 
   static String getName() {

@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'dart:typed_data';
 import '../../../utils/convert.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -7,21 +8,35 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class SignInReq {
-  late String token;
-  late String countryCode;
-  late String phoneNumber;
-  late String verificationCode;
-  late Uint8List password;
+  int behavior;
+  String account;
+  String email;
+  String phoneNumber;
+  String countryCode;
+  Uint8List password;
+  String token;
+  String verificationCode;
 
-  SignInReq(this.verificationCode, this.countryCode, this.phoneNumber,
-      this.token, this.password);
+  SignInReq({
+    required this.email,
+    required this.token,
+    required this.account,
+    required this.behavior,
+    required this.password,
+    required this.phoneNumber,
+    required this.countryCode,
+    required this.verificationCode,
+  });
 
   Map<String, dynamic> toJson() => {
-        'verification_code': verificationCode,
-        'country_code': countryCode,
-        'phone_number': phoneNumber,
+        'email': email,
         'token': token,
+        'account': account,
+        'behavior': behavior,
         'password': password,
+        'phone_number': phoneNumber,
+        'country_code': countryCode,
+        'verification_code': verificationCode,
       };
 
   Uint8List toBytes() {
@@ -42,26 +57,37 @@ class SignInRsp {
 
   @override
   String toString() {
-    return Convert.Bytes2String(Convert.toBytes(this));
+    return Convert.bytes2String(Convert.toBytes(this));
   }
 
   Map<String, dynamic> toJson() => {
         'code': code,
       };
 
-  SignInRsp.fromJson(Map<String, dynamic> json)
-      : code = json['code'] ?? -1;
+  SignInRsp.fromJson(Map<String, dynamic> json) : code = json['code'] ?? -1;
 }
 
-void signIn(
-    {required String verificationCode,
-    required String countryCode,
-    required String phoneNumber,
-    required String token,
-    required Uint8List password}) {
+void signIn({
+  required String email,
+  required String token,
+  required String account,
+  required int behavior,
+  required Uint8List password,
+  required String phoneNumber,
+  required String countryCode,
+  required String verificationCode,
+}) {
   PacketClient packet = PacketClient.create();
-  SignInReq req =
-      SignInReq(verificationCode, countryCode, phoneNumber, token, password);
+  SignInReq req = SignInReq(
+    email: email,
+    token: token,
+    account: account,
+    behavior: behavior,
+    password: password,
+    phoneNumber: phoneNumber,
+    countryCode: countryCode,
+    verificationCode: verificationCode,
+  );
   packet.getHeader().setMajor(Major.backend);
   packet.getHeader().setMinor(Minor.backend.signInReq);
   packet.setBody(req.toJson());
