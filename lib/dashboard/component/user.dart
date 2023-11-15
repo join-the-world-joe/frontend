@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
+import 'package:flutter_framework/dashboard/business/check_permission.dart';
 import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/business/fetch_permission_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/business/fetch_role_list_of_condition.dart';
@@ -48,10 +49,27 @@ class User extends StatefulWidget {
 }
 
 class _State extends State<User> {
+  bool closed = false;
+  int curStage = 0;
+  bool hasFetchPermissionListOfCondition = false;
+  bool hasFetchMenuListOfCondition = false;
   final nameControl = TextEditingController();
   final roleControl = TextEditingController();
   final phoneNumberControl = TextEditingController();
   final scrollController = ScrollController();
+
+  Stream<int>? yeildData() async* {
+    var lastStage = curStage;
+    while (!closed) {
+      // print('User.yeildData.last: $lastStage, cur: ${curStage}');
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (lastStage != curStage) {
+        lastStage = curStage;
+        // print('showPermissionListOfUserDialog.last: $lastStage');
+        yield lastStage;
+      }
+    }
+  }
 
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
@@ -62,12 +80,32 @@ class _State extends State<User> {
       // print("User.observe: major: $major, minor: $minor");
       if (major == Major.backend && minor == Minor.backend.fetchUserListOfConditionRsp) {
         fetchUserListOfConditionHandler(body);
+      } else if (major == Major.backend && minor == Minor.backend.checkPermissionRsp) {
+        checkPermissionHandler(body);
       } else {
         print("User.observe warning: $major-$minor doesn't matched");
       }
       return;
     } catch (e) {
       print('User.observe($major-$minor).e: ${e.toString()}');
+      return;
+    }
+  }
+
+  void checkPermissionHandler(Map<String, dynamic> body) {
+    print('User.checkPermissionHandler');
+    try {
+      CheckPermissionRsp rsp = CheckPermissionRsp.fromJson(body);
+      if (rsp.getMinor() == int.parse(Minor.backend.fetchPermissionListOfConditionReq)) {
+        hasFetchPermissionListOfCondition = rsp.getCode() == Code.oK ? true : false;
+      }
+      if (rsp.getMinor() == int.parse(Minor.backend.fetchMenuListOfConditionReq)) {
+        hasFetchMenuListOfCondition = rsp.getCode() == Code.oK ? true : false;
+      }
+      curStage++;
+      return;
+    } catch (e) {
+      print("User.checkPermissionHandler failure, $e");
       return;
     }
   }
@@ -127,6 +165,7 @@ class _State extends State<User> {
   @override
   void dispose() {
     // print('User.dispose');
+    closed = true;
     super.dispose();
   }
 
@@ -140,121 +179,140 @@ class _State extends State<User> {
 
   @override
   Widget build(BuildContext context) {
+    checkPermission(major: Major.backend, minor: Minor.backend.fetchPermissionListOfConditionReq);
+    checkPermission(major: Major.backend, minor: Minor.backend.fetchMenuListOfConditionReq);
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                SizedBox(
-                  width: 110,
-                  child: TextFormField(
-                    controller: phoneNumberControl,
-                    decoration: InputDecoration(
-                      // border: const UnderlineInputBorder(),
-                      labelText: Translator.translate(Language.fPhoneNumber),
-                    ),
+        child: StreamBuilder(
+          stream: yeildData(),
+          builder: (context, snap) {
+            if (curStage > 0) {
+              return ListView(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      SizedBox(
+                        width: 110,
+                        child: TextFormField(
+                          controller: phoneNumberControl,
+                          decoration: InputDecoration(
+                            // border: const UnderlineInputBorder(),
+                            labelText: Translator.translate(Language.fPhoneNumber),
+                          ),
+                        ),
+                      ),
+                      Spacing.addHorizontalSpace(20),
+                      SizedBox(
+                        width: 110,
+                        child: TextFormField(
+                          controller: nameControl,
+                          decoration: InputDecoration(
+                            // border: const UnderlineInputBorder(),
+                            labelText: Translator.translate(Language.fName),
+                          ),
+                        ),
+                      ),
+                      Spacing.addHorizontalSpace(20),
+                      SizedBox(
+                        height: 30,
+                        width: 100,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Cache.setUserList([]);
+                            // print('name: ${nameControl.text}');
+                            if (!Runtime.allow(
+                              major: int.parse(Major.backend),
+                              minor: int.parse(Minor.backend.fetchUserListOfConditionReq),
+                            )) {
+                              return;
+                            }
+                            if (nameControl.text.isEmpty && phoneNumberControl.text.isEmpty) {
+                              fetchUserListOfCondition(
+                                behavior: 1,
+                                name: '',
+                                phoneNumber: '',
+                                userId: 0,
+                              );
+                            } else {
+                              fetchUserListOfCondition(
+                                behavior: 2,
+                                name: nameControl.text,
+                                phoneNumber: phoneNumberControl.text,
+                                userId: 0,
+                              );
+                            }
+                          },
+                          child: Text(
+                            Translator.translate(Language.search),
+                            style: const TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                        ),
+                      ),
+                      Spacing.addHorizontalSpace(20),
+                      SizedBox(
+                        height: 30,
+                        width: 100,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            phoneNumberControl.text = '';
+                            nameControl.text = '';
+                            Cache.setUserList([]);
+                            refresh();
+                          },
+                          child: Text(
+                            Translator.translate(Language.reset),
+                            style: const TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Spacing.addHorizontalSpace(20),
-                SizedBox(
-                  width: 110,
-                  child: TextFormField(
-                    controller: nameControl,
-                    decoration: InputDecoration(
-                      // border: const UnderlineInputBorder(),
-                      labelText: Translator.translate(Language.fName),
-                    ),
-                  ),
-                ),
-                Spacing.addHorizontalSpace(20),
-                SizedBox(
-                  height: 30,
-                  width: 100,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Cache.setUserList([]);
-                      // print('name: ${nameControl.text}');
-                      if (!Runtime.allow(
-                        major: int.parse(Major.backend),
-                        minor: int.parse(Minor.backend.fetchUserListOfConditionReq),
-                      )) {
-                        return;
-                      }
-                      fetchUserListOfCondition(
-                        behavior: 2,
-                        name: nameControl.text,
-                        phoneNumber: phoneNumberControl.text,
-                        userId: 0,
-                      );
-                    },
-                    child: Text(
-                      Translator.translate(Language.search),
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
-                    ),
-                  ),
-                ),
-                Spacing.addHorizontalSpace(20),
-                SizedBox(
-                  height: 30,
-                  width: 100,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      phoneNumberControl.text = '';
-                      nameControl.text = '';
-                      Cache.setUserList([]);
-                      refresh();
-                    },
-                    child: Text(
-                      Translator.translate(Language.reset),
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Spacing.addVerticalSpace(20),
-            Scrollbar(
-              controller: scrollController,
-              thumbVisibility: true,
-              scrollbarOrientation: ScrollbarOrientation.bottom,
-              child: PaginatedDataTable(
-                controller: scrollController,
-                actions: [
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.add),
-                    onPressed: () async {
-                      showInsertUserDialog(context);
-                    },
-                    label: Text(
-                      Translator.translate(Language.newUser),
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
+                  Spacing.addVerticalSpace(20),
+                  Scrollbar(
+                    controller: scrollController,
+                    thumbVisibility: true,
+                    scrollbarOrientation: ScrollbarOrientation.bottom,
+                    child: PaginatedDataTable(
+                      controller: scrollController,
+                      actions: [
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.add),
+                          onPressed: () async {
+                            showInsertUserDialog(context);
+                          },
+                          label: Text(
+                            Translator.translate(Language.newUser),
+                            style: const TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                        ),
+                      ],
+                      source: Source(context, hasFetchPermissionListOfCondition, hasFetchMenuListOfCondition),
+                      header: Text(Translator.translate(Language.userList)),
+                      columns: [
+                        DataColumn(label: Text(Translator.translate(Language.fPhoneNumber))),
+                        DataColumn(label: Text(Translator.translate(Language.fName))),
+                        DataColumn(label: Text(Translator.translate(Language.fStatus))),
+                        DataColumn(label: Text(Translator.translate(Language.fRole))),
+                        if (hasFetchPermissionListOfCondition) DataColumn(label: Text(Translator.translate(Language.fPermission))),
+                        if (hasFetchMenuListOfCondition) DataColumn(label: Text(Translator.translate(Language.tMenu))),
+                        // DataColumn(label: Text('字段列表')),
+                        DataColumn(label: Text(Translator.translate(Language.fCreatedAt))),
+                        DataColumn(label: Text(Translator.translate(Language.operation))),
+                      ],
+                      columnSpacing: 60,
+                      horizontalMargin: 10,
+                      rowsPerPage: 5,
+                      showCheckboxColumn: false,
                     ),
                   ),
                 ],
-                source: Source(context),
-                header: Text(Translator.translate(Language.userList)),
-                columns: [
-                  DataColumn(label: Text(Translator.translate(Language.fPhoneNumber))),
-                  DataColumn(label: Text(Translator.translate(Language.fName))),
-                  DataColumn(label: Text(Translator.translate(Language.fStatus))),
-                  DataColumn(label: Text(Translator.translate(Language.fRole))),
-                  DataColumn(label: Text(Translator.translate(Language.fPermission))),
-                  DataColumn(label: Text(Translator.translate(Language.tMenu))),
-                  // DataColumn(label: Text('字段列表')),
-                  DataColumn(label: Text(Translator.translate(Language.fCreatedAt))),
-                  DataColumn(label: Text(Translator.translate(Language.operation))),
-                ],
-                columnSpacing: 60,
-                horizontalMargin: 10,
-                rowsPerPage: 5,
-                showCheckboxColumn: false,
-              ),
-            ),
-          ],
+              );
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
         ),
       ),
     );
@@ -265,8 +323,10 @@ class Source extends DataTableSource {
   BuildContext context;
   List<Widget> widgets = [];
   final List<usr.User> _data = Cache.getUserList();
+  bool hasFetchPermissionListOfCondition;
+  bool hasFetchMenuListOfCondition;
 
-  Source(this.context);
+  Source(this.context, this.hasFetchPermissionListOfCondition, this.hasFetchMenuListOfCondition);
 
   @override
   bool get isRowCountApproximate => false;
@@ -303,24 +363,26 @@ class Source extends DataTableSource {
             },
           ),
         ),
-        DataCell(
-          IconButton(
-            tooltip: Translator.translate(Language.viewPermissionList),
-            icon: const Icon(Icons.verified_user_outlined),
-            onPressed: () {
-              showPermissionListOfUserDialog(context, _data[index]);
-            },
+        if (hasFetchPermissionListOfCondition)
+          DataCell(
+            IconButton(
+              tooltip: Translator.translate(Language.viewPermissionList),
+              icon: const Icon(Icons.verified_user_outlined),
+              onPressed: () {
+                showPermissionListOfUserDialog(context, _data[index]);
+              },
+            ),
           ),
-        ),
-        DataCell(
-          IconButton(
-            tooltip: Translator.translate(Language.viewMenuList),
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              showMenuListOfUserDialog(context, _data[index]);
-            },
+        if (hasFetchMenuListOfCondition)
+          DataCell(
+            IconButton(
+              tooltip: Translator.translate(Language.viewMenuList),
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                showMenuListOfUserDialog(context, _data[index]);
+              },
+            ),
           ),
-        ),
         DataCell(Text(_data[index].getCreatedAt())),
         DataCell(
           Row(

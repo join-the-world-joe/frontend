@@ -62,4 +62,21 @@ class Language {
   static String fetchPermissionListOfCondition = 'FetchPermissionListOfCondition';
   static String insertUserRecord = 'InsertUserRecord';
   static String softDeleteUserRecord = 'SoftDeleteUserRecord';
+
+  // role
+  static String administrator = 'Administrator';
+  static String rdManager = 'RD_Manager';
+  static String softwareEngineer = 'Software_Engineer';
+  static String hardwareEngineer = 'Hardware_Engineer';
+  static String financeManger = 'Finance_Manger';
+  static String purchasingSpecialist = 'Purchasing_Specialist';
+  static String accountingSpecialist = 'Accounting_Specialist';
+  static String hrManger = 'HR_Manger';
+  static String hrSpecialist = 'HR_Specialist';
+  static String marketingManger = 'Marketing_Manger';
+  static String salesSpecialist = 'Sales_Specialist';
+  static String manufacturingManger = 'Manufacturing_Manger';
+  static String productionSpecialist = 'Production_Specialist';
+
+
 }

@@ -24,7 +24,7 @@ class PasswordSignIn extends StatefulWidget {
 
 class _State extends State<PasswordSignIn> {
   late int countdown = 0;
-  final idControl = TextEditingController(text: 'xx@gmail.com');
+  final idControl = TextEditingController(text: 'rd_manager@gmail.com');
   final passwordControl = TextEditingController(text: '123456');
   double widgetWidth = 450;
   Duration loginBusyDuration = const Duration(seconds: 10);

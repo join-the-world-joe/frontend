@@ -22,7 +22,7 @@ class RoleList {
     try {
       List<String> nameList = List<String>.from(json['name_list']);
       List<String> descList = List<String>.from(json['description_list']);
-      List<String> levelList = List<String>.from(json['level_list']);
+      List<String> levelList = List<String>.from(json['rank_list']);
       for (var i = 0; i < nameList.length; i++) {
         rl.add(Role(nameList[i], levelList[i], descList[i]));
       }

@@ -41,7 +41,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      print('showModifyUserDialog, last: $lastStage, cur: ${curStage}');
+      // print('showUpdateUserDialog, last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
@@ -114,9 +114,9 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
     try {
       print("showInsertUserDialog.observe: major: $major, minor: $minor");
       if (major == Major.backend && minor == Minor.backend.fetchRoleListOfConditionRsp) {
+        print('body: ${body.toString()}');
         fetchRoleListOfConditionHandler(body);
-      }
-      if (major == Major.backend && minor == Minor.backend.updateUserRecordRsp) {
+      } else if (major == Major.backend && minor == Minor.backend.updateUserRecordRsp) {
         updateUserRecordHandler(body);
       } else {
         print("showInsertUserDialog.observe warning: $major-$minor doesn't matched");
@@ -149,6 +149,11 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
         userId: 0,
         roleNameList: [''],
       );
+      // fetchRoleListOfCondition(
+      //   behavior: 2,
+      //   userId: int.parse(user.getId()),
+      //   roleNameList: [''],
+      // );
       Future.delayed(
         const Duration(milliseconds: 100),
         () {
@@ -178,7 +183,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
                     }
                   },
                 );
-                print('selected: $roleList');
+                // print('selected: $roleList');
                 return roleList;
               }();
               updateUserRecord(
@@ -309,7 +314,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
                               spacing: 6.0,
                               runSpacing: 6.0,
                               children: () {
-                                List<Widget> widgets = [const Text('获取用户角色列表失败')];
+                                List<Widget> widgets = [const Text('获取中...')];
                                 if (roleStatus.isEmpty) {
                                   return widgets;
                                 }
@@ -326,7 +331,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
                                           roleStatus[key] = !roleStatus[key]!;
                                           curStage++;
                                         },
-                                        label: Text(key.getName()),
+                                        label: Text(Translator.translate(key.getName())),
                                       ),
                                     );
                                   },
@@ -358,10 +363,6 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
 
 Chip _buildRoleChip(String label) {
   return Chip(
-    // avatar: const CircleAvatar(
-    //   backgroundColor: Colors.orangeAccent,
-    //   child: Text('角色'),
-    // ),
     labelPadding: const EdgeInsets.all(2.0),
     label: Text(
       label,

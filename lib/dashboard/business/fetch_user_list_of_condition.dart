@@ -16,6 +16,8 @@ class FetchUserListOfConditionReq {
   FetchUserListOfConditionReq(this._behavior, this._userId, this._name, this._phoneNumber);
 
   Map<String, dynamic> toJson() => {
+        'behavior': _behavior,
+        'user_id': _userId,
         'name': utf8.encode(_name),
         'phone_number': _phoneNumber,
       };

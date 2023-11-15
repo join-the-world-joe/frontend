@@ -57,15 +57,30 @@ class English {
     Language.table: 'Table',
     Language.fField: 'Field',
     Language.fieldList: 'Field List',
-    Language.tMenu:'Menu',
+    Language.tMenu: 'Menu',
 
     // permission
     Language.fetchMenuListOfCondition: 'Fetch Menu List',
     Language.fetchUserListOfCondition: 'Fetch User List',
     Language.fetchRoleListOfCondition: 'Fetch Role List',
     Language.fetchPermissionListOfCondition: 'Fetch Permission List',
-    Language.insertUserRecord : 'Insert User',
-    Language.softDeleteUserRecord : 'Remove User',
+    Language.insertUserRecord: 'Insert User',
+    Language.softDeleteUserRecord: 'Remove User',
+
+    // role
+    Language.administrator: 'Administrator',
+    Language.rdManager: 'R&D Manager',
+    Language.softwareEngineer: 'Software Engineer',
+    Language.hardwareEngineer: 'Hardware Engineer',
+    Language.financeManger: 'Finance Manager',
+    Language.purchasingSpecialist: 'Purchasing Specialist',
+    Language.accountingSpecialist: 'Accounting Specialist',
+    Language.hrManger: 'HR Manger',
+    Language.hrSpecialist: 'HR Specialist',
+    Language.marketingManger: 'Marketing Manger',
+    Language.salesSpecialist: 'Sales Specialist',
+    Language.manufacturingManger: 'Manufacturing Manger',
+    Language.productionSpecialist: 'Production Specialist',
   };
 
   static String getName() {

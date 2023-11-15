@@ -64,8 +64,23 @@ class Chinese {
     Language.fetchUserListOfCondition: '获取用户列表',
     Language.fetchRoleListOfCondition: '获取角色列表',
     Language.fetchPermissionListOfCondition: '获取权限列表',
-    Language.insertUserRecord : '新增用户',
-    Language.softDeleteUserRecord : '删除用户',
+    Language.insertUserRecord: '新增用户',
+    Language.softDeleteUserRecord: '删除用户',
+
+    // role
+    Language.administrator: '系统管理员',
+    Language.rdManager: '研发部主管',
+    Language.softwareEngineer: '软件工程师',
+    Language.hardwareEngineer: '硬件工程师',
+    Language.financeManger: '财务部主管',
+    Language.purchasingSpecialist: '采购专员',
+    Language.accountingSpecialist: '财务专员',
+    Language.hrManger: '人事部主管',
+    Language.hrSpecialist: '人事行政专员',
+    Language.marketingManger: '市场部主管',
+    Language.salesSpecialist: '销售部主管',
+    Language.manufacturingManger: '生产部主管',
+    Language.productionSpecialist: '生产线专员',
   };
 
   static String getName() {

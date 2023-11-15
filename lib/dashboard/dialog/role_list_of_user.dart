@@ -147,13 +147,14 @@ List<Widget> _buildWidgetList(RoleList roleList) {
   for (var i = 0; i < roleList.getBody().length; i++) {
     var name = roleList.getBody()[i].getName();
     var desc = roleList.getBody()[i].getDescription();
-    chipList.add(_buildFilterChip(label: name, textColor: Colors.white, tooltip: desc));
+    chipList.add(_buildFilterChip(label: Translator.translate(name), textColor: Colors.white, tooltip: desc));
   }
   widgetList.add(
     SizedBox(
       width: 380,
       child: Row(
         children: [
+          if (roleList.getBody().isEmpty) Text('未分配角色'),
           Expanded(
             child: Wrap(
               spacing: 6.0,

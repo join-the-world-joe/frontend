@@ -15,4 +15,10 @@ class Backend {
   String softDeleteUserRecordRsp = '14';
   String updateUserRecordReq = '15';
   String updateUserRecordRsp = '16';
+  String fetchFieldListOfConditionReq = "17";
+  String fetchFieldListOfConditionRsp = "18";
+  String fetchTrackListOfConditionReq = "19";
+  String fetchTrackListOfConditionRsp = "20";
+  String checkPermissionReq = "21";
+  String checkPermissionRsp = "22";
 }
