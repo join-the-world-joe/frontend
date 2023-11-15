@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter_framework/framework/packet_client.dart';
 import '../../common/route/major.dart';
 import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/framework/rate_limiter.dart';
 
 class FetchRateLimitingConfigReq {
   Map<String, dynamic> toJson() => {};
@@ -9,11 +12,22 @@ class FetchRateLimitingConfigReq {
 
 class FetchRateLimitingConfigRsp {
   late int code;
-  late dynamic body;
+  Map<String, RateLimiter> rateLimiter = {};
 
   FetchRateLimitingConfigRsp.fromJson(Map<String, dynamic> json) {
     code = json['code'] ?? -1;
-    body = json['body'] ?? '';
+    rateLimiter = {};
+    if (json.containsKey('body')) {
+      Map<String, dynamic> body = json['body'];
+      if (body.containsKey('rate_limit_list')) {
+        Map<String, dynamic> any = body['rate_limit_list'];
+        any.forEach(
+          (key, value) {
+            rateLimiter['${value['major']}-${value['minor']}'] = RateLimiter(value['major'], value['minor'], value['period']);
+          },
+        );
+      }
+    }
   }
 }
 

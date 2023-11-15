@@ -42,6 +42,7 @@ dependencies:
   intl_phone_field: ^3.2.0
   sprintf: ^7.0.0
   email_validator: ^2.1.17
+  uuid: ^4.2.1
 
 dev_dependencies:
   flutter_test:

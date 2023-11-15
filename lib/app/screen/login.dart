@@ -119,7 +119,6 @@ class _State extends State<Login> {
 
   void navigate(String page) {
     print('Login.navigate to $page');
-    // Runtime.hook.clear();
     Navigate.to(context, Screen.build(page));
   }
 

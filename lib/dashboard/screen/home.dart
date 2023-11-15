@@ -36,7 +36,6 @@ class Home extends StatefulWidget {
 
 class _State extends State<Home> {
   int curStage = 0;
-  int _selectedIndex = 0;
   int selected = 0;
   Duration fetchMenuDuration = const Duration(seconds: 3);
   Timer? fetchMenuTimer;
@@ -118,16 +117,6 @@ class _State extends State<Home> {
   void progress() async {
     print('home.progress');
     return;
-  }
-
-  void debug() async {
-    print('home.debug');
-    var body = '{"Admission":["User","Role","Permission","Menu","Track", "Field"],"Menu1":["item1","item2","item3","item4","item5"]}';
-    Cache.setMenuList(MenuList.fromJson(jsonDecode(body)));
-
-    await Future.delayed(const Duration(seconds: 1));
-    curStage = 1;
-    refresh();
   }
 
   @override
@@ -253,7 +242,7 @@ class _State extends State<Home> {
           Expanded(
             child: StreamBuilder(
               builder: (context, snap) {
-                print('data: ${snap.data}');
+                // print('data: ${snap.data}');
                 if (snap.data != null) {
                   if (Cache.getContent() == User.content) {
                     return const User();

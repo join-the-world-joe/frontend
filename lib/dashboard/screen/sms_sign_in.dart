@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_framework/utils/spacing.dart';
 import 'screen.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import 'package:flutter_framework/validator/mobile.dart';
@@ -12,7 +10,6 @@ import 'package:flutter_framework/common/business/sms/send_verification_code.dar
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
-import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/dashboard/business/sign_in.dart';
 
@@ -26,9 +23,7 @@ class SMSSignIn extends StatefulWidget {
 class _State extends State<SMSSignIn> {
   late int countdown = 0;
   Timer? countdownTimer;
-  Timer? disableLoginTimer;
   bool fSent = false;
-  bool fLoginBusy = false;
   String smsButtonLabel = '获取';
   Duration loginBusyDuration = const Duration(seconds: 10);
   final countryCodeControl = TextEditingController();
@@ -117,6 +112,12 @@ class _State extends State<SMSSignIn> {
 
   void navigate(String page) {
     print('SMSSignIn.navigate to $page');
+    if (countdownTimer != null) {
+      if (countdownTimer!.isActive) {
+        print('SMSSignIn.countdownTimer.cancel');
+        countdownTimer!.cancel();
+      }
+    }
     Navigate.to(context, Screen.build(page));
   }
 
@@ -128,18 +129,6 @@ class _State extends State<SMSSignIn> {
   @override
   void dispose() {
     print('SMSSignIn.dispose');
-    if (countdownTimer != null) {
-      if (countdownTimer!.isActive) {
-        print('SMSSignIn.countdownTimer.cancel');
-        countdownTimer!.cancel();
-      }
-    }
-    if (disableLoginTimer != null) {
-      if (disableLoginTimer!.isActive) {
-        print('SMSSignIn.disableLoginTimer.cancel');
-        disableLoginTimer!.cancel();
-      }
-    }
     super.dispose();
   }
 
@@ -168,16 +157,13 @@ class _State extends State<SMSSignIn> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       fixedSize: const Size(85, 35),
-                      foregroundColor: fLoginBusy ? Colors.grey : Colors.lightBlueAccent,
-                      backgroundColor: fLoginBusy ? Colors.grey : Colors.lightBlueAccent,
+                      foregroundColor: Colors.lightBlueAccent,
+                      backgroundColor: Colors.lightBlueAccent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),
                     ),
                     onPressed: () {
-                      if (fLoginBusy) {
-                        return;
-                      }
                       navigate(Screen.passwordSignIn);
                     },
                     child: const Row(
@@ -327,14 +313,6 @@ class _State extends State<SMSSignIn> {
                               phoneNumber: phoneNumberControl.text,
                             );
                             fSent = true;
-                            fLoginBusy = true;
-                            disableLoginTimer = Timer.periodic(
-                              loginBusyDuration,
-                              (timer) {
-                                fLoginBusy = false;
-                                refresh();
-                              },
-                            );
                             refresh();
                           },
                         ),
@@ -353,7 +331,10 @@ class _State extends State<SMSSignIn> {
                   width: 350,
                   child: ElevatedButton(
                     onPressed: () {
-                      if (fLoginBusy) {
+                      if (!Runtime.allow(
+                        major: int.parse(Major.backend),
+                        minor: int.parse(Minor.backend.signInReq),
+                      )) {
                         return;
                       }
                       signIn(
@@ -366,20 +347,12 @@ class _State extends State<SMSSignIn> {
                         token: '',
                         password: Uint8List.fromList([]),
                       );
-                      fLoginBusy = true;
-                      disableLoginTimer = Timer.periodic(
-                        loginBusyDuration,
-                        (timer) {
-                          fLoginBusy = false;
-                          refresh();
-                        },
-                      );
                       refresh();
                     },
                     style: ElevatedButton.styleFrom(
                       fixedSize: const Size(85, 35),
-                      foregroundColor: fLoginBusy ? Colors.grey : Colors.lightBlueAccent,
-                      backgroundColor: fLoginBusy ? Colors.grey : Colors.lightBlueAccent,
+                      foregroundColor: Colors.lightBlueAccent,
+                      backgroundColor: Colors.lightBlueAccent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),

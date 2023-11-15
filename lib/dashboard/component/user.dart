@@ -59,7 +59,7 @@ class _State extends State<User> {
     var body = packet.getBody();
 
     try {
-      print("User.observe: major: $major, minor: $minor");
+      // print("User.observe: major: $major, minor: $minor");
       if (major == Major.backend && minor == Minor.backend.fetchUserListOfConditionRsp) {
         fetchUserListOfConditionHandler(body);
       } else {
@@ -73,28 +73,18 @@ class _State extends State<User> {
   }
 
   void fetchUserListOfConditionHandler(Map<String, dynamic> body) {
-    print('User.fetchUserListOfConditionHandler');
+    // print('User.fetchUserListOfConditionHandler');
     try {
       FetchUserListOfConditionRsp rsp = FetchUserListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         Cache.setUserList([]);
-        print('body: ${rsp.body.toString()}');
-        print(rsp.body);
-        // var body = rsp.body as Map<String, List<dynamic>>;
+        // print('body: ${rsp.body.toString()}');
+        // print(rsp.body);
         var userList = rsp.body['user_list'] as List<dynamic>;
         userList.forEach(
-              (e) {
+          (e) {
             Cache.userList.add(
-              usr.User(
-                  e['id'],
-                  e['name'],
-                  e['account'],
-                  e['email'],
-                  e['department'],
-                  e['country_code'],
-                  e['phone_number'],
-                  e['status'],
-                  e['created_at']),
+              usr.User(e['id'], e['name'], e['account'], e['email'], e['department'], e['country_code'], e['phone_number'], e['status'], e['created_at']),
             );
           },
         );
@@ -114,7 +104,7 @@ class _State extends State<User> {
   }
 
   void refresh() {
-    print('User.refresh');
+    // print('User.refresh');
     setState(() {});
   }
 
@@ -124,32 +114,27 @@ class _State extends State<User> {
   }
 
   void setup() {
-    print('User.setup');
+    // print('User.setup');
     Cache.setUserList([]);
     Runtime.setObserve(observe);
   }
 
   void progress() async {
-    print('User.progress');
+    // print('User.progress');
     return;
   }
 
   @override
   void dispose() {
-    print('User.dispose');
+    // print('User.dispose');
     super.dispose();
-  }
-
-  void debug() async {
-    print('User.debug');
   }
 
   @override
   void initState() {
-    print('User.initState');
+    // print('User.initState');
     setup();
     progress();
-    debug();
     super.initState();
   }
 
@@ -192,10 +177,18 @@ class _State extends State<User> {
                   child: ElevatedButton(
                     onPressed: () {
                       Cache.setUserList([]);
-                      print('name: ${nameControl.text}');
+                      // print('name: ${nameControl.text}');
+                      if (!Runtime.allow(
+                        major: int.parse(Major.backend),
+                        minor: int.parse(Minor.backend.fetchUserListOfConditionReq),
+                      )) {
+                        return;
+                      }
                       fetchUserListOfCondition(
+                        behavior: 2,
                         name: nameControl.text,
                         phoneNumber: phoneNumberControl.text,
+                        userId: 0,
                       );
                     },
                     child: Text(
@@ -282,7 +275,7 @@ class Source extends DataTableSource {
   int get rowCount => getLength();
 
   int getLength() {
-    print('length: ${_data.length}');
+    // print('length: ${_data.length}');
     return _data.length;
   }
 
@@ -291,11 +284,11 @@ class Source extends DataTableSource {
 
   @override
   DataRow getRow(int index) {
-    print("getRow: $index");
+    // print("getRow: $index");
     return DataRow(
       selected: false,
       onSelectChanged: (selected) {
-        print('selected: $selected');
+        // print('selected: $selected');
       },
       cells: [
         DataCell(Text(_data[index].getPhoneNumber())),
@@ -344,14 +337,13 @@ class Source extends DataTableSource {
                 tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
                   await showRemoveUserDialog(context, _data[index]).then(
-                        (value) =>
-                            () {
-                          print('value: $value');
-                          if (value) {
-                            _data.removeAt(index);
-                            notifyListeners();
-                          }
-                        }(),
+                    (value) => () {
+                      // print('value: $value');
+                      if (value) {
+                        _data.removeAt(index);
+                        notifyListeners();
+                      }
+                    }(),
                   );
                 },
               ),

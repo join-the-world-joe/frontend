@@ -7,7 +7,6 @@ import '../../../plugin/crypto/rsa.dart';
 import '../../../plugin/crypto/aes.dart';
 import '../framework/packet_client.dart';
 import '../framework/websocket.dart';
-import '../../../utils/convert.dart';
 import '../../../common/code/code.dart';
 import '../validator/packet_client.dart';
 
@@ -18,18 +17,19 @@ class Runtime {
   static bool connected = false;
   static late String token;
   static Function? _observe;
-  static Map<String, RateLimiter> rateLimiter = {};
+  static Map<String, RateLimiter> _rateLimiter = {};
 
-  static bool allow({required String permission}) {
-    if (!rateLimiter.containsKey(permission)) {
-      rateLimiter[permission] = RateLimiter(const Duration(milliseconds: 1000)); // default, one seconds
-      return rateLimiter[permission]!.allow();
+  static bool allow({required int major, required int minor}) {
+    var key = '$major-$minor';
+    if (!_rateLimiter.containsKey(key)) {
+      _rateLimiter[key] = RateLimiter(major, minor, 1000); // default, one seconds
+      return _rateLimiter[key]!.allow();
     }
-    return rateLimiter[permission]!.allow();
+    return _rateLimiter[key]!.allow();
   }
 
   static updateRateLimiter(Map<String, RateLimiter> any) {
-    rateLimiter = any;
+    _rateLimiter = any;
   }
 
   static setConnectivity(bool b) {

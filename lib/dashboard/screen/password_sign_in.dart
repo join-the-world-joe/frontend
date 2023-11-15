@@ -24,12 +24,10 @@ class PasswordSignIn extends StatefulWidget {
 
 class _State extends State<PasswordSignIn> {
   late int countdown = 0;
-  bool fBusy = false;
   final idControl = TextEditingController(text: 'xx@gmail.com');
   final passwordControl = TextEditingController(text: '123456');
   double widgetWidth = 450;
   Duration loginBusyDuration = const Duration(seconds: 10);
-  Timer? loginBusyTimer;
 
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
@@ -90,12 +88,6 @@ class _State extends State<PasswordSignIn> {
   @override
   void dispose() {
     print('PasswordSignIn.dispose');
-    if (loginBusyTimer != null) {
-      if (loginBusyTimer!.isActive) {
-        print('SMSSignIn.loginBusyTimer.cancel');
-        loginBusyTimer!.cancel();
-      }
-    }
     super.dispose();
   }
 
@@ -125,17 +117,13 @@ class _State extends State<PasswordSignIn> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       fixedSize: const Size(85, 35),
-                      foregroundColor: fBusy ? Colors.grey : Colors.lightBlueAccent,
-                      backgroundColor: fBusy ? Colors.grey : Colors.lightBlueAccent,
+                      foregroundColor: Colors.lightBlueAccent,
+                      backgroundColor: Colors.lightBlueAccent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),
                     ),
                     onPressed: () {
-                      if (fBusy) {
-                        return;
-                      }
-                      // Navigate.to(context, Screen.build(Screen.smsSignIn));
                       navigate(Screen.smsSignIn);
                     },
                     child: const Row(
@@ -240,7 +228,10 @@ class _State extends State<PasswordSignIn> {
                   width: widgetWidth,
                   child: ElevatedButton(
                     onPressed: () {
-                      if (fBusy) {
+                      if (!Runtime.allow(
+                        major: int.parse(Major.backend),
+                        minor: int.parse(Minor.backend.signInReq),
+                      )) {
                         return;
                       }
                       var behavior = 1; // email, by default
@@ -256,18 +247,9 @@ class _State extends State<PasswordSignIn> {
                           token: '',
                           password: Runtime.rsa.encrypt(passwordControl.text),
                         );
-                        fBusy = true;
-                        loginBusyTimer = Timer(
-                          loginBusyDuration,
-                          () {
-                            fBusy = false;
-                            refresh();
-                          },
-                        );
                         refresh();
                         return;
                       }
-                      fBusy = true;
                       signIn(
                         behavior: behavior,
                         verificationCode: '',
@@ -278,20 +260,13 @@ class _State extends State<PasswordSignIn> {
                         token: '',
                         password: Runtime.rsa.encrypt(passwordControl.text),
                       );
-                      loginBusyTimer = Timer(
-                        loginBusyDuration,
-                        () {
-                          fBusy = false;
-                          refresh();
-                        },
-                      );
                       refresh();
                       return;
                     },
                     style: ElevatedButton.styleFrom(
                       fixedSize: const Size(85, 35),
-                      foregroundColor: fBusy ? Colors.grey : Colors.lightBlueAccent,
-                      backgroundColor: fBusy ? Colors.grey : Colors.lightBlueAccent,
+                      foregroundColor: Colors.lightBlueAccent,
+                      backgroundColor: Colors.lightBlueAccent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),

@@ -8,10 +8,12 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class FetchUserListOfConditionReq {
+  final int _behavior;
   final String _name;
   final String _phoneNumber;
+  final int _userId;
 
-  FetchUserListOfConditionReq(this._name, this._phoneNumber);
+  FetchUserListOfConditionReq(this._behavior, this._userId, this._name, this._phoneNumber);
 
   Map<String, dynamic> toJson() => {
         'name': utf8.encode(_name),
@@ -34,11 +36,13 @@ class FetchUserListOfConditionRsp {
 }
 
 void fetchUserListOfCondition({
+  required int behavior,
   required String name,
   required String phoneNumber,
+  required int userId,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchUserListOfConditionReq req = FetchUserListOfConditionReq(name, phoneNumber);
+  FetchUserListOfConditionReq req = FetchUserListOfConditionReq(behavior, userId, name, phoneNumber);
   packet.getHeader().setMajor(Major.backend);
   packet.getHeader().setMinor(Minor.backend.fetchUserListOfConditionReq);
   packet.setBody(req.toJson());
