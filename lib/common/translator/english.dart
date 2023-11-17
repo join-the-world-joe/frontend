@@ -60,12 +60,14 @@ class English {
     Language.tMenu: 'Menu',
 
     // permission
+    Language.signIn: 'Sign In',
     Language.fetchMenuListOfCondition: 'Fetch Menu List',
     Language.fetchUserListOfCondition: 'Fetch User List',
     Language.fetchRoleListOfCondition: 'Fetch Role List',
     Language.fetchPermissionListOfCondition: 'Fetch Permission List',
     Language.insertUserRecord: 'Insert User',
     Language.softDeleteUserRecord: 'Remove User',
+    Language.updateUserRecord: 'Update User',
 
     // role
     Language.administrator: 'Administrator',
@@ -81,6 +83,22 @@ class English {
     Language.salesSpecialist: 'Sales Specialist',
     Language.manufacturingManger: 'Manufacturing Manger',
     Language.productionSpecialist: 'Production Specialist',
+    Language.descriptionOfAdministrator: 'The top role of this organization',
+    Language.descriptionOfRDManager: 'The manager of Research and Development department',
+    Language.descriptionOfSoftwareEngineer: 'A Software Engineer of Research and Development department',
+    Language.descriptionOfHardwareEngineer: 'A Hardware Engineer of Research and Development department',
+    Language.descriptionOfFinanceManger: 'The manager of Finance Department',
+    Language.descriptionOfPurchasingSpecialist: 'A Purchasing Specialist of Finance Department',
+    Language.descriptionOfAccountingSpecialist: 'A Accounting Specialist of Finance Department',
+    Language.descriptionOfHRManger: 'The manager of Human Resources Department',
+    Language.descriptionOfHRSpecialist: 'A Human Resources Specialist of Human Resources Department',
+    Language.descriptionOfMarketingManger: 'The manager of Marketing Department',
+    Language.descriptionOfSalesSpecialist: 'A Sales Specialist of Marketing Department',
+    Language.descriptionOfManufacturingManger: 'The manager of Manufacturing Department',
+    Language.descriptionOfProductionSpecialist: 'A Production Specialist of Manufacturing Department',
+
+    Language.titleOfErrorNotifyDialog: 'Error',
+    Language.passwordInTwoInputControlDoNotMatch: 'Password not matched',
   };
 
   static String getName() {

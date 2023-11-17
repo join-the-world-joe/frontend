@@ -53,6 +53,8 @@ class _State extends State<User> {
   int curStage = 0;
   bool hasFetchPermissionListOfCondition = false;
   bool hasFetchMenuListOfCondition = false;
+  bool hasInsertUserRecord = false;
+  bool hasSoftDeleteUserRecord = false;
   final nameControl = TextEditingController();
   final roleControl = TextEditingController();
   final phoneNumberControl = TextEditingController();
@@ -95,12 +97,16 @@ class _State extends State<User> {
   void checkPermissionHandler(Map<String, dynamic> body) {
     print('User.checkPermissionHandler');
     try {
+      print('body: ${body.toString()}');
       CheckPermissionRsp rsp = CheckPermissionRsp.fromJson(body);
       if (rsp.getMinor() == int.parse(Minor.backend.fetchPermissionListOfConditionReq)) {
         hasFetchPermissionListOfCondition = rsp.getCode() == Code.oK ? true : false;
-      }
-      if (rsp.getMinor() == int.parse(Minor.backend.fetchMenuListOfConditionReq)) {
+      } else if (rsp.getMinor() == int.parse(Minor.backend.fetchMenuListOfConditionReq)) {
         hasFetchMenuListOfCondition = rsp.getCode() == Code.oK ? true : false;
+      } else if (rsp.getMinor() == int.parse(Minor.backend.insertUserRecordReq)) {
+        hasInsertUserRecord = rsp.getCode() == Code.oK ? true : false;
+      } else if (rsp.getMinor() == int.parse(Minor.backend.softDeleteUserRecordReq)) {
+        hasSoftDeleteUserRecord = rsp.getCode() == Code.oK ? true : false;
       }
       curStage++;
       return;
@@ -180,7 +186,15 @@ class _State extends State<User> {
   @override
   Widget build(BuildContext context) {
     checkPermission(major: Major.backend, minor: Minor.backend.fetchPermissionListOfConditionReq);
-    checkPermission(major: Major.backend, minor: Minor.backend.fetchMenuListOfConditionReq);
+    Future.delayed(const Duration(milliseconds: 100), () {
+      checkPermission(major: Major.backend, minor: Minor.backend.fetchMenuListOfConditionReq);
+    });
+    Future.delayed(const Duration(milliseconds: 200), () {
+      checkPermission(major: Major.backend, minor: Minor.backend.insertUserRecordReq);
+    });
+    Future.delayed(const Duration(milliseconds: 300), () {
+      checkPermission(major: Major.backend, minor: Minor.backend.softDeleteUserRecordReq);
+    });
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
@@ -278,18 +292,24 @@ class _State extends State<User> {
                     child: PaginatedDataTable(
                       controller: scrollController,
                       actions: [
-                        ElevatedButton.icon(
-                          icon: const Icon(Icons.add),
-                          onPressed: () async {
-                            showInsertUserDialog(context);
-                          },
-                          label: Text(
-                            Translator.translate(Language.newUser),
-                            style: const TextStyle(color: Colors.white, fontSize: 15),
+                        if (hasInsertUserRecord)
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.add),
+                            onPressed: () async {
+                              showInsertUserDialog(context);
+                            },
+                            label: Text(
+                              Translator.translate(Language.newUser),
+                              style: const TextStyle(color: Colors.white, fontSize: 15),
+                            ),
                           ),
-                        ),
                       ],
-                      source: Source(context, hasFetchPermissionListOfCondition, hasFetchMenuListOfCondition),
+                      source: Source(
+                        context,
+                        hasFetchPermissionListOfCondition,
+                        hasFetchMenuListOfCondition,
+                        hasSoftDeleteUserRecord,
+                      ),
                       header: Text(Translator.translate(Language.userList)),
                       columns: [
                         DataColumn(label: Text(Translator.translate(Language.fPhoneNumber))),
@@ -325,8 +345,14 @@ class Source extends DataTableSource {
   final List<usr.User> _data = Cache.getUserList();
   bool hasFetchPermissionListOfCondition;
   bool hasFetchMenuListOfCondition;
+  bool hasSoftDeleteUserRecord;
 
-  Source(this.context, this.hasFetchPermissionListOfCondition, this.hasFetchMenuListOfCondition);
+  Source(
+    this.context,
+    this.hasFetchPermissionListOfCondition,
+    this.hasFetchMenuListOfCondition,
+    this.hasSoftDeleteUserRecord,
+  );
 
   @override
   bool get isRowCountApproximate => false;
@@ -394,21 +420,22 @@ class Source extends DataTableSource {
                   showUpdateUserDialog(context, _data[index]);
                 },
               ),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                tooltip: Translator.translate(Language.remove),
-                onPressed: () async {
-                  await showRemoveUserDialog(context, _data[index]).then(
-                    (value) => () {
-                      // print('value: $value');
-                      if (value) {
-                        _data.removeAt(index);
-                        notifyListeners();
-                      }
-                    }(),
-                  );
-                },
-              ),
+              if (hasSoftDeleteUserRecord)
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  tooltip: Translator.translate(Language.remove),
+                  onPressed: () async {
+                    await showRemoveUserDialog(context, _data[index]).then(
+                      (value) => () {
+                        // print('value: $value');
+                        if (value) {
+                          _data.removeAt(index);
+                          notifyListeners();
+                        }
+                      }(),
+                    );
+                  },
+                ),
             ],
           ),
         ),

@@ -60,12 +60,14 @@ class Chinese {
     Language.tMenu: '菜单',
 
     // permission
+    Language.signIn: '登入系统',
     Language.fetchMenuListOfCondition: '获取菜单列表',
     Language.fetchUserListOfCondition: '获取用户列表',
     Language.fetchRoleListOfCondition: '获取角色列表',
     Language.fetchPermissionListOfCondition: '获取权限列表',
     Language.insertUserRecord: '新增用户',
     Language.softDeleteUserRecord: '删除用户',
+    Language.updateUserRecord: '更新用户',
 
     // role
     Language.administrator: '系统管理员',
@@ -81,6 +83,23 @@ class Chinese {
     Language.salesSpecialist: '销售部主管',
     Language.manufacturingManger: '生产部主管',
     Language.productionSpecialist: '生产线专员',
+    Language.descriptionOfAdministrator: '董事会主席',
+    Language.descriptionOfRDManager: '研发部负责人，管理 软件与硬件 相关职能',
+    Language.descriptionOfSoftwareEngineer: '研发部门-软件工程师',
+    Language.descriptionOfHardwareEngineer: '研发部门-硬件工程师',
+    Language.descriptionOfFinanceManger: '财务部门负责人',
+    Language.descriptionOfPurchasingSpecialist: '财务部门-采购专员',
+    Language.descriptionOfAccountingSpecialist: '财务部门-会计专员',
+    Language.descriptionOfHRManger: '人事部门负责人',
+    Language.descriptionOfHRSpecialist: '人事部-人事行政专员',
+    Language.descriptionOfMarketingManger: '市场部负责人',
+    Language.descriptionOfSalesSpecialist: '市场部-销售专员',
+    Language.descriptionOfManufacturingManger: '生产部门负责人',
+    Language.descriptionOfProductionSpecialist: '生产部-生产线专员',
+
+    // dialog
+    Language.titleOfErrorNotifyDialog: '错误提示',
+    Language.passwordInTwoInputControlDoNotMatch: '两次输入的密码不一致',
   };
 
   static String getName() {

@@ -26,7 +26,7 @@ import 'package:flutter_framework/common/translator/translator.dart';
 
 Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
   String countryCode = user.getCountryCode();
-  int status = int.parse(user.getStatus()) == 1 ? 1 : 0;
+  int status = int.parse(user.getStatus());
   Map<Role, bool> roleStatus = {}; // key: role_name, value: bool
   RoleList wholeRoleList = RoleList([]);
   RoleList roleList = RoleList([]);
@@ -174,6 +174,16 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
           ),
           TextButton(
             onPressed: () async {
+              if (passwordController.text.isNotEmpty || verifiedPasswordController.text.isNotEmpty) {
+                if (passwordController.text != verifiedPasswordController.text) {
+                  showMessageDialog(
+                    context,
+                    Translator.translate(Language.titleOfErrorNotifyDialog),
+                    Translator.translate(Language.passwordInTwoInputControlDoNotMatch),
+                  );
+                  return;
+                }
+              }
               List<String> roleList = () {
                 List<String> roleList = [];
                 roleStatus.forEach(
@@ -183,7 +193,6 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
                     }
                   },
                 );
-                // print('selected: $roleList');
                 return roleList;
               }();
               updateUserRecord(
@@ -227,7 +236,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
                           Spacing.addHorizontalSpace(50),
                           Text(Translator.translate(Language.disable)),
                           Radio<int?>(
-                            value: 0,
+                            value: 2,
                             groupValue: status,
                             onChanged: (b) {
                               status = b!;
@@ -287,6 +296,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
                       width: 350,
                       child: TextFormField(
                         controller: passwordController,
+                        obscureText: true,
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.password),
                         ),
@@ -297,6 +307,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
                       width: 350,
                       child: TextFormField(
                         controller: verifiedPasswordController,
+                        obscureText: true,
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.confirmPassword),
                         ),
@@ -323,6 +334,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
                                   (key, value) {
                                     widgets.add(
                                       InputChip(
+                                        tooltip: Translator.translate(key.getDescription()),
                                         padding: const EdgeInsets.all(8.0),
                                         labelPadding: const EdgeInsets.all(2.0),
                                         selectedColor: Colors.green,

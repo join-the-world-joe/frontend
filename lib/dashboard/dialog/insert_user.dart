@@ -291,6 +291,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                                   (key, value) {
                                     widgets.add(
                                       InputChip(
+                                        tooltip: Translator.translate(key.getDescription()),
                                         padding: const EdgeInsets.all(8.0),
                                         labelPadding: const EdgeInsets.all(2.0),
                                         selectedColor: Colors.green,
@@ -299,7 +300,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                                           roleStatus[key] = !roleStatus[key]!;
                                           curStage++;
                                         },
-                                        label: Text(key.getName()),
+                                        label: Text(Translator.translate(key.getName())),
                                       ),
                                     );
                                   },
@@ -329,10 +330,6 @@ Future<void> showInsertUserDialog(BuildContext context) async {
 
 Chip _buildRoleChip(String label) {
   return Chip(
-    // avatar: const CircleAvatar(
-    //   backgroundColor: Colors.orangeAccent,
-    //   child: Text('角色'),
-    // ),
     labelPadding: const EdgeInsets.all(2.0),
     label: Text(
       label,
