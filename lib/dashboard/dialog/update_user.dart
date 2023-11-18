@@ -314,7 +314,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
                       ),
                     ),
                     Spacing.addVerticalSpace(10),
-                    _buildRoleChip(Translator.translate(Language.fRole)),
+                    _buildRoleChip(Translator.translate(Language.titleOfRole)),
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 380,

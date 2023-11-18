@@ -92,6 +92,7 @@ class _State extends State<SMSSignIn> {
     try {
       SignInRsp rsp = SignInRsp.fromJson(body);
       if (rsp.code == Code.oK) {
+        print("SignInRsp: ${body.toString()}");
         navigate(Screen.home);
       } else {
         showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');

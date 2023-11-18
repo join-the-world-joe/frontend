@@ -1,7 +1,7 @@
 class Role {
   String _name;
   String _description;
-  String _level;
+  String _rank;
 
   String getName() {
     return _name;
@@ -11,7 +11,7 @@ class Role {
     return _description;
   }
 
-  Role(this._name, this._level, this._description);
+  Role(this._name, this._rank, this._description);
 
   factory Role.fromJson(Map<String, dynamic> json) {
     String name = 'null', description = 'null', level = 'null';

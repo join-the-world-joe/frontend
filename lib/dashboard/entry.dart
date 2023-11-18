@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/dashboard/component/test.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
+import 'package:flutter_framework/dashboard/screen/offline.dart';
 import 'package:flutter_framework/dashboard/screen/password_sign_in.dart';
 import 'package:flutter_framework/dashboard/screen/sms_sign_in.dart';
 import 'screen/home.dart';
@@ -28,11 +29,17 @@ class _State extends State<Entry> {
       ),
       initialRoute: '/loading',
       routes: {
+        '/offline': (context) {
+          return const Offline(
+            lastScreen: '',
+            lastContent: '',
+          );
+        },
         '/test': (context) {
-          return  Test();
+          return Test();
         },
         '/logic_test': (context) {
-          return  LogicTest();
+          return LogicTest();
         },
         '/loading': (context) {
           return const Loading();

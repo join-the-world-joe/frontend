@@ -79,7 +79,7 @@ class _State extends State<Role> {
                     child: TextFormField(
                       // controller: _accountController,
                       decoration: InputDecoration(
-                        labelText: Translator.translate(Language.fRole),
+                        labelText: Translator.translate(Language.titleOfRole),
                       ),
                     ),
                   ),
@@ -90,7 +90,7 @@ class _State extends State<Role> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        Translator.translate(Language.search),
+                        Translator.translate(Language.titleOfSearch),
                         style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
@@ -114,7 +114,7 @@ class _State extends State<Role> {
                 source: Source(context),
                 header: Text(Translator.translate(Language.roleList)),
                 columns: [
-                  DataColumn(label: Text(Translator.translate(Language.fRole))),
+                  DataColumn(label: Text(Translator.translate(Language.titleOfRole))),
                   DataColumn(label: Text(Translator.translate(Language.level))),
                   DataColumn(label: Text(Translator.translate(Language.permissionList))),
                   DataColumn(label: Text(Translator.translate(Language.menuList))),

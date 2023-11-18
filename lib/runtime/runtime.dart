@@ -18,11 +18,12 @@ class Runtime {
   static late String token;
   static Function? _observe;
   static Map<String, RateLimiter> _rateLimiter = {};
+  static int defaultRateLimitDuration = 1000; // default, one seconds
 
   static bool allow({required int major, required int minor}) {
     var key = '$major-$minor';
     if (!_rateLimiter.containsKey(key)) {
-      _rateLimiter[key] = RateLimiter(major, minor, 1000); // default, one seconds
+      _rateLimiter[key] = RateLimiter(major, minor, defaultRateLimitDuration);
       return _rateLimiter[key]!.allow();
     }
     return _rateLimiter[key]!.allow();

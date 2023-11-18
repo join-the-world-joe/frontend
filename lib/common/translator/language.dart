@@ -6,13 +6,13 @@ class Language {
   static String role = 'Role';
   static String field = 'Field';
   static String track = 'Track';
-  static String search = 'Search';
+  static String titleOfSearch = 'The title of Search';
   static String reset = 'Reset';
   static String userList = 'User List';
   static String fPhoneNumber = 'field of Phone Number';
   static String fCountryCode = 'field of Country Code';
   static String fName = 'field of Name';
-  static String fRole = 'field of Role';
+  static String titleOfRole = 'the title of role';
   static String fStatus = 'field of Status';
   static String fCreatedAt = 'field of CreatedAt';
   static String roleList = 'Role List';
@@ -40,12 +40,12 @@ class Language {
   static String update = 'Update';
   static String remove = 'Remove';
   static String confirmYourDeletion = 'Confirm Your Deletion';
-  static String fPermission = 'field of Permission';
+  static String titleOfPermission = 'the title of Permission';
   static String major = 'Major';
   static String minor = 'Minor';
   static String fMenu = 'field of Menu';
   static String subMenu = 'sub Menu';
-  static String operator = 'Operator';
+  static String titleOfOperator = 'the title of operator';
   static String request = 'Request';
   static String response = 'Response';
   static String operationTimestamp = 'Operation Timestamp';
@@ -54,6 +54,8 @@ class Language {
   static String fField = 'field of field';
   static String fieldList = 'Field List';
   static String tMenu = 'title of Menu';
+  static String titleOfBeginDate = 'the title of begin date';
+  static String titleOfEndDate = 'the title of end date';
 
   // permission
   static String signIn = 'SignIn';

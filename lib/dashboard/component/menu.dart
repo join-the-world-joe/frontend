@@ -100,7 +100,7 @@ class _State extends State<Menu> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        Translator.translate(Language.search),
+                        Translator.translate(Language.titleOfSearch),
                         style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),

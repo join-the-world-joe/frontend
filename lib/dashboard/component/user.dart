@@ -67,7 +67,6 @@ class _State extends State<User> {
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
-        // print('showPermissionListOfUserDialog.last: $lastStage');
         yield lastStage;
       }
     }
@@ -132,11 +131,11 @@ class _State extends State<User> {
             );
           },
         );
-        refresh();
+        curStage++;
         return;
       } else if (rsp.code == Code.accessDenied) {
         showMessageDialog(context, '温馨提示：', '没有权限.');
-        refresh();
+        curStage++;
         return;
       } else {
         showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
@@ -260,7 +259,7 @@ class _State extends State<User> {
                             }
                           },
                           child: Text(
-                            Translator.translate(Language.search),
+                            Translator.translate(Language.titleOfSearch),
                             style: const TextStyle(color: Colors.white, fontSize: 15),
                           ),
                         ),
@@ -315,8 +314,8 @@ class _State extends State<User> {
                         DataColumn(label: Text(Translator.translate(Language.fPhoneNumber))),
                         DataColumn(label: Text(Translator.translate(Language.fName))),
                         DataColumn(label: Text(Translator.translate(Language.fStatus))),
-                        DataColumn(label: Text(Translator.translate(Language.fRole))),
-                        if (hasFetchPermissionListOfCondition) DataColumn(label: Text(Translator.translate(Language.fPermission))),
+                        DataColumn(label: Text(Translator.translate(Language.titleOfRole))),
+                        if (hasFetchPermissionListOfCondition) DataColumn(label: Text(Translator.translate(Language.titleOfPermission))),
                         if (hasFetchMenuListOfCondition) DataColumn(label: Text(Translator.translate(Language.tMenu))),
                         // DataColumn(label: Text('字段列表')),
                         DataColumn(label: Text(Translator.translate(Language.fCreatedAt))),

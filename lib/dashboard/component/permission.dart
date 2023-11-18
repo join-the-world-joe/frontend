@@ -90,7 +90,7 @@ class _State extends State<Permission> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        Translator.translate(Language.search),
+                        Translator.translate(Language.titleOfSearch),
                         style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
@@ -114,7 +114,7 @@ class _State extends State<Permission> {
                 source: Source(context),
                 header: Text(Translator.translate(Language.permissionList)),
                 columns: [
-                  DataColumn(label: Text(Translator.translate(Language.fPermission))),
+                  DataColumn(label: Text(Translator.translate(Language.titleOfPermission))),
                   DataColumn(label: Text(Translator.translate(Language.major))),
                   DataColumn(label: Text(Translator.translate(Language.minor))),
                   DataColumn(label: Text(Translator.translate(Language.description))),

@@ -99,7 +99,7 @@ class _State extends State<Field> {
                     child: TextFormField(
                       // controller: _accountController,
                       decoration: InputDecoration(
-                        labelText: Translator.translate(Language.fRole),
+                        labelText: Translator.translate(Language.titleOfRole),
                       ),
                     ),
                   ),
@@ -110,7 +110,7 @@ class _State extends State<Field> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        Translator.translate(Language.search),
+                        Translator.translate(Language.titleOfSearch),
                         style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ),
