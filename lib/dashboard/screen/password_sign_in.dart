@@ -239,26 +239,28 @@ class _State extends State<PasswordSignIn> {
                         behavior = 4;
                         signIn(
                           behavior: behavior,
-                          verificationCode: '',
+                          verificationCode: 0,
                           countryCode: '',
                           phoneNumber: '',
                           email: '',
                           account: idControl.text,
                           token: '',
                           password: Runtime.rsa.encrypt(passwordControl.text),
+                          userId: 0,
                         );
                         refresh();
                         return;
                       }
                       signIn(
                         behavior: behavior,
-                        verificationCode: '',
+                        verificationCode: 0,
                         countryCode: '',
                         phoneNumber: '',
                         email: idControl.text,
                         account: '',
                         token: '',
                         password: Runtime.rsa.encrypt(passwordControl.text),
+                        userId: 0,
                       );
                       refresh();
                       return;

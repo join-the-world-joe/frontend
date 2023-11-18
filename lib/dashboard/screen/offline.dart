@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/dashboard/business/echo.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../setup.dart';
 import '../../runtime/runtime.dart';
 import '../screen/screen.dart';
+import 'package:otp/otp.dart';
 
 class Offline extends StatefulWidget {
   const Offline({Key? key, required this.lastScreen, required this.lastContent}) : super(key: key);
@@ -61,20 +63,42 @@ class _State extends State<Offline> {
     }
   }
 
+  void signInHandler(Map<String, dynamic> body) {
+    print('SMSSignIn.signInHandler');
+    try {
+      print('body: ${body.toString()}');
+      SignInRsp rsp = SignInRsp.fromJson(body);
+      if (rsp.code == Code.oK) {
+        print("SignInRsp: ${body.toString()}");
+        // navigate(Screen.home);
+        return;
+      } else {
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        return;
+      }
+    } catch (e) {
+      print("SMSSignIn.signInHandler failure, $e");
+      showMessageDialog(context, '温馨提示：', '未知错误');
+      return;
+    }
+  }
+
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
     try {
-      // print("User.observe: major: $major, minor: $minor");
+      // print("Offline.observe: major: $major, minor: $minor");
       if (major == Major.gateway && minor == Minor.gateway.pongRsp) {
         echoHandler(body);
+      } else if (major == Major.backend && minor == Minor.backend.signInRsp) {
+        signInHandler(body);
       } else {
-        print("User.observe warning: $major-$minor doesn't matched");
+        print("Offline.observe warning: $major-$minor doesn't matched");
       }
       return;
     } catch (e) {
-      print('User.observe($major-$minor).e: ${e.toString()}');
+      print('Offline.observe($major-$minor).e: ${e.toString()}');
       return;
     }
   }
@@ -89,8 +113,20 @@ class _State extends State<Offline> {
     Navigate.to(context, Screen.build(page));
   }
 
+  void debug() {
+    // {code: 0, user_id: 1, name: 流星, token: 7b775969-9baf-4659-86e9-f3c743b555fd, secret: BF6B6B677BCB7C5B}
+    // {code: 0, user_id: 1, name: 流星, token: ab8f12c7-bc2b-4aff-b38f-8953a6e12fc8, secret: A5EABE66AHBADCA5}
+    var userId = 1;
+    var secret = 'BF6B6B677BCB7C5B';
+    var token = '7b775969-9baf-4659-86e9-f3c743b555fd';
+    Cache.setToken(token);
+    Cache.setUserId(userId);
+    Cache.setSecret(secret);
+  }
+
   void setup() {
     print('Offline.setup');
+    debug();
     setup_();
     Runtime.setObserve(observe);
   }
@@ -146,21 +182,35 @@ class _State extends State<Offline> {
                         }
                         curStage = 0;
                         echo(message: message);
-                        if (widget.lastContent.isNotEmpty) {
-                          if (widget.lastContent == Screen.home && Cache.getMenuList().getLength() > 0 && Cache.getToken().isNotEmpty) {
-                            // signIn
-                            signIn(
-                              email: '',
-                              token: Cache.getToken(),
-                              account: '',
-                              behavior: 3,
-                              password: Uint8List(0),
-                              phoneNumber: '',
-                              countryCode: '',
-                              verificationCode: '',
-                            );
-                          }
-                        }
+                        var code = OTP.generateTOTPCodeString(Cache.getSecret(), DateTime.now().millisecondsSinceEpoch, algorithm: Algorithm.SHA1, isGoogle: true);
+                        Future.delayed(
+                            Duration(milliseconds: 100),
+                            () => signIn(
+                                  email: '',
+                                  token: Cache.getToken(),
+                                  account: '',
+                                  behavior: 3,
+                                  password: Uint8List(0),
+                                  phoneNumber: '',
+                                  countryCode: '',
+                                  verificationCode: int.parse(code),
+                                  userId: Cache.getUserId(),
+                                ));
+                        // if (widget.lastContent.isNotEmpty) {
+                        //   if (widget.lastContent == Screen.home && Cache.getMenuList().getLength() > 0 && Cache.getToken().isNotEmpty && Cache.getSecret().isNotEmpty) {
+                        //     // signIn
+                        //     signIn(
+                        //       email: '',
+                        //       token: Cache.getToken(),
+                        //       account: '',
+                        //       behavior: 3,
+                        //       password: Uint8List(0),
+                        //       phoneNumber: '',
+                        //       countryCode: '',
+                        //       verificationCode: OTP.generateTOTPCodeString(Cache.getSecret(), DateTime.now().millisecondsSinceEpoch).toString(),
+                        //     );
+                        //   }
+                        // }
                       },
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,

@@ -27,7 +27,7 @@ class _State extends State<Entry> {
         //     .apply(bodyColor: Colors.white),
         canvasColor: secondaryColor,
       ),
-      initialRoute: '/loading',
+      initialRoute: '/offline',
       routes: {
         '/offline': (context) {
           return const Offline(

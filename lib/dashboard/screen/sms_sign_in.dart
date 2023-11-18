@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'screen.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import 'package:flutter_framework/validator/mobile.dart';
@@ -93,12 +94,15 @@ class _State extends State<SMSSignIn> {
       SignInRsp rsp = SignInRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         print("SignInRsp: ${body.toString()}");
+        Cache.setUserId(rsp.getUserId());
+        Cache.setToken(rsp.getToken());
+        Cache.setSecret(rsp.getSecret());
         navigate(Screen.home);
+        return;
       } else {
         showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
         return;
       }
-      return;
     } catch (e) {
       print("SMSSignIn.signInHandler failure, $e");
       showMessageDialog(context, '温馨提示：', '未知错误');
@@ -340,13 +344,14 @@ class _State extends State<SMSSignIn> {
                       }
                       signIn(
                         behavior: 2,
-                        verificationCode: verificationCodeControl.text,
+                        verificationCode: int.parse(verificationCodeControl.text),
                         countryCode: countryCodeControl.text,
                         phoneNumber: phoneNumberControl.text,
                         email: '',
                         account: '',
                         token: '',
                         password: Uint8List.fromList([]),
+                        userId: 0,
                       );
                       refresh();
                     },

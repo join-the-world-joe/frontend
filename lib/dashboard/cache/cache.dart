@@ -5,7 +5,8 @@ import '../model/menu_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 
 class Cache {
-  static late String _token;
+  static String _token = '';
+  static String _secret = '';
   static String _role = '';
   static late int _userId;
   static late MenuList _menuList;
@@ -45,6 +46,14 @@ class Cache {
 
   static List<User> getUserList() {
     return userList;
+  }
+
+  static setSecret(String any) {
+    _secret = any;
+  }
+
+  static String getSecret() {
+    return _secret;
   }
 
   static setToken(String any) {

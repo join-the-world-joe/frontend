@@ -15,7 +15,8 @@ class SignInReq {
   String countryCode;
   Uint8List password;
   String token;
-  String verificationCode;
+  int verificationCode;
+  int userId;
 
   SignInReq({
     required this.email,
@@ -26,6 +27,7 @@ class SignInReq {
     required this.phoneNumber,
     required this.countryCode,
     required this.verificationCode,
+    required this.userId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -37,6 +39,7 @@ class SignInReq {
         'phone_number': phoneNumber,
         'country_code': countryCode,
         'verification_code': verificationCode,
+        'user_id': userId,
       };
 
   Uint8List toBytes() {
@@ -46,9 +49,24 @@ class SignInReq {
 
 class SignInRsp {
   late int code;
+  late int userId;
+  late String secret;
+  late String token;
 
   int getCode() {
     return code;
+  }
+
+  String getToken() {
+    return token;
+  }
+
+  String getSecret() {
+    return secret;
+  }
+
+  int getUserId() {
+    return userId;
   }
 
   Uint8List toBytes() {
@@ -64,7 +82,11 @@ class SignInRsp {
         'code': code,
       };
 
-  SignInRsp.fromJson(Map<String, dynamic> json) : code = json['code'] ?? -1;
+  SignInRsp.fromJson(Map<String, dynamic> json)
+      : code = json['code'] ?? -1,
+        userId = json['user_id'] ?? -1,
+        secret = json['secret'] ?? -1,
+        token = json['token'] ?? -1;
 }
 
 void signIn({
@@ -75,7 +97,8 @@ void signIn({
   required Uint8List password,
   required String phoneNumber,
   required String countryCode,
-  required String verificationCode,
+  required int verificationCode,
+  required int userId,
 }) {
   PacketClient packet = PacketClient.create();
   SignInReq req = SignInReq(
@@ -87,6 +110,7 @@ void signIn({
     phoneNumber: phoneNumber,
     countryCode: countryCode,
     verificationCode: verificationCode,
+    userId: userId,
   );
   packet.getHeader().setMajor(Major.backend);
   packet.getHeader().setMinor(Minor.backend.signInReq);
