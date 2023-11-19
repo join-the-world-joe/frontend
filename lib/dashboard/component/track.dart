@@ -104,7 +104,7 @@ class _State extends State<Track> {
 
   void setup() {
     print('Track.setup');
-    Cache.setTrackList(TrackList([], 0));
+    Cache.setTrackList(TrackList([]));
     Runtime.setObserve(observe);
   }
 
@@ -298,7 +298,6 @@ class _State extends State<Track> {
 
 class Source extends DataTableSource {
   BuildContext context;
-  List<Widget> widgets = [];
   TrackList trackList = Cache.getTrackList();
 
   Source(this.context);

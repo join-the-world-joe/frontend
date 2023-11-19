@@ -13,8 +13,8 @@ class Cache {
   static String _content = '';
   static List<User> userList = [];
   static late RoleList _roleList;
-  static TrackList trackList = TrackList([], 0);
-  static late PermissionList _permissionList;
+  static TrackList trackList = TrackList([]);
+  static PermissionList _permissionList = PermissionList([]);
 
   static setPermissionList(PermissionList any) {
     _permissionList = any;

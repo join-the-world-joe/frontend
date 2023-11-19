@@ -10,8 +10,8 @@ import 'package:flutter_framework/common/code/code.dart';
 
 class FetchPermissionListOfConditionReq {
   final String _name; // the name of permission
-  final int _major;
-  final int _minor;
+  final String _major;
+  final String _minor;
   final int _userId;
   final int _behavior;
   final RoleList _roleList;
@@ -44,8 +44,8 @@ class FetchPermissionListOfConditionRsp {
 
 void fetchPermissionListOfCondition({
   required String name,
-  required int major,
-  required int minor,
+  required String major,
+  required String minor,
   required int userId,
   required int behavior,
   required RoleList roleList,

@@ -95,8 +95,8 @@ Future<int> showPermissionListOfUserDialog(BuildContext context, User user) asyn
     builder: (context) {
       fetchPermissionListOfCondition(
         name: '',
-        major: 0,
-        minor: 0,
+        major: '',
+        minor: '',
         userId: int.parse(user.getId()),
         behavior: 2,
         roleList: RoleList([]),

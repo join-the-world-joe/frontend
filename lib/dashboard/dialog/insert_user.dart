@@ -49,8 +49,8 @@ Future<void> showInsertUserDialog(BuildContext context) async {
     try {
       FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
-        print(rsp.body.toString());
-        wholeRoleList = RoleList.fromJson(rsp.body['role_list']);
+        // print(rsp.body.toString());
+        wholeRoleList = RoleList.fromJson(rsp.body);
         for (var i = 0; i < wholeRoleList.getBody().length; i++) {
           roleStatus[wholeRoleList.getBody()[i]] = false;
           for (var j = 0; j < roleList.getBody().length; j++) {

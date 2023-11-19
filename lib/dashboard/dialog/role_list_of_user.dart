@@ -36,7 +36,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
       FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         print(rsp.body.toString());
-        RoleList roleList = RoleList.fromJson(rsp.body['role_list']);
+        RoleList roleList = RoleList.fromJson(rsp.body);
         widgetList = _buildWidgetList(roleList);
         curStage++;
         return;

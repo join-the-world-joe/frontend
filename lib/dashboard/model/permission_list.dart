@@ -1,30 +1,37 @@
 import 'permission.dart';
 
 class PermissionList {
-  List<Permission> _body;
+  List<Permission> _body = [];
+  int _length = 0;
 
-  PermissionList(this._body);
+  PermissionList(List<Permission> any) {
+    _body = any;
+    _length = any.length;
+  }
 
   List<Permission> getBody() {
     return _body;
   }
 
+  int getLength() {
+    return _length;
+  }
+
   factory PermissionList.fromJson(Map<String, dynamic> json) {
     List<Permission> pl = [];
     try {
-      json.forEach(
-        (key, value) {
-          print("key: $key");
-          print("value: $value");
-          var name = key;
-          var major = value['major'];
-          var minor = value['minor'];
-          var description = value['description'];
-          pl.add(Permission(name, major, minor, description));
-        },
-      );
+      // List<Permission> permissionList = [];
+      if (json['permission_list'] != null) {
+        List<dynamic> any = json['permission_list'];
+        any.forEach(
+          (element) {
+            pl.add(Permission.fromJson(element));
+          },
+        );
+      }
+      return PermissionList(pl);
     } catch (e) {
-      print('e: $e');
+      print('PermissionList failure, e: $e');
     }
 
     return PermissionList(pl);
