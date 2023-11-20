@@ -5,14 +5,14 @@ import '../model/menu_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 
 class Cache {
-  static String _token = '';
+  static String _memberId = '';
   static String _secret = '';
   static String _role = '';
-  static late int _userId;
-  static late MenuList _menuList;
+  static int _userId = 0;
+  static MenuList _menuList = MenuList([], 0);
   static String _content = '';
   static List<User> userList = [];
-  static late RoleList _roleList;
+  static RoleList _roleList = RoleList([]);
   static TrackList trackList = TrackList([]);
   static PermissionList _permissionList = PermissionList([]);
 
@@ -56,12 +56,12 @@ class Cache {
     return _secret;
   }
 
-  static setToken(String any) {
-    _token = any;
+  static setMemberId(String any) {
+    _memberId = any;
   }
 
-  static String getToken() {
-    return _token;
+  static String getMemberId() {
+    return _memberId;
   }
 
   static setRole(String any) {

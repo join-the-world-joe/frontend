@@ -68,7 +68,7 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
 
     try {
       print("showRemoveUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.backend && minor == Minor.backend.softDeleteUserRecordRsp) {
+      if (major == Major.admin && minor == Minor.admin.softDeleteUserRecordRsp) {
         softDeleteUserRecordHandler(body);
       } else {
         print("showRemoveUserDialog.observe warning: $major-$minor doesn't matched");

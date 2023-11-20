@@ -58,8 +58,8 @@ void fetchUserList({
 }) {
   PacketClient packet = PacketClient.create();
   FetchUserListReq req = FetchUserListReq(role, name, phoneNumber);
-  packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.signInReq);
+  packet.getHeader().setMajor(Major.admin);
+  packet.getHeader().setMinor(Minor.admin.signInReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

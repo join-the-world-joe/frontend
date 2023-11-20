@@ -103,9 +103,9 @@ Future<void> showInsertUserDialog(BuildContext context) async {
 
     try {
       print("showInsertUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.backend && minor == Minor.backend.insertUserRecordRsp) {
+      if (major == Major.admin && minor == Minor.admin.insertUserRecordRsp) {
         insertUserRecordHandler(body);
-      } else if (major == Major.backend && minor == Minor.backend.fetchRoleListOfConditionRsp) {
+      } else if (major == Major.admin && minor == Minor.admin.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(body);
       } else {
         print("showInsertUserDialog.observe warning: $major-$minor doesn't matched");

@@ -80,7 +80,7 @@ class _State extends State<Track> {
 
     try {
       // print("User.observe: major: $major, minor: $minor");
-      if (major == Major.backend && minor == Minor.backend.fetchTrackListOfConditionRsp) {
+      if (major == Major.admin && minor == Minor.admin.fetchTrackListOfConditionRsp) {
         fetchTrackListOfConditionHandler(body);
       } else {
         print("Track.observe warning: $major-$minor doesn't matched");
@@ -228,8 +228,8 @@ class _State extends State<Track> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (!Runtime.allow(
-                              major: int.parse(Major.backend),
-                              minor: int.parse(Minor.backend.fetchTrackListOfConditionReq),
+                              major: int.parse(Major.admin),
+                              minor: int.parse(Minor.admin.fetchTrackListOfConditionReq),
                             )) {
                               return;
                             }

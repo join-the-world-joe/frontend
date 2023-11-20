@@ -62,8 +62,8 @@ void checkPermission({
 }) {
   PacketClient packet = PacketClient.create();
   CheckPermissionReq req = CheckPermissionReq(int.parse(major), int.parse(minor));
-  packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.checkPermissionReq);
+  packet.getHeader().setMajor(Major.admin);
+  packet.getHeader().setMinor(Minor.admin.checkPermissionReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

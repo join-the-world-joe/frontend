@@ -35,7 +35,7 @@ class _State extends State<PasswordSignIn> {
     var body = packet.getBody();
     print("PasswordSignIn.observe: major: $major, minor: $minor");
     try {
-      if (major == Major.backend && minor == Minor.backend.signInRsp) {
+      if (major == Major.admin && minor == Minor.admin.signInRsp) {
         signInHandler(body);
       } else {
         print("PasswordSignIn.observe warning: $major-$minor doesn't matched");
@@ -229,8 +229,8 @@ class _State extends State<PasswordSignIn> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (!Runtime.allow(
-                        major: int.parse(Major.backend),
-                        minor: int.parse(Minor.backend.signInReq),
+                        major: int.parse(Major.admin),
+                        minor: int.parse(Minor.admin.signInReq),
                       )) {
                         return;
                       }
@@ -244,7 +244,7 @@ class _State extends State<PasswordSignIn> {
                           phoneNumber: '',
                           email: '',
                           account: idControl.text,
-                          token: '',
+                          memberId: '',
                           password: Runtime.rsa.encrypt(passwordControl.text),
                           userId: 0,
                         );
@@ -258,7 +258,7 @@ class _State extends State<PasswordSignIn> {
                         phoneNumber: '',
                         email: idControl.text,
                         account: '',
-                        token: '',
+                        memberId: '',
                         password: Runtime.rsa.encrypt(passwordControl.text),
                         userId: 0,
                       );

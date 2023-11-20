@@ -68,8 +68,18 @@ class Websocket {
   }
 
   Future<void> run() async {
-    _channel?.stream.listen(_onReceive,
-        onDone: _onDone, onError: _onError, cancelOnError: false);
+    try {
+      _channel?.stream.listen(_onReceive, onDone: _onDone, onError: _onError, cancelOnError: false);
+    } catch (e) {
+      print('Websocket.run failure, err: $e');
+    }
+  }
+
+  void close() {
+    print('close');
+    if (_channel != null) {
+      _channel!.sink.close();
+    }
   }
 
   setUrl(String url) {

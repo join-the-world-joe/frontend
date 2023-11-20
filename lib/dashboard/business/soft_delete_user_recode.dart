@@ -33,8 +33,8 @@ void softDeleteUserRecord({
 }) {
   PacketClient packet = PacketClient.create();
   SoftDeleteUserRecordReq req = SoftDeleteUserRecordReq(userList);
-  packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.softDeleteUserRecordReq);
+  packet.getHeader().setMajor(Major.admin);
+  packet.getHeader().setMinor(Minor.admin.softDeleteUserRecordReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

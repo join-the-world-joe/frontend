@@ -59,8 +59,8 @@ void updateUserRecord({
     password,
     roleList,
   );
-  packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.updateUserRecordReq);
+  packet.getHeader().setMajor(Major.admin);
+  packet.getHeader().setMinor(Minor.admin.updateUserRecordReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

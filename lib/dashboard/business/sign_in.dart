@@ -14,13 +14,13 @@ class SignInReq {
   String phoneNumber;
   String countryCode;
   Uint8List password;
-  String token;
+  String memberId;
   int verificationCode;
   int userId;
 
   SignInReq({
     required this.email,
-    required this.token,
+    required this.memberId,
     required this.account,
     required this.behavior,
     required this.password,
@@ -32,7 +32,7 @@ class SignInReq {
 
   Map<String, dynamic> toJson() => {
         'email': email,
-        'token': token,
+        'member_id': memberId,
         'account': account,
         'behavior': behavior,
         'password': password,
@@ -51,14 +51,19 @@ class SignInRsp {
   late int code;
   late int userId;
   late String secret;
-  late String token;
+  late String memberId;
+  late String name;
 
   int getCode() {
     return code;
   }
 
-  String getToken() {
-    return token;
+  String getName() {
+    return name;
+  }
+
+  String getMemberId() {
+    return memberId;
   }
 
   String getSecret() {
@@ -78,20 +83,17 @@ class SignInRsp {
     return Convert.bytes2String(Convert.toBytes(this));
   }
 
-  Map<String, dynamic> toJson() => {
-        'code': code,
-      };
-
   SignInRsp.fromJson(Map<String, dynamic> json)
       : code = json['code'] ?? -1,
         userId = json['user_id'] ?? -1,
         secret = json['secret'] ?? -1,
-        token = json['token'] ?? -1;
+        memberId = json['member_id'] ?? -1,
+        name = json['name'] ?? -1;
 }
 
 void signIn({
   required String email,
-  required String token,
+  required String memberId,
   required String account,
   required int behavior,
   required Uint8List password,
@@ -103,7 +105,7 @@ void signIn({
   PacketClient packet = PacketClient.create();
   SignInReq req = SignInReq(
     email: email,
-    token: token,
+    memberId: memberId,
     account: account,
     behavior: behavior,
     password: password,
@@ -112,8 +114,9 @@ void signIn({
     verificationCode: verificationCode,
     userId: userId,
   );
-  packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.signInReq);
+  print('signIn req: ${req.toString()}');
+  packet.getHeader().setMajor(Major.admin);
+  packet.getHeader().setMinor(Minor.admin.signInReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

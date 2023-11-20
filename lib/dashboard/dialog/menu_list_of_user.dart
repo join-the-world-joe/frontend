@@ -63,7 +63,7 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
 
     try {
       print("showMenuListOfUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.backend && minor == Minor.backend.fetchMenuListOfConditionRsp) {
+      if (major == Major.admin && minor == Minor.admin.fetchMenuListOfConditionRsp) {
         fetchMenuListOfConditionHandler(body);
       } else {
         print("showMenuListOfUserDialog.observe warning: $major-$minor doesn't matched");

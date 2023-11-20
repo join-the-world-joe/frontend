@@ -67,7 +67,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
 
     try {
       print("showRoleListOfUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.backend && minor == Minor.backend.fetchRoleListOfConditionRsp) {
+      if (major == Major.admin && minor == Minor.admin.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(body);
       } else {
         print("showRoleListOfUserDialog.observe warning: $major-$minor doesn't matched");

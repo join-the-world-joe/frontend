@@ -52,8 +52,8 @@ void fetchPermissionListOfCondition({
 }) {
   PacketClient packet = PacketClient.create();
   FetchPermissionListOfConditionReq req = FetchPermissionListOfConditionReq(name, major, minor, userId, behavior, roleList);
-  packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.fetchPermissionListOfConditionReq);
+  packet.getHeader().setMajor(Major.admin);
+  packet.getHeader().setMinor(Minor.admin.fetchPermissionListOfConditionReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

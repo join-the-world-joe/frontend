@@ -35,20 +35,27 @@ class Home extends StatefulWidget {
 }
 
 class _State extends State<Home> {
+  bool closed = false;
   int curStage = 0;
   int selected = 0;
   Duration fetchMenuDuration = const Duration(seconds: 3);
   Timer? fetchMenuTimer;
   bool isDrawerOpen = false;
 
-  Stream<String>? yeildData() async* {
-    var lastContent = '';
-    while (true) {
-      await Future.delayed(Config.contentAreaRefreshInterval);
-      if (lastContent != Cache.getContent()) {
-        lastContent = Cache.getContent();
-        // print('lastContent: $lastContent');
-        yield lastContent;
+  Stream<int>? yeildData() async* {
+    var lastStage = curStage;
+    while (!closed) {
+      // print('Loading.yeildData.last: $lastStage, cur: ${curStage}');
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (lastStage != curStage) {
+        lastStage = curStage;
+        yield lastStage;
+      } else {
+        if (!Runtime.getConnectivity()) {
+          closed = true;
+          navigate(Screen.offline);
+          return;
+        }
       }
     }
   }
@@ -59,7 +66,7 @@ class _State extends State<Home> {
     var body = packet.getBody();
     print("Home.observe: major: $major, minor: $minor");
     try {
-      if (major == Major.backend && minor == Minor.backend.fetchMenuListOfConditionRsp) {
+      if (major == Major.admin && minor == Minor.admin.fetchMenuListOfConditionRsp) {
         fetchMenuListOfConditionHandler(body);
       } else {
         print("Home.observe warning: $major-$minor doesn't matched");
@@ -164,8 +171,9 @@ class _State extends State<Home> {
                   (title) => ListTile(
                     title: Text(Translator.translate(title)),
                     onTap: () {
-                      // print('onTap: $title');
+                      print('onTap: $title');
                       Cache.setContent(title);
+                      curStage++;
                       if (isDrawerOpen) {
                         // print('drawer is open now');
                         Navigator.of(context).pop();

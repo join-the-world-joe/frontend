@@ -40,8 +40,8 @@ void fetchRoleListOfCondition({
 }) {
   PacketClient packet = PacketClient.create();
   FetchRoleListOfConditionReq req = FetchRoleListOfConditionReq(behavior, userId, roleNameList);
-  packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.fetchRoleListOfConditionReq);
+  packet.getHeader().setMajor(Major.admin);
+  packet.getHeader().setMinor(Minor.admin.fetchRoleListOfConditionReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

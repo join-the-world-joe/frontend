@@ -29,12 +29,16 @@ class _State extends State<Loading> {
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('showMenuListOfUserDialog.last: $lastStage, showMenuListOfUserDialog.cur: ${curStage}');
+      // print('Loading.yeildData.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
-        // print('showRoleListOfUserDialog.last: $lastStage');
         yield lastStage;
+      } else {
+        if (!Runtime.getConnectivity()) {
+          curStage++;
+          return;
+        }
       }
     }
   }
@@ -88,9 +92,9 @@ class _State extends State<Loading> {
     var body = packet.getBody();
     print("Loading.observe: major: $major, minor: $minor");
     try {
-      if (major == Major.gateway && minor == Minor.gateway.fetchRateLimitingConfigRsp) {
+      if (major == Major.backendGateway && minor == Minor.backendGateway.fetchRateLimitingConfigRsp) {
         fetchRateLimitingConfigHandler(body);
-      } else if (major == Major.gateway && minor == Minor.gateway.pongRsp) {
+      } else if (major == Major.backendGateway && minor == Minor.backendGateway.pongRsp) {
         echoHandler(body);
       } else {
         print("Loading.observe warning: $major-$minor doesn't matched");
@@ -108,7 +112,8 @@ class _State extends State<Loading> {
   }
 
   void navigate(String page) {
-    print('fetchRateLimitingConfigHandler.navigate to $page');
+    print('Loading.navigate to $page');
+    // closed = true;
     Navigate.to(context, Screen.build(page));
   }
 
@@ -138,6 +143,10 @@ class _State extends State<Loading> {
     return StreamBuilder(
       stream: yeildData(),
       builder: (context, snap) {
+        if (!Runtime.getConnectivity()) {
+          closed = true;
+          navigate(Screen.offline);
+        }
         if (curStage == 0) {
           return const Center(child: CircularProgressIndicator());
         } else if (curStage == 1) {

@@ -46,8 +46,8 @@ void fetchTrackListOfCondition({
 }) {
   PacketClient packet = PacketClient.create();
   FetchTrackListOfConditionReq req = FetchTrackListOfConditionReq(behavior, name, permission, begin, end);
-  packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.fetchTrackListOfConditionReq);
+  packet.getHeader().setMajor(Major.admin);
+  packet.getHeader().setMinor(Minor.admin.fetchTrackListOfConditionReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

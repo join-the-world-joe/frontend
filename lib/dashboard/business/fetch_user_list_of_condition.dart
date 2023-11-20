@@ -45,8 +45,8 @@ void fetchUserListOfCondition({
 }) {
   PacketClient packet = PacketClient.create();
   FetchUserListOfConditionReq req = FetchUserListOfConditionReq(behavior, userId, name, phoneNumber);
-  packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.fetchUserListOfConditionReq);
+  packet.getHeader().setMajor(Major.admin);
+  packet.getHeader().setMinor(Minor.admin.fetchUserListOfConditionReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

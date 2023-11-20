@@ -1,4 +1,4 @@
-class Backend {
+class Admin {
   String signInReq = '1';
   String signInRsp = '2';
   String fetchMenuListOfConditionReq = '3';

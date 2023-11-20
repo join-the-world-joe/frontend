@@ -113,10 +113,10 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
 
     try {
       print("showInsertUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.backend && minor == Minor.backend.fetchRoleListOfConditionRsp) {
+      if (major == Major.admin && minor == Minor.admin.fetchRoleListOfConditionRsp) {
         print('body: ${body.toString()}');
         fetchRoleListOfConditionHandler(body);
-      } else if (major == Major.backend && minor == Minor.backend.updateUserRecordRsp) {
+      } else if (major == Major.admin && minor == Minor.admin.updateUserRecordRsp) {
         updateUserRecordHandler(body);
       } else {
         print("showInsertUserDialog.observe warning: $major-$minor doesn't matched");

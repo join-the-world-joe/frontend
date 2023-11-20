@@ -30,10 +30,7 @@ class _State extends State<Entry> {
       initialRoute: '/loading',
       routes: {
         '/offline': (context) {
-          return const Offline(
-            lastScreen: '',
-            lastContent: '',
-          );
+          return const Offline();
         },
         '/test': (context) {
           return Test();

@@ -1,6 +1,6 @@
 class RateLimiter {
   bool tried = false;
-  DateTime? _last;
+  DateTime _last = DateTime.now().add(const Duration(hours: -1));
   final int _major;
   final int _minor;
   final int _period;
@@ -20,15 +20,11 @@ class RateLimiter {
   RateLimiter(this._major, this._minor, this._period);
 
   bool allow() {
-    if (_last == null) {
+    print('major: ${_major} minor:{ ${_minor} last: ${_last.toString()}');
+    if (DateTime.now().isAfter(_last.add(Duration(milliseconds: _period)))) {
       _last = DateTime.now();
       return true;
-    } else {
-      if (DateTime.now().isAfter(_last!.add(Duration(milliseconds: _period)))) {
-        _last = DateTime.now();
-        return true;
-      }
-      return false;
     }
+    return false;
   }
 }

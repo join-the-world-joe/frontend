@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_framework/dashboard/screen/offline.dart';
 import 'loading.dart';
 import 'password_sign_in.dart';
 import 'home.dart';
@@ -8,6 +9,7 @@ class Screen {
   static const String home = 'home';
   static const String smsSignIn = 'sms_sign_in';
   static const String passwordSignIn = 'password_sign_in';
+  static const String offline = 'offline';
 
   static Widget build(String screen) {
     switch (screen) {
@@ -22,6 +24,10 @@ class Screen {
       case home:
         {
           return const Home();
+        }
+      case offline:
+        {
+          return const Offline();
         }
       default:
         {

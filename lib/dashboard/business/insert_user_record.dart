@@ -55,8 +55,8 @@ void insertUserRecord({
     password,
     roleList,
   );
-  packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.insertUserRecordReq);
+  packet.getHeader().setMajor(Major.admin);
+  packet.getHeader().setMinor(Minor.admin.insertUserRecordReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

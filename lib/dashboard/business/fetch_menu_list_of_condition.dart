@@ -43,8 +43,8 @@ void fetchMenuListOfCondition({
 }) {
   PacketClient packet = PacketClient.create();
   FetchMenuListOfConditionReq req = FetchMenuListOfConditionReq(behavior, userId, roleList);
-  packet.getHeader().setMajor(Major.backend);
-  packet.getHeader().setMinor(Minor.backend.fetchMenuListOfConditionReq);
+  packet.getHeader().setMajor(Major.admin);
+  packet.getHeader().setMinor(Minor.admin.fetchMenuListOfConditionReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

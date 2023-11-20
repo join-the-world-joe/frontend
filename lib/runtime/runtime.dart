@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/framework/rate_limiter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -11,11 +12,11 @@ import '../../../common/code/code.dart';
 import '../validator/packet_client.dart';
 
 class Runtime {
-  static late RSACrypto rsa;
-  static late AESCrypto aes;
-  static late bool encryption;
-  static bool connected = false;
-  static late String token;
+  static RSACrypto rsa = RSACrypto(publicKey: Config.rsaPublicKey, privateKey: Config.rsaPrivateKey);
+  static AESCrypto aes = AESCrypto(key: Config.aesKey, iv: Config.aesIV);
+  static bool encryption = true;
+  static bool _connected = true;
+  static String token = '';
   static Function? _observe;
   static Map<String, RateLimiter> _rateLimiter = {};
   static int defaultRateLimitDuration = 1000; // default, one seconds
@@ -23,6 +24,7 @@ class Runtime {
   static bool allow({required int major, required int minor}) {
     var key = '$major-$minor';
     if (!_rateLimiter.containsKey(key)) {
+      print('new rate limiter, key: $key');
       _rateLimiter[key] = RateLimiter(major, minor, defaultRateLimitDuration);
       return _rateLimiter[key]!.allow();
     }
@@ -34,11 +36,12 @@ class Runtime {
   }
 
   static setConnectivity(bool b) {
-    connected = b;
+    _connected = b;
   }
 
   static bool getConnectivity() {
-    return connected;
+    // print("connected: $_connected");
+    return _connected;
   }
 
   static setToken(String any) {
@@ -81,11 +84,12 @@ class Runtime {
       }
     },
     onDone: () {
-      setConnectivity(false);
       print('onDone');
+      setConnectivity(false);
+      wsClient.close();
     },
     onError: (err, StackTrace stackTrace) {
-      print('onError.err: ${err.toString()}');
+      // print('onError.err: ${err.toString()}');
       // if (err is WebSocketChannelException) {
       //   print('err == WebSocketChannelException');
       //   setConnectivity(false);

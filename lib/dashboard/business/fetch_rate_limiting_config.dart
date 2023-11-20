@@ -34,8 +34,8 @@ class FetchRateLimitingConfigRsp {
 void fetchRateLimitingConfig() {
   PacketClient packet = PacketClient.create();
   FetchRateLimitingConfigReq req = FetchRateLimitingConfigReq();
-  packet.getHeader().setMajor(Major.gateway);
-  packet.getHeader().setMinor(Minor.gateway.fetchRateLimitingConfigReq);
+  packet.getHeader().setMajor(Major.backendGateway);
+  packet.getHeader().setMinor(Minor.backendGateway.fetchRateLimitingConfigReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

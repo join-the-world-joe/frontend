@@ -79,9 +79,9 @@ class _State extends State<User> {
 
     try {
       // print("User.observe: major: $major, minor: $minor");
-      if (major == Major.backend && minor == Minor.backend.fetchUserListOfConditionRsp) {
+      if (major == Major.admin && minor == Minor.admin.fetchUserListOfConditionRsp) {
         fetchUserListOfConditionHandler(body);
-      } else if (major == Major.backend && minor == Minor.backend.checkPermissionRsp) {
+      } else if (major == Major.admin && minor == Minor.admin.checkPermissionRsp) {
         checkPermissionHandler(body);
       } else {
         print("User.observe warning: $major-$minor doesn't matched");
@@ -98,13 +98,13 @@ class _State extends State<User> {
     try {
       print('body: ${body.toString()}');
       CheckPermissionRsp rsp = CheckPermissionRsp.fromJson(body);
-      if (rsp.getMinor() == int.parse(Minor.backend.fetchPermissionListOfConditionReq)) {
+      if (rsp.getMinor() == int.parse(Minor.admin.fetchPermissionListOfConditionReq)) {
         hasFetchPermissionListOfCondition = rsp.getCode() == Code.oK ? true : false;
-      } else if (rsp.getMinor() == int.parse(Minor.backend.fetchMenuListOfConditionReq)) {
+      } else if (rsp.getMinor() == int.parse(Minor.admin.fetchMenuListOfConditionReq)) {
         hasFetchMenuListOfCondition = rsp.getCode() == Code.oK ? true : false;
-      } else if (rsp.getMinor() == int.parse(Minor.backend.insertUserRecordReq)) {
+      } else if (rsp.getMinor() == int.parse(Minor.admin.insertUserRecordReq)) {
         hasInsertUserRecord = rsp.getCode() == Code.oK ? true : false;
-      } else if (rsp.getMinor() == int.parse(Minor.backend.softDeleteUserRecordReq)) {
+      } else if (rsp.getMinor() == int.parse(Minor.admin.softDeleteUserRecordReq)) {
         hasSoftDeleteUserRecord = rsp.getCode() == Code.oK ? true : false;
       }
       curStage++;
@@ -184,15 +184,15 @@ class _State extends State<User> {
 
   @override
   Widget build(BuildContext context) {
-    checkPermission(major: Major.backend, minor: Minor.backend.fetchPermissionListOfConditionReq);
+    checkPermission(major: Major.admin, minor: Minor.admin.fetchPermissionListOfConditionReq);
     Future.delayed(const Duration(milliseconds: 100), () {
-      checkPermission(major: Major.backend, minor: Minor.backend.fetchMenuListOfConditionReq);
+      checkPermission(major: Major.admin, minor: Minor.admin.fetchMenuListOfConditionReq);
     });
     Future.delayed(const Duration(milliseconds: 200), () {
-      checkPermission(major: Major.backend, minor: Minor.backend.insertUserRecordReq);
+      checkPermission(major: Major.admin, minor: Minor.admin.insertUserRecordReq);
     });
     Future.delayed(const Duration(milliseconds: 300), () {
-      checkPermission(major: Major.backend, minor: Minor.backend.softDeleteUserRecordReq);
+      checkPermission(major: Major.admin, minor: Minor.admin.softDeleteUserRecordReq);
     });
     return Scaffold(
       body: SafeArea(
@@ -237,8 +237,8 @@ class _State extends State<User> {
                             Cache.setUserList([]);
                             // print('name: ${nameControl.text}');
                             if (!Runtime.allow(
-                              major: int.parse(Major.backend),
-                              minor: int.parse(Minor.backend.fetchUserListOfConditionReq),
+                              major: int.parse(Major.admin),
+                              minor: int.parse(Minor.admin.fetchUserListOfConditionReq),
                             )) {
                               return;
                             }

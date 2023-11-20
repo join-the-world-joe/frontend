@@ -6,6 +6,7 @@ import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/dashboard/business/echo.dart';
+import 'package:flutter_framework/dashboard/business/fetch_rate_limiting_config.dart';
 import 'package:flutter_framework/dashboard/business/sign_in.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -18,9 +19,7 @@ import '../screen/screen.dart';
 import 'package:otp/otp.dart';
 
 class Offline extends StatefulWidget {
-  const Offline({Key? key, required this.lastScreen, required this.lastContent}) : super(key: key);
-
-  final String lastScreen, lastContent;
+  const Offline({Key? key}) : super(key: key);
 
   @override
   State createState() => _State();
@@ -40,6 +39,27 @@ class _State extends State<Offline> {
         lastStage = curStage;
         yield lastStage;
       }
+    }
+  }
+
+  void fetchRateLimitingConfigHandler(Map<String, dynamic> body) {
+    print('Offline.fetchRateLimitingConfigHandler');
+    try {
+      FetchRateLimitingConfigRsp rsp = FetchRateLimitingConfigRsp.fromJson(body);
+      if (rsp.code == Code.oK) {
+        Runtime.updateRateLimiter(rsp.rateLimiter);
+        curStage++;
+      } else {
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        curStage--;
+        return;
+      }
+      return;
+    } catch (e) {
+      print("Loading.fetchRateLimitingConfigHandler failure, $e");
+      showMessageDialog(context, '温馨提示：', '未知错误');
+      curStage--;
+      return;
     }
   }
 
@@ -70,7 +90,10 @@ class _State extends State<Offline> {
       SignInRsp rsp = SignInRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         print("SignInRsp: ${body.toString()}");
-        // navigate(Screen.home);
+        Cache.setUserId(rsp.getUserId());
+        Cache.setMemberId(rsp.getMemberId());
+        Cache.setSecret(rsp.getSecret());
+        navigate(Screen.home);
         return;
       } else {
         showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
@@ -89,9 +112,13 @@ class _State extends State<Offline> {
     var body = packet.getBody();
     try {
       // print("Offline.observe: major: $major, minor: $minor");
-      if (major == Major.gateway && minor == Minor.gateway.pongRsp) {
+      if (major == Major.backendGateway && minor == Minor.backendGateway.pongRsp) {
         echoHandler(body);
-      } else if (major == Major.backend && minor == Minor.backend.signInRsp) {
+        Runtime.setConnectivity(true);
+      } else if (major == Major.backendGateway && minor == Minor.backendGateway.fetchRateLimitingConfigRsp) {
+        fetchRateLimitingConfigHandler(body);
+      } else if (major == Major.admin && minor == Minor.admin.signInRsp) {
+        Runtime.setConnectivity(true);
         signInHandler(body);
       } else {
         print("Offline.observe warning: $major-$minor doesn't matched");
@@ -110,7 +137,13 @@ class _State extends State<Offline> {
 
   void navigate(String page) {
     print('Offline.navigate to $page');
-    Navigate.to(context, Screen.build(page));
+    closed = true;
+    Future.delayed(
+      const Duration(milliseconds: 300),
+      () {
+        Navigate.to(context, Screen.build(page));
+      },
+    );
   }
 
   void debug() {
@@ -118,15 +151,15 @@ class _State extends State<Offline> {
     // {code: 0, user_id: 1, name: 流星, token: ab8f12c7-bc2b-4aff-b38f-8953a6e12fc8, secret: A5EABE66AHBADCA5}
     var userId = 1;
     var secret = 'BF6B6B677BCB7C5B';
-    var token = '7b775969-9baf-4659-86e9-f3c743b555fd';
-    Cache.setToken(token);
+    var memberId = '7b775969-9baf-4659-86e9-f3c743b555fd';
+    Cache.setMemberId(memberId);
     Cache.setUserId(userId);
     Cache.setSecret(secret);
   }
 
   void setup() {
     print('Offline.setup');
-    debug();
+    // debug();
     setup_();
     Runtime.setObserve(observe);
   }
@@ -152,7 +185,9 @@ class _State extends State<Offline> {
           child: StreamBuilder(
             stream: yeildData(),
             builder: (context, snap) {
-              if (curStage > 1) {}
+              if (curStage > 1) {
+
+              }
               return ListView(
                 shrinkWrap: true,
                 children: [
@@ -176,41 +211,54 @@ class _State extends State<Offline> {
                         ),
                       ),
                       onPressed: () {
-                        // navigate(Screen.passwordSignIn);
-                        if (!Runtime.allow(major: int.parse(Major.gateway), minor: int.parse(Minor.gateway.pingReq))) {
+                        print("secret: ${Cache.getSecret()}, memberId: ${Cache.getMemberId()}, userId: ${Cache.getUserId()}");
+
+                        fetchRateLimitingConfig();
+
+                        if (!Runtime.getConnectivity()) {
+                          setup();
+                        }
+
+                        if (Runtime.allow(major: int.parse(Major.backendGateway), minor: int.parse(Minor.backendGateway.pingReq))) {
+                          echo(message: message);
+                        }
+
+                        if (!Runtime.allow(major: int.parse(Major.admin), minor: int.parse(Minor.admin.signInReq))) {
                           return;
                         }
-                        curStage = 0;
-                        echo(message: message);
-                        var code = OTP.generateTOTPCodeString(Cache.getSecret(), DateTime.now().millisecondsSinceEpoch, algorithm: Algorithm.SHA1, isGoogle: true);
+
+                        if (Cache.getMemberId().isNotEmpty && Cache.getSecret().isNotEmpty && Cache.getUserId() > 0) {
+                          Future.delayed(
+                            const Duration(milliseconds: 500),
+                            () {
+                              var totp = OTP.generateTOTPCodeString(Cache.getSecret(), DateTime.now().millisecondsSinceEpoch, algorithm: Algorithm.SHA1, isGoogle: true);
+                              signIn(
+                                userId: Cache.getUserId(),
+                                email: '',
+                                memberId: Cache.getMemberId(),
+                                account: '',
+                                behavior: 3,
+                                password: Uint8List(0),
+                                phoneNumber: '',
+                                countryCode: '',
+                                verificationCode: int.parse(totp),
+                              );
+                            },
+                          );
+                          return;
+                        }
                         Future.delayed(
-                            Duration(milliseconds: 100),
-                            () => signIn(
-                                  email: '',
-                                  token: Cache.getToken(),
-                                  account: '',
-                                  behavior: 3,
-                                  password: Uint8List(0),
-                                  phoneNumber: '',
-                                  countryCode: '',
-                                  verificationCode: int.parse(code),
-                                  userId: Cache.getUserId(),
-                                ));
-                        // if (widget.lastContent.isNotEmpty) {
-                        //   if (widget.lastContent == Screen.home && Cache.getMenuList().getLength() > 0 && Cache.getToken().isNotEmpty && Cache.getSecret().isNotEmpty) {
-                        //     // signIn
-                        //     signIn(
-                        //       email: '',
-                        //       token: Cache.getToken(),
-                        //       account: '',
-                        //       behavior: 3,
-                        //       password: Uint8List(0),
-                        //       phoneNumber: '',
-                        //       countryCode: '',
-                        //       verificationCode: OTP.generateTOTPCodeString(Cache.getSecret(), DateTime.now().millisecondsSinceEpoch).toString(),
-                        //     );
-                        //   }
-                        // }
+                          const Duration(milliseconds: 500),
+                          () {
+                            if (Runtime.getConnectivity()) {
+                              navigate(Screen.smsSignIn);
+                              return;
+                            } else {
+                              return;
+                            }
+                          },
+                        );
+                        return;
                       },
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,

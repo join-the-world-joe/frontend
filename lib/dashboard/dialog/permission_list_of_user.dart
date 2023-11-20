@@ -75,7 +75,7 @@ Future<int> showPermissionListOfUserDialog(BuildContext context, User user) asyn
 
     try {
       print("showPermissionListOfUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.backend && minor == Minor.backend.fetchPermissionListOfConditionRsp) {
+      if (major == Major.admin && minor == Minor.admin.fetchPermissionListOfConditionRsp) {
         fetchPermissionListOfConditionHandler(body);
       } else {
         print("showPermissionListOfUserDialog.observe warning: $major-$minor doesn't matched");

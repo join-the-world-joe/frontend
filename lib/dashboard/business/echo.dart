@@ -52,8 +52,8 @@ void echo({
 }) {
   PacketClient packet = PacketClient.create();
   PingReq req = PingReq(message);
-  packet.getHeader().setMajor(Major.gateway);
-  packet.getHeader().setMinor(Minor.gateway.pingReq);
+  packet.getHeader().setMajor(Major.backendGateway);
+  packet.getHeader().setMinor(Minor.backendGateway.pingReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

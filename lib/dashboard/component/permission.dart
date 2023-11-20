@@ -78,7 +78,7 @@ class _State extends State<Permission> {
 
     try {
       print("Permission.observe: major: $major, minor: $minor");
-      if (major == Major.backend && minor == Minor.backend.fetchPermissionListOfConditionRsp) {
+      if (major == Major.admin && minor == Minor.admin.fetchPermissionListOfConditionRsp) {
         fetchPermissionListOfConditionHandler(body);
         curStage++;
       } else {
@@ -176,8 +176,8 @@ class _State extends State<Permission> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (!Runtime.allow(
-                            major: int.parse(Major.backend),
-                            minor: int.parse(Minor.backend.fetchTrackListOfConditionReq),
+                            major: int.parse(Major.admin),
+                            minor: int.parse(Minor.admin.fetchTrackListOfConditionReq),
                           )) {
                             return;
                           }
@@ -210,7 +210,6 @@ class _State extends State<Permission> {
                     ),
                   ],
                 ),
-                Spacing.addVerticalSpace(20),
                 Spacing.addVerticalSpace(20),
                 Scrollbar(
                   controller: scrollController,
