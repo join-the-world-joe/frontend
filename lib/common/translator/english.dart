@@ -99,8 +99,13 @@ class English {
     Language.descriptionOfManufacturingManger: 'The manager of Manufacturing Department',
     Language.descriptionOfProductionSpecialist: 'A Production Specialist of Manufacturing Department',
 
+    // dialog
     Language.titleOfErrorNotifyDialog: 'Error',
     Language.passwordInTwoInputControlDoNotMatch: 'Password not matched',
+
+    // inform.notification
+    Language.eventForceOffline: 'Force Offline',
+    Language.messageForceOffline : 'Your account has been logon somewhere! Your have to logout immediately.',
   };
 
   static String getName() {

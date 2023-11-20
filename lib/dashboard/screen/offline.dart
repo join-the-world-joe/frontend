@@ -84,12 +84,12 @@ class _State extends State<Offline> {
   }
 
   void signInHandler(Map<String, dynamic> body) {
-    print('SMSSignIn.signInHandler');
+    print('Offline.signInHandler');
     try {
       print('body: ${body.toString()}');
       SignInRsp rsp = SignInRsp.fromJson(body);
       if (rsp.code == Code.oK) {
-        print("SignInRsp: ${body.toString()}");
+        // print("SignInRsp: ${body.toString()}");
         Cache.setUserId(rsp.getUserId());
         Cache.setMemberId(rsp.getMemberId());
         Cache.setSecret(rsp.getSecret());
@@ -100,7 +100,7 @@ class _State extends State<Offline> {
         return;
       }
     } catch (e) {
-      print("SMSSignIn.signInHandler failure, $e");
+      print("Offline.signInHandler failure, $e");
       showMessageDialog(context, '温馨提示：', '未知错误');
       return;
     }
@@ -136,14 +136,16 @@ class _State extends State<Offline> {
   }
 
   void navigate(String page) {
-    print('Offline.navigate to $page');
-    closed = true;
-    Future.delayed(
-      const Duration(milliseconds: 300),
-      () {
-        Navigate.to(context, Screen.build(page));
-      },
-    );
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () {
+          print('Offline.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
   }
 
   void debug() {
@@ -158,7 +160,7 @@ class _State extends State<Offline> {
   }
 
   void setup() {
-    print('Offline.setup');
+    // print('Offline.setup');
     // debug();
     setup_();
     Runtime.setObserve(observe);
@@ -166,13 +168,13 @@ class _State extends State<Offline> {
 
   @override
   void dispose() {
-    print('Offline.dispose');
+    // print('Offline.dispose');
     super.dispose();
   }
 
   @override
   void initState() {
-    print('Offline.initState');
+    // print('Offline.initState');
     setup();
     super.initState();
   }
@@ -185,9 +187,7 @@ class _State extends State<Offline> {
           child: StreamBuilder(
             stream: yeildData(),
             builder: (context, snap) {
-              if (curStage > 1) {
-
-              }
+              if (curStage > 1) {}
               return ListView(
                 shrinkWrap: true,
                 children: [
@@ -213,11 +213,11 @@ class _State extends State<Offline> {
                       onPressed: () {
                         print("secret: ${Cache.getSecret()}, memberId: ${Cache.getMemberId()}, userId: ${Cache.getUserId()}");
 
-                        fetchRateLimitingConfig();
-
                         if (!Runtime.getConnectivity()) {
                           setup();
                         }
+
+                        fetchRateLimitingConfig();
 
                         if (Runtime.allow(major: int.parse(Major.backendGateway), minor: int.parse(Minor.backendGateway.pingReq))) {
                           echo(message: message);

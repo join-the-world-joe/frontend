@@ -10,9 +10,13 @@ class Screen {
   static const String smsSignIn = 'sms_sign_in';
   static const String passwordSignIn = 'password_sign_in';
   static const String offline = 'offline';
+  static const String loading = 'loading';
 
   static Widget build(String screen) {
     switch (screen) {
+      case loading: {
+        return const Loading();
+      }
       case smsSignIn:
         {
           return const SMSSignIn();

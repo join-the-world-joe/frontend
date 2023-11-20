@@ -58,8 +58,8 @@ class Chinese {
     Language.fField: '字段',
     Language.fieldList: '字段列表',
     Language.tMenu: '菜单',
-    Language.titleOfBeginDate:'开始日期',
-    Language.titleOfEndDate:'结束日期',
+    Language.titleOfBeginDate: '开始日期',
+    Language.titleOfEndDate: '结束日期',
 
     // permission
     Language.signIn: '登入系统',
@@ -102,6 +102,10 @@ class Chinese {
     // dialog
     Language.titleOfErrorNotifyDialog: '错误提示',
     Language.passwordInTwoInputControlDoNotMatch: '两次输入的密码不一致',
+
+    // inform.notification
+    Language.eventForceOffline: '强制下线',
+    Language.messageForceOffline: '帐号在异地登录, 当前帐号被强制下线.',
   };
 
   static String getName() {

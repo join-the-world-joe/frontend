@@ -66,6 +66,7 @@ class Language {
   static String insertUserRecord = 'InsertUserRecord';
   static String softDeleteUserRecord = 'SoftDeleteUserRecord';
   static String updateUserRecord = 'UpdateUserRecord';
+
   // role
   static String administrator = 'Administrator';
   static String rdManager = 'RD_Manager';
@@ -97,4 +98,8 @@ class Language {
   // dialog
   static String titleOfErrorNotifyDialog = 'the title of the error notify dialog';
   static String passwordInTwoInputControlDoNotMatch = 'the password in two input control do not match';
+
+  // inform.notification
+  static String eventForceOffline = 'Force Offline';
+  static String messageForceOffline = 'Your account has been logon somewhere! Your have to logout immediately.';
 }

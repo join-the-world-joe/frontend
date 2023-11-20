@@ -76,7 +76,7 @@ class Websocket {
   }
 
   void close() {
-    print('close');
+    print('Websocket.close');
     if (_channel != null) {
       _channel!.sink.close();
     }

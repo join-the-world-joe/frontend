@@ -42,7 +42,7 @@ class _State extends State<Home> {
   Timer? fetchMenuTimer;
   bool isDrawerOpen = false;
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       // print('Loading.yeildData.last: $lastStage, cur: ${curStage}');
@@ -52,8 +52,7 @@ class _State extends State<Home> {
         yield lastStage;
       } else {
         if (!Runtime.getConnectivity()) {
-          closed = true;
-          navigate(Screen.offline);
+          curStage++;
           return;
         }
       }
@@ -106,24 +105,27 @@ class _State extends State<Home> {
   }
 
   void refresh() {
-    print('home.refresh');
+    // print('home.refresh');
     setState(() {});
   }
 
   void navigate(String page) {
-    print('home.navigate to $page');
-    Navigate.to(context, Screen.build(page));
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () {
+          print('home.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
   }
 
   void setup() {
-    print('home.setup');
+    // print('home.setup');
     Runtime.setObserve(observe);
     fetchMenuListOfCondition(behavior: 1, userId: 0, roleList: RoleList([]));
-  }
-
-  void progress() async {
-    print('home.progress');
-    return;
   }
 
   @override
@@ -140,10 +142,8 @@ class _State extends State<Home> {
 
   @override
   void initState() {
-    print('home.initState');
+    // print('home.initState');
     setup();
-    progress();
-    // debug();
     super.initState();
   }
 
@@ -171,7 +171,7 @@ class _State extends State<Home> {
                   (title) => ListTile(
                     title: Text(Translator.translate(title)),
                     onTap: () {
-                      print('onTap: $title');
+                      // print('onTap: $title');
                       Cache.setContent(title);
                       curStage++;
                       if (isDrawerOpen) {
@@ -249,8 +249,13 @@ class _State extends State<Home> {
           Spacing.addHorizontalSpace(20),
           Expanded(
             child: StreamBuilder(
+              stream: stream(),
               builder: (context, snap) {
                 // print('data: ${snap.data}');
+                if (!Runtime.getConnectivity()) {
+                  navigate(Screen.offline);
+                  return const Text('');
+                }
                 if (snap.data != null) {
                   if (Cache.getContent() == User.content) {
                     return const User();
@@ -270,7 +275,6 @@ class _State extends State<Home> {
                 }
                 return const Center(child: CircularProgressIndicator());
               },
-              stream: yeildData(),
             ),
           ),
         ],

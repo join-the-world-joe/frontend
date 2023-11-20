@@ -26,10 +26,10 @@ class _State extends State<Loading> {
   bool closed = false;
   String message = const Uuid().v4();
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('Loading.yeildData.last: $lastStage, cur: ${curStage}');
+      // print('Loading.stream.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
@@ -107,31 +107,38 @@ class _State extends State<Loading> {
   }
 
   void refresh() {
-    print('Loading.refresh');
+    // print('Loading.refresh');
     setState(() {});
   }
 
   void navigate(String page) {
-    print('Loading.navigate to $page');
-    // closed = true;
-    Navigate.to(context, Screen.build(page));
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () {
+          print('Loading.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
   }
 
   void setup() {
-    print('Loading.setup');
+    // print('Loading.setup');
     setup_();
     Runtime.setObserve(observe);
   }
 
   @override
   void dispose() {
-    print('Loading.dispose');
+    // print('Loading.dispose');
     super.dispose();
   }
 
   @override
   void initState() {
-    print('Loading.initState');
+    // print('Loading.initState');
     setup();
     super.initState();
   }
@@ -141,23 +148,23 @@ class _State extends State<Loading> {
     echo(message: message);
     fetchRateLimitingConfig();
     return StreamBuilder(
-      stream: yeildData(),
+      stream: stream(),
       builder: (context, snap) {
         if (!Runtime.getConnectivity()) {
-          closed = true;
           navigate(Screen.offline);
+          return const Text('');
         }
         if (curStage == 0) {
           return const Center(child: CircularProgressIndicator());
         } else if (curStage == 1) {
-          print('curStage == 1');
+          // print('curStage == 1');
           return const Center(child: CircularProgressIndicator());
         } else if (curStage == 2) {
           print('curStage == 2');
           navigate(Screen.smsSignIn);
-          return const Text('auth done');
+          return const Text(''); // done
         } else {
-          return const Text('else case');
+          return const Text(''); // fail
         }
       },
     );

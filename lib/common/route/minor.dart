@@ -3,6 +3,7 @@ import 'generic.dart' as generic_;
 import 'sms.dart' as sms_;
 import 'admin.dart' as admin_;
 import 'backend_gateway.dart' as backend_gateway_;
+import 'inform.dart' as inform_;
 
 class Minor {
   static backend_gateway_.BackendGateway backendGateway = backend_gateway_.BackendGateway();
@@ -10,4 +11,5 @@ class Minor {
   static account_.Account account = account_.Account();
   static sms_.SMS sms = sms_.SMS();
   static admin_.Admin admin = admin_.Admin();
+  static inform_.Inform inform = inform_.Inform();
 }

@@ -34,10 +34,10 @@ class _State extends State<SMSSignIn> {
   final phoneNumberControl = TextEditingController(text: '18629309942');
   final verificationCodeControl = TextEditingController(text: '1111');
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('SMSSignIn.yeildData.last: $lastStage, cur: ${curStage}');
+      // print('SMSSignIn.stream.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
@@ -131,41 +131,60 @@ class _State extends State<SMSSignIn> {
   }
 
   void refresh() {
-    print('SMSSignIn.refresh');
+    // print('SMSSignIn.refresh');
     setState(() {});
   }
 
+  // void navigate(String page) {
+  //   print('SMSSignIn.navigate to $page');
+  //   closed = true;
+  //   Future.delayed(
+  //     const Duration(milliseconds: 300),
+  //     () {
+  //       if (countdownTimer != null) {
+  //         if (countdownTimer!.isActive) {
+  //           print('SMSSignIn.countdownTimer.cancel');
+  //           countdownTimer!.cancel();
+  //         }
+  //       }
+  //       Navigate.to(context, Screen.build(page));
+  //     },
+  //   );
+  // }
+
   void navigate(String page) {
-    print('SMSSignIn.navigate to $page');
-    closed = true;
-    Future.delayed(
-      const Duration(milliseconds: 300),
-      () {
-        if (countdownTimer != null) {
-          if (countdownTimer!.isActive) {
-            print('SMSSignIn.countdownTimer.cancel');
-            countdownTimer!.cancel();
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () {
+          print('SMSSignIn.navigate to $page');
+          if (countdownTimer != null) {
+            if (countdownTimer!.isActive) {
+              print('SMSSignIn.countdownTimer.cancel');
+              countdownTimer!.cancel();
+            }
           }
-        }
-        Navigate.to(context, Screen.build(page));
-      },
-    );
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
   }
 
   void setup() {
-    print('SMSSignIn.setup');
+    // print('SMSSignIn.setup');
     Runtime.setObserve(observe);
   }
 
   @override
   void dispose() {
-    print('SMSSignIn.dispose');
+    // print('SMSSignIn.dispose');
     super.dispose();
   }
 
   @override
   void initState() {
-    print('SMSSignIn.initState');
+    // print('SMSSignIn.initState');
     setup();
     super.initState();
   }
@@ -175,10 +194,9 @@ class _State extends State<SMSSignIn> {
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
             if (!Runtime.getConnectivity()) {
-              closed = true;
               navigate(Screen.offline);
             }
             return ListView(

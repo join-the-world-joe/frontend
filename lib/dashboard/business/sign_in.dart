@@ -114,7 +114,6 @@ void signIn({
     verificationCode: verificationCode,
     userId: userId,
   );
-  print('signIn req: ${req.toString()}');
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.signInReq);
   packet.setBody(req.toJson());

@@ -84,16 +84,16 @@ class Runtime {
       }
     },
     onDone: () {
-      print('onDone');
+      print('Websocket.onDone');
       setConnectivity(false);
       wsClient.close();
     },
     onError: (err, StackTrace stackTrace) {
-      // print('onError.err: ${err.toString()}');
-      // if (err is WebSocketChannelException) {
-      //   print('err == WebSocketChannelException');
-      //   setConnectivity(false);
-      // }
+      print('onError.err: ${err.toString()}');
+      if (err is WebSocketChannelException) {
+        print('err == WebSocketChannelException');
+        setConnectivity(false);
+      }
     },
   );
 }
