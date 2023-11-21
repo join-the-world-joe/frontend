@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import '../../../utils/convert.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -6,20 +7,22 @@ import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class FetchTrackListOfConditionReq {
-  final String _name;
+  final String _operator;
   final int _behavior;
-  final String _begin;
-  final String _end;
-  final String _permissionName;
+  final int _begin;
+  final int _end;
+  final String _major;
+  final String _minor;
 
-  FetchTrackListOfConditionReq(this._behavior, this._name, this._permissionName, this._begin, this._end);
+  FetchTrackListOfConditionReq(this._behavior, this._operator, this._begin, this._end, this._major, this._minor);
 
   Map<String, dynamic> toJson() => {
-        'name': _name,
+        'operator': utf8.encode(_operator),
         'behavior': _behavior,
         'begin': _begin,
         'end': _end,
-        'permission': _permissionName,
+        'major': _major,
+        'minor': _minor,
       };
 
   Uint8List toBytes() {
@@ -38,14 +41,15 @@ class FetchTrackListOfConditionRsp {
 }
 
 void fetchTrackListOfCondition({
-  required String name,
+  required String operator,
   required int behavior,
-  required String begin,
-  required String end,
-  required String permission,
+  required int begin,
+  required int end,
+  required String major,
+  required String minor,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchTrackListOfConditionReq req = FetchTrackListOfConditionReq(behavior, name, permission, begin, end);
+  FetchTrackListOfConditionReq req = FetchTrackListOfConditionReq(behavior, operator, begin, end, major, minor);
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.fetchTrackListOfConditionReq);
   packet.setBody(req.toJson());

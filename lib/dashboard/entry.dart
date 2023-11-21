@@ -36,7 +36,7 @@ class _State extends State<Entry> {
           return Test();
         },
         '/logic_test': (context) {
-          return LogicTest();
+          return const LogicTest();
         },
         '/loading': (context) {
           return const Loading();

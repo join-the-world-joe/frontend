@@ -18,18 +18,3 @@ class Notification {
     message = json['message'] ?? '';
   }
 }
-
-void notificationHandler(Map<String, dynamic> body) {
-  print('notificationHandler');
-  try {
-    Notification notify = Notification.fromJson(body);
-    if (event.containsKey(notify.event)) {
-      Cache.setUserId(0);
-      Cache.setMemberId('');
-      Cache.setMenuList(MenuList([], 0));
-    }
-  } catch (e) {
-    print("notificationHandler failure, $e");
-    return;
-  }
-}

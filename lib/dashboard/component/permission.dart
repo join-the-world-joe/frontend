@@ -201,7 +201,10 @@ class _State extends State<Permission> {
                       height: 30,
                       width: 100,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Cache.setPermissionList(PermissionList([]));
+                          curStage++;
+                        },
                         child: Text(
                           Translator.translate(Language.reset),
                           style: const TextStyle(color: Colors.white, fontSize: 15),
@@ -266,13 +269,7 @@ class Source extends DataTableSource {
         DataCell(Text(Translator.translate(permissionList.getBody()[index].getName()))),
         DataCell(Text(permissionList.getBody()[index].getMajor())),
         DataCell(Text(permissionList.getBody()[index].getMinor())),
-        DataCell(Text(permissionList.getBody()[index].getDescription())),
-        // DataCell(Text(trackList.getBody()[index].getMajor())),
-        // DataCell(Text(trackList.getBody()[index].getMinor())),
-        // DataCell(Text('')),
-        // DataCell(Text('')),
-        // DataCell(Text('')),
-        // DataCell(Text('')),
+        DataCell(Text(Translator.translate(permissionList.getBody()[index].getDescription()))),
       ],
     );
   }

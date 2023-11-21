@@ -102,6 +102,9 @@ class English {
     // dialog
     Language.titleOfErrorNotifyDialog: 'Error',
     Language.passwordInTwoInputControlDoNotMatch: 'Password not matched',
+    Language.titleOfNotification : 'Notification',
+    Language.messageOfSomewhereLogin : 'Your account login somewhere.',
+    Language.endDateIsBeforeBeginDate: 'The End DateTime is Before Begin DateTime',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',

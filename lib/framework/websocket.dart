@@ -34,9 +34,13 @@ class Websocket {
   }
 
   Future<String> connect() async {
-    _channel = WebSocketChannel.connect(
-      Uri.parse(_url),
-    );
+    try {
+      _channel = WebSocketChannel.connect(
+        Uri.parse(_url),
+      );
+    }catch(e) {
+     print('Websocket.connect fail: $e');
+    }
     return '';
   }
 

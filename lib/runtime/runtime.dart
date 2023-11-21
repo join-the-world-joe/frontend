@@ -18,6 +18,7 @@ class Runtime {
   static bool _connected = true;
   static String token = '';
   static Function? _observe;
+  static Function? _observer; // common observe for all pages
   static Map<String, RateLimiter> _rateLimiter = {};
   static int defaultRateLimitDuration = 1000; // default, one seconds
 
@@ -60,6 +61,14 @@ class Runtime {
     return _observe;
   }
 
+  static setObserver(Function? callback) {
+    _observer = callback;
+  }
+
+  static Function? getObserver() {
+    return _observer;
+  }
+
   static Websocket wsClient = Websocket(
     encryption: encryption,
     aes: aes,
@@ -69,6 +78,7 @@ class Runtime {
           var packet = PacketClient.fromJson(jsonDecode(aes.Decrypt(data)));
           if (isPacketClientValid(packet) == Code.oK) {
             _observe?.call(packet);
+            _observer?.call(packet);
           }
           return;
         } else {

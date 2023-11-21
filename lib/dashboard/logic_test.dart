@@ -19,7 +19,8 @@ class _State extends State<LogicTest> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(onPressed: () {
-      print("last: $last");
+      var d = DateTime.parse('2023-11-8');
+      print("d: ${d.millisecondsSinceEpoch/1000}");
     });
   }
 }

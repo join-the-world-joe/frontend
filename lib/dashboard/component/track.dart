@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -39,10 +40,23 @@ class _State extends State<Track> {
   bool closed = false;
   int curStage = 1;
   final scrollController = ScrollController();
+  TextEditingController majorController = TextEditingController();
+  TextEditingController minorController = TextEditingController();
   TextEditingController operatorController = TextEditingController();
-  TextEditingController permissionController = TextEditingController();
-  TextEditingController beginController = TextEditingController();
-  TextEditingController endController = TextEditingController(text: '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}');
+  TextEditingController beginController = TextEditingController(text: '${DateTime
+      .now()
+      .year}-${DateTime
+      .now()
+      .month}-${DateTime
+      .now()
+      .day}');
+  TextEditingController endController = TextEditingController(text: '${DateTime
+      .now()
+      .year}-${DateTime
+      .now()
+      .month}-${DateTime
+      .now()
+      .day}');
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -59,7 +73,9 @@ class _State extends State<Track> {
   void fetchTrackListOfConditionHandler(Map<String, dynamic> body) {
     try {
       FetchTrackListOfConditionRsp rsp = FetchTrackListOfConditionRsp.fromJson(body);
+      print('rsp: ${body.toString()}');
       if (rsp.code == Code.oK) {
+        print('rsp: ${rsp.toString()}');
         Cache.setTrackList(TrackList.fromJson(rsp.body));
         curStage++;
         return;
@@ -141,7 +157,12 @@ class _State extends State<Track> {
       lastDate: DateTime.now(),
     );
     if (picked != null) {
-      return '${picked.year}-${picked.month}-${picked.day}';
+      var year = picked.year;
+      var month = picked.month;
+      var day = picked.day
+          .toString()
+          .length == 2 ? picked.day.toString() : '0${picked.day}';
+      return '$year-$month-$day';
     } else {
       return null;
     }
@@ -163,7 +184,7 @@ class _State extends State<Track> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       SizedBox(
-                        width: 110,
+                        width: 60,
                         child: TextFormField(
                           controller: operatorController,
                           decoration: InputDecoration(
@@ -173,12 +194,30 @@ class _State extends State<Track> {
                       ),
                       Spacing.addHorizontalSpace(20),
                       SizedBox(
-                        width: 110,
+                        width: 70,
                         child: TextFormField(
-                          controller: permissionController,
+                          controller: majorController,
                           decoration: InputDecoration(
-                            labelText: Translator.translate(Language.titleOfPermission),
+                            labelText: Translator.translate(Language.major),
                           ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                            LengthLimitingTextInputFormatter(3),
+                          ],
+                        ),
+                      ),
+                      Spacing.addHorizontalSpace(20),
+                      SizedBox(
+                        width: 70,
+                        child: TextFormField(
+                          controller: minorController,
+                          decoration: InputDecoration(
+                            labelText: Translator.translate(Language.minor),
+                          ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                            LengthLimitingTextInputFormatter(3),
+                          ],
                         ),
                       ),
                       Spacing.addHorizontalSpace(20),
@@ -233,12 +272,39 @@ class _State extends State<Track> {
                             )) {
                               return;
                             }
+
+                            // print('begin string: ${beginController.text}');
+                            // print('end string: ${endController.text}');
+                            var begin = DateTime.parse(beginController.text);
+                            var end = DateTime.parse(endController.text).add(const Duration(days: 0,
+                                hours: 23,
+                                minutes: 59,
+                                seconds: 59,
+                                milliseconds: 999));
+                            if (end.isBefore(begin)) {
+                              showMessageDialog(context, Translator.translate(Language.titleOfNotification), Translator.translate(Language.endDateIsBeforeBeginDate));
+                              return;
+                            }
+                            var d1 = DateTime
+                                .parse(beginController.text)
+                                .millisecondsSinceEpoch;
+                            var d2 = DateTime
+                                .parse(endController.text)
+                                .add(const Duration(days: 0,
+                                hours: 23,
+                                minutes: 59,
+                                seconds: 59,
+                                milliseconds: 999))
+                                .millisecondsSinceEpoch;
+                            // print('begin int: ${d1 ~/ 1000}');
+                            // print('end int: ${d2 ~/ 1000}');
                             fetchTrackListOfCondition(
-                              name: operatorController.text,
+                              operator: operatorController.text,
                               behavior: 2,
-                              begin: beginController.text,
-                              end: endController.text,
-                              permission: permissionController.text,
+                              begin: d1 ~/ 1000,
+                              end: d2 ~/ 1000,
+                              major: majorController.text,
+                              minor: minorController.text,
                             );
                           },
                           child: Text(
@@ -252,7 +318,27 @@ class _State extends State<Track> {
                         height: 30,
                         width: 100,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Cache.setTrackList(TrackList([]));
+                            operatorController.text = '';
+                            majorController.text = '';
+                            minorController.text = '';
+                            beginController.text = '${DateTime
+                                .now()
+                                .year}-${DateTime
+                                .now()
+                                .month}-${DateTime
+                                .now()
+                                .day}';
+                            endController.text = '${DateTime
+                                .now()
+                                .year}-${DateTime
+                                .now()
+                                .month}-${DateTime
+                                .now()
+                                .day}';
+                            curStage++;
+                          },
                           child: Text(
                             Translator.translate(Language.reset),
                             style: const TextStyle(color: Colors.white, fontSize: 15),
@@ -325,18 +411,20 @@ class Source extends DataTableSource {
         DataCell(
           IconButton(
             tooltip: trackList.getBody()[index].getRequest(),
-            icon: const Icon(Icons.read_more),
+            icon: const Icon(Icons.more_horiz),
             onPressed: () {
               //   showRoleListOfUserDialog(context, _data[index]);
+              Clipboard.setData(ClipboardData(text: trackList.getBody()[index].getRequest()));
             },
           ),
         ),
         DataCell(
           IconButton(
             tooltip: trackList.getBody()[index].getResponse(),
-            icon: const Icon(Icons.repeat_sharp),
+            icon: const Icon(Icons.more_horiz),
             onPressed: () {
               //   showRoleListOfUserDialog(context, _data[index]);
+              Clipboard.setData(ClipboardData(text: trackList.getBody()[index].getResponse()));
             },
           ),
         ),

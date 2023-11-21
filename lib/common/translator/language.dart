@@ -98,6 +98,9 @@ class Language {
   // dialog
   static String titleOfErrorNotifyDialog = 'the title of the error notify dialog';
   static String passwordInTwoInputControlDoNotMatch = 'the password in two input control do not match';
+  static String titleOfNotification = 'the title of notification';
+  static String messageOfSomewhereLogin = 'the message of somewhere login';
+  static String endDateIsBeforeBeginDate = 'the end datetime is before begin datetime';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';

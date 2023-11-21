@@ -102,6 +102,9 @@ class Chinese {
     // dialog
     Language.titleOfErrorNotifyDialog: '错误提示',
     Language.passwordInTwoInputControlDoNotMatch: '两次输入的密码不一致',
+    Language.titleOfNotification : '温馨提醒:',
+    Language.messageOfSomewhereLogin : '您的帐号已在别处登录.',
+    Language.endDateIsBeforeBeginDate: '结束日期在开始日期之前',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',

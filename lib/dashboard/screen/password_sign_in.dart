@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'screen.dart';
@@ -24,7 +25,7 @@ class PasswordSignIn extends StatefulWidget {
 
 class _State extends State<PasswordSignIn> {
   late int countdown = 0;
-  final idControl = TextEditingController(text: 'rd_manager@gmail.com');
+  final idControl = TextEditingController(text: 'admin@gmail.com');
   final passwordControl = TextEditingController(text: '123456');
   double widgetWidth = 450;
   Duration loginBusyDuration = const Duration(seconds: 10);
@@ -52,6 +53,10 @@ class _State extends State<PasswordSignIn> {
     try {
       SignInRsp rsp = SignInRsp.fromJson(body);
       if (rsp.code == Code.oK) {
+        print("PasswordSignIn: ${body.toString()}");
+        Cache.setUserId(rsp.getUserId());
+        Cache.setMemberId(rsp.getMemberId());
+        Cache.setSecret(rsp.getSecret());
         navigate(Screen.home);
       } else {
         showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');

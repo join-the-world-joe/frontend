@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/inform.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
@@ -26,6 +27,7 @@ import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../setup.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
+import 'package:flutter_framework/dashboard/business/inform.dart' as inform;
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -77,6 +79,48 @@ class _State extends State<Home> {
     }
   }
 
+  void observer(PacketClient packet) {
+    var major = packet.getHeader().getMajor();
+    var minor = packet.getHeader().getMinor();
+    var body = packet.getBody();
+    // print("Home.observer: major: $major, minor: $minor");
+    try {
+      if (major == Major.inform && minor == Minor.inform.notification) {
+        notificationHandler(body);
+      } else {
+        // print("Home.observer warning: $major-$minor doesn't matched");
+      }
+      return;
+    } catch (e) {
+      // print('Home.observer($major-$minor).e: ${e.toString()}');
+      return;
+    }
+  }
+
+  void notificationHandler(Map<String, dynamic> body) {
+    print('Home.notificationHandler');
+    try {
+      inform.Notification notification = inform.Notification.fromJson(body);
+      if (inform.event.containsKey(notification.event)) {
+        Cache.setUserId(0);
+        Cache.setMemberId('');
+        Cache.setMenuList(MenuList([], 0));
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.messageOfSomewhereLogin),
+        ).then((value) {
+          Runtime.setObserve(null);
+          Runtime.setObserver(null);
+          navigate(Screen.loading);
+        });
+      }
+    } catch (e) {
+      print("notificationHandler failure, $e");
+      return;
+    }
+  }
+
   void fetchMenuListOfConditionHandler(Map<String, dynamic> body) {
     print('Home.fetchMenuListOfConditionHandler');
     try {
@@ -116,7 +160,8 @@ class _State extends State<Home> {
         const Duration(milliseconds: 500),
         () {
           print('home.navigate to $page');
-          Navigate.to(context, Screen.build(page));
+          // Navigate.to(context, Screen.build(page));
+          Navigate.pushReplacement(context, Screen.build(page));
         },
       );
     }
@@ -125,6 +170,7 @@ class _State extends State<Home> {
   void setup() {
     // print('home.setup');
     Runtime.setObserve(observe);
+    Runtime.setObserver(observer);
     fetchMenuListOfCondition(behavior: 1, userId: 0, roleList: RoleList([]));
   }
 
