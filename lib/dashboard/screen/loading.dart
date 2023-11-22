@@ -29,7 +29,6 @@ class _State extends State<Loading> {
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('Loading.stream.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
@@ -40,6 +39,19 @@ class _State extends State<Loading> {
           return;
         }
       }
+    }
+  }
+
+  void navigate(String page) {
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+            () {
+          print('Loading.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
     }
   }
 
@@ -109,19 +121,6 @@ class _State extends State<Loading> {
   void refresh() {
     // print('Loading.refresh');
     setState(() {});
-  }
-
-  void navigate(String page) {
-    if (!closed) {
-      closed = true;
-      Future.delayed(
-        const Duration(milliseconds: 500),
-        () {
-          print('Loading.navigate to $page');
-          Navigate.to(context, Screen.build(page));
-        },
-      );
-    }
   }
 
   void setup() {

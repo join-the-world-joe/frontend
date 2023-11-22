@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/inform.dart';
+import 'package:flutter_framework/common/translator/chinese.dart';
+import 'package:flutter_framework/common/translator/english.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
@@ -43,11 +45,17 @@ class _State extends State<Home> {
   Duration fetchMenuDuration = const Duration(seconds: 3);
   Timer? fetchMenuTimer;
   bool isDrawerOpen = false;
+  var language = Translator.getNative();
+  var user = User();
+  var track = Track();
+  var role = Role();
+  var menu = Menu();
+  var permission = Permission();
+  var field = Field();
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('Loading.yeildData.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
@@ -58,6 +66,20 @@ class _State extends State<Home> {
           return;
         }
       }
+    }
+  }
+
+  void navigate(String page) {
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+            () {
+          print('home.navigate to $page');
+          // Navigate.to(context, Screen.build(page));
+          Navigate.pushReplacement(context, Screen.build(page));
+        },
+      );
     }
   }
 
@@ -153,18 +175,13 @@ class _State extends State<Home> {
     setState(() {});
   }
 
-  void navigate(String page) {
-    if (!closed) {
-      closed = true;
-      Future.delayed(
-        const Duration(milliseconds: 500),
-        () {
-          print('home.navigate to $page');
-          // Navigate.to(context, Screen.build(page));
-          Navigate.pushReplacement(context, Screen.build(page));
-        },
-      );
-    }
+  void refreshContent() {
+    user = User();
+    track = Track();
+    role = Role();
+    menu = Menu();
+    permission = Permission();
+    field = Field();
   }
 
   void setup() {
@@ -277,6 +294,38 @@ class _State extends State<Home> {
       appBar: AppBar(
         title: Text(Translator.translate(Language.dashboard)),
         centerTitle: true,
+        actions: [
+          SizedBox(
+            width: 100,
+            child: DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.transparent),
+                ),
+              ),
+              hint: Text(
+                Translator.translate(Language.fCountryCode),
+              ),
+              isExpanded: true,
+              value: language,
+              items: [
+                DropdownMenuItem<String>(
+                  value: Chinese.getName(),
+                  child: Text(Translator.translate(Language.languageOfChinese)),
+                ),
+                DropdownMenuItem<String>(
+                  value: English.getName(),
+                  child: Text(Translator.translate(Language.languageOfEnglish)),
+                ),
+              ],
+              onChanged: (lang) {
+                Translator.setNative(lang!);
+                refresh();
+                refreshContent();
+              },
+            ),
+          ),
+        ],
       ),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,17 +353,18 @@ class _State extends State<Home> {
                 }
                 if (snap.data != null) {
                   if (Cache.getContent() == User.content) {
-                    return const User();
+                    // return const User();
+                    return user;
                   } else if (Cache.getContent() == Role.content) {
-                    return const Role();
+                    return role;
                   } else if (Cache.getContent() == Menu.content) {
-                    return const Menu();
+                    return menu;
                   } else if (Cache.getContent() == Permission.content) {
-                    return const Permission();
+                    return permission;
                   } else if (Cache.getContent() == Field.content) {
-                    return const Field();
+                    return field;
                   } else if (Cache.getContent() == Track.content) {
-                    return const Track();
+                    return track;
                   } else {
                     return const Text('Unknown');
                   }

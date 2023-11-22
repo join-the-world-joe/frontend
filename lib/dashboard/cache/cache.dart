@@ -1,6 +1,7 @@
 import 'package:flutter_framework/dashboard/model/permission_list.dart';
 import 'package:flutter_framework/dashboard/model/track_list.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
+import 'package:flutter_framework/dashboard/model/user_list.dart';
 import '../model/menu_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 
@@ -11,7 +12,7 @@ class Cache {
   static int _userId = 0;
   static MenuList _menuList = MenuList([], 0);
   static String _content = '';
-  static List<User> userList = [];
+  static UserList userList = UserList([]);
   static RoleList _roleList = RoleList([]);
   static TrackList trackList = TrackList([]);
   static PermissionList _permissionList = PermissionList([]);
@@ -40,11 +41,11 @@ class Cache {
     return trackList;
   }
 
-  static setUserList(List<User> any) {
+  static setUserList(UserList any) {
     userList = any;
   }
 
-  static List<User> getUserList() {
+  static UserList getUserList() {
     return userList;
   }
 

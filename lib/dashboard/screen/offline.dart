@@ -30,17 +30,46 @@ class _State extends State<Offline> {
   int curStage = 0;
   String message = const Uuid().v4();
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('Offline.yeildData.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
+      } else {
+        if (!Runtime.getConnectivity()) {
+          curStage++;
+          return;
+        }
       }
     }
   }
+
+  void navigate(String page) {
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+            () {
+          print('Offline.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
+  }
+
+  // Stream<int>? yeildData() async* {
+  //   var lastStage = curStage;
+  //   while (!closed) {
+  //     // print('Offline.yeildData.last: $lastStage, cur: ${curStage}');
+  //     await Future.delayed(const Duration(milliseconds: 100));
+  //     if (lastStage != curStage) {
+  //       lastStage = curStage;
+  //       yield lastStage;
+  //     }
+  //   }
+  // }
 
   void fetchRateLimitingConfigHandler(Map<String, dynamic> body) {
     print('Offline.fetchRateLimitingConfigHandler');
@@ -56,7 +85,7 @@ class _State extends State<Offline> {
       }
       return;
     } catch (e) {
-      print("Loading.fetchRateLimitingConfigHandler failure, $e");
+      print("Offline.fetchRateLimitingConfigHandler failure, $e");
       showMessageDialog(context, '温馨提示：', '未知错误');
       curStage--;
       return;
@@ -131,32 +160,8 @@ class _State extends State<Offline> {
   }
 
   void refresh() {
-    print('Offline.refresh');
+    // print('Offline.refresh');
     setState(() {});
-  }
-
-  void navigate(String page) {
-    if (!closed) {
-      closed = true;
-      Future.delayed(
-        const Duration(milliseconds: 500),
-        () {
-          print('Offline.navigate to $page');
-          Navigate.to(context, Screen.build(page));
-        },
-      );
-    }
-  }
-
-  void debug() {
-    // {code: 0, user_id: 1, name: 流星, token: 7b775969-9baf-4659-86e9-f3c743b555fd, secret: BF6B6B677BCB7C5B}
-    // {code: 0, user_id: 1, name: 流星, token: ab8f12c7-bc2b-4aff-b38f-8953a6e12fc8, secret: A5EABE66AHBADCA5}
-    var userId = 1;
-    var secret = 'BF6B6B677BCB7C5B';
-    var memberId = '7b775969-9baf-4659-86e9-f3c743b555fd';
-    Cache.setMemberId(memberId);
-    Cache.setUserId(userId);
-    Cache.setSecret(secret);
   }
 
   void setup() {
@@ -185,7 +190,7 @@ class _State extends State<Offline> {
       body: Center(
         child: SafeArea(
           child: StreamBuilder(
-            stream: yeildData(),
+            stream: stream(),
             builder: (context, snap) {
               if (curStage > 1) {}
               return ListView(

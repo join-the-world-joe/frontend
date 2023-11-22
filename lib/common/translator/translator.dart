@@ -8,6 +8,10 @@ class Translator {
     _native = language;
   }
 
+  static String getNative() {
+    return _native;
+  }
+
   static String translate(String input) {
     if (_native == Chinese.getName()) {
       return Chinese.translate(input);

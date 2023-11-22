@@ -16,7 +16,6 @@ class Chinese {
     Language.fPhoneNumber: '手机号码',
     Language.fCountryCode: '国家地区码',
     Language.fName: '姓名',
-    Language.titleOfRole: '角色',
     Language.fStatus: '状态',
     Language.fCreatedAt: '创建时间',
     Language.roleList: '角色列表',
@@ -35,7 +34,6 @@ class Chinese {
     Language.modifyUser: '更新用户资料',
     Language.dashboard: '通用后台管理系统',
     Language.ok: '确定',
-    Language.level: '等级',
     Language.description: '描述',
     Language.viewPermissionList: '查看权限列表',
     Language.viewMenuList: '查看菜单列表',
@@ -61,6 +59,10 @@ class Chinese {
     Language.titleOfBeginDate: '开始日期',
     Language.titleOfEndDate: '结束日期',
 
+    // language
+    Language.languageOfChinese:'简体中文',
+    Language.languageOfEnglish:'英文',
+
     // permission
     Language.signIn: '登入系统',
     Language.fetchMenuListOfCondition: '获取菜单列表',
@@ -72,6 +74,9 @@ class Chinese {
     Language.updateUserRecord: '更新用户',
 
     // role
+    Language.titleOfRole: '角色',
+    Language.rankOfRole: '级别',
+    Language.departmentOfRole:'部门',
     Language.administrator: '系统管理员',
     Language.rdManager: '研发部主管',
     Language.softwareEngineer: '软件工程师',

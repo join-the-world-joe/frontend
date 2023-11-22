@@ -7,6 +7,7 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/menu_list.dart';
+import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import '../responsive.dart';
 import '../config/config.dart';
@@ -29,6 +30,22 @@ class Role extends StatefulWidget {
 }
 
 class _State extends State<Role> {
+  bool closed = false;
+  int curStage = 1;
+  TextEditingController roleController = TextEditingController();
+
+  Stream<int>? yeildData() async* {
+    var lastStage = curStage;
+    while (!closed) {
+      // print('Track.yeildData.last: $lastStage, cur: ${curStage}');
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (lastStage != curStage) {
+        lastStage = curStage;
+        yield lastStage;
+      }
+    }
+  }
+
   void navigate(String page) {
     print('Role.navigate to $page');
     Navigate.to(context, Screen.build(page));
@@ -77,7 +94,7 @@ class _State extends State<Role> {
                   SizedBox(
                     width: 110,
                     child: TextFormField(
-                      // controller: _accountController,
+                      controller: roleController,
                       decoration: InputDecoration(
                         labelText: Translator.translate(Language.titleOfRole),
                       ),
@@ -88,7 +105,9 @@ class _State extends State<Role> {
                     height: 30,
                     width: 100,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+
+                      },
                       child: Text(
                         Translator.translate(Language.titleOfSearch),
                         style: const TextStyle(color: Colors.white, fontSize: 15),
@@ -100,7 +119,10 @@ class _State extends State<Role> {
                     height: 30,
                     width: 100,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Cache.setRoleList(RoleList([]));
+                        roleController.text = '';
+                      },
                       child: Text(
                         Translator.translate(Language.reset),
                         style: const TextStyle(color: Colors.white, fontSize: 15),
@@ -115,7 +137,8 @@ class _State extends State<Role> {
                 header: Text(Translator.translate(Language.roleList)),
                 columns: [
                   DataColumn(label: Text(Translator.translate(Language.titleOfRole))),
-                  DataColumn(label: Text(Translator.translate(Language.level))),
+                  DataColumn(label: Text(Translator.translate(Language.rankOfRole))),
+                  DataColumn(label: Text(Translator.translate(Language.departmentOfRole))),
                   DataColumn(label: Text(Translator.translate(Language.permissionList))),
                   DataColumn(label: Text(Translator.translate(Language.menuList))),
                   DataColumn(label: Text(Translator.translate(Language.description))),
@@ -135,8 +158,7 @@ class _State extends State<Role> {
 
 class Source extends DataTableSource {
   BuildContext context;
-  List<Widget> widgets = [];
-  final List<User> _data = [];
+  RoleList roleList = Cache.getRoleList();
 
   Source(this.context);
 
@@ -144,7 +166,7 @@ class Source extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => _data.length;
+  int get rowCount => roleList.getLength();
 
   @override
   int get selectedRowCount => 0;
@@ -156,20 +178,15 @@ class Source extends DataTableSource {
       selected: false,
       onSelectChanged: (selected) {},
       cells: [
-        DataCell(Text('')),
-        DataCell(Text('')),
+        DataCell(Text(Translator.translate(roleList.getBody()[index].getName()))),
+        DataCell(Text(roleList.getBody()[index].getRank().toString())),
+        DataCell(Text(Translator.translate(roleList.getBody()[index].getDepartment()))),
         DataCell(
           IconButton(
             tooltip: Translator.translate(Language.viewPermissionList),
             icon: const Icon(Icons.verified_user_outlined),
             onPressed: () {
-              //   fetchRoleListOfCondition(
-              //     userIdList: [int.parse(_data[index].getId())],
-              //     userName: '',
-              //     phoneNumber: '',
-              //   );
-              //   print(fetchPermissionListOfCondition.toString());
-              //   Cache.setLastRequest(fetchPermissionListOfCondition.toString());
+              // showPermissionListOfUserDialog(context, roleList[index]);
             },
           ),
         ),
@@ -177,12 +194,12 @@ class Source extends DataTableSource {
           IconButton(
             tooltip: Translator.translate(Language.viewMenuList),
             icon: const Icon(Icons.menu),
-            onPressed: () {},
+            onPressed: () {
+              // showMenuListOfUserDialog(context, roleList[index]);
+            },
           ),
         ),
-        DataCell(
-          Text(''),
-        ),
+        DataCell(Text(Translator.translate(roleList.getBody()[index].getDescription()))),
       ],
     );
   }

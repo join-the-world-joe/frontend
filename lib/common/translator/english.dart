@@ -16,7 +16,6 @@ class English {
     Language.fPhoneNumber: 'Phone Number',
     Language.fCountryCode: 'Country Code',
     Language.fName: 'Name',
-    Language.titleOfRole: 'Role',
     Language.fStatus: 'Status',
     Language.fCreatedAt: 'CreatedAt',
     Language.roleList: 'Role List',
@@ -35,7 +34,6 @@ class English {
     Language.modifyUser: 'Modify User',
     Language.dashboard: 'General Admin Panel',
     Language.ok: 'OK',
-    Language.level: 'Level',
     Language.description: 'Description',
     Language.viewPermissionList: 'View Permission List',
     Language.viewMenuList: 'View Menu List',
@@ -61,6 +59,10 @@ class English {
     Language.titleOfBeginDate: 'Begin Date',
     Language.titleOfEndDate: 'End Date',
 
+    // language
+    Language.languageOfChinese:'Chinese',
+    Language.languageOfEnglish:'English',
+
     // permission
     Language.signIn: 'Sign In',
     Language.fetchMenuListOfCondition: 'Fetch Menu List',
@@ -72,6 +74,9 @@ class English {
     Language.updateUserRecord: 'Update User',
 
     // role
+    Language.titleOfRole: 'Role',
+    Language.rankOfRole: 'Rank',
+    Language.departmentOfRole:'Department',
     Language.administrator: 'Administrator',
     Language.rdManager: 'R&D Manager',
     Language.softwareEngineer: 'Software Engineer',

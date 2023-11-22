@@ -24,11 +24,42 @@ class PasswordSignIn extends StatefulWidget {
 }
 
 class _State extends State<PasswordSignIn> {
+  bool closed = false;
+  int curStage = 0;
   late int countdown = 0;
   final idControl = TextEditingController(text: 'admin@gmail.com');
   final passwordControl = TextEditingController(text: '123456');
   double widgetWidth = 450;
   Duration loginBusyDuration = const Duration(seconds: 10);
+
+  Stream<int>? stream() async* {
+    var lastStage = curStage;
+    while (!closed) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (lastStage != curStage) {
+        lastStage = curStage;
+        yield lastStage;
+      } else {
+        if (!Runtime.getConnectivity()) {
+          curStage++;
+          return;
+        }
+      }
+    }
+  }
+
+  void navigate(String page) {
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+            () {
+          print('PasswordSignIn.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
+  }
 
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
@@ -70,226 +101,224 @@ class _State extends State<PasswordSignIn> {
     }
   }
 
-  void navigate(String page) {
-    print('PasswordSignIn.navigate to $page');
-    Navigate.to(context, Screen.build(page));
-  }
-
   void refresh() {
-    print('PasswordSignIn.refresh');
+    // print('PasswordSignIn.refresh');
     setState(() {});
   }
 
   void setup() {
-    print('PasswordSignIn.setup');
+    // print('PasswordSignIn.setup');
     Runtime.setObserve(observe);
-  }
-
-  void progress() async {
-    print('PasswordSignIn.progress');
-    return;
   }
 
   @override
   void dispose() {
-    print('PasswordSignIn.dispose');
+    // print('PasswordSignIn.dispose');
     super.dispose();
   }
 
   @override
   void initState() {
-    print('PasswordSignIn.initState');
+    // print('PasswordSignIn.initState');
     setup();
-    progress();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: ListView(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          children: <Widget>[
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 30, top: 70),
-                child: SizedBox(
-                  width: 150,
-                  height: 40,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(85, 35),
-                      foregroundColor: Colors.lightBlueAccent,
-                      backgroundColor: Colors.lightBlueAccent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      navigate(Screen.smsSignIn);
-                    },
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '验证码登录',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
+      body: SafeArea(
+        child: StreamBuilder(
+          stream: stream(),
+          builder: (context, snap) {
+            if (!Runtime.getConnectivity()) {
+              navigate(Screen.offline);
+              return const Text('');
+            }
+            return ListView(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 30, top: 70),
+                    child: SizedBox(
+                      width: 150,
+                      height: 40,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(85, 35),
+                          foregroundColor: Colors.lightBlueAccent,
+                          backgroundColor: Colors.lightBlueAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5, top: 70),
-                child: SizedBox(
-                  width: widgetWidth,
-                  height: 50,
-                  child: const Text(
-                    '密码登录',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 27,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5, top: 20),
-                child: SizedBox(
-                  width: widgetWidth,
-                  child: TextField(
-                    obscureText: false,
-                    controller: idControl,
-                    style: const TextStyle(
-                      fontSize: 30.0,
-                    ),
-                    inputFormatters: [
-                      // FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                      LengthLimitingTextInputFormatter(20),
-                    ],
-                    decoration: const InputDecoration(
-                      counterText: '',
-                      isDense: true,
-                      prefixIcon: Text(
-                        "帐号  ",
-                        style: TextStyle(
-                          fontSize: 25.0,
+                        onPressed: () {
+                          navigate(Screen.smsSignIn);
+                        },
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '验证码登录',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5, top: 20),
-                child: SizedBox(
-                  width: widgetWidth,
-                  child: TextField(
-                    obscureText: true,
-                    controller: passwordControl,
-                    style: const TextStyle(
-                      fontSize: 30.0,
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                      LengthLimitingTextInputFormatter(20),
-                    ],
-                    decoration: const InputDecoration(
-                      counterText: '',
-                      isDense: true,
-                      prefixIcon: Text(
-                        "密码  ",
+                Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 5, top: 70),
+                    child: SizedBox(
+                      width: widgetWidth,
+                      height: 50,
+                      child: const Text(
+                        '密码登录',
                         style: TextStyle(
-                          fontSize: 25.0,
+                          color: Colors.white,
+                          fontSize: 27,
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5, top: 20),
-                child: SizedBox(
-                  height: 40,
-                  width: widgetWidth,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (!Runtime.allow(
-                        major: int.parse(Major.admin),
-                        minor: int.parse(Minor.admin.signInReq),
-                      )) {
-                        return;
-                      }
-                      var behavior = 1; // email, by default
-                      if (!isEmailValid(idControl.text)) {
-                        behavior = 4;
-                        signIn(
-                          behavior: behavior,
-                          verificationCode: 0,
-                          countryCode: '',
-                          phoneNumber: '',
-                          email: '',
-                          account: idControl.text,
-                          memberId: '',
-                          password: Runtime.rsa.encrypt(passwordControl.text),
-                          userId: 0,
-                        );
-                        refresh();
-                        return;
-                      }
-                      signIn(
-                        behavior: behavior,
-                        verificationCode: 0,
-                        countryCode: '',
-                        phoneNumber: '',
-                        email: idControl.text,
-                        account: '',
-                        memberId: '',
-                        password: Runtime.rsa.encrypt(passwordControl.text),
-                        userId: 0,
-                      );
-                      refresh();
-                      return;
-                    },
-                    style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(85, 35),
-                      foregroundColor: Colors.lightBlueAccent,
-                      backgroundColor: Colors.lightBlueAccent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                    child: const Text(
-                      '登录',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25.0,
+                Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 5, top: 20),
+                    child: SizedBox(
+                      width: widgetWidth,
+                      child: TextField(
+                        obscureText: false,
+                        controller: idControl,
+                        style: const TextStyle(
+                          fontSize: 30.0,
+                        ),
+                        inputFormatters: [
+                          // FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                          LengthLimitingTextInputFormatter(20),
+                        ],
+                        decoration: const InputDecoration(
+                          counterText: '',
+                          isDense: true,
+                          prefixIcon: Text(
+                            "帐号  ",
+                            style: TextStyle(
+                              fontSize: 25.0,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          ],
+                Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 5, top: 20),
+                    child: SizedBox(
+                      width: widgetWidth,
+                      child: TextField(
+                        obscureText: true,
+                        controller: passwordControl,
+                        style: const TextStyle(
+                          fontSize: 30.0,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                          LengthLimitingTextInputFormatter(20),
+                        ],
+                        decoration: const InputDecoration(
+                          counterText: '',
+                          isDense: true,
+                          prefixIcon: Text(
+                            "密码  ",
+                            style: TextStyle(
+                              fontSize: 25.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 5, top: 20),
+                    child: SizedBox(
+                      height: 40,
+                      width: widgetWidth,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (!Runtime.allow(
+                            major: int.parse(Major.admin),
+                            minor: int.parse(Minor.admin.signInReq),
+                          )) {
+                            return;
+                          }
+                          var behavior = 1; // email, by default
+                          if (!isEmailValid(idControl.text)) {
+                            behavior = 4;
+                            signIn(
+                              behavior: behavior,
+                              verificationCode: 0,
+                              countryCode: '',
+                              phoneNumber: '',
+                              email: '',
+                              account: idControl.text,
+                              memberId: '',
+                              password: Runtime.rsa.encrypt(passwordControl.text),
+                              userId: 0,
+                            );
+                            refresh();
+                            return;
+                          }
+                          signIn(
+                            behavior: behavior,
+                            verificationCode: 0,
+                            countryCode: '',
+                            phoneNumber: '',
+                            email: idControl.text,
+                            account: '',
+                            memberId: '',
+                            password: Runtime.rsa.encrypt(passwordControl.text),
+                            userId: 0,
+                          );
+                          refresh();
+                          return;
+                        },
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(85, 35),
+                          foregroundColor: Colors.lightBlueAccent,
+                          backgroundColor: Colors.lightBlueAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                        ),
+                        child: const Text(
+                          '登录',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

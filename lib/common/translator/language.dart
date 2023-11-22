@@ -12,7 +12,6 @@ class Language {
   static String fPhoneNumber = 'field of Phone Number';
   static String fCountryCode = 'field of Country Code';
   static String fName = 'field of Name';
-  static String titleOfRole = 'the title of role';
   static String fStatus = 'field of Status';
   static String fCreatedAt = 'field of CreatedAt';
   static String roleList = 'Role List';
@@ -31,8 +30,6 @@ class Language {
   static String modifyUser = 'Modify User';
   static String dashboard = 'Dashboard';
   static String ok = 'OK';
-  static String level = 'Level';
-  static String description = 'Description';
   static String viewPermissionList = 'View Permission List';
   static String viewMenuList = 'View Menu List';
   static String viewRoleList = 'View Role List';
@@ -57,6 +54,13 @@ class Language {
   static String titleOfBeginDate = 'the title of begin date';
   static String titleOfEndDate = 'the title of end date';
 
+  // language
+  static String languageOfChinese = 'the languageOfChinese';
+  static String languageOfEnglish = 'the languageOfEnglish';
+
+  // common
+  static String description = 'Description';
+
   // permission
   static String signIn = 'SignIn';
   static String fetchMenuListOfCondition = 'FetchMenuListOfCondition';
@@ -68,6 +72,9 @@ class Language {
   static String updateUserRecord = 'UpdateUserRecord';
 
   // role
+  static String titleOfRole = 'the title of role';
+  static String rankOfRole = 'the rank of specific role';
+  static String departmentOfRole = 'the department of specific role';
   static String administrator = 'Administrator';
   static String rdManager = 'RD_Manager';
   static String softwareEngineer = 'Software_Engineer';

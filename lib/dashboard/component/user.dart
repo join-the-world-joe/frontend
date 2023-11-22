@@ -24,6 +24,7 @@ import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/dashboard/model/permission_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/dashboard/model/user.dart' as usr;
+import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import '../responsive.dart';
@@ -63,7 +64,7 @@ class _State extends State<User> {
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('User.yeildData.last: $lastStage, cur: ${curStage}');
+      // print('Offline.yeildData.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
@@ -116,35 +117,54 @@ class _State extends State<User> {
   }
 
   void fetchUserListOfConditionHandler(Map<String, dynamic> body) {
-    // print('User.fetchUserListOfConditionHandler');
     try {
       FetchUserListOfConditionRsp rsp = FetchUserListOfConditionRsp.fromJson(body);
+      print('rsp: ${body.toString()}');
       if (rsp.code == Code.oK) {
-        Cache.setUserList([]);
-        // print('body: ${rsp.body.toString()}');
-        // print(rsp.body);
-        var userList = rsp.body['user_list'] as List<dynamic>;
-        userList.forEach(
-          (e) {
-            Cache.userList.add(
-              usr.User(e['id'], e['name'], e['account'], e['email'], e['department'], e['country_code'], e['phone_number'], e['status'], e['created_at']),
-            );
-          },
-        );
-        curStage++;
-        return;
-      } else if (rsp.code == Code.accessDenied) {
-        showMessageDialog(context, '温馨提示：', '没有权限.');
+        print('rsp: ${rsp.toString()}');
+        Cache.setUserList(UserList.fromJson(rsp.body));
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
         return;
       }
     } catch (e) {
-      print("User.fetchUserListOfConditionHandler failure, $e");
+      print("Track.fetchTrackListOfConditionHandler failure, $e");
+      return;
     }
   }
+
+  // void fetchUserListOfConditionHandler(Map<String, dynamic> body) {
+  //   // print('User.fetchUserListOfConditionHandler');
+  //   try {
+  //     FetchUserListOfConditionRsp rsp = FetchUserListOfConditionRsp.fromJson(body);
+  //     if (rsp.code == Code.oK) {
+  //       Cache.setUserList([]);
+  //       // print('body: ${rsp.body.toString()}');
+  //       // print(rsp.body);
+  //       var userList = rsp.body['user_list'] as List<dynamic>;
+  //       userList.forEach(
+  //         (e) {
+  //           Cache.userList.add(
+  //             usr.User(e['id'], e['name'], e['account'], e['email'], e['department'], e['country_code'], e['phone_number'], e['status'], e['created_at']),
+  //           );
+  //         },
+  //       );
+  //       curStage++;
+  //       return;
+  //     } else if (rsp.code == Code.accessDenied) {
+  //       showMessageDialog(context, '温馨提示：', '没有权限.');
+  //       curStage++;
+  //       return;
+  //     } else {
+  //       showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+  //       return;
+  //     }
+  //   } catch (e) {
+  //     print("User.fetchUserListOfConditionHandler failure, $e");
+  //   }
+  // }
 
   void refresh() {
     // print('User.refresh');
@@ -152,13 +172,21 @@ class _State extends State<User> {
   }
 
   void navigate(String page) {
-    print('User.navigate to $page');
-    Navigate.to(context, Screen.build(page));
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () {
+          print('User.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
   }
 
   void setup() {
     // print('User.setup');
-    Cache.setUserList([]);
+    Cache.setUserList(UserList([]));
     Runtime.setObserve(observe);
   }
 
@@ -234,7 +262,7 @@ class _State extends State<User> {
                         width: 100,
                         child: ElevatedButton(
                           onPressed: () {
-                            Cache.setUserList([]);
+                            Cache.setUserList(UserList([]));
                             // print('name: ${nameControl.text}');
                             if (!Runtime.allow(
                               major: int.parse(Major.admin),
@@ -272,7 +300,7 @@ class _State extends State<User> {
                           onPressed: () {
                             phoneNumberControl.text = '';
                             nameControl.text = '';
-                            Cache.setUserList([]);
+                            Cache.setUserList(UserList([]));
                             refresh();
                           },
                           child: Text(
@@ -340,8 +368,7 @@ class _State extends State<User> {
 
 class Source extends DataTableSource {
   BuildContext context;
-  List<Widget> widgets = [];
-  final List<usr.User> _data = Cache.getUserList();
+  UserList userList = Cache.getUserList();
   bool hasFetchPermissionListOfCondition;
   bool hasFetchMenuListOfCondition;
   bool hasSoftDeleteUserRecord;
@@ -357,12 +384,7 @@ class Source extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => getLength();
-
-  int getLength() {
-    // print('length: ${_data.length}');
-    return _data.length;
-  }
+  int get rowCount => userList.getLength();
 
   @override
   int get selectedRowCount => 0;
@@ -376,15 +398,15 @@ class Source extends DataTableSource {
         // print('selected: $selected');
       },
       cells: [
-        DataCell(Text(_data[index].getPhoneNumber())),
-        DataCell(Text(_data[index].getName())),
-        DataCell(_data[index].getStatus() == '1' ? const Icon(Icons.done, color: Colors.lightGreen) : const Icon(Icons.close)),
+        DataCell(Text(userList.getBody()[index].getPhoneNumber())),
+        DataCell(Text(userList.getBody()[index].getName())),
+        DataCell(userList.getBody()[index].getStatus() == '1' ? const Icon(Icons.done, color: Colors.lightGreen) : const Icon(Icons.close)),
         DataCell(
           IconButton(
             tooltip: Translator.translate(Language.viewRoleList),
             icon: const Icon(Icons.people_alt_rounded),
             onPressed: () {
-              showRoleListOfUserDialog(context, _data[index]);
+              showRoleListOfUserDialog(context, userList.getBody()[index]);
             },
           ),
         ),
@@ -394,7 +416,7 @@ class Source extends DataTableSource {
               tooltip: Translator.translate(Language.viewPermissionList),
               icon: const Icon(Icons.verified_user_outlined),
               onPressed: () {
-                showPermissionListOfUserDialog(context, _data[index]);
+                showPermissionListOfUserDialog(context, userList.getBody()[index]);
               },
             ),
           ),
@@ -404,11 +426,11 @@ class Source extends DataTableSource {
               tooltip: Translator.translate(Language.viewMenuList),
               icon: const Icon(Icons.menu),
               onPressed: () {
-                showMenuListOfUserDialog(context, _data[index]);
+                showMenuListOfUserDialog(context, userList.getBody()[index]);
               },
             ),
           ),
-        DataCell(Text(_data[index].getCreatedAt())),
+        DataCell(Text(userList.getBody()[index].getCreatedAt())),
         DataCell(
           Row(
             children: [
@@ -416,7 +438,7 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.edit),
                 tooltip: Translator.translate(Language.update),
                 onPressed: () async {
-                  showUpdateUserDialog(context, _data[index]);
+                  showUpdateUserDialog(context, userList.getBody()[index]);
                 },
               ),
               if (hasSoftDeleteUserRecord)
@@ -424,11 +446,11 @@ class Source extends DataTableSource {
                   icon: const Icon(Icons.delete),
                   tooltip: Translator.translate(Language.remove),
                   onPressed: () async {
-                    await showRemoveUserDialog(context, _data[index]).then(
+                    await showRemoveUserDialog(context, userList.getBody()[index]).then(
                       (value) => () {
                         // print('value: $value');
                         if (value) {
-                          _data.removeAt(index);
+                          userList.getBody().removeAt(index);
                           notifyListeners();
                         }
                       }(),

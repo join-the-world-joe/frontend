@@ -37,7 +37,6 @@ class _State extends State<SMSSignIn> {
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('SMSSignIn.stream.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
@@ -48,6 +47,25 @@ class _State extends State<SMSSignIn> {
           return;
         }
       }
+    }
+  }
+
+  void navigate(String page) {
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+            () {
+          print('SMSSignIn.navigate to $page');
+          if (countdownTimer != null) {
+            if (countdownTimer!.isActive) {
+              print('SMSSignIn.countdownTimer.cancel');
+              countdownTimer!.cancel();
+            }
+          }
+          Navigate.to(context, Screen.build(page));
+        },
+      );
     }
   }
 
@@ -135,42 +153,6 @@ class _State extends State<SMSSignIn> {
     setState(() {});
   }
 
-  // void navigate(String page) {
-  //   print('SMSSignIn.navigate to $page');
-  //   closed = true;
-  //   Future.delayed(
-  //     const Duration(milliseconds: 300),
-  //     () {
-  //       if (countdownTimer != null) {
-  //         if (countdownTimer!.isActive) {
-  //           print('SMSSignIn.countdownTimer.cancel');
-  //           countdownTimer!.cancel();
-  //         }
-  //       }
-  //       Navigate.to(context, Screen.build(page));
-  //     },
-  //   );
-  // }
-
-  void navigate(String page) {
-    if (!closed) {
-      closed = true;
-      Future.delayed(
-        const Duration(milliseconds: 500),
-        () {
-          print('SMSSignIn.navigate to $page');
-          if (countdownTimer != null) {
-            if (countdownTimer!.isActive) {
-              print('SMSSignIn.countdownTimer.cancel');
-              countdownTimer!.cancel();
-            }
-          }
-          Navigate.to(context, Screen.build(page));
-        },
-      );
-    }
-  }
-
   void setup() {
     // print('SMSSignIn.setup');
     Runtime.setObserve(observe);
@@ -198,6 +180,7 @@ class _State extends State<SMSSignIn> {
           builder: (context, snap) {
             if (!Runtime.getConnectivity()) {
               navigate(Screen.offline);
+              return const Text('');
             }
             return ListView(
               scrollDirection: Axis.vertical,

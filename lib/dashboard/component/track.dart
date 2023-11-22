@@ -43,20 +43,8 @@ class _State extends State<Track> {
   TextEditingController majorController = TextEditingController();
   TextEditingController minorController = TextEditingController();
   TextEditingController operatorController = TextEditingController();
-  TextEditingController beginController = TextEditingController(text: '${DateTime
-      .now()
-      .year}-${DateTime
-      .now()
-      .month}-${DateTime
-      .now()
-      .day}');
-  TextEditingController endController = TextEditingController(text: '${DateTime
-      .now()
-      .year}-${DateTime
-      .now()
-      .month}-${DateTime
-      .now()
-      .day}');
+  TextEditingController beginController = TextEditingController(text: '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}');
+  TextEditingController endController = TextEditingController(text: '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}');
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -159,9 +147,7 @@ class _State extends State<Track> {
     if (picked != null) {
       var year = picked.year;
       var month = picked.month;
-      var day = picked.day
-          .toString()
-          .length == 2 ? picked.day.toString() : '0${picked.day}';
+      var day = picked.day.toString().length == 2 ? picked.day.toString() : '0${picked.day}';
       return '$year-$month-$day';
     } else {
       return null;
@@ -184,7 +170,7 @@ class _State extends State<Track> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       SizedBox(
-                        width: 60,
+                        width: 70,
                         child: TextFormField(
                           controller: operatorController,
                           decoration: InputDecoration(
@@ -276,26 +262,13 @@ class _State extends State<Track> {
                             // print('begin string: ${beginController.text}');
                             // print('end string: ${endController.text}');
                             var begin = DateTime.parse(beginController.text);
-                            var end = DateTime.parse(endController.text).add(const Duration(days: 0,
-                                hours: 23,
-                                minutes: 59,
-                                seconds: 59,
-                                milliseconds: 999));
+                            var end = DateTime.parse(endController.text).add(const Duration(days: 0, hours: 23, minutes: 59, seconds: 59, milliseconds: 999));
                             if (end.isBefore(begin)) {
                               showMessageDialog(context, Translator.translate(Language.titleOfNotification), Translator.translate(Language.endDateIsBeforeBeginDate));
                               return;
                             }
-                            var d1 = DateTime
-                                .parse(beginController.text)
-                                .millisecondsSinceEpoch;
-                            var d2 = DateTime
-                                .parse(endController.text)
-                                .add(const Duration(days: 0,
-                                hours: 23,
-                                minutes: 59,
-                                seconds: 59,
-                                milliseconds: 999))
-                                .millisecondsSinceEpoch;
+                            var d1 = DateTime.parse(beginController.text).millisecondsSinceEpoch;
+                            var d2 = DateTime.parse(endController.text).add(const Duration(days: 0, hours: 23, minutes: 59, seconds: 59, milliseconds: 999)).millisecondsSinceEpoch;
                             // print('begin int: ${d1 ~/ 1000}');
                             // print('end int: ${d2 ~/ 1000}');
                             fetchTrackListOfCondition(
@@ -323,20 +296,8 @@ class _State extends State<Track> {
                             operatorController.text = '';
                             majorController.text = '';
                             minorController.text = '';
-                            beginController.text = '${DateTime
-                                .now()
-                                .year}-${DateTime
-                                .now()
-                                .month}-${DateTime
-                                .now()
-                                .day}';
-                            endController.text = '${DateTime
-                                .now()
-                                .year}-${DateTime
-                                .now()
-                                .month}-${DateTime
-                                .now()
-                                .day}';
+                            beginController.text = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}';
+                            endController.text = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}';
                             curStage++;
                           },
                           child: Text(
