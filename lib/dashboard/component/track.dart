@@ -11,7 +11,6 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/fetch_track_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
-import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/dashboard/model/track_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -46,16 +45,39 @@ class _State extends State<Track> {
   TextEditingController beginController = TextEditingController(text: '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}');
   TextEditingController endController = TextEditingController(text: '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}');
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('Track.yeildData.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
+      } else {
+        if (!Runtime.getConnectivity()) {
+          curStage++;
+          return;
+        }
       }
     }
+  }
+
+  void navigate(String page) {
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () {
+          print('Track.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
+  }
+
+  void setup() {
+    print('Track.setup');
+    Cache.setTrackList(TrackList([]));
+    Runtime.setObserve(observe);
   }
 
   void fetchTrackListOfConditionHandler(Map<String, dynamic> body) {
@@ -96,25 +118,9 @@ class _State extends State<Track> {
     }
   }
 
-  void navigate(String page) {
-    print('Track.navigate to $page');
-    Navigate.to(context, Screen.build(page));
-  }
-
   void refresh() {
     // print('User.refresh');
     setState(() {});
-  }
-
-  void setup() {
-    print('Track.setup');
-    Cache.setTrackList(TrackList([]));
-    Runtime.setObserve(observe);
-  }
-
-  void progress() async {
-    print('Track.progress');
-    return;
   }
 
   @override
@@ -124,16 +130,10 @@ class _State extends State<Track> {
     super.dispose();
   }
 
-  void debug() async {
-    print('Track.debug');
-  }
-
   @override
   void initState() {
     print('Track.initState');
     setup();
-    progress();
-    debug();
     super.initState();
   }
 
@@ -159,183 +159,180 @@ class _State extends State<Track> {
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
-            if (curStage > 0) {
-              return ListView(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        width: 70,
-                        child: TextFormField(
-                          controller: operatorController,
-                          decoration: InputDecoration(
-                            labelText: Translator.translate(Language.titleOfOperator),
-                          ),
+            return ListView(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 70,
+                      child: TextFormField(
+                        controller: operatorController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.titleOfOperator),
                         ),
                       ),
-                      Spacing.addHorizontalSpace(20),
-                      SizedBox(
-                        width: 70,
-                        child: TextFormField(
-                          controller: majorController,
-                          decoration: InputDecoration(
-                            labelText: Translator.translate(Language.major),
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                            LengthLimitingTextInputFormatter(3),
-                          ],
-                        ),
-                      ),
-                      Spacing.addHorizontalSpace(20),
-                      SizedBox(
-                        width: 70,
-                        child: TextFormField(
-                          controller: minorController,
-                          decoration: InputDecoration(
-                            labelText: Translator.translate(Language.minor),
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                            LengthLimitingTextInputFormatter(3),
-                          ],
-                        ),
-                      ),
-                      Spacing.addHorizontalSpace(20),
-                      SizedBox(
-                        width: 150,
-                        child: TextFormField(
-                          readOnly: true,
-                          controller: beginController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            prefixIcon: const Icon(Icons.calendar_month_outlined),
-                            labelText: Translator.translate(Language.titleOfBeginDate),
-                          ),
-                          onTap: () async {
-                            var any = await selectDate();
-                            if (any != null) {
-                              beginController.text = any;
-                            }
-                            refresh();
-                          },
-                        ),
-                      ),
-                      Spacing.addHorizontalSpace(20),
-                      SizedBox(
-                        width: 150,
-                        child: TextFormField(
-                          readOnly: true,
-                          controller: endController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            prefixIcon: const Icon(Icons.calendar_month_outlined),
-                            labelText: Translator.translate(Language.titleOfEndDate),
-                          ),
-                          onTap: () async {
-                            var any = await selectDate();
-                            if (any != null) {
-                              endController.text = any;
-                            }
-                            refresh();
-                          },
-                        ),
-                      ),
-                      Spacing.addHorizontalSpace(20),
-                      SizedBox(
-                        height: 30,
-                        width: 100,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (!Runtime.allow(
-                              major: int.parse(Major.admin),
-                              minor: int.parse(Minor.admin.fetchTrackListOfConditionReq),
-                            )) {
-                              return;
-                            }
-
-                            // print('begin string: ${beginController.text}');
-                            // print('end string: ${endController.text}');
-                            var begin = DateTime.parse(beginController.text);
-                            var end = DateTime.parse(endController.text).add(const Duration(days: 0, hours: 23, minutes: 59, seconds: 59, milliseconds: 999));
-                            if (end.isBefore(begin)) {
-                              showMessageDialog(context, Translator.translate(Language.titleOfNotification), Translator.translate(Language.endDateIsBeforeBeginDate));
-                              return;
-                            }
-                            var d1 = DateTime.parse(beginController.text).millisecondsSinceEpoch;
-                            var d2 = DateTime.parse(endController.text).add(const Duration(days: 0, hours: 23, minutes: 59, seconds: 59, milliseconds: 999)).millisecondsSinceEpoch;
-                            // print('begin int: ${d1 ~/ 1000}');
-                            // print('end int: ${d2 ~/ 1000}');
-                            fetchTrackListOfCondition(
-                              operator: operatorController.text,
-                              behavior: 2,
-                              begin: d1 ~/ 1000,
-                              end: d2 ~/ 1000,
-                              major: majorController.text,
-                              minor: minorController.text,
-                            );
-                          },
-                          child: Text(
-                            Translator.translate(Language.titleOfSearch),
-                            style: const TextStyle(color: Colors.white, fontSize: 15),
-                          ),
-                        ),
-                      ),
-                      Spacing.addHorizontalSpace(20),
-                      SizedBox(
-                        height: 30,
-                        width: 100,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Cache.setTrackList(TrackList([]));
-                            operatorController.text = '';
-                            majorController.text = '';
-                            minorController.text = '';
-                            beginController.text = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}';
-                            endController.text = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}';
-                            curStage++;
-                          },
-                          child: Text(
-                            Translator.translate(Language.reset),
-                            style: const TextStyle(color: Colors.white, fontSize: 15),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Spacing.addVerticalSpace(20),
-                  Scrollbar(
-                    controller: scrollController,
-                    thumbVisibility: true,
-                    scrollbarOrientation: ScrollbarOrientation.bottom,
-                    child: PaginatedDataTable(
-                      controller: scrollController,
-                      source: Source(context),
-                      header: Text(Translator.translate(Language.operationLog)),
-                      columns: [
-                        DataColumn(label: Text(Translator.translate(Language.titleOfOperator))),
-                        DataColumn(label: Text(Translator.translate(Language.titleOfPermission))),
-                        DataColumn(label: Text(Translator.translate(Language.major))),
-                        DataColumn(label: Text(Translator.translate(Language.minor))),
-                        DataColumn(label: Text(Translator.translate(Language.request))),
-                        DataColumn(label: Text(Translator.translate(Language.response))),
-                        DataColumn(label: Text(Translator.translate(Language.operationTimestamp))),
-                      ],
-                      columnSpacing: 60,
-                      horizontalMargin: 10,
-                      rowsPerPage: 5,
-                      showCheckboxColumn: false,
                     ),
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      width: 70,
+                      child: TextFormField(
+                        controller: majorController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.major),
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                          LengthLimitingTextInputFormatter(3),
+                        ],
+                      ),
+                    ),
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      width: 70,
+                      child: TextFormField(
+                        controller: minorController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.minor),
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                          LengthLimitingTextInputFormatter(3),
+                        ],
+                      ),
+                    ),
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      width: 150,
+                      child: TextFormField(
+                        readOnly: true,
+                        controller: beginController,
+                        decoration: InputDecoration(
+                          filled: true,
+                          prefixIcon: const Icon(Icons.calendar_month_outlined),
+                          labelText: Translator.translate(Language.titleOfBeginDate),
+                        ),
+                        onTap: () async {
+                          var any = await selectDate();
+                          if (any != null) {
+                            beginController.text = any;
+                          }
+                          refresh();
+                        },
+                      ),
+                    ),
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      width: 150,
+                      child: TextFormField(
+                        readOnly: true,
+                        controller: endController,
+                        decoration: InputDecoration(
+                          filled: true,
+                          prefixIcon: const Icon(Icons.calendar_month_outlined),
+                          labelText: Translator.translate(Language.titleOfEndDate),
+                        ),
+                        onTap: () async {
+                          var any = await selectDate();
+                          if (any != null) {
+                            endController.text = any;
+                          }
+                          refresh();
+                        },
+                      ),
+                    ),
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      height: 30,
+                      width: 100,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (!Runtime.allow(
+                            major: int.parse(Major.admin),
+                            minor: int.parse(Minor.admin.fetchTrackListOfConditionReq),
+                          )) {
+                            return;
+                          }
+
+                          // print('begin string: ${beginController.text}');
+                          // print('end string: ${endController.text}');
+                          var begin = DateTime.parse(beginController.text);
+                          var end = DateTime.parse(endController.text).add(const Duration(days: 0, hours: 23, minutes: 59, seconds: 59, milliseconds: 999));
+                          if (end.isBefore(begin)) {
+                            showMessageDialog(context, Translator.translate(Language.titleOfNotification), Translator.translate(Language.endDateIsBeforeBeginDate));
+                            return;
+                          }
+                          var d1 = DateTime.parse(beginController.text).millisecondsSinceEpoch;
+                          var d2 = DateTime.parse(endController.text).add(const Duration(days: 0, hours: 23, minutes: 59, seconds: 59, milliseconds: 999)).millisecondsSinceEpoch;
+                          // print('begin int: ${d1 ~/ 1000}');
+                          // print('end int: ${d2 ~/ 1000}');
+                          fetchTrackListOfCondition(
+                            operator: operatorController.text,
+                            behavior: 2,
+                            begin: d1 ~/ 1000,
+                            end: d2 ~/ 1000,
+                            major: majorController.text,
+                            minor: minorController.text,
+                          );
+                        },
+                        child: Text(
+                          Translator.translate(Language.titleOfSearch),
+                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                        ),
+                      ),
+                    ),
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      height: 30,
+                      width: 100,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Cache.setTrackList(TrackList([]));
+                          operatorController.text = '';
+                          majorController.text = '';
+                          minorController.text = '';
+                          beginController.text = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}';
+                          endController.text = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}';
+                          curStage++;
+                        },
+                        child: Text(
+                          Translator.translate(Language.reset),
+                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Spacing.addVerticalSpace(20),
+                Scrollbar(
+                  controller: scrollController,
+                  thumbVisibility: true,
+                  scrollbarOrientation: ScrollbarOrientation.bottom,
+                  child: PaginatedDataTable(
+                    controller: scrollController,
+                    source: Source(context),
+                    header: Text(Translator.translate(Language.operationLog)),
+                    columns: [
+                      DataColumn(label: Text(Translator.translate(Language.titleOfOperator))),
+                      DataColumn(label: Text(Translator.translate(Language.titleOfPermission))),
+                      DataColumn(label: Text(Translator.translate(Language.major))),
+                      DataColumn(label: Text(Translator.translate(Language.minor))),
+                      DataColumn(label: Text(Translator.translate(Language.request))),
+                      DataColumn(label: Text(Translator.translate(Language.response))),
+                      DataColumn(label: Text(Translator.translate(Language.operationTimestamp))),
+                    ],
+                    columnSpacing: 60,
+                    horizontalMargin: 10,
+                    rowsPerPage: 5,
+                    showCheckboxColumn: false,
                   ),
-                ],
-              );
-            }
-            return const Center(child: CircularProgressIndicator());
+                ),
+              ],
+            );
           },
         ),
       ),

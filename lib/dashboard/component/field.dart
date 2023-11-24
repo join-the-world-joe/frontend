@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
-import 'package:flutter_framework/dashboard/model/menu_list.dart';
+import 'package:flutter_framework/dashboard/model/field_list.dart';
+import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import '../responsive.dart';
 import '../config/config.dart';
@@ -29,18 +30,61 @@ class Field extends StatefulWidget {
 }
 
 class _State extends State<Field> {
+  bool closed = false;
+  int curStage = 1;
+
+  Stream<int>? stream() async* {
+    var lastStage = curStage;
+    while (!closed) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (lastStage != curStage) {
+        lastStage = curStage;
+        yield lastStage;
+      } else {
+        if (!Runtime.getConnectivity()) {
+          curStage++;
+          return;
+        }
+      }
+    }
+  }
+
   void navigate(String page) {
-    print('Field.navigate to $page');
-    Navigate.to(context, Screen.build(page));
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () {
+          print('Field.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
   }
 
   void setup() {
     print('Field.setup');
+    Cache.setFieldList(FieldList([]));
+    Runtime.setObserve(observe);
   }
 
-  void progress() async {
-    print('Field.progress');
-    return;
+  void observe(PacketClient packet) {
+    var major = packet.getHeader().getMajor();
+    var minor = packet.getHeader().getMinor();
+    var body = packet.getBody();
+
+    try {
+      print("Field.observe: major: $major, minor: $minor");
+      if (major == Major.admin && minor == Minor.admin.fetchFieldListOfConditionRsp) {
+        curStage++;
+      } else {
+        print("Field.observe warning: $major-$minor doesn't matched");
+      }
+      return;
+    } catch (e) {
+      print('Field.observe($major-$minor).e: ${e.toString()}');
+      return;
+    }
   }
 
   @override
@@ -57,8 +101,6 @@ class _State extends State<Field> {
   void initState() {
     print('Field.initState');
     setup();
-    progress();
-    debug();
     super.initState();
   }
 
@@ -66,85 +108,88 @@ class _State extends State<Field> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  SizedBox(
-                    width: 110,
-                    child: TextFormField(
-                      // controller: _accountController,
-                      decoration: InputDecoration(
-                        labelText: Translator.translate(Language.fField),
+        child: StreamBuilder(
+          stream: stream(),
+          builder: (context, snap) {
+            return ListView(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 110,
+                      child: TextFormField(
+                        // controller: _accountController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.fField),
+                        ),
                       ),
                     ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
-                    width: 110,
-                    child: TextFormField(
-                      // controller: _accountController,
-                      decoration: InputDecoration(
-                        labelText: Translator.translate(Language.table),
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      width: 110,
+                      child: TextFormField(
+                        // controller: _accountController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.table),
+                        ),
                       ),
                     ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
-                    width: 110,
-                    child: TextFormField(
-                      // controller: _accountController,
-                      decoration: InputDecoration(
-                        labelText: Translator.translate(Language.titleOfRole),
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      width: 110,
+                      child: TextFormField(
+                        // controller: _accountController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.titleOfRole),
+                        ),
                       ),
                     ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
-                    height: 30,
-                    width: 100,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text(
-                        Translator.translate(Language.titleOfSearch),
-                        style: const TextStyle(color: Colors.white, fontSize: 15),
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      height: 30,
+                      width: 100,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text(
+                          Translator.translate(Language.titleOfSearch),
+                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                        ),
                       ),
                     ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
-                    height: 30,
-                    width: 100,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text(
-                        Translator.translate(Language.reset),
-                        style: const TextStyle(color: Colors.white, fontSize: 15),
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      height: 30,
+                      width: 100,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text(
+                          Translator.translate(Language.reset),
+                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              Spacing.addVerticalSpace(20),
-              PaginatedDataTable(
-                source: Source(context),
-                header: Text(Translator.translate(Language.fieldList)),
-                columns: [
-                  DataColumn(label: Text(Translator.translate(Language.fField))),
-                  DataColumn(label: Text(Translator.translate(Language.table))),
-                  DataColumn(label: Text(Translator.translate(Language.description))),
-                ],
-                columnSpacing: 60,
-                horizontalMargin: 10,
-                rowsPerPage: 5,
-                showCheckboxColumn: false,
-              ),
-            ],
-          ),
+                  ],
+                ),
+                Spacing.addVerticalSpace(20),
+                PaginatedDataTable(
+                  source: Source(context),
+                  header: Text(Translator.translate(Language.fieldList)),
+                  columns: [
+                    DataColumn(label: Text(Translator.translate(Language.fField))),
+                    DataColumn(label: Text(Translator.translate(Language.table))),
+                    DataColumn(label: Text(Translator.translate(Language.description))),
+                  ],
+                  columnSpacing: 60,
+                  horizontalMargin: 10,
+                  rowsPerPage: 5,
+                  showCheckboxColumn: false,
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

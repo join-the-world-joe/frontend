@@ -40,7 +40,6 @@ class Language {
   static String titleOfPermission = 'the title of Permission';
   static String major = 'Major';
   static String minor = 'Minor';
-  static String fMenu = 'field of Menu';
   static String subMenu = 'sub Menu';
   static String titleOfOperator = 'the title of operator';
   static String request = 'Request';
@@ -60,6 +59,10 @@ class Language {
 
   // common
   static String description = 'Description';
+  static String valueOfNull = "the value of null";
+
+  // menu
+  static String titleOfParentMenu = 'the title of parent menu';
 
   // permission
   static String signIn = 'SignIn';
@@ -70,6 +73,12 @@ class Language {
   static String insertUserRecord = 'InsertUserRecord';
   static String softDeleteUserRecord = 'SoftDeleteUserRecord';
   static String updateUserRecord = 'UpdateUserRecord';
+  static String managementOfUsers = 'The management of users';
+  static String managementOfRoles = 'The management of roles';
+  static String managementOfMenus = 'The management of menus';
+  static String managementOfPermissions = 'The management of permissions';
+  static String managementOfFields = 'The management of fields';
+  static String managementOfTracks = 'The management of tracks';
 
   // role
   static String titleOfRole = 'the title of role';
@@ -101,6 +110,12 @@ class Language {
   static String descriptionOfSalesSpecialist = 'A Sales Specialist of Marketing Department';
   static String descriptionOfManufacturingManger = 'The manager of Manufacturing Department';
   static String descriptionOfProductionSpecialist = 'A Production Specialist of Manufacturing Department';
+  static String departmentOfBoardOfDirectors = 'Board of Directors';
+  static String departmentOfResearchAndDevelopment = 'Research and Development';
+  static String departmentOfFinanceDepartment = 'Finance Department';
+  static String departmentOfHumanResourcesDepartment = 'Human Resources Department';
+  static String departmentOfMarketingDepartment = 'Marketing Department';
+  static String departmentOfManufacturingDepartment = 'Manufacturing Department';
 
   // dialog
   static String titleOfErrorNotifyDialog = 'the title of the error notify dialog';

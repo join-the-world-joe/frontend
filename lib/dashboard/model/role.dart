@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Role {
   String _name;
   String _description;

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import '../../../utils/convert.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -15,7 +16,7 @@ class FetchRoleListOfConditionReq {
   Map<String, dynamic> toJson() => {
         'user_id': _userId,
         'behavior': _behavior,
-        'role_list': _roleNameList,
+        'role_list': _roleNameList.map((e) => utf8.encode(e)).toList(),
       };
 
   Uint8List toBytes() {
@@ -38,10 +39,12 @@ void fetchRoleListOfCondition({
   required int behavior,
   required List<String> roleNameList,
 }) {
+  print('fetchRoleListOfCondition');
   PacketClient packet = PacketClient.create();
   FetchRoleListOfConditionReq req = FetchRoleListOfConditionReq(behavior, userId, roleNameList);
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.fetchRoleListOfConditionReq);
   packet.setBody(req.toJson());
+  print('req: ${req.toJson()}');
   Runtime.wsClient.sendPacket(packet);
 }

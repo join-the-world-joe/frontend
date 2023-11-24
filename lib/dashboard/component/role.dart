@@ -3,11 +3,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
+import 'package:flutter_framework/dashboard/business/fetch_role_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
-import 'package:flutter_framework/dashboard/model/menu_list.dart';
+import 'package:flutter_framework/dashboard/dialog/menu_list_of_role.dart';
+import 'package:flutter_framework/dashboard/dialog/permission_list_of_role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
+import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import '../responsive.dart';
 import '../config/config.dart';
@@ -32,32 +36,93 @@ class Role extends StatefulWidget {
 class _State extends State<Role> {
   bool closed = false;
   int curStage = 1;
-  TextEditingController roleController = TextEditingController();
+  final scrollController = ScrollController();
+  TextEditingController roleController = TextEditingController(text: '');
+  Map<String, String> autoMatch = {
+    // Chinese
+    "软件": Language.softwareEngineer,
+    "软件工程师": Language.softwareEngineer,
+    "硬件": Language.hardwareEngineer,
+    "硬件工程师": Language.hardwareEngineer,
+    // English
+    "software": Language.softwareEngineer,
+    "software engineer": Language.softwareEngineer,
+    "hardware": Language.hardwareEngineer,
+    "hardware engineer": Language.hardwareEngineer,
+  };
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('Track.yeildData.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
+      } else {
+        if (!Runtime.getConnectivity()) {
+          curStage++;
+          return;
+        }
       }
     }
   }
 
   void navigate(String page) {
-    print('Role.navigate to $page');
-    Navigate.to(context, Screen.build(page));
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () {
+          print('Role.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
   }
 
   void setup() {
     print('Role.setup');
+    Cache.setRoleList(RoleList([]));
+    Runtime.setObserve(observe);
   }
 
-  void progress() async {
-    print('Role.progress');
-    return;
+  void observe(PacketClient packet) {
+    var major = packet.getHeader().getMajor();
+    var minor = packet.getHeader().getMinor();
+    var body = packet.getBody();
+
+    try {
+      print("Role.observe: major: $major, minor: $minor");
+      if (major == Major.admin && minor == Minor.admin.fetchRoleListOfConditionRsp) {
+        fetchRoleListOfConditionHandler(body);
+        curStage++;
+      } else {
+        print("Role.observe warning: $major-$minor doesn't matched");
+      }
+      return;
+    } catch (e) {
+      print('Role.observe($major-$minor).e: ${e.toString()}');
+      return;
+    }
+  }
+
+  void fetchRoleListOfConditionHandler(Map<String, dynamic> body) {
+    print('Role.fetchRoleListOfConditionHandler');
+    try {
+      FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
+      if (rsp.code == Code.oK) {
+        print(rsp.body.toString());
+        RoleList roleList = RoleList.fromJson(rsp.body);
+        Cache.setRoleList(roleList);
+        curStage++;
+        return;
+      } else {
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        return;
+      }
+    } catch (e) {
+      print("fetchRoleListOfConditionHandler failure, $e");
+    }
   }
 
   @override
@@ -66,16 +131,10 @@ class _State extends State<Role> {
     super.dispose();
   }
 
-  void debug() async {
-    print('Role.debug');
-  }
-
   @override
   void initState() {
     print('Role.initState');
     setup();
-    progress();
-    debug();
     super.initState();
   }
 
@@ -83,73 +142,106 @@ class _State extends State<Role> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  SizedBox(
-                    width: 110,
-                    child: TextFormField(
-                      controller: roleController,
-                      decoration: InputDecoration(
-                        labelText: Translator.translate(Language.titleOfRole),
+        child: StreamBuilder(
+          stream: stream(),
+          builder: (context, snap) {
+            return ListView(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 110,
+                      child: TextFormField(
+                        controller: roleController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.titleOfRole),
+                        ),
                       ),
                     ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
-                    height: 30,
-                    width: 100,
-                    child: ElevatedButton(
-                      onPressed: () {
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      height: 30,
+                      width: 100,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (!Runtime.allow(
+                            major: int.parse(Major.admin),
+                            minor: int.parse(Minor.admin.fetchRoleListOfConditionReq),
+                          )) {
+                            return;
+                          }
 
-                      },
-                      child: Text(
-                        Translator.translate(Language.titleOfSearch),
-                        style: const TextStyle(color: Colors.white, fontSize: 15),
+                          var inputName = roleController.text.trim();
+                          if (inputName.isNotEmpty) {
+                            List<String> roleList = [];
+                            roleList.add(inputName);
+                            fetchRoleListOfCondition(
+                              userId: 0,
+                              behavior: 2,
+                              roleNameList: roleList,
+                            );
+                            return;
+                          }
+                          fetchRoleListOfCondition(
+                            userId: 0,
+                            behavior: 1,
+                            roleNameList: [],
+                          );
+                          return;
+                        },
+                        child: Text(
+                          Translator.translate(Language.titleOfSearch),
+                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                        ),
                       ),
                     ),
-                  ),
-                  Spacing.addHorizontalSpace(20),
-                  SizedBox(
-                    height: 30,
-                    width: 100,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Cache.setRoleList(RoleList([]));
-                        roleController.text = '';
-                      },
-                      child: Text(
-                        Translator.translate(Language.reset),
-                        style: const TextStyle(color: Colors.white, fontSize: 15),
+                    Spacing.addHorizontalSpace(20),
+                    SizedBox(
+                      height: 30,
+                      width: 100,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Cache.setRoleList(RoleList([]));
+                          roleController.text = '';
+                          curStage++;
+                        },
+                        child: Text(
+                          Translator.translate(Language.reset),
+                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                        ),
                       ),
                     ),
+                  ],
+                ),
+                Spacing.addVerticalSpace(20),
+                Scrollbar(
+                  controller: scrollController,
+                  thumbVisibility: true,
+                  scrollbarOrientation: ScrollbarOrientation.bottom,
+                  child: PaginatedDataTable(
+                    controller: scrollController,
+                    source: Source(context),
+                    header: Text(Translator.translate(Language.roleList)),
+                    columns: [
+                      DataColumn(label: Text(Translator.translate(Language.titleOfRole))),
+                      DataColumn(label: Text(Translator.translate(Language.rankOfRole))),
+                      DataColumn(label: Text(Translator.translate(Language.departmentOfRole))),
+                      DataColumn(label: Text(Translator.translate(Language.permissionList))),
+                      DataColumn(label: Text(Translator.translate(Language.menuList))),
+                      DataColumn(label: Text(Translator.translate(Language.description))),
+                    ],
+                    columnSpacing: 60,
+                    horizontalMargin: 10,
+                    rowsPerPage: 5,
+                    showCheckboxColumn: false,
                   ),
-                ],
-              ),
-              Spacing.addVerticalSpace(20),
-              PaginatedDataTable(
-                source: Source(context),
-                header: Text(Translator.translate(Language.roleList)),
-                columns: [
-                  DataColumn(label: Text(Translator.translate(Language.titleOfRole))),
-                  DataColumn(label: Text(Translator.translate(Language.rankOfRole))),
-                  DataColumn(label: Text(Translator.translate(Language.departmentOfRole))),
-                  DataColumn(label: Text(Translator.translate(Language.permissionList))),
-                  DataColumn(label: Text(Translator.translate(Language.menuList))),
-                  DataColumn(label: Text(Translator.translate(Language.description))),
-                ],
-                columnSpacing: 60,
-                horizontalMargin: 10,
-                rowsPerPage: 5,
-                showCheckboxColumn: false,
-              ),
-            ],
-          ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -187,6 +279,7 @@ class Source extends DataTableSource {
             icon: const Icon(Icons.verified_user_outlined),
             onPressed: () {
               // showPermissionListOfUserDialog(context, roleList[index]);
+              showPermissionListOfRoleDialog(context, roleList.getBody()[index]);
             },
           ),
         ),
@@ -196,6 +289,7 @@ class Source extends DataTableSource {
             icon: const Icon(Icons.menu),
             onPressed: () {
               // showMenuListOfUserDialog(context, roleList[index]);
+              showMenuListOfRoleDialog(context, roleList.getBody()[index]);
             },
           ),
         ),

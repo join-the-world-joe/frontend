@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_framework/dashboard/component/test.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/screen/offline.dart';
 import 'package:flutter_framework/dashboard/screen/password_sign_in.dart';
@@ -31,9 +30,6 @@ class _State extends State<Entry> {
       routes: {
         '/offline': (context) {
           return const Offline();
-        },
-        '/test': (context) {
-          return Test();
         },
         '/logic_test': (context) {
           return const LogicTest();

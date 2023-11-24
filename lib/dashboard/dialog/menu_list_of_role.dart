@@ -5,6 +5,8 @@ import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
+import 'package:flutter_framework/dashboard/component/menu.dart';
+import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/side_menu_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
@@ -12,7 +14,7 @@ import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 
-Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
+Future<int> showMenuListOfRoleDialog(BuildContext context, Role role) async {
   bool closed = false;
   int curStage = 0;
   List<Widget> widgetList = [];
@@ -82,8 +84,8 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
     builder: (context) {
       fetchMenuListOfCondition(
         behavior: 2,
-        userId: int.parse(user.getId()),
-        roleList: RoleList([]),
+        userId: 0,
+        roleList: RoleList([role]),
       );
       return AlertDialog(
         actions: [

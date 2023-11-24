@@ -1,19 +1,19 @@
 class Menu {
-  final String _title;
-  final List<String> _itemList;
-  final List<String> _descList;
+  final String _name;
+  final String _parent;
+  final String _description;
 
-  String getTitle() {
-    return _title;
+  Menu(this._name, this._parent, this._description);
+
+  String getName() {
+    return _name;
   }
 
-  List<String> getItemList() {
-    return _itemList;
+  String getParent() {
+    return _parent;
   }
 
-  List<String> getDescList() {
-    return _descList;
+  String getDescription() {
+    return _description;
   }
-
-  Menu(this._title, this._itemList, this._descList);
 }

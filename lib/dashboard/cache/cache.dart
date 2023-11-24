@@ -1,7 +1,9 @@
+import 'package:flutter_framework/dashboard/model/field_list.dart';
 import 'package:flutter_framework/dashboard/model/permission_list.dart';
 import 'package:flutter_framework/dashboard/model/track_list.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
+import '../model/side_menu_list.dart';
 import '../model/menu_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 
@@ -10,8 +12,10 @@ class Cache {
   static String _secret = '';
   static String _role = '';
   static int _userId = 0;
+  static SideMenuList _sideMenuList = SideMenuList([], 0);
   static MenuList _menuList = MenuList([], 0);
   static String _content = '';
+  static FieldList fieldList = FieldList([]);
   static UserList userList = UserList([]);
   static RoleList _roleList = RoleList([]);
   static TrackList trackList = TrackList([]);
@@ -39,6 +43,14 @@ class Cache {
 
   static TrackList getTrackList() {
     return trackList;
+  }
+
+  static setFieldList(FieldList any) {
+    fieldList = any;
+  }
+
+  static FieldList getFieldList() {
+    return fieldList;
   }
 
   static setUserList(UserList any) {
@@ -79,6 +91,14 @@ class Cache {
 
   static int getUserId() {
     return _userId;
+  }
+
+  static void setSideMenuList(SideMenuList any) {
+    _sideMenuList = any;
+  }
+
+  static SideMenuList getSideMenuList() {
+    return _sideMenuList;
   }
 
   static void setMenuList(MenuList any) {

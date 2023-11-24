@@ -34,7 +34,6 @@ class English {
     Language.modifyUser: 'Modify User',
     Language.dashboard: 'General Admin Panel',
     Language.ok: 'OK',
-    Language.description: 'Description',
     Language.viewPermissionList: 'View Permission List',
     Language.viewMenuList: 'View Menu List',
     Language.viewRoleList: 'View Role List',
@@ -45,7 +44,6 @@ class English {
     Language.titleOfPermission: 'Permission',
     Language.major: 'Major',
     Language.minor: 'Minor',
-    Language.fMenu: 'Parent Menu',
     Language.subMenu: 'Menu',
     Language.titleOfOperator: 'Operator',
     Language.request: 'Request',
@@ -60,8 +58,15 @@ class English {
     Language.titleOfEndDate: 'End Date',
 
     // language
-    Language.languageOfChinese:'Chinese',
-    Language.languageOfEnglish:'English',
+    Language.languageOfChinese: 'Chinese',
+    Language.languageOfEnglish: 'English',
+
+    // common
+    Language.description: 'Description',
+    Language.valueOfNull:'',
+
+    // menu
+    Language.titleOfParentMenu: 'Parent',
 
     // permission
     Language.signIn: 'Sign In',
@@ -72,11 +77,17 @@ class English {
     Language.insertUserRecord: 'Insert User',
     Language.softDeleteUserRecord: 'Remove User',
     Language.updateUserRecord: 'Update User',
+    Language.managementOfUsers :'The management of users',
+    Language.managementOfRoles : 'The management of roles',
+    Language.managementOfMenus : 'The management of menus',
+    Language.managementOfPermissions : 'The management of permissions',
+    Language.managementOfFields : 'The management of fields',
+    Language.managementOfTracks : 'The management of tracks',
 
     // role
     Language.titleOfRole: 'Role',
     Language.rankOfRole: 'Rank',
-    Language.departmentOfRole:'Department',
+    Language.departmentOfRole: 'Department',
     Language.administrator: 'Administrator',
     Language.rdManager: 'R&D Manager',
     Language.softwareEngineer: 'Software Engineer',
@@ -103,17 +114,23 @@ class English {
     Language.descriptionOfSalesSpecialist: 'A Sales Specialist of Marketing Department',
     Language.descriptionOfManufacturingManger: 'The manager of Manufacturing Department',
     Language.descriptionOfProductionSpecialist: 'A Production Specialist of Manufacturing Department',
+    Language.departmentOfBoardOfDirectors: 'Board of Directors',
+    Language.departmentOfResearchAndDevelopment: 'Research and Development',
+    Language.departmentOfFinanceDepartment: 'Finance Department',
+    Language.departmentOfHumanResourcesDepartment: 'Human Resources Department',
+    Language.departmentOfMarketingDepartment: 'Marketing Department',
+    Language.departmentOfManufacturingDepartment: 'Manufacturing Department',
 
     // dialog
     Language.titleOfErrorNotifyDialog: 'Error',
     Language.passwordInTwoInputControlDoNotMatch: 'Password not matched',
-    Language.titleOfNotification : 'Notification',
-    Language.messageOfSomewhereLogin : 'Your account login somewhere.',
+    Language.titleOfNotification: 'Notification',
+    Language.messageOfSomewhereLogin: 'Your account login somewhere.',
     Language.endDateIsBeforeBeginDate: 'The End DateTime is Before Begin DateTime',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',
-    Language.messageForceOffline : 'Your account has been logon somewhere! Your have to logout immediately.',
+    Language.messageForceOffline: 'Your account has been logon somewhere! Your have to logout immediately.',
   };
 
   static String getName() {

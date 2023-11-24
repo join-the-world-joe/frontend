@@ -15,7 +15,7 @@ import 'package:flutter_framework/dashboard/component/permission.dart';
 import 'package:flutter_framework/dashboard/component/role.dart';
 import 'package:flutter_framework/dashboard/component/track.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
-import 'package:flutter_framework/dashboard/model/menu_list.dart';
+import 'package:flutter_framework/dashboard/model/side_menu_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import '../responsive.dart';
@@ -126,7 +126,7 @@ class _State extends State<Home> {
       if (inform.event.containsKey(notification.event)) {
         Cache.setUserId(0);
         Cache.setMemberId('');
-        Cache.setMenuList(MenuList([], 0));
+        Cache.setSideMenuList(SideMenuList([], 0));
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
@@ -148,7 +148,7 @@ class _State extends State<Home> {
     try {
       FetchMenuListOfConditionRsp rsp = FetchMenuListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
-        Cache.setMenuList(MenuList.fromJson(rsp.body));
+        Cache.setSideMenuList(SideMenuList.fromJson(rsp.body));
         curStage++;
         refresh();
         return;
@@ -217,13 +217,13 @@ class _State extends State<Home> {
       return const Text('获取菜单数据失败');
     }
 
-    if (Cache.getMenuList().getBody().isEmpty) {
+    if (Cache.getSideMenuList().getBody().isEmpty) {
       return const Text('没有菜单数据');
     }
 
     List<Widget> widgets = [];
 
-    Cache.getMenuList().getBody().forEach(
+    Cache.getSideMenuList().getBody().forEach(
       (element) {
         widgets.add(
           ExpansionTile(

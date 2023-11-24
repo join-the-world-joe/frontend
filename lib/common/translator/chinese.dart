@@ -34,7 +34,6 @@ class Chinese {
     Language.modifyUser: '更新用户资料',
     Language.dashboard: '通用后台管理系统',
     Language.ok: '确定',
-    Language.description: '描述',
     Language.viewPermissionList: '查看权限列表',
     Language.viewMenuList: '查看菜单列表',
     Language.viewRoleList: '查看角色列表',
@@ -45,7 +44,6 @@ class Chinese {
     Language.titleOfPermission: '权限',
     Language.major: '主业务号',
     Language.minor: '次业务号',
-    Language.fMenu: '父级菜单',
     Language.subMenu: '菜单',
     Language.titleOfOperator: '操作人',
     Language.request: '请求',
@@ -60,8 +58,15 @@ class Chinese {
     Language.titleOfEndDate: '结束日期',
 
     // language
-    Language.languageOfChinese:'简体中文',
-    Language.languageOfEnglish:'英文',
+    Language.languageOfChinese: '简体中文',
+    Language.languageOfEnglish: '英文',
+
+    // common
+    Language.description: '描述',
+    Language.valueOfNull:'',
+
+    // menu
+    Language.titleOfParentMenu: '父级菜单',
 
     // permission
     Language.signIn: '登入系统',
@@ -72,11 +77,17 @@ class Chinese {
     Language.insertUserRecord: '新增用户',
     Language.softDeleteUserRecord: '删除用户',
     Language.updateUserRecord: '更新用户',
+    Language.managementOfUsers :'用户管理',
+    Language.managementOfRoles : '角色管理',
+    Language.managementOfMenus : '菜单管理',
+    Language.managementOfPermissions : '权限管理',
+    Language.managementOfFields : '字段管理',
+    Language.managementOfTracks : '日志管理',
 
     // role
     Language.titleOfRole: '角色',
     Language.rankOfRole: '级别',
-    Language.departmentOfRole:'部门',
+    Language.departmentOfRole: '部门',
     Language.administrator: '系统管理员',
     Language.rdManager: '研发部主管',
     Language.softwareEngineer: '软件工程师',
@@ -103,12 +114,18 @@ class Chinese {
     Language.descriptionOfSalesSpecialist: '市场部-销售专员',
     Language.descriptionOfManufacturingManger: '生产部门负责人',
     Language.descriptionOfProductionSpecialist: '生产部-生产线专员',
+    Language.departmentOfBoardOfDirectors: '董事会',
+    Language.departmentOfResearchAndDevelopment: '研发部',
+    Language.departmentOfFinanceDepartment: '财务部',
+    Language.departmentOfHumanResourcesDepartment: '人事部',
+    Language.departmentOfMarketingDepartment: '市场部',
+    Language.departmentOfManufacturingDepartment: '生产部',
 
     // dialog
     Language.titleOfErrorNotifyDialog: '错误提示',
     Language.passwordInTwoInputControlDoNotMatch: '两次输入的密码不一致',
-    Language.titleOfNotification : '温馨提醒:',
-    Language.messageOfSomewhereLogin : '您的帐号已在别处登录.',
+    Language.titleOfNotification: '温馨提醒:',
+    Language.messageOfSomewhereLogin: '您的帐号已在别处登录.',
     Language.endDateIsBeforeBeginDate: '结束日期在开始日期之前',
 
     // inform.notification

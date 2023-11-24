@@ -8,7 +8,6 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/fetch_permission_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
-import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/dashboard/model/permission_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -41,16 +40,39 @@ class _State extends State<Permission> {
   TextEditingController majorController = TextEditingController();
   TextEditingController minorController = TextEditingController();
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('Permission.yeildData.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
+      } else {
+        if (!Runtime.getConnectivity()) {
+          curStage++;
+          return;
+        }
       }
     }
+  }
+
+  void navigate(String page) {
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+            () {
+          print('Permission.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
+  }
+
+  void setup() {
+    print('Permission.setup');
+    Cache.setPermissionList(PermissionList([]));
+    Runtime.setObserve(observe);
   }
 
   void fetchPermissionListOfConditionHandler(Map<String, dynamic> body) {
@@ -91,38 +113,16 @@ class _State extends State<Permission> {
     }
   }
 
-  void navigate(String page) {
-    print('Permission.navigate to $page');
-    Navigate.to(context, Screen.build(page));
-  }
-
-  void setup() {
-    print('Permission.setup');
-    Cache.setPermissionList(PermissionList([]));
-    Runtime.setObserve(observe);
-  }
-
-  void progress() async {
-    print('Permission.progress');
-    return;
-  }
-
   @override
   void dispose() {
     print('Permission.dispose');
     super.dispose();
   }
 
-  void debug() async {
-    print('Permission.debug');
-  }
-
   @override
   void initState() {
     print('Permission.initState');
     setup();
-    progress();
-    debug();
     super.initState();
   }
 
@@ -131,7 +131,7 @@ class _State extends State<Permission> {
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
             return ListView(
               scrollDirection: Axis.vertical,
@@ -245,7 +245,6 @@ class _State extends State<Permission> {
 
 class Source extends DataTableSource {
   BuildContext context;
-  List<Widget> widgets = [];
   PermissionList permissionList = Cache.getPermissionList();
 
   Source(this.context);

@@ -1,3 +1,5 @@
+import 'package:flutter_framework/common/translator/language.dart';
+
 import 'menu.dart';
 
 class MenuList {
@@ -23,7 +25,10 @@ class MenuList {
           // print("value: $value");
           List<String> itemList = List<String>.from(value['item_list'] as List);
           List<String> descList = List<String>.from(value['description_list'] as List);
-          ml.add(Menu(key, itemList, descList));
+          ml.add(Menu(key, Language.valueOfNull, key));
+          for (var i = 0; i < itemList.length; i++) {
+            ml.add(Menu(itemList[i], key, descList[i]));
+          }
         },
       );
     } catch (e) {

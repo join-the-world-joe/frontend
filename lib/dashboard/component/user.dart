@@ -20,7 +20,6 @@ import 'package:flutter_framework/dashboard/dialog/update_user.dart';
 import 'package:flutter_framework/dashboard/dialog/permission_list_of_user.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_user.dart';
 import 'package:flutter_framework/dashboard/dialog/role_list_of_user.dart';
-import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/dashboard/model/permission_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/dashboard/model/user.dart' as usr;
@@ -61,16 +60,39 @@ class _State extends State<User> {
   final phoneNumberControl = TextEditingController();
   final scrollController = ScrollController();
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('Offline.yeildData.last: $lastStage, cur: ${curStage}');
       await Future.delayed(const Duration(milliseconds: 100));
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
+      } else {
+        if (!Runtime.getConnectivity()) {
+          curStage++;
+          return;
+        }
       }
     }
+  }
+
+  void navigate(String page) {
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+            () {
+          print('User.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
+  }
+
+  void setup() {
+    // print('User.setup');
+    Cache.setUserList(UserList([]));
+    Runtime.setObserve(observe);
   }
 
   void observe(PacketClient packet) {
@@ -135,64 +157,9 @@ class _State extends State<User> {
     }
   }
 
-  // void fetchUserListOfConditionHandler(Map<String, dynamic> body) {
-  //   // print('User.fetchUserListOfConditionHandler');
-  //   try {
-  //     FetchUserListOfConditionRsp rsp = FetchUserListOfConditionRsp.fromJson(body);
-  //     if (rsp.code == Code.oK) {
-  //       Cache.setUserList([]);
-  //       // print('body: ${rsp.body.toString()}');
-  //       // print(rsp.body);
-  //       var userList = rsp.body['user_list'] as List<dynamic>;
-  //       userList.forEach(
-  //         (e) {
-  //           Cache.userList.add(
-  //             usr.User(e['id'], e['name'], e['account'], e['email'], e['department'], e['country_code'], e['phone_number'], e['status'], e['created_at']),
-  //           );
-  //         },
-  //       );
-  //       curStage++;
-  //       return;
-  //     } else if (rsp.code == Code.accessDenied) {
-  //       showMessageDialog(context, '温馨提示：', '没有权限.');
-  //       curStage++;
-  //       return;
-  //     } else {
-  //       showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
-  //       return;
-  //     }
-  //   } catch (e) {
-  //     print("User.fetchUserListOfConditionHandler failure, $e");
-  //   }
-  // }
-
   void refresh() {
     // print('User.refresh');
     setState(() {});
-  }
-
-  void navigate(String page) {
-    if (!closed) {
-      closed = true;
-      Future.delayed(
-        const Duration(milliseconds: 500),
-        () {
-          print('User.navigate to $page');
-          Navigate.to(context, Screen.build(page));
-        },
-      );
-    }
-  }
-
-  void setup() {
-    // print('User.setup');
-    Cache.setUserList(UserList([]));
-    Runtime.setObserve(observe);
-  }
-
-  void progress() async {
-    // print('User.progress');
-    return;
   }
 
   @override
@@ -206,7 +173,6 @@ class _State extends State<User> {
   void initState() {
     // print('User.initState');
     setup();
-    progress();
     super.initState();
   }
 
@@ -225,7 +191,7 @@ class _State extends State<User> {
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
             if (curStage > 0) {
               return ListView(

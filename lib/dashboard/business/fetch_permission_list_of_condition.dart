@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 
@@ -18,14 +19,19 @@ class FetchPermissionListOfConditionReq {
 
   FetchPermissionListOfConditionReq(this._name, this._major, this._minor, this._userId, this._behavior, this._roleList);
 
-  Map<String, dynamic> toJson() => {
-        'name': _name,
-        'major': _major,
-        'minor': _minor,
-        'user_id': _userId,
-        'behavior': _behavior,
-        'role_list': _roleList.getNameList(),
-      };
+
+  Map<String, dynamic> toJson() {
+    print('_roleList.getNameList: ${_roleList.getNameList()}');
+    var temp = <String, dynamic>{
+      'name': _name,
+      'major': _major,
+      'minor': _minor,
+      'user_id': _userId,
+      'behavior': _behavior,
+      'role_list': _roleList.getNameList(),
+    };
+      return temp;
+  }
 
   Uint8List toBytes() {
     return Convert.toBytes(this);
@@ -55,5 +61,6 @@ void fetchPermissionListOfCondition({
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.fetchPermissionListOfConditionReq);
   packet.setBody(req.toJson());
+  print('req:toJson: ${req.toJson()}');
   Runtime.wsClient.sendPacket(packet);
 }
