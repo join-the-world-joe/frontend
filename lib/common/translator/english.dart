@@ -69,6 +69,19 @@ class English {
     // field
     Language.tableOfField: 'Table',
     Language.nameOfField: 'Field',
+    Language.userOfTable: 'user',
+    Language.idOfUser: 'id',
+    Language.descriptionOfIdOfUser: 'the ID of a user',
+    Language.nameOfUser: 'name',
+    Language.descriptionOfNameOfUser: 'the name of a user',
+    Language.countryCodeOfUser: 'country_code',
+    Language.descriptionOfCountryCodeOfUser: 'the country_code of a user',
+    Language.phoneNumberOfUser: 'phone_number',
+    Language.descriptionOfPhoneNumberOfUser: 'the phone_number of a user',
+    Language.statusOfUser: 'status',
+    Language.descriptionOfStatusOfUser: 'the status of a user',
+    Language.createdAtOfUser: 'created_at',
+    Language.descriptionOfCreatedAtOfUser: 'the created_at of a user',
 
     // permission
     Language.signIn: 'Sign In',
@@ -129,6 +142,10 @@ class English {
     Language.titleOfNotification: 'Notification',
     Language.messageOfSomewhereLogin: 'Your account login somewhere.',
     Language.endDateIsBeforeBeginDate: 'The End DateTime is Before Begin DateTime',
+    Language.failureOnFetchMenuListOfCondition: 'Failure on the request of menu',
+    Language.noDataFailureOnFetchMenuListOfCondition: 'No menu data failure on the request of menu',
+    Language.accessDeniedFailureOnFetchPermissionOfCondition:'Access Denied',
+    Language.failure:'失败',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',

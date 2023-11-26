@@ -69,6 +69,19 @@ class Chinese {
     // field
     Language.tableOfField: '数据表',
     Language.nameOfField: '字段',
+    Language.userOfTable: 'user',
+    Language.idOfUser: 'id',
+    Language.descriptionOfIdOfUser: '用户ID',
+    Language.nameOfUser: 'name',
+    Language.descriptionOfNameOfUser: '姓名',
+    Language.countryCodeOfUser: 'country_code',
+    Language.descriptionOfCountryCodeOfUser: '国家地区码',
+    Language.phoneNumberOfUser: 'phone_number',
+    Language.descriptionOfPhoneNumberOfUser: '电话号码',
+    Language.statusOfUser: 'status',
+    Language.descriptionOfStatusOfUser: '状态',
+    Language.createdAtOfUser: 'created_at',
+    Language.descriptionOfCreatedAtOfUser: '创建日期',
 
     // permission
     Language.signIn: '登入系统',
@@ -129,6 +142,10 @@ class Chinese {
     Language.titleOfNotification: '温馨提醒:',
     Language.messageOfSomewhereLogin: '您的帐号已在别处登录.',
     Language.endDateIsBeforeBeginDate: '结束日期在开始日期之前',
+    Language.failureOnFetchMenuListOfCondition : '获取菜单数据失败',
+    Language.noDataFailureOnFetchMenuListOfCondition:'没有菜单数据',
+    Language.accessDeniedFailureOnFetchPermissionOfCondition:'没有权限',
+    Language.failure:'失败',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',

@@ -74,7 +74,7 @@ class _State extends State<Home> {
       closed = true;
       Future.delayed(
         const Duration(milliseconds: 500),
-            () {
+        () {
           print('home.navigate to $page');
           // Navigate.to(context, Screen.build(page));
           Navigate.pushReplacement(context, Screen.build(page));
@@ -153,13 +153,21 @@ class _State extends State<Home> {
         refresh();
         return;
       } else if (rsp.code == Code.accessDenied) {
-        showMessageDialog(context, '温馨提示：', '没有权限.');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.accessDeniedFailureOnFetchPermissionOfCondition),
+        );
         curStage = -1;
         refresh();
         return;
       } else {
         print('Home.fetchMenuListOfConditionHandler failure: ${rsp.code}');
-        showMessageDialog(context, '温馨提示：', '没有权限.');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.failure) + rsp.code.toString(),
+        );
         curStage = -1;
         refresh();
         return;
@@ -176,12 +184,12 @@ class _State extends State<Home> {
   }
 
   void refreshContent() {
-    user = User();
-    track = Track();
-    role = Role();
-    menu = Menu();
-    permission = Permission();
-    field = Field();
+    user =  User();
+    track =  Track();
+    role =  Role();
+    menu =  Menu();
+    permission =  Permission();
+    field =  Field();
   }
 
   void setup() {
@@ -214,11 +222,11 @@ class _State extends State<Home> {
     if (curStage == 0) {
       return const Center(child: CircularProgressIndicator());
     } else if (curStage <= 0) {
-      return const Text('获取菜单数据失败');
+      return Text(Translator.translate(Language.failureOnFetchMenuListOfCondition));
     }
 
     if (Cache.getSideMenuList().getBody().isEmpty) {
-      return const Text('没有菜单数据');
+      return Text(Translator.translate(Language.noDataFailureOnFetchMenuListOfCondition));
     }
 
     List<Widget> widgets = [];

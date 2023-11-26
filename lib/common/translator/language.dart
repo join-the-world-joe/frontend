@@ -65,6 +65,19 @@ class Language {
   // field
   static String tableOfField = 'the table of field';
   static String nameOfField = 'the name of field';
+  static String userOfTable = 'table.user';
+  static String idOfUser = 'user.id';
+  static String descriptionOfIdOfUser = 'the description of id of user';
+  static String nameOfUser = 'user.name';
+  static String descriptionOfNameOfUser = 'the description of name of user';
+  static String countryCodeOfUser = 'user.country_code';
+  static String descriptionOfCountryCodeOfUser = 'the description of country_code of user';
+  static String phoneNumberOfUser = 'user.phone_number';
+  static String descriptionOfPhoneNumberOfUser = 'the description of phone_number of user';
+  static String statusOfUser = 'user.status';
+  static String descriptionOfStatusOfUser = 'the description of status of user';
+  static String createdAtOfUser = 'user.created_at';
+  static String descriptionOfCreatedAtOfUser = 'the description of created_at of user';
 
   // permission
   static String signIn = 'SignIn';
@@ -125,6 +138,10 @@ class Language {
   static String titleOfNotification = 'the title of notification';
   static String messageOfSomewhereLogin = 'the message of somewhere login';
   static String endDateIsBeforeBeginDate = 'the end datetime is before begin datetime';
+  static String failureOnFetchMenuListOfCondition = 'the failure of fetch menu list of condition';
+  static String noDataFailureOnFetchMenuListOfCondition = 'the no data failure';
+  static String accessDeniedFailureOnFetchPermissionOfCondition = 'the access denied failure on the request of permission';
+  static String failure = 'Failure';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';
