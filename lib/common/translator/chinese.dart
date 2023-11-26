@@ -3,13 +3,6 @@ import 'package:flutter_framework/common/translator/language.dart';
 class Chinese {
   static const String _name = 'Chinese';
   static Map<String, String> model = {
-    Language.admission: '管理',
-    Language.user: '用户管理',
-    Language.role: '角色管理',
-    Language.field: '字段管理',
-    Language.menu: '菜单管理',
-    Language.permission: '权限管理',
-    Language.track: '操作日志',
     Language.titleOfSearch: '查询',
     Language.reset: '重置',
     Language.userList: '用户列表',
@@ -50,8 +43,6 @@ class Chinese {
     Language.response: '应答',
     Language.operationTimestamp: '操作时间',
     Language.operationLog: '操作日志列表',
-    Language.table: '数据表',
-    Language.fField: '字段',
     Language.fieldList: '字段列表',
     Language.tMenu: '菜单',
     Language.titleOfBeginDate: '开始日期',
@@ -67,6 +58,17 @@ class Chinese {
 
     // menu
     Language.titleOfParentMenu: '父级菜单',
+    Language.menuOfAdmission: '管理',
+    Language.menuOfUser: '用户管理',
+    Language.menuOfRole: '角色管理',
+    Language.menuOfField: '字段管理',
+    Language.menuOfMenu: '菜单管理',
+    Language.menuOfPermission: '权限管理',
+    Language.menuOfTrack: '操作日志',
+
+    // field
+    Language.tableOfField: '数据表',
+    Language.nameOfField: '字段',
 
     // permission
     Language.signIn: '登入系统',

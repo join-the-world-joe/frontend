@@ -3,8 +3,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
+import 'package:flutter_framework/dashboard/business/fetch_field_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/field_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -32,6 +34,9 @@ class Field extends StatefulWidget {
 class _State extends State<Field> {
   bool closed = false;
   int curStage = 1;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController tableController = TextEditingController();
+  TextEditingController roleController = TextEditingController();
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -76,6 +81,7 @@ class _State extends State<Field> {
     try {
       print("Field.observe: major: $major, minor: $minor");
       if (major == Major.admin && minor == Minor.admin.fetchFieldListOfConditionRsp) {
+        fetchFieldListOfConditionHandler(body);
         curStage++;
       } else {
         print("Field.observe warning: $major-$minor doesn't matched");
@@ -87,19 +93,33 @@ class _State extends State<Field> {
     }
   }
 
-  @override
-  void dispose() {
-    print('Field.dispose');
-    super.dispose();
+  void fetchFieldListOfConditionHandler(Map<String, dynamic> body) {
+    try {
+      FetchFieldListOfConditionRsp rsp = FetchFieldListOfConditionRsp.fromJson(body);
+      if (rsp.code == Code.oK) {
+        print('body: ${rsp.body}');
+        Cache.setFieldList(FieldList.fromJson(rsp.body));
+        curStage++;
+        return;
+      } else {
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        return;
+      }
+    } catch (e) {
+      print("Field.fetchFieldListOfConditionHandler failure, $e");
+      return;
+    }
   }
 
-  void debug() async {
-    print('Field.debug');
+  @override
+  void dispose() {
+    // print('Field.dispose');
+    super.dispose();
   }
 
   @override
   void initState() {
-    print('Field.initState');
+    // print('Field.initState');
     setup();
     super.initState();
   }
@@ -121,9 +141,9 @@ class _State extends State<Field> {
                     SizedBox(
                       width: 110,
                       child: TextFormField(
-                        // controller: _accountController,
+                        controller: nameController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.fField),
+                          labelText: Translator.translate(Language.nameOfField),
                         ),
                       ),
                     ),
@@ -131,9 +151,9 @@ class _State extends State<Field> {
                     SizedBox(
                       width: 110,
                       child: TextFormField(
-                        // controller: _accountController,
+                        controller: tableController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.table),
+                          labelText: Translator.translate(Language.tableOfField),
                         ),
                       ),
                     ),
@@ -141,7 +161,7 @@ class _State extends State<Field> {
                     SizedBox(
                       width: 110,
                       child: TextFormField(
-                        // controller: _accountController,
+                        controller: roleController,
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.titleOfRole),
                         ),
@@ -152,7 +172,29 @@ class _State extends State<Field> {
                       height: 30,
                       width: 100,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (!Runtime.allow(
+                            major: int.parse(Major.admin),
+                            minor: int.parse(Minor.admin.fetchFieldListOfConditionReq),
+                          )) {
+                            return;
+                          }
+                          if (nameController.text.isEmpty && tableController.text.isEmpty && roleController.text.isEmpty) {
+                            fetchFieldListOfCondition(
+                              behavior: 1,
+                              field: '',
+                              table: '',
+                              role: '',
+                            );
+                            return;
+                          }
+                          fetchFieldListOfCondition(
+                            behavior: 2,
+                            field: nameController.text,
+                            table: tableController.text,
+                            role: roleController.text,
+                          );
+                        },
                         child: Text(
                           Translator.translate(Language.titleOfSearch),
                           style: const TextStyle(color: Colors.white, fontSize: 15),
@@ -164,7 +206,13 @@ class _State extends State<Field> {
                       height: 30,
                       width: 100,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Cache.setFieldList(FieldList([]));
+                          nameController.text = '';
+                          tableController.text = '';
+                          roleController.text = '';
+                          curStage++;
+                        },
                         child: Text(
                           Translator.translate(Language.reset),
                           style: const TextStyle(color: Colors.white, fontSize: 15),
@@ -178,8 +226,8 @@ class _State extends State<Field> {
                   source: Source(context),
                   header: Text(Translator.translate(Language.fieldList)),
                   columns: [
-                    DataColumn(label: Text(Translator.translate(Language.fField))),
-                    DataColumn(label: Text(Translator.translate(Language.table))),
+                    DataColumn(label: Text(Translator.translate(Language.nameOfField))),
+                    DataColumn(label: Text(Translator.translate(Language.tableOfField))),
                     DataColumn(label: Text(Translator.translate(Language.description))),
                   ],
                   columnSpacing: 60,
@@ -196,10 +244,10 @@ class _State extends State<Field> {
   }
 }
 
+
 class Source extends DataTableSource {
   BuildContext context;
-  List<Widget> widgets = [];
-  final List<User> _data = [];
+  FieldList fieldList = Cache.getFieldList();
 
   Source(this.context);
 
@@ -207,7 +255,7 @@ class Source extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => _data.length;
+  int get rowCount => fieldList.getLength();
 
   @override
   int get selectedRowCount => 0;
@@ -219,9 +267,9 @@ class Source extends DataTableSource {
       selected: false,
       onSelectChanged: (selected) {},
       cells: [
-        DataCell(Text('')),
-        DataCell(Text('')),
-        DataCell(Text('')),
+        DataCell(Text(Translator.translate(fieldList.getBody()[index].getName()))),
+        DataCell(Text(Translator.translate(fieldList.getBody()[index].getTable()))),
+        DataCell(Text(Translator.translate(fieldList.getBody()[index].getDescription()))),
       ],
     );
   }

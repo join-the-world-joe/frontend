@@ -3,13 +3,6 @@ import 'package:flutter_framework/common/translator/language.dart';
 class English {
   static const String _name = 'English';
   static Map<String, String> model = {
-    Language.admission: 'Admission',
-    Language.user: 'User',
-    Language.role: 'Role',
-    Language.field: 'Field',
-    Language.menu: 'Menu',
-    Language.permission: 'Permission',
-    Language.track: 'Track',
     Language.titleOfSearch: 'Search',
     Language.reset: 'Reset',
     Language.userList: 'User List',
@@ -50,8 +43,6 @@ class English {
     Language.response: 'Response',
     Language.operationTimestamp: 'Operation Timestamp',
     Language.operationLog: 'Operation Log',
-    Language.table: 'Table',
-    Language.fField: 'Field',
     Language.fieldList: 'Field List',
     Language.tMenu: 'Menu',
     Language.titleOfBeginDate: 'Begin Date',
@@ -63,10 +54,21 @@ class English {
 
     // common
     Language.description: 'Description',
-    Language.valueOfNull:'',
+    Language.valueOfNull: '',
 
     // menu
     Language.titleOfParentMenu: 'Parent',
+    Language.menuOfAdmission: 'Admission',
+    Language.menuOfUser: 'User',
+    Language.menuOfRole: 'Role',
+    Language.menuOfField: 'Field',
+    Language.menuOfMenu: 'Menu',
+    Language.menuOfPermission: 'Permission',
+    Language.menuOfTrack: 'Track',
+
+    // field
+    Language.tableOfField: 'Table',
+    Language.nameOfField: 'Field',
 
     // permission
     Language.signIn: 'Sign In',
@@ -77,12 +79,12 @@ class English {
     Language.insertUserRecord: 'Insert User',
     Language.softDeleteUserRecord: 'Remove User',
     Language.updateUserRecord: 'Update User',
-    Language.managementOfUsers :'The management of users',
-    Language.managementOfRoles : 'The management of roles',
-    Language.managementOfMenus : 'The management of menus',
-    Language.managementOfPermissions : 'The management of permissions',
-    Language.managementOfFields : 'The management of fields',
-    Language.managementOfTracks : 'The management of tracks',
+    Language.managementOfUsers: 'The management of users',
+    Language.managementOfRoles: 'The management of roles',
+    Language.managementOfMenus: 'The management of menus',
+    Language.managementOfPermissions: 'The management of permissions',
+    Language.managementOfFields: 'The management of fields',
+    Language.managementOfTracks: 'The management of tracks',
 
     // role
     Language.titleOfRole: 'Role',

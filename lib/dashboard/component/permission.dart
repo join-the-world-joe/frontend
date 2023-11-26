@@ -145,7 +145,7 @@ class _State extends State<Permission> {
                       child: TextFormField(
                         controller: nameController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.permission),
+                          labelText: Translator.translate(Language.menuOfPermission),
                         ),
                       ),
                     ),

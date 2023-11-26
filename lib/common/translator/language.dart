@@ -1,11 +1,4 @@
 class Language {
-  static String admission = 'Admission';
-  static String user = 'User';
-  static String menu = 'Menu';
-  static String permission = 'Permission';
-  static String role = 'Role';
-  static String field = 'Field';
-  static String track = 'Track';
   static String titleOfSearch = 'The title of Search';
   static String reset = 'Reset';
   static String userList = 'User List';
@@ -46,8 +39,6 @@ class Language {
   static String response = 'Response';
   static String operationTimestamp = 'Operation Timestamp';
   static String operationLog = 'Operation List';
-  static String table = 'Table';
-  static String fField = 'field of field';
   static String fieldList = 'Field List';
   static String tMenu = 'title of Menu';
   static String titleOfBeginDate = 'the title of begin date';
@@ -63,6 +54,17 @@ class Language {
 
   // menu
   static String titleOfParentMenu = 'the title of parent menu';
+  static String menuOfAdmission = 'Admission';
+  static String menuOfUser = 'User';
+  static String menuOfMenu = 'Menu';
+  static String menuOfPermission = 'Permission';
+  static String menuOfRole = 'Role';
+  static String menuOfField = 'Field';
+  static String menuOfTrack = 'Track';
+
+  // field
+  static String tableOfField = 'the table of field';
+  static String nameOfField = 'the name of field';
 
   // permission
   static String signIn = 'SignIn';

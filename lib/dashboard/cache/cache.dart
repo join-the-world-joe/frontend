@@ -13,7 +13,7 @@ class Cache {
   static String _role = '';
   static int _userId = 0;
   static SideMenuList _sideMenuList = SideMenuList([], 0);
-  static MenuList _menuList = MenuList([], 0);
+  static MenuList _menuList = MenuList([]);
   static String _content = '';
   static FieldList fieldList = FieldList([]);
   static UserList userList = UserList([]);

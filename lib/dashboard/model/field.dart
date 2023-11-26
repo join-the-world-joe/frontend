@@ -1,3 +1,5 @@
+import 'package:flutter_framework/common/translator/language.dart';
+
 class Field {
   String _name;
   String _table;
@@ -18,11 +20,11 @@ class Field {
   Field(this._name, this._table, this._description);
 
   factory Field.fromJson(Map<String, dynamic> json) {
-    String name = 'null', description = 'null', table = 'null';
+    String name = Language.valueOfNull, description = Language.valueOfNull, table = Language.valueOfNull;
     try {
-      name = json['name'] ?? 'Empty';
-      description = json['description'] ?? 'Empty';
-      table = json['table'] ?? 'Empty';
+      name = json['name'] ?? Language.valueOfNull;
+      description = json['description'] ?? Language.valueOfNull;
+      table = json['table'] ?? Language.valueOfNull;
     } catch (e) {
       print('e: $e');
     }

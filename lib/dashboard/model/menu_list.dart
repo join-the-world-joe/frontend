@@ -3,17 +3,16 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'menu.dart';
 
 class MenuList {
-  int _length;
   List<Menu> _body;
 
-  MenuList(this._body, this._length);
+  MenuList(this._body);
 
   List<Menu> getBody() {
     return _body;
   }
 
   int getLength() {
-    return _length;
+    return _body.length;
   }
 
   factory MenuList.fromJson(Map<String, dynamic> json) {
@@ -35,6 +34,6 @@ class MenuList {
       print('e: $e');
     }
 
-    return MenuList(ml, ml.length);
+    return MenuList(ml);
   }
 }

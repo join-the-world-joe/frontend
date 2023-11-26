@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/check_permission.dart';
@@ -81,7 +82,7 @@ class _State extends State<User> {
       closed = true;
       Future.delayed(
         const Duration(milliseconds: 500),
-            () {
+        () {
           print('User.navigate to $page');
           Navigate.to(context, Screen.build(page));
         },
@@ -364,8 +365,18 @@ class Source extends DataTableSource {
         // print('selected: $selected');
       },
       cells: [
-        DataCell(Text(userList.getBody()[index].getPhoneNumber())),
-        DataCell(Text(userList.getBody()[index].getName())),
+        DataCell(
+          Text(userList.getBody()[index].getPhoneNumber()),
+          onTap: () {
+            Clipboard.setData(ClipboardData(text: userList.getBody()[index].getPhoneNumber()));
+          },
+        ),
+        DataCell(
+          Text(userList.getBody()[index].getName()),
+          onTap: () {
+            Clipboard.setData(ClipboardData(text: userList.getBody()[index].getName()));
+          },
+        ),
         DataCell(userList.getBody()[index].getStatus() == '1' ? const Icon(Icons.done, color: Colors.lightGreen) : const Icon(Icons.close)),
         DataCell(
           IconButton(
@@ -396,7 +407,12 @@ class Source extends DataTableSource {
               },
             ),
           ),
-        DataCell(Text(userList.getBody()[index].getCreatedAt())),
+        DataCell(
+          Text(userList.getBody()[index].getCreatedAt()),
+          onTap: () {
+            Clipboard.setData(ClipboardData(text: userList.getBody()[index].getCreatedAt()));
+          },
+        ),
         DataCell(
           Row(
             children: [

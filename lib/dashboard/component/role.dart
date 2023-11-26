@@ -38,18 +38,6 @@ class _State extends State<Role> {
   int curStage = 1;
   final scrollController = ScrollController();
   TextEditingController roleController = TextEditingController(text: '');
-  Map<String, String> autoMatch = {
-    // Chinese
-    "软件": Language.softwareEngineer,
-    "软件工程师": Language.softwareEngineer,
-    "硬件": Language.hardwareEngineer,
-    "硬件工程师": Language.hardwareEngineer,
-    // English
-    "software": Language.softwareEngineer,
-    "software engineer": Language.softwareEngineer,
-    "hardware": Language.hardwareEngineer,
-    "hardware engineer": Language.hardwareEngineer,
-  };
 
   Stream<int>? stream() async* {
     var lastStage = curStage;

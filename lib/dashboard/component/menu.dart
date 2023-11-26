@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
-
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/translator/chinese.dart';
+import 'package:flutter_framework/common/translator/english.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
@@ -35,8 +37,29 @@ class Menu extends StatefulWidget {
 class _State extends State<Menu> {
   bool closed = false;
   int curStage = 1;
+  String menuFilter = '';
+  String parentFilter = '';
   TextEditingController menuController = TextEditingController();
   TextEditingController parentController = TextEditingController();
+
+  var chinese = <String, String>{
+    Chinese.model[Language.menuOfUser]!: Language.menuOfUser,
+    Chinese.model[Language.menuOfRole]!: Language.menuOfRole,
+    Chinese.model[Language.menuOfMenu]!: Language.menuOfMenu,
+    Chinese.model[Language.menuOfTrack]!: Language.menuOfTrack,
+    Chinese.model[Language.menuOfField]!: Language.menuOfField,
+    Chinese.model[Language.menuOfAdmission]!: Language.menuOfAdmission,
+    Chinese.model[Language.menuOfPermission]!: Language.menuOfPermission,
+  };
+  var english = <String, String>{
+    English.model[Language.menuOfUser]!: Language.menuOfUser,
+    English.model[Language.menuOfRole]!: Language.menuOfRole,
+    English.model[Language.menuOfMenu]!: Language.menuOfMenu,
+    English.model[Language.menuOfTrack]!: Language.menuOfTrack,
+    English.model[Language.menuOfField]!: Language.menuOfField,
+    English.model[Language.menuOfAdmission]!: Language.menuOfAdmission,
+    English.model[Language.menuOfPermission]!: Language.menuOfPermission,
+  };
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -68,8 +91,8 @@ class _State extends State<Menu> {
   }
 
   void setup() {
-    print('Menu.setup');
-    Cache.setMenuList(MenuList([], 0));
+    // print('Menu.setup');
+    Cache.setMenuList(MenuList([]));
     Runtime.setObserve(observe);
   }
 
@@ -100,7 +123,81 @@ class _State extends State<Menu> {
       if (rsp.code == Code.oK) {
         print('body: ${rsp.body}');
         var menuList = MenuList.fromJson(rsp.body);
-        Cache.setMenuList(menuList);
+        var output = menuList;
+        if (menuFilter.isNotEmpty || parentFilter.isNotEmpty) {
+          output = MenuList([]);
+          if (menuFilter.isNotEmpty) {
+            print('menuFilter: $menuFilter');
+            chinese.forEach(
+              (key, value) {
+                if (key.contains(menuFilter)) {
+                  print('contains.key: $key, value: $value');
+                  menuList.getBody().forEach(
+                    (element) {
+                      if (element.getName().compareTo(value) == 0) {
+                        if (!output.getBody().contains(element)) {
+                          print('chinese menu add: ${element.getName()}');
+                          output.getBody().add(element);
+                        }
+                      }
+                    },
+                  );
+                }
+              },
+            );
+            english.forEach(
+              (key, value) {
+                if (key.contains(menuFilter)) {
+                  print('contains.key: $key, value: $value');
+                  menuList.getBody().forEach(
+                    (element) {
+                      if (element.getName().compareTo(value) == 0) {
+                        if (!output.getBody().contains(element)) {
+                          print('english menu add: ${element.getName()}');
+                          output.getBody().add(element);
+                        }
+                      }
+                    },
+                  );
+                }
+              },
+            );
+          }
+          if (parentFilter.isNotEmpty) {
+            print('parentFilter: $menuFilter');
+            chinese.forEach(
+              (key, value) {
+                if (value.contains(parentFilter)) {
+                  menuList.getBody().forEach(
+                    (element) {
+                      if (element.getParent().compareTo(value) == 0) {
+                        if (!output.getBody().contains(element)) {
+                          output.getBody().add(element);
+                        }
+                      }
+                    },
+                  );
+                }
+              },
+            );
+            english.forEach(
+              (key, value) {
+                if (value.contains(parentFilter)) {
+                  menuList.getBody().forEach(
+                    (element) {
+                      if (element.getParent().compareTo(value) == 0) {
+                        if (!output.getBody().contains(element)) {
+                          output.getBody().add(element);
+                        }
+                      }
+                    },
+                  );
+                }
+              },
+            );
+          }
+        }
+        Cache.setMenuList(output);
         curStage++;
         return;
       } else {
@@ -117,13 +214,13 @@ class _State extends State<Menu> {
 
   @override
   void dispose() {
-    print('Menu.dispose');
+    // print('Menu.dispose');
     super.dispose();
   }
 
   @override
   void initState() {
-    print('Menu.initState');
+    // print('Menu.initState');
     setup();
     super.initState();
   }
@@ -173,11 +270,19 @@ class _State extends State<Menu> {
                           )) {
                             return;
                           }
+                          Cache.setMenuList(MenuList([]));
+                          if (menuController.text.isNotEmpty) {
+                            menuFilter = menuController.text;
+                          }
+                          if (parentController.text.isNotEmpty) {
+                            parentFilter = parentController.text;
+                          }
                           fetchMenuListOfCondition(
                             behavior: 2,
                             userId: Cache.getUserId(),
                             roleList: RoleList([]),
                           );
+                          curStage++;
                         },
                         child: Text(
                           Translator.translate(Language.titleOfSearch),
@@ -191,9 +296,11 @@ class _State extends State<Menu> {
                       width: 100,
                       child: ElevatedButton(
                         onPressed: () {
-                          Cache.setMenuList(MenuList([], 0));
+                          Cache.setMenuList(MenuList([]));
                           menuController.text = '';
                           parentController.text = '';
+                          menuFilter = '';
+                          parentFilter = '';
                           curStage++;
                         },
                         child: Text(
