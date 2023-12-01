@@ -5,6 +5,8 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/echo.dart';
 import 'package:flutter_framework/dashboard/business/fetch_rate_limiting_config.dart';
 import 'package:flutter_framework/dashboard/business/sign_in.dart';
@@ -51,25 +53,13 @@ class _State extends State<Offline> {
       closed = true;
       Future.delayed(
         const Duration(milliseconds: 500),
-            () {
+        () {
           print('Offline.navigate to $page');
           Navigate.to(context, Screen.build(page));
         },
       );
     }
   }
-
-  // Stream<int>? yeildData() async* {
-  //   var lastStage = curStage;
-  //   while (!closed) {
-  //     // print('Offline.yeildData.last: $lastStage, cur: ${curStage}');
-  //     await Future.delayed(const Duration(milliseconds: 100));
-  //     if (lastStage != curStage) {
-  //       lastStage = curStage;
-  //       yield lastStage;
-  //     }
-  //   }
-  // }
 
   void fetchRateLimitingConfigHandler(Map<String, dynamic> body) {
     print('Offline.fetchRateLimitingConfigHandler');
@@ -86,7 +76,11 @@ class _State extends State<Offline> {
       return;
     } catch (e) {
       print("Offline.fetchRateLimitingConfigHandler failure, $e");
-      showMessageDialog(context, '温馨提示：', '未知错误');
+      showMessageDialog(
+        context,
+        Translator.translate(Language.titleOfNotification),
+        Translator.translate(Language.failureWithoutErrorCode),
+      );
       curStage--;
       return;
     }
@@ -125,7 +119,11 @@ class _State extends State<Offline> {
         navigate(Screen.home);
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}${rsp.code}',
+        );
         return;
       }
     } catch (e) {
@@ -201,8 +199,8 @@ class _State extends State<Offline> {
                     size: 50,
                   ),
                   Spacing.addVerticalSpace(20),
-                  const Center(
-                    child: Text('网络连接已断开....'),
+                  Center(
+                    child: Text(Translator.translate(Language.networkDisconnected)),
                   ),
                   Spacing.addVerticalSpace(20),
                   Center(

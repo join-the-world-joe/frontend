@@ -166,7 +166,7 @@ class _State extends State<Home> {
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.failure) + rsp.code.toString(),
+          Translator.translate(Language.failureWithErrorCode) + rsp.code.toString(),
         );
         curStage = -1;
         refresh();

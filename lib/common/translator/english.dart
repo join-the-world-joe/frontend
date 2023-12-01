@@ -142,10 +142,13 @@ class English {
     Language.titleOfNotification: 'Notification',
     Language.messageOfSomewhereLogin: 'Your account login somewhere.',
     Language.endDateIsBeforeBeginDate: 'The End DateTime is Before Begin DateTime',
-    Language.failureOnFetchMenuListOfCondition: 'Failure on the request of menu',
-    Language.noDataFailureOnFetchMenuListOfCondition: 'No menu data failure on the request of menu',
-    Language.accessDeniedFailureOnFetchPermissionOfCondition:'Access Denied',
-    Language.failure:'失败',
+    Language.failureOnFetchMenuListOfCondition: 'Failure on the response of menu',
+    Language.noDataFailureOnFetchMenuListOfCondition: 'No menu data failure on the response of menu',
+    Language.accessDeniedFailureOnFetchPermissionOfCondition: 'Access Denied',
+    Language.failureWithErrorCode: 'Error Code: ',
+    Language.failureWithoutErrorCode:'Exception',
+    Language.networkDisconnected: 'Network Disconnected',
+    Language.networkConnected:'Network Connected',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',

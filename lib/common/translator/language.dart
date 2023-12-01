@@ -141,7 +141,10 @@ class Language {
   static String failureOnFetchMenuListOfCondition = 'the failure of fetch menu list of condition';
   static String noDataFailureOnFetchMenuListOfCondition = 'the no data failure';
   static String accessDeniedFailureOnFetchPermissionOfCondition = 'the access denied failure on the request of permission';
-  static String failure = 'Failure';
+  static String failureWithErrorCode = 'the failure from response with error code ';
+  static String failureWithoutErrorCode = 'the failure from response without error code';
+  static String networkDisconnected = 'the network has been disconnected';
+  static String networkConnected = 'the network has been connected';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';

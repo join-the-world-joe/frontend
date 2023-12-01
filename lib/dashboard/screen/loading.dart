@@ -3,6 +3,8 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/echo.dart';
 import 'package:flutter_framework/dashboard/business/fetch_rate_limiting_config.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
@@ -47,7 +49,7 @@ class _State extends State<Loading> {
       closed = true;
       Future.delayed(
         const Duration(milliseconds: 500),
-            () {
+        () {
           print('Loading.navigate to $page');
           Navigate.to(context, Screen.build(page));
         },
@@ -64,7 +66,11 @@ class _State extends State<Loading> {
           curStage++;
         }
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}${rsp.getCode()}',
+        );
         curStage--;
         return;
       }
@@ -85,14 +91,22 @@ class _State extends State<Loading> {
         Runtime.updateRateLimiter(rsp.rateLimiter);
         curStage++;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}${rsp.code}',
+        );
         curStage--;
         return;
       }
       return;
     } catch (e) {
       print("Loading.fetchRateLimitingConfigHandler failure, $e");
-      showMessageDialog(context, '温馨提示：', '未知错误');
+      showMessageDialog(
+        context,
+        Translator.translate(Language.titleOfNotification),
+        Translator.translate(Language.failureWithErrorCode),
+      );
       curStage--;
       return;
     }

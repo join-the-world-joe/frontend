@@ -54,7 +54,7 @@ class Chinese {
 
     // common
     Language.description: '描述',
-    Language.valueOfNull:'',
+    Language.valueOfNull: '',
 
     // menu
     Language.titleOfParentMenu: '父级菜单',
@@ -92,12 +92,12 @@ class Chinese {
     Language.insertUserRecord: '新增用户',
     Language.softDeleteUserRecord: '删除用户',
     Language.updateUserRecord: '更新用户',
-    Language.managementOfUsers :'用户管理',
-    Language.managementOfRoles : '角色管理',
-    Language.managementOfMenus : '菜单管理',
-    Language.managementOfPermissions : '权限管理',
-    Language.managementOfFields : '字段管理',
-    Language.managementOfTracks : '日志管理',
+    Language.managementOfUsers: '用户管理',
+    Language.managementOfRoles: '角色管理',
+    Language.managementOfMenus: '菜单管理',
+    Language.managementOfPermissions: '权限管理',
+    Language.managementOfFields: '字段管理',
+    Language.managementOfTracks: '日志管理',
 
     // role
     Language.titleOfRole: '角色',
@@ -139,13 +139,16 @@ class Chinese {
     // dialog
     Language.titleOfErrorNotifyDialog: '错误提示',
     Language.passwordInTwoInputControlDoNotMatch: '两次输入的密码不一致',
-    Language.titleOfNotification: '温馨提醒:',
+    Language.titleOfNotification: '温馨提醒: ',
     Language.messageOfSomewhereLogin: '您的帐号已在别处登录.',
     Language.endDateIsBeforeBeginDate: '结束日期在开始日期之前',
-    Language.failureOnFetchMenuListOfCondition : '获取菜单数据失败',
-    Language.noDataFailureOnFetchMenuListOfCondition:'没有菜单数据',
-    Language.accessDeniedFailureOnFetchPermissionOfCondition:'没有权限',
-    Language.failure:'失败',
+    Language.failureOnFetchMenuListOfCondition: '获取菜单数据失败',
+    Language.noDataFailureOnFetchMenuListOfCondition: '没有菜单数据',
+    Language.accessDeniedFailureOnFetchPermissionOfCondition: '拒绝访问',
+    Language.failureWithErrorCode: '错误代码: ',
+    Language.failureWithoutErrorCode: '程序异常',
+    Language.networkDisconnected: '网络已断开',
+    Language.networkConnected: '网络已连接',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',
