@@ -111,7 +111,7 @@ class _State extends State<Offline> {
     try {
       print('body: ${body.toString()}');
       SignInRsp rsp = SignInRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
+      if (rsp.getCode() == Code.oK) {
         // print("SignInRsp: ${body.toString()}");
         Cache.setUserId(rsp.getUserId());
         Cache.setMemberId(rsp.getMemberId());
@@ -122,7 +122,7 @@ class _State extends State<Offline> {
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}${rsp.code}',
+          '${Translator.translate(Language.failureWithErrorCode)}${rsp.getCode()}',
         );
         return;
       }

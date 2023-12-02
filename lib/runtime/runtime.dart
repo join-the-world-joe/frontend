@@ -80,18 +80,15 @@ class Runtime {
             _observe?.call(packet);
             _observer?.call(packet);
           }
-          return;
         } else {
           var packet = PacketClient.fromBytes(data);
           if (isPacketClientValid(packet) == Code.oK) {
             _observe?.call(packet);
           }
-          return;
         }
       } catch (e) {
         print('wsClient.OnReceive.e: $e');
-        return;
-      }
+      } finally {}
     },
     onDone: () {
       print('Websocket.onDone');

@@ -83,14 +83,14 @@ class _State extends State<PasswordSignIn> {
     print('PasswordSignIn.signInHandler');
     try {
       SignInRsp rsp = SignInRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
+      if (rsp.getCode() == Code.oK) {
         print("PasswordSignIn: ${body.toString()}");
         Cache.setUserId(rsp.getUserId());
         Cache.setMemberId(rsp.getMemberId());
         Cache.setSecret(rsp.getSecret());
         navigate(Screen.home);
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
         return;
       }
       return;

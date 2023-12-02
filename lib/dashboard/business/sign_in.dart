@@ -48,30 +48,32 @@ class SignInReq {
 }
 
 class SignInRsp {
-  late int code;
-  late int userId;
-  late String secret;
-  late String memberId;
-  late String name;
+  late int _code;
+  late int _userId;
+  late String _secret;
+  late String _memberId;
+  late String _name;
+
+  SignInRsp(this._code, this._name, this._secret, this._userId, this._memberId);
 
   int getCode() {
-    return code;
+    return _code;
   }
 
   String getName() {
-    return name;
+    return _name;
   }
 
   String getMemberId() {
-    return memberId;
+    return _memberId;
   }
 
   String getSecret() {
-    return secret;
+    return _secret;
   }
 
   int getUserId() {
-    return userId;
+    return _userId;
   }
 
   Uint8List toBytes() {
@@ -83,12 +85,17 @@ class SignInRsp {
     return Convert.bytes2String(Convert.toBytes(this));
   }
 
-  SignInRsp.fromJson(Map<String, dynamic> json)
-      : code = json['code'] ?? -1,
-        userId = json['user_id'] ?? -1,
-        secret = json['secret'] ?? -1,
-        memberId = json['member_id'] ?? -1,
-        name = json['name'] ?? -1;
+  SignInRsp.fromJson(Map<String, dynamic> json) {
+    print('json: ${json.toString()}');
+    if (json.containsKey('body')) {
+      var body = json['body'];
+      _code = body['code'] ?? -1;
+      _userId = body['user_id'] ?? -1;
+      _secret = body['secret'] ?? "";
+      _memberId = body['member_id'] ?? "";
+      _name = body['name'] ?? "";
+    }
+  }
 }
 
 void signIn({

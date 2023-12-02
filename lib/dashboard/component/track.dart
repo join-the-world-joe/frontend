@@ -42,8 +42,11 @@ class _State extends State<Track> {
   TextEditingController majorController = TextEditingController();
   TextEditingController minorController = TextEditingController();
   TextEditingController operatorController = TextEditingController();
-  TextEditingController beginController = TextEditingController(text: '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}');
-  TextEditingController endController = TextEditingController(text: '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}');
+  TextEditingController beginController = TextEditingController(text: '');
+  TextEditingController endController = TextEditingController(text: '');
+  int year = DateTime.now().year;
+  int month = DateTime.now().month;
+  var day = DateTime.now().day.toString().length == 2 ? DateTime.now().day.toString() : '0${DateTime.now().day}';
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -78,6 +81,8 @@ class _State extends State<Track> {
     print('Track.setup');
     Cache.setTrackList(TrackList([]));
     Runtime.setObserve(observe);
+    beginController.text = '$year-$month-$day';
+    endController.text = '$year-$month-$day';
   }
 
   void fetchTrackListOfConditionHandler(Map<String, dynamic> body) {
@@ -258,8 +263,8 @@ class _State extends State<Track> {
                             return;
                           }
 
-                          // print('begin string: ${beginController.text}');
-                          // print('end string: ${endController.text}');
+                          print('begin string: ${beginController.text}');
+                          print('end string: ${endController.text}');
                           var begin = DateTime.parse(beginController.text);
                           var end = DateTime.parse(endController.text).add(const Duration(days: 0, hours: 23, minutes: 59, seconds: 59, milliseconds: 999));
                           if (end.isBefore(begin)) {
@@ -291,12 +296,15 @@ class _State extends State<Track> {
                       width: 100,
                       child: ElevatedButton(
                         onPressed: () {
+                          int year = DateTime.now().year;
+                          int month = DateTime.now().month;
+                          var day = DateTime.now().day.toString().length == 2 ? DateTime.now().day.toString() : '0${DateTime.now().day}';
                           Cache.setTrackList(TrackList([]));
                           operatorController.text = '';
                           majorController.text = '';
                           minorController.text = '';
-                          beginController.text = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}';
-                          endController.text = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}';
+                          beginController.text = '$year-$month-$day';
+                          endController.text = '$year-$month-$day';
                           curStage++;
                         },
                         child: Text(

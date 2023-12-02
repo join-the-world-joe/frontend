@@ -27,6 +27,8 @@ class _State extends State<Loading> {
   int curStage = 0;
   bool closed = false;
   String message = const Uuid().v4();
+  bool fGetRateLimiting = false;
+  bool fCheckPong = false;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -64,23 +66,12 @@ class _State extends State<Loading> {
       if (rsp.getCode() == Code.oK) {
         if (message.compareTo(rsp.getMessage()) == 0) {
           curStage++;
+          fCheckPong = true;
         }
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}${rsp.getCode()}',
-        );
-        curStage--;
-        return;
       }
-      return;
     } catch (e) {
       print("Loading.echoHandler failure, $e");
-      showMessageDialog(context, '温馨提示：', '未知错误');
-      curStage--;
-      return;
-    }
+    } finally {}
   }
 
   void fetchRateLimitingConfigHandler(Map<String, dynamic> body) {
@@ -89,27 +80,13 @@ class _State extends State<Loading> {
       FetchRateLimitingConfigRsp rsp = FetchRateLimitingConfigRsp.fromJson(body);
       if (rsp.code == Code.oK) {
         Runtime.updateRateLimiter(rsp.rateLimiter);
+        fGetRateLimiting = true;
         curStage++;
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}${rsp.code}',
-        );
-        curStage--;
-        return;
       }
-      return;
     } catch (e) {
       print("Loading.fetchRateLimitingConfigHandler failure, $e");
-      showMessageDialog(
-        context,
-        Translator.translate(Language.titleOfNotification),
-        Translator.translate(Language.failureWithErrorCode),
-      );
-      curStage--;
       return;
-    }
+    } finally {}
   }
 
   void observe(PacketClient packet) {
@@ -125,33 +102,28 @@ class _State extends State<Loading> {
       } else {
         print("Loading.observe warning: $major-$minor doesn't matched");
       }
-      return;
     } catch (e) {
-      print('Loading.observe($major-$minor).e: ${e.toString()}');
-      return;
+      print('Loading.observe failure($major-$minor), e: ${e.toString()}');
+    } finally {
     }
   }
 
   void refresh() {
-    // print('Loading.refresh');
     setState(() {});
   }
 
   void setup() {
-    // print('Loading.setup');
     setup_();
     Runtime.setObserve(observe);
   }
 
   @override
   void dispose() {
-    // print('Loading.dispose');
     super.dispose();
   }
 
   @override
   void initState() {
-    // print('Loading.initState');
     setup();
     super.initState();
   }
@@ -173,8 +145,9 @@ class _State extends State<Loading> {
           // print('curStage == 1');
           return const Center(child: CircularProgressIndicator());
         } else if (curStage == 2) {
-          print('curStage == 2');
-          navigate(Screen.smsSignIn);
+          if (fCheckPong && fGetRateLimiting) {
+            navigate(Screen.smsSignIn);
+          }
           return const Text(''); // done
         } else {
           return const Text(''); // fail

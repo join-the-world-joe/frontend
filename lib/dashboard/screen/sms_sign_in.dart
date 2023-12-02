@@ -82,11 +82,9 @@ class _State extends State<SMSSignIn> {
       } else {
         print("SMSSignIn.observe warning: $major-$minor doesn't matched");
       }
-      return;
     } catch (e) {
-      print('SMSSignIn.observe($major-$minor).e: ${e.toString()}');
-      return;
-    }
+      print('SMSSignIn.observe failure($major-$minor), e: ${e.toString()}');
+    } finally {}
   }
 
   void smsHandler(Map<String, dynamic> body) {
@@ -127,25 +125,23 @@ class _State extends State<SMSSignIn> {
   }
 
   void signInHandler(Map<String, dynamic> body) {
-    print('SMSSignIn.signInHandler');
+    print('SMSSignIn.signInHandler.body: ${body.toString()}');
     try {
       SignInRsp rsp = SignInRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print("SignInRsp: ${body.toString()}");
+      if (rsp.getCode() == Code.oK) {
         Cache.setUserId(rsp.getUserId());
         Cache.setMemberId(rsp.getMemberId());
         Cache.setSecret(rsp.getSecret());
         navigate(Screen.home);
-        return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
         return;
       }
     } catch (e) {
       print("SMSSignIn.signInHandler failure, $e");
       showMessageDialog(context, '温馨提示：', '未知错误');
       return;
-    }
+    } finally {}
   }
 
   void refresh() {
