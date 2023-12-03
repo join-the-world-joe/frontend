@@ -125,7 +125,6 @@ class _State extends State<SMSSignIn> {
   }
 
   void signInHandler(Map<String, dynamic> body) {
-    print('SMSSignIn.signInHandler.body: ${body.toString()}');
     try {
       SignInRsp rsp = SignInRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {

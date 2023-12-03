@@ -86,7 +86,6 @@ class SignInRsp {
   }
 
   SignInRsp.fromJson(Map<String, dynamic> json) {
-    print('json: ${json.toString()}');
     if (json.containsKey('body')) {
       var body = json['body'];
       _code = body['code'] ?? -1;

@@ -60,7 +60,6 @@ class _State extends State<Loading> {
   }
 
   void echoHandler(Map<String, dynamic> body) {
-    print('Loading.echoHandler');
     try {
       PongRsp rsp = PongRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
@@ -75,7 +74,6 @@ class _State extends State<Loading> {
   }
 
   void fetchRateLimitingConfigHandler(Map<String, dynamic> body) {
-    print('Loading.fetchRateLimitingConfigHandler');
     try {
       FetchRateLimitingConfigRsp rsp = FetchRateLimitingConfigRsp.fromJson(body);
       if (rsp.code == Code.oK) {
@@ -115,6 +113,8 @@ class _State extends State<Loading> {
   void setup() {
     setup_();
     Runtime.setObserve(observe);
+    echo(message: message);
+    fetchRateLimitingConfig();
   }
 
   @override
@@ -130,8 +130,6 @@ class _State extends State<Loading> {
 
   @override
   Widget build(BuildContext context) {
-    echo(message: message);
-    fetchRateLimitingConfig();
     return StreamBuilder(
       stream: stream(),
       builder: (context, snap) {

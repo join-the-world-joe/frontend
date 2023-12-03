@@ -144,7 +144,6 @@ class _State extends State<Home> {
   }
 
   void fetchMenuListOfConditionHandler(Map<String, dynamic> body) {
-    print('Home.fetchMenuListOfConditionHandler');
     try {
       FetchMenuListOfConditionRsp rsp = FetchMenuListOfConditionRsp.fromJson(body);
       if (rsp.code == Code.oK) {
