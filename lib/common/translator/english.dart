@@ -146,13 +146,36 @@ class English {
     Language.noDataFailureOnFetchMenuListOfCondition: 'No menu data failure on the response of menu',
     Language.accessDeniedFailureOnFetchPermissionOfCondition: 'Access Denied',
     Language.failureWithErrorCode: 'Error Code: ',
-    Language.failureWithoutErrorCode:'Exception',
+    Language.failureWithoutErrorCode: 'Exception',
     Language.networkDisconnected: 'Network Disconnected',
-    Language.networkConnected:'Network Connected',
+    Language.networkConnected: 'Network Connected',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',
     Language.messageForceOffline: 'Your account has been logon somewhere! Your have to logout immediately.',
+
+    // Operations
+    Language.operations: 'Operation',
+    Language.good: 'Good',
+    Language.advertisement: 'Advertisement',
+    Language.idOfGood: 'ID',
+    Language.nameOfGood: 'Name',
+    Language.listOfGoods: 'Good List',
+    Language.importGood: 'Import Good',
+    Language.buyingPrice: "Buying Price",
+    Language.vendorOfGood: "Vendor",
+    Language.statusOfGood: "Status",
+    Language.contactOfVendor: "Contact",
+    Language.idOfAdvertisement: "ID",
+    Language.nameOfAdvertisement: "Name",
+    Language.listOfAdvertisements: "Advertisement List",
+    Language.titleOfAdvertisement: "Title",
+    Language.sellingPriceOfAdvertisement: "Selling Price",
+    Language.placeOfOriginOfAdvertisement: "Place Of Origin",
+    Language.sellingPointsOfAdvertisement: "Selling Points",
+    Language.stockOfAdvertisement: "Stock",
+    Language.urlOfAdvertisement: "Path",
+    Language.newAdvertisement : "New Advertisement",
   };
 
   static String getName() {

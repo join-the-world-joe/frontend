@@ -149,4 +149,28 @@ class Language {
   // inform.notification
   static String eventForceOffline = 'Force Offline';
   static String messageForceOffline = 'Your account has been logon somewhere! Your have to logout immediately.';
+
+  // Operations
+  static String operations = 'Operations';
+  static String good = "Good";
+  static String advertisement = "Advertisement";
+  static String idOfGood = "the id of good";
+  static String nameOfGood = "the name of good";
+  static String listOfGoods = "the list of goods";
+  static String importGood = "import the data of a good";
+  static String buyingPrice = "the buying price of a good";
+  static String vendorOfGood = "the vendor of a good";
+  static String statusOfGood = "the status of a good";
+  static String contactOfVendor = "the contact of a vendor";
+  static String idOfAdvertisement = "the id of an advertisement";
+  static String nameOfAdvertisement = "the name of an advertisement";
+  static String listOfAdvertisements = "the list of advertisements";
+  static String titleOfAdvertisement = "the title of an advertisement";
+  static String sellingPriceOfAdvertisement = "the selling price of an advertisement";
+  static String placeOfOriginOfAdvertisement = "the place of origin of an advertisement";
+  static String sellingPointsOfAdvertisement = "the selling points of an advertisement";
+  static String stockOfAdvertisement = "the stock of an advertisement";
+  static String urlOfAdvertisement = "the image url of an advertisement";
+  static String newAdvertisement = "to new an advertisement";
+
 }

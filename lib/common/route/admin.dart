@@ -21,4 +21,14 @@ class Admin {
   String fetchTrackListOfConditionRsp = "20";
   String checkPermissionReq = "21";
   String checkPermissionRsp = "22";
+  String fetchIdListOfGoodReq = "23";
+  String fetchIdListOfGoodRsp = "24";
+  String fetchRecordOfGoodReq = "25";
+  String fetchRecordOfGoodRsp = "26";
+  String insertRecordOfGoodReq = "27";
+  String insertRecordOfGoodRsp = "28";
+  String softDeleteRecordOfGoodReq = "29";
+  String softDeleteRecordOfGoodRsp = "30";
+  String updateRecordOfGoodReq = "31";
+  String updateRecordOfGoodRsp = "32";
 }

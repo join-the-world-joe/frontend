@@ -9,7 +9,9 @@ import 'package:flutter_framework/common/translator/english.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
+import 'package:flutter_framework/dashboard/component/advertisement.dart';
 import 'package:flutter_framework/dashboard/component/field.dart';
+import 'package:flutter_framework/dashboard/component/good.dart';
 import 'package:flutter_framework/dashboard/component/menu.dart';
 import 'package:flutter_framework/dashboard/component/permission.dart';
 import 'package:flutter_framework/dashboard/component/role.dart';
@@ -52,6 +54,8 @@ class _State extends State<Home> {
   var menu = Menu();
   var permission = Permission();
   var field = Field();
+  var good = Good();
+  var advertisement = Advertisement();
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -183,12 +187,14 @@ class _State extends State<Home> {
   }
 
   void refreshContent() {
-    user =  User();
-    track =  Track();
-    role =  Role();
-    menu =  Menu();
-    permission =  Permission();
-    field =  Field();
+    user = User();
+    track = Track();
+    role = Role();
+    menu = Menu();
+    permission = Permission();
+    field = Field();
+    good = Good();
+    advertisement = Advertisement();
   }
 
   void setup() {
@@ -372,6 +378,10 @@ class _State extends State<Home> {
                     return field;
                   } else if (Cache.getContent() == Track.content) {
                     return track;
+                  } else if (Cache.getContent() == Good.content) {
+                    return good;
+                  } else if (Cache.getContent() == Advertisement.content) {
+                    return advertisement;
                   } else {
                     return const Text('Unknown');
                   }

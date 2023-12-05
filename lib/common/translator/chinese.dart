@@ -153,6 +153,29 @@ class Chinese {
     // inform.notification
     Language.eventForceOffline: '强制下线',
     Language.messageForceOffline: '帐号在异地登录, 当前帐号被强制下线.',
+
+    // Operations
+    Language.operations: '运营管理',
+    Language.good: '商品',
+    Language.advertisement: '广告',
+    Language.idOfGood: '商品编号',
+    Language.nameOfGood: '商品名称',
+    Language.listOfGoods: '商品列表',
+    Language.importGood:"录入商品",
+    Language.buyingPrice : "进货价",
+    Language.vendorOfGood : "供应商",
+    Language.statusOfGood : "状态",
+    Language.contactOfVendor : "联系方式",
+    Language.idOfAdvertisement: "广告ID",
+    Language.nameOfAdvertisement: "广告名称",
+    Language.listOfAdvertisements: "广告列表",
+    Language.titleOfAdvertisement: "销售标语",
+    Language.sellingPriceOfAdvertisement: "出售价格",
+    Language.placeOfOriginOfAdvertisement: "产地",
+    Language.sellingPointsOfAdvertisement: "卖点",
+    Language.stockOfAdvertisement: "库存",
+    Language.urlOfAdvertisement: "路径",
+    Language.newAdvertisement : "新增广告",
   };
 
   static String getName() {
