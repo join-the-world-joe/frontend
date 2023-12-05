@@ -55,6 +55,7 @@ class English {
     // common
     Language.description: 'Description',
     Language.valueOfNull: '',
+    Language.loading : "Loading",
 
     // menu
     Language.titleOfParentMenu: 'Parent',

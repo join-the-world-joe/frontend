@@ -51,6 +51,7 @@ class Language {
   // common
   static String description = 'Description';
   static String valueOfNull = "the value of null";
+  static String loading = "the status of loading";
 
   // menu
   static String titleOfParentMenu = 'the title of parent menu';

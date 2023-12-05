@@ -55,6 +55,7 @@ class Chinese {
     // common
     Language.description: '描述',
     Language.valueOfNull: '',
+    Language.loading : "加载中",
 
     // menu
     Language.titleOfParentMenu: '父级菜单',
