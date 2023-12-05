@@ -70,6 +70,7 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
     try {
       print("showInsertGoodDialog.observe: major: $major, minor: $minor");
       if (major == Major.admin && minor == Minor.admin.insertRecordOfGoodRsp) {
+        insertRecordOfGoodHandler(body);
       } else {
         print("showInsertGoodDialog.observe warning: $major-$minor doesn't matched");
       }
@@ -77,7 +78,7 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
     } catch (e) {
       print('showInsertGoodDialog.observe($major-$minor).e: ${e.toString()}');
       return;
-    }
+    } finally {}
   }
 
   Runtime.setObserve(observe);
@@ -100,6 +101,28 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
           ),
           TextButton(
             onPressed: () async {
+              if (nameController.text.isEmpty) {
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.productNameNotProvided),
+                );
+                return;
+              }
+              if (buyingPriceController.text.isEmpty) {
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.buyingPriceNotProvided),
+                );
+                return;
+              }
+              if (!Runtime.allow(
+                major: int.parse(Major.admin),
+                minor: int.parse(Minor.admin.insertRecordOfGoodReq),
+              )) {
+                return;
+              }
               insertRecordOfGood(
                 status: status,
                 name: nameController.text,

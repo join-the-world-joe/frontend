@@ -149,6 +149,8 @@ class Chinese {
     Language.failureWithoutErrorCode: '程序异常',
     Language.networkDisconnected: '网络已断开',
     Language.networkConnected: '网络已连接',
+    Language.buyingPriceNotProvided: "未提供进货价",
+    Language.productNameNotProvided: "未提供商品名称",
 
     // inform.notification
     Language.eventForceOffline: '强制下线',

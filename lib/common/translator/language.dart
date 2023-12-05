@@ -145,6 +145,8 @@ class Language {
   static String failureWithoutErrorCode = 'the failure from response without error code';
   static String networkDisconnected = 'the network has been disconnected';
   static String networkConnected = 'the network has been connected';
+  static String buyingPriceNotProvided = "the buying price not provided";
+  static String productNameNotProvided = "the name of product not provided";
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';

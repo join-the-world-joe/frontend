@@ -149,6 +149,8 @@ class English {
     Language.failureWithoutErrorCode: 'Exception',
     Language.networkDisconnected: 'Network Disconnected',
     Language.networkConnected: 'Network Connected',
+    Language.buyingPriceNotProvided: "Buying Price Not Provided",
+    Language.productNameNotProvided: "Product Name Not Provided",
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',
