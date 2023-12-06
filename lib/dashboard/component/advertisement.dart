@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/check_permission.dart';
+import 'package:flutter_framework/dashboard/dialog/insert_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -30,6 +31,10 @@ class _State extends State<Advertisement> {
   final nameController = TextEditingController();
   final idController = TextEditingController();
   final scrollController = ScrollController();
+  List<int> idList = [];
+  Map<int, Product> dataMap = {};
+  Map<int, DateTime> datetimeMap = {};
+  Map<int, bool> boolMap = {};
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -101,16 +106,6 @@ class _State extends State<Advertisement> {
 
   @override
   Widget build(BuildContext context) {
-    checkPermission(major: Major.admin, minor: Minor.admin.fetchPermissionListOfConditionReq);
-    Future.delayed(const Duration(milliseconds: 100), () {
-      checkPermission(major: Major.admin, minor: Minor.admin.fetchMenuListOfConditionReq);
-    });
-    Future.delayed(const Duration(milliseconds: 200), () {
-      checkPermission(major: Major.admin, minor: Minor.admin.insertUserRecordReq);
-    });
-    Future.delayed(const Duration(milliseconds: 300), () {
-      checkPermission(major: Major.admin, minor: Minor.admin.softDeleteUserRecordReq);
-    });
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
@@ -150,7 +145,14 @@ class _State extends State<Advertisement> {
                         height: 30,
                         width: 100,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (!Runtime.allow(
+                              major: int.parse(Major.admin),
+                              minor: int.parse(Minor.admin.fetchIdListOfAdvertisementReq),
+                            )) {
+                              return;
+                            }
+                          },
                           child: Text(
                             Translator.translate(Language.titleOfSearch),
                             style: const TextStyle(color: Colors.white, fontSize: 15),
@@ -187,7 +189,7 @@ class _State extends State<Advertisement> {
                         ElevatedButton.icon(
                           icon: const Icon(Icons.add),
                           onPressed: () async {
-                            showInsertUserDialog(context);
+                            showInsertAdvertisementDialog(context);
                           },
                           label: Text(
                             Translator.translate(Language.newAdvertisement),
@@ -200,6 +202,8 @@ class _State extends State<Advertisement> {
                       ),
                       header: Text(Translator.translate(Language.listOfAdvertisements)),
                       columns: [
+                        DataColumn(label: Text(Translator.translate(Language.idOfAdvertisement))),
+                        DataColumn(label: Text(Translator.translate(Language.idOfGood))),
                         DataColumn(label: Text(Translator.translate(Language.titleOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.sellingPriceOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.placeOfOriginOfAdvertisement))),

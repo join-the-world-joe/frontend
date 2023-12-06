@@ -160,6 +160,7 @@ class English {
     // Operations
     Language.operations: 'Operation',
     Language.good: 'Good',
+    Language.category: "Category",
     Language.advertisement: 'Advertisement',
     Language.idOfGood: 'ID',
     Language.nameOfGood: 'Name',
@@ -179,6 +180,11 @@ class English {
     Language.stockOfAdvertisement: "Stock",
     Language.urlOfAdvertisement: "Path",
     Language.newAdvertisement : "New Advertisement",
+    Language.modifyGood: "Modify Product",
+    Language.peekInfoFromProductId: "Peek",
+    Language.productIdIsEmpty : "Product ID is empty!",
+    Language.withoutProductInfoInResponse: "Product not found",
+    Language.nameOfAdvertisementIsEmpty: "Name not provided"
   };
 
   static String getName() {

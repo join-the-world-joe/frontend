@@ -160,8 +160,9 @@ class Chinese {
     // Operations
     Language.operations: '运营管理',
     Language.good: '商品',
+    Language.category: "类目",
     Language.advertisement: '广告',
-    Language.idOfGood: '商品编号',
+    Language.idOfGood: '商品ID',
     Language.nameOfGood: '商品名称',
     Language.listOfGoods: '商品列表',
     Language.importGood:"录入商品",
@@ -177,8 +178,13 @@ class Chinese {
     Language.placeOfOriginOfAdvertisement: "产地",
     Language.sellingPointsOfAdvertisement: "卖点",
     Language.stockOfAdvertisement: "库存",
-    Language.urlOfAdvertisement: "路径",
+    Language.urlOfAdvertisement: "图片路径",
     Language.newAdvertisement : "新增广告",
+    Language.modifyGood: "更新商品信息",
+    Language.peekInfoFromProductId: "查看商品信息",
+    Language.productIdIsEmpty: "商品ID为空",
+    Language.withoutProductInfoInResponse : "未找到商品信息",
+    Language.nameOfAdvertisementIsEmpty: "未提供广告名称"
   };
 
   static String getName() {

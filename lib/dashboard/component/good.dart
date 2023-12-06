@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'dart:async';
@@ -10,6 +11,7 @@ import 'package:flutter_framework/dashboard/business/fetch_id_list_of_good.dart'
 import 'package:flutter_framework/dashboard/dialog/insert_good.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_good.dart';
+import 'package:flutter_framework/dashboard/dialog/update_good.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -20,6 +22,7 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../model/product.dart';
+import '../business/fetch_records_of_good.dart';
 
 class Good extends StatefulWidget {
   const Good({Key? key}) : super(key: key);
@@ -35,8 +38,12 @@ class _State extends State<Good> {
   int curStage = 1;
   final nameController = TextEditingController();
   final idController = TextEditingController();
+  final vendorController = TextEditingController();
   final scrollController = ScrollController();
-  var sourceContext = SourceContext();
+  List<int> idList = [];
+  Map<int, Product> dataMap = {};
+  Map<int, DateTime> datetimeMap = {};
+  Map<int, bool> boolMap = {};
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -54,11 +61,25 @@ class _State extends State<Good> {
     }
   }
 
+  void navigate(String page) {
+    if (!closed) {
+      closed = true;
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () {
+          print('Good.navigate to $page');
+          Navigate.to(context, Screen.build(page));
+        },
+      );
+    }
+  }
+
   void fetchIdListOfGoodHandler(Map<String, dynamic> body) {
     try {
       FetchIdListOfGoodRsp rsp = FetchIdListOfGoodRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        sourceContext.idList = rsp.getIdList();
+        print("fetchIdListOfGoodHandler.idList: ${rsp.getIdList()}");
+        idList = rsp.getIdList();
         curStage++;
         return;
       } else {
@@ -71,17 +92,40 @@ class _State extends State<Good> {
     }
   }
 
-  void navigate(String page) {
-    if (!closed) {
-      closed = true;
-      Future.delayed(
-        const Duration(milliseconds: 500),
-        () {
-          print('Good.navigate to $page');
-          Navigate.to(context, Screen.build(page));
-        },
-      );
-    }
+  void fetchRecordsOfGoodHandler(Map<String, dynamic> body) {
+    try {
+      FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
+      if (rsp.getCode() == Code.oK) {
+        print('product map: ${rsp.productMap.toString()}');
+        if (idList.isEmpty) {
+          rsp.getProductMap().forEach((key, value) {
+            idList.add(key);
+            dataMap[key] = value;
+            boolMap[key] = true;
+          });
+        }
+        rsp.getProductMap().forEach((key, value) {
+          dataMap[key] = value;
+          boolMap[key] = true;
+        });
+        curStage++;
+        return;
+      } else {
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
+        return;
+      }
+    } catch (e) {
+      print("Good.fetchRecordsOfGoodHandler failure, $e");
+      return;
+    } finally {}
+  }
+
+  void resetSource() {
+    idList = [];
+    dataMap = {};
+    datetimeMap = {};
+    boolMap = {};
+    curStage++;
   }
 
   void setup() {
@@ -98,6 +142,8 @@ class _State extends State<Good> {
       print("Good.observe: major: $major, minor: $minor");
       if (major == Major.admin && minor == Minor.admin.fetchIdListOfGoodRsp) {
         fetchIdListOfGoodHandler(body);
+      } else if (major == Major.admin && minor == Minor.admin.fetchRecordsOfGoodRsp) {
+        fetchRecordsOfGoodHandler(body);
       } else {
         print("Good.observe warning: $major-$minor doesn't matched");
       }
@@ -147,6 +193,11 @@ class _State extends State<Good> {
                             // border: const UnderlineInputBorder(),
                             labelText: Translator.translate(Language.idOfGood),
                           ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                            LengthLimitingTextInputFormatter(11),
+                          ],
                         ),
                       ),
                       Spacing.addHorizontalSpace(20),
@@ -166,13 +217,14 @@ class _State extends State<Good> {
                         width: 100,
                         child: ElevatedButton(
                           onPressed: () {
-                            if (!Runtime.allow(
-                              major: int.parse(Major.admin),
-                              minor: int.parse(Minor.admin.fetchIdListOfGoodReq),
-                            )) {
-                              return;
-                            }
                             if (idController.text.isEmpty && nameController.text.isEmpty) {
+                              if (!Runtime.allow(
+                                major: int.parse(Major.admin),
+                                minor: int.parse(Minor.admin.fetchIdListOfGoodReq),
+                              )) {
+                                return;
+                              }
+                              resetSource();
                               fetchIdListOfGood(
                                 behavior: 1,
                                 productName: "",
@@ -180,12 +232,32 @@ class _State extends State<Good> {
                               );
                               return;
                             }
-                            fetchIdListOfGood(
-                              behavior: 2,
-                              productName: nameController.text,
-                              categoryId: 0,
-                            );
-                            return;
+                            if (idController.text.isNotEmpty) {
+                              if (!Runtime.allow(
+                                major: int.parse(Major.admin),
+                                minor: int.parse(Minor.admin.fetchRecordsOfGoodReq),
+                              )) {
+                                return;
+                              }
+                              resetSource();
+                              fetchRecordsOfGood(productList: [int.parse(idController.text)]);
+                              return;
+                            }
+                            if (nameController.text.isNotEmpty) {
+                              if (!Runtime.allow(
+                                major: int.parse(Major.admin),
+                                minor: int.parse(Minor.admin.fetchIdListOfGoodReq),
+                              )) {
+                                return;
+                              }
+                              resetSource();
+                              fetchIdListOfGood(
+                                behavior: 2,
+                                productName: nameController.text,
+                                categoryId: 0,
+                              );
+                              return;
+                            }
                           },
                           child: Text(
                             Translator.translate(Language.titleOfSearch),
@@ -201,7 +273,7 @@ class _State extends State<Good> {
                           onPressed: () {
                             idController.text = '';
                             nameController.text = '';
-                            sourceContext.idList = [];
+                            idList = [];
                             refresh();
                           },
                           child: Text(
@@ -231,7 +303,7 @@ class _State extends State<Good> {
                           ),
                         ),
                       ],
-                      source: Source(context, sourceContext),
+                      source: Source(context, idList, dataMap, datetimeMap, boolMap),
                       header: Text(Translator.translate(Language.listOfGoods)),
                       columns: [
                         DataColumn(label: Text(Translator.translate(Language.idOfGood))),
@@ -260,28 +332,30 @@ class _State extends State<Good> {
   }
 }
 
-class SourceContext {
-  List<int> idList = [];
-  Map<int, Product> productMap = {};
-  Map<int, int> productMapStatus = {}; // null, default; >0, timestamp, requested; 100, load completed
-
-
-}
-
 class Source extends DataTableSource {
+  List<int> idList;
+  List<int> requestIdList = [];
+  Map<int, Product> dataMap;
+  Map<int, DateTime> datetimeMap;
+  Map<int, bool> boolMap;
   BuildContext buildContext;
-  SourceContext context;
 
   Source(
     this.buildContext,
-    this.context,
+    this.idList,
+    this.dataMap,
+    this.datetimeMap,
+    this.boolMap,
   );
 
   @override
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => context.idList.length;
+  int get rowCount => () {
+        print("length: ${idList.length}");
+        return idList.length;
+      }();
 
   @override
   int get selectedRowCount => 0;
@@ -297,7 +371,45 @@ class Source extends DataTableSource {
     var contact = Translator.translate(Language.loading);
     var desc = Translator.translate(Language.loading);
 
+    var key = idList[index];
 
+    if (boolMap.containsKey(key)) {
+      // fetch row finished
+      if (dataMap.containsKey(key)) {
+        id = dataMap[key]!.getId().toString();
+        name = dataMap[key]!.getName();
+        buyingPrice = dataMap[key]!.getBuyingPrice().toString();
+        vendor = dataMap[key]!.getVendor();
+        status = dataMap[key]!.getStatus().toString();
+        contact = dataMap[key]!.getContact();
+        desc = dataMap[key]!.getDescription();
+      } else {
+        print("unknown error: dataMap.containsKey(key) == false");
+      }
+    } else {
+      if (datetimeMap.containsKey(key)) {
+        // item requested
+        print("key: ${key}, datetime: ${datetimeMap[key]}");
+      }
+      {
+        // item not requested
+        requestIdList = [];
+        requestIdList.add(key);
+        if (index % 5 == 0 || index == 0) {
+          for (var i = index + 1; i < index + 5; i++) {
+            if (i >= idList.length) {
+              break;
+            }
+            requestIdList.add(idList[i]);
+          }
+        }
+        fetchRecordsOfGood(productList: requestIdList);
+        print("requestIdList: $requestIdList");
+        for (var i = 0; i < requestIdList.length; i++) {
+          datetimeMap[i] = DateTime.now();
+        }
+      }
+    }
 
     return DataRow(
       selected: false,
@@ -318,17 +430,31 @@ class Source extends DataTableSource {
               IconButton(
                 icon: const Icon(Icons.edit),
                 tooltip: Translator.translate(Language.update),
-                onPressed: () async {},
+                onPressed: () async {
+                  showUpdateGoodDialog(
+                      buildContext,
+                      Product(
+                        int.parse(id),
+                        name,
+                        int.parse(buyingPrice),
+                        desc,
+                        int.parse(status),
+                        vendor,
+                        "",
+                        contact,
+                        "",
+                      ));
+                },
               ),
               IconButton(
                 icon: const Icon(Icons.delete),
                 tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
-                  await showRemoveGoodDialog(context, userList.getBody()[index]).then(
-                        (value) => () {
+                  await showRemoveGoodDialog(buildContext, int.parse(id), name, vendor).then(
+                    (value) => () {
                       // print('value: $value');
                       if (value) {
-                        context.idList.removeAt(index);
+                        idList.removeAt(index);
                         notifyListeners();
                       }
                     }(),

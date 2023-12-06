@@ -6,23 +6,25 @@ import '../../common/route/major.dart';
 import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
-class InsertRecordOfGoodReq {
+class UpdateRecordOfGoodReq {
   final String _name;
+  final int _productId;
+  final int _buyingPrice;
+  final int _status;
   final String _vendor;
   final String _contact;
-  final int _buyingPrice;
-  final String _desc;
-  final int _status;
+  final String _description;
 
-  InsertRecordOfGoodReq(this._name, this._vendor, this._contact, this._buyingPrice, this._desc, this._status);
+  UpdateRecordOfGoodReq(this._productId, this._name, this._buyingPrice, this._status, this._vendor, this._contact, this._description);
 
   Map<String, dynamic> toJson() => {
         'name': utf8.encode(_name),
-        'vendor': utf8.encode(_vendor),
-        'contact': utf8.encode(_contact),
+        'product_id': _productId,
         'buying_price': _buyingPrice,
-        'description': utf8.encode(_desc),
+        'vendor': utf8.encode(_vendor),
         'status': _status,
+        'contact': utf8.encode(_contact),
+        'description': utf8.encode(_description),
       };
 
   Uint8List toBytes() {
@@ -30,33 +32,35 @@ class InsertRecordOfGoodReq {
   }
 }
 
-class InsertRecordOfGoodRsp {
+class UpdateRecordOfGoodRsp {
   late int code;
 
-  InsertRecordOfGoodRsp.fromJson(Map<String, dynamic> json) {
+  UpdateRecordOfGoodRsp.fromJson(Map<String, dynamic> json) {
     code = json['code'] ?? -1;
   }
 }
 
-void insertRecordOfGood({
+void updateRecordOfGood({
   required String name,
+  required int productId,
+  required int buyingPrice,
+  required int status,
   required String vendor,
   required String contact,
-  required int status,
-  required int buyingPrice,
   required String description,
 }) {
   PacketClient packet = PacketClient.create();
-  InsertRecordOfGoodReq req = InsertRecordOfGoodReq(
+  UpdateRecordOfGoodReq req = UpdateRecordOfGoodReq(
+    productId,
     name,
+    buyingPrice,
+    status,
     vendor,
     contact,
-    buyingPrice,
     description,
-    status,
   );
   packet.getHeader().setMajor(Major.admin);
-  packet.getHeader().setMinor(Minor.admin.insertRecordOfGoodReq);
+  packet.getHeader().setMinor(Minor.admin.updateRecordOfGoodReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

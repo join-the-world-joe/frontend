@@ -23,12 +23,22 @@ class Admin {
   String checkPermissionRsp = "22";
   String fetchIdListOfGoodReq = "23";
   String fetchIdListOfGoodRsp = "24";
-  String fetchRecordOfGoodReq = "25";
-  String fetchRecordOfGoodRsp = "26";
+  String fetchRecordsOfGoodReq = "25";
+  String fetchRecordsOfGoodRsp = "26";
   String insertRecordOfGoodReq = "27";
   String insertRecordOfGoodRsp = "28";
-  String softDeleteRecordOfGoodReq = "29";
-  String softDeleteRecordOfGoodRsp = "30";
+  String softDeleteRecordsOfGoodReq = "29";
+  String softDeleteRecordsOfGoodRsp = "30";
   String updateRecordOfGoodReq = "31";
   String updateRecordOfGoodRsp = "32";
+  String fetchIdListOfAdvertisementReq = "33";
+  String fetchIdListOfAdvertisementRsp = "34";
+  String fetchRecordsOfAdvertisementReq = "35";
+  String fetchRecordsOfAdvertisementRsp = "36";
+  String insertRecordOfAdvertisementReq = "37";
+  String insertRecordOfAdvertisementRsp = "38";
+  String softDeleteRecordsOfAdvertisementReq = "39";
+  String softDeleteRecordsOfAdvertisementRsp = "40";
+  String updateRecordOfAdvertisementReq = "41";
+  String updateRecordOfAdvertisementRsp = "42";
 }

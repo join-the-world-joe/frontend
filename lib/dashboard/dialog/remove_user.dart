@@ -93,46 +93,46 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
           builder: (context, snap) {
             print('data: ${snap.data}');
             // if (snap.data != null) {
-              return SizedBox(
-                width: 220,
-                height: 180,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Column(
-                        // mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('ID ：${user.getId()}'),
-                          Spacing.addVerticalSpace(20),
-                          Text('${Translator.translate(Language.fName)} ：${user.getName()}'),
-                          Spacing.addVerticalSpace(20),
-                          Text('${Translator.translate(Language.fPhoneNumber)} ：${user.getPhoneNumber()}'),
-                          Spacing.addVerticalSpace(20),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(Translator.translate(Language.cancel)),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              softDeleteUserRecord(userList: [int.parse(user.getId())]);
-                            },
-                            child: Text(Translator.translate(Language.confirm)),
-                          ),
-                          Spacing.addVerticalSpace(50),
-                        ],
-                      ),
-                    ],
-                  ),
+            return SizedBox(
+              width: 220,
+              height: 180,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Column(
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('ID ：${user.getId()}'),
+                        Spacing.addVerticalSpace(20),
+                        Text('${Translator.translate(Language.fName)} ：${user.getName()}'),
+                        Spacing.addVerticalSpace(20),
+                        Text('${Translator.translate(Language.fPhoneNumber)} ：${user.getPhoneNumber()}'),
+                        Spacing.addVerticalSpace(20),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(Translator.translate(Language.cancel)),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            softDeleteUserRecord(userList: [int.parse(user.getId())]);
+                          },
+                          child: Text(Translator.translate(Language.confirm)),
+                        ),
+                        Spacing.addVerticalSpace(50),
+                      ],
+                    ),
+                  ],
                 ),
-              );
+              ),
+            );
             // }
             // return const SizedBox(
             //   width: 400,
@@ -149,50 +149,4 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
     Runtime.setObserve(oriObserve);
     return curStage > 0;
   });
-  // return await showDialog(
-  //   barrierDismissible: false,
-  //   context: context,
-  //   builder: (context) {
-  //     return AlertDialog(
-  //       title: Text(Translator.translate(Language.confirmYourDeletion)),
-  //       actions: [
-  //         Column(
-  //           children: [
-  //             Column(
-  //               // mainAxisAlignment: MainAxisAlignment.center,
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 Text('ID ：${user.getId()}'),
-  //                 Spacing.addVerticalSpace(20),
-  //                 Text('${Translator.translate(Language.fName)} ：${user.getName()}'),
-  //                 Spacing.addVerticalSpace(20),
-  //                 Text('${Translator.translate(Language.fPhoneNumber)} ：${user.getPhoneNumber()}'),
-  //                 Spacing.addVerticalSpace(20),
-  //               ],
-  //             ),
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.end,
-  //               children: [
-  //                 TextButton(
-  //                   onPressed: () {
-  //                     Runtime.setObserve(oriObserve);
-  //                     Navigator.pop(context, 0);
-  //                   },
-  //                   child: Text(Translator.translate(Language.cancel)),
-  //                 ),
-  //                 TextButton(
-  //                   onPressed: () {
-  //                     softDeleteUserRecord(userList: [int.parse(user.getId())]);
-  //                   },
-  //                   child: Text(Translator.translate(Language.confirm)),
-  //                 ),
-  //                 Spacing.addVerticalSpace(50),
-  //               ],
-  //             ),
-  //           ],
-  //         ),
-  //       ],
-  //     );
-  //   },
-  // );
 }

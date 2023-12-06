@@ -5,7 +5,7 @@ import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/business/soft_delete_record_of_good.dart';
+import 'package:flutter_framework/dashboard/business/soft_delete_records_of_good.dart';
 import 'package:flutter_framework/dashboard/business/soft_delete_user_recode.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/dashboard/component/good.dart';
@@ -17,7 +17,7 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 
-Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
+Future<bool> showRemoveGoodDialog(BuildContext context, int id, String name, String vendor) async {
   var oriObserve = Runtime.getObserve();
   bool closed = false;
   int curStage = 0;
@@ -69,7 +69,7 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
 
     try {
       print("showRemoveUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.softDeleteRecordOfGoodRsp) {
+      if (major == Major.admin && minor == Minor.admin.softDeleteRecordsOfGoodRsp) {
         softDeleteRecordOfGoodHandler(body);
       } else {
         print("showRemoveUserDialog.observe warning: $major-$minor doesn't matched");
@@ -104,9 +104,11 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
                       // mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('ID ：${product.getId()}'),
+                        Text('ID ：${id}'),
                         Spacing.addVerticalSpace(20),
-                        Text('${Translator.translate(Language.nameOfGood)} ：${product.getName()}'),
+                        Text('${Translator.translate(Language.nameOfGood)} : $name'),
+                        Spacing.addVerticalSpace(20),
+                        Text('${Translator.translate(Language.vendorOfGood)} : $name'),
                         Spacing.addVerticalSpace(20),
                       ],
                     ),
@@ -121,7 +123,7 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
                         ),
                         TextButton(
                           onPressed: () {
-                            softDeleteRecordOfGood(productIdList: [int.parse(product.getId())]);
+                            softDeleteRecordsOfGood(productIdList: [id]);
                           },
                           child: Text(Translator.translate(Language.confirm)),
                         ),
@@ -132,12 +134,6 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
                 ),
               ),
             );
-            // }
-            // return const SizedBox(
-            //   width: 400,
-            //   height: 250,
-            //   child: Center(child: CircularProgressIndicator()),
-            // );
           },
           stream: yeildData(),
         ),
@@ -148,50 +144,4 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
     Runtime.setObserve(oriObserve);
     return curStage > 0;
   });
-  // return await showDialog(
-  //   barrierDismissible: false,
-  //   context: context,
-  //   builder: (context) {
-  //     return AlertDialog(
-  //       title: Text(Translator.translate(Language.confirmYourDeletion)),
-  //       actions: [
-  //         Column(
-  //           children: [
-  //             Column(
-  //               // mainAxisAlignment: MainAxisAlignment.center,
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 Text('ID ：${user.getId()}'),
-  //                 Spacing.addVerticalSpace(20),
-  //                 Text('${Translator.translate(Language.fName)} ：${user.getName()}'),
-  //                 Spacing.addVerticalSpace(20),
-  //                 Text('${Translator.translate(Language.fPhoneNumber)} ：${user.getPhoneNumber()}'),
-  //                 Spacing.addVerticalSpace(20),
-  //               ],
-  //             ),
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.end,
-  //               children: [
-  //                 TextButton(
-  //                   onPressed: () {
-  //                     Runtime.setObserve(oriObserve);
-  //                     Navigator.pop(context, 0);
-  //                   },
-  //                   child: Text(Translator.translate(Language.cancel)),
-  //                 ),
-  //                 TextButton(
-  //                   onPressed: () {
-  //                     softDeleteUserRecord(userList: [int.parse(user.getId())]);
-  //                   },
-  //                   child: Text(Translator.translate(Language.confirm)),
-  //                 ),
-  //                 Spacing.addVerticalSpace(50),
-  //               ],
-  //             ),
-  //           ],
-  //         ),
-  //       ],
-  //     );
-  //   },
-  // );
 }

@@ -7,12 +7,12 @@ import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
-class FetchIdListOfGoodReq {
+class FetchIdListOfAdvertisementReq {
   final int _behavior;
   final String _productName;
   final int _categoryId;
 
-  FetchIdListOfGoodReq(this._behavior, this._productName, this._categoryId);
+  FetchIdListOfAdvertisementReq(this._behavior, this._productName, this._categoryId);
 
   Map<String, dynamic> toJson() => {
         'behavior': _behavior,
@@ -25,7 +25,7 @@ class FetchIdListOfGoodReq {
   }
 }
 
-class FetchIdListOfGoodRsp {
+class FetchIdListOfAdvertisementRsp {
   int _code = -1;
   List<int> _idList = [];
 
@@ -46,7 +46,7 @@ class FetchIdListOfGoodRsp {
     return Convert.bytes2String(Convert.toBytes(this));
   }
 
-  FetchIdListOfGoodRsp.fromJson(Map<String, dynamic> json) {
+  FetchIdListOfAdvertisementRsp.fromJson(Map<String, dynamic> json) {
     if (json['code'] != null) {
       _code = json['code'] ?? -1;
     }
@@ -59,15 +59,15 @@ class FetchIdListOfGoodRsp {
   }
 }
 
-void fetchIdListOfGood({
+void fetchIdListOfAdvertisement({
   required int behavior,
   required String productName,
   required int categoryId,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchIdListOfGoodReq req = FetchIdListOfGoodReq(behavior, productName, categoryId);
+  FetchIdListOfAdvertisementReq req = FetchIdListOfAdvertisementReq(behavior, productName, categoryId);
   packet.getHeader().setMajor(Major.admin);
-  packet.getHeader().setMinor(Minor.admin.fetchIdListOfGoodReq);
+  packet.getHeader().setMinor(Minor.admin.fetchIdListOfAdvertisementReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

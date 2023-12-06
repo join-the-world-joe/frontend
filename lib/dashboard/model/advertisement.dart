@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class Product {
+class Advertisement {
   final int _id;
   final String _name;
   final int _buyingPrice;
@@ -47,7 +47,7 @@ class Product {
     return _contact;
   }
 
-  Product(
+  Advertisement(
     this._id,
     this._name,
     this._buyingPrice,

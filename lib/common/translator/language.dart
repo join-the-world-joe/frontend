@@ -156,6 +156,7 @@ class Language {
   // Operations
   static String operations = 'Operations';
   static String good = "Good";
+  static String category = "Category";
   static String advertisement = "Advertisement";
   static String idOfGood = "the id of good";
   static String nameOfGood = "the name of good";
@@ -175,5 +176,9 @@ class Language {
   static String stockOfAdvertisement = "the stock of an advertisement";
   static String urlOfAdvertisement = "the image url of an advertisement";
   static String newAdvertisement = "to new an advertisement";
-
+  static String modifyGood = "to modify the information of good";
+  static String peekInfoFromProductId = "to peek the information from productId";
+  static String productIdIsEmpty = "the product id is empty";
+  static String withoutProductInfoInResponse = "there is no product info in response";
+  static String nameOfAdvertisementIsEmpty = "the name of advertisement not provided";
 }
