@@ -76,6 +76,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
             Translator.translate(Language.nameOfGood),
             rsp.productMap[key]!.getName(),
           );
+          descController.text = rsp.productMap[key]!.getName();
           curStage++;
         } else {
           showMessageDialog(
@@ -149,6 +150,14 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                   context,
                   Translator.translate(Language.titleOfNotification),
                   Translator.translate(Language.nameOfAdvertisementIsEmpty),
+                );
+                return;
+              }
+              if (descController.text.isEmpty) {
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.needToPeekProductInfo),
                 );
                 return;
               }
@@ -396,6 +405,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                     SizedBox(
                       width: 350,
                       child: TextFormField(
+                        readOnly: true,
                         controller: descController,
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.description),

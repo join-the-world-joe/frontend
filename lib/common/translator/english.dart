@@ -56,6 +56,7 @@ class English {
     Language.description: 'Description',
     Language.valueOfNull: '',
     Language.loading : "Loading",
+    Language.clickToView: "Click to view",
 
     // menu
     Language.titleOfParentMenu: 'Parent',
@@ -191,6 +192,7 @@ class English {
     Language.pressRightButtonToAddSellingPoint:"Press button to add selling point",
     Language.incorrectStockValueInController :"Illegal stock",
     Language.incorrectSellingPriceInController : "Illegal Selling Price",
+    Language.needToPeekProductInfo: "Please Peek Product",
   };
 
   static String getName() {

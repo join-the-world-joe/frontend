@@ -432,18 +432,19 @@ class Source extends DataTableSource {
                 tooltip: Translator.translate(Language.update),
                 onPressed: () async {
                   showUpdateGoodDialog(
-                      buildContext,
-                      Product(
-                        int.parse(id),
-                        name,
-                        int.parse(buyingPrice),
-                        desc,
-                        int.parse(status),
-                        vendor,
-                        "",
-                        contact,
-                        "",
-                      ));
+                    buildContext,
+                    Product(
+                      int.parse(id),
+                      name,
+                      int.parse(buyingPrice),
+                      desc,
+                      int.parse(status),
+                      vendor,
+                      "",
+                      contact,
+                      "",
+                    ),
+                  );
                 },
               ),
               IconButton(

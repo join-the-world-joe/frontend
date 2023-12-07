@@ -56,6 +56,7 @@ class Chinese {
     Language.description: '描述',
     Language.valueOfNull: '',
     Language.loading: "加载中",
+    Language.clickToView: "点击查看",
 
     // menu
     Language.titleOfParentMenu: '父级菜单',
@@ -152,7 +153,7 @@ class Chinese {
     Language.networkConnected: '网络已连接',
     Language.buyingPriceNotProvided: "未提供进货价",
     Language.productNameNotProvided: "未提供商品名称",
-    Language.removeRecordSuccessfully :'删除成功',
+    Language.removeRecordSuccessfully: '删除成功',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',
@@ -191,6 +192,7 @@ class Chinese {
     Language.pressRightButtonToAddSellingPoint: "点击右则按钮增加商品卖点",
     Language.incorrectStockValueInController: "库存设定有误",
     Language.incorrectSellingPriceInController: "出售价格有误",
+    Language.needToPeekProductInfo: "请先确认商品信息",
   };
 
   static String getName() {

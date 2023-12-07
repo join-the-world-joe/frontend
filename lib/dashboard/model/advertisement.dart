@@ -5,7 +5,7 @@ class Advertisement {
   final String _name;
   final String _title;
   final String _placeOfOrigin;
-  final String _sellingPoint;
+  final List<String> _sellingPoint;
   final String _url;
   final int _sellingPrice;
   final String _description;
@@ -21,7 +21,7 @@ class Advertisement {
     return _name;
   }
 
-  String getSellingPoint() {
+  List<String> getSellingPoint() {
     return _sellingPoint;
   }
 

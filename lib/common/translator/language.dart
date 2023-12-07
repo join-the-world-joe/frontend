@@ -52,6 +52,7 @@ class Language {
   static String description = 'Description';
   static String valueOfNull = "the value of null";
   static String loading = "the status of loading";
+  static String clickToView = "press button to view the detail info";
 
   // menu
   static String titleOfParentMenu = 'the title of parent menu';
@@ -187,4 +188,5 @@ class Language {
   static String pressRightButtonToAddSellingPoint = "press the right button to add selling point";
   static String incorrectStockValueInController = "the stock value in controller is invalid";
   static String incorrectSellingPriceInController = "the selling price in controller is invalid";
+  static String needToPeekProductInfo = "need to peek product info";
 }

@@ -10,6 +10,8 @@ import 'package:flutter_framework/dashboard/business/fetch_id_list_of_advertisem
 import 'package:flutter_framework/dashboard/dialog/insert_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/update_advertisement.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -374,7 +376,7 @@ class Source extends DataTableSource {
     var titleOfAdvertisement = Translator.translate(Language.loading);
     var sellingPriceOfAdvertisement = Translator.translate(Language.loading);
     var placeOfOrigin = Translator.translate(Language.loading);
-    var sellingPoints = Translator.translate(Language.loading);
+    List<String> sellingPoints = [];
     var stock = Translator.translate(Language.loading);
     var url = Translator.translate(Language.loading);
     var description = Translator.translate(Language.loading);
@@ -396,7 +398,7 @@ class Source extends DataTableSource {
         idOfGood = dataMap[key]!.getProductId().toString();
         url = dataMap[key]!.getUrl().toString();
         description = dataMap[key]!.getDescription().toString();
-        sellingPoints = dataMap[key]!.getSellingPoint().toString();
+        sellingPoints = dataMap[key]!.getSellingPoint();
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
@@ -437,7 +439,16 @@ class Source extends DataTableSource {
         DataCell(Text(titleOfAdvertisement)),
         DataCell(Text(sellingPriceOfAdvertisement)),
         DataCell(Text(placeOfOrigin)),
-        DataCell(Text(sellingPoints)),
+        DataCell(
+          IconButton(
+            tooltip: Translator.translate(Language.clickToView),
+            icon: const Icon(Icons.more_horiz),
+            onPressed: () {
+              //   showRoleListOfUserDialog(context, _data[index]);
+              showSellingPointOfAdvertisementDialog(buildContext, idOfAdvertisement, sellingPoints);
+            },
+          ),
+        ),
         DataCell(Text(stock)),
         DataCell(Text(url)),
         DataCell(Text(description)),
@@ -448,19 +459,22 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.edit),
                 tooltip: Translator.translate(Language.update),
                 onPressed: () async {
-                  // showUpdateGoodDialog(
-                  //     buildContext,
-                  //     Product(
-                  //       int.parse(id),
-                  //       name,
-                  //       int.parse(buyingPrice),
-                  //       desc,
-                  //       int.parse(status),
-                  //       vendor,
-                  //       "",
-                  //       contact,
-                  //       "",
-                  //     ));
+                  showUpdateAdvertisementDialog(
+                    buildContext,
+                    model.Advertisement(
+                      int.parse(idOfAdvertisement),
+                      nameOfAdvertisement,
+                      titleOfAdvertisement,
+                      placeOfOrigin,
+                      sellingPoints,
+                      url,
+                      int.parse(sellingPriceOfAdvertisement),
+                      description,
+                      int.parse(status),
+                      int.parse(stock),
+                      int.parse(idOfGood),
+                    ),
+                  );
                 },
               ),
               IconButton(

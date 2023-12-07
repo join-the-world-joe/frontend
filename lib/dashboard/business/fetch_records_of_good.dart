@@ -46,19 +46,21 @@ class FetchRecordsOfGoodRsp {
       var body = json['body'];
       if (body.containsKey('records_of_good')) {
         final Map some = Map.from(body['records_of_good']);
-        some.forEach((key, value) {
-          productMap[value['id']] = Product(
-            value['id'],
-            value['name'],
-            value['buying_price'],
-            value['description'],
-            value['status'],
-            value['vendor'],
-            value['created_at'],
-            value['contact'],
-            value['updated_at'],
-          );
-        });
+        some.forEach(
+          (key, value) {
+            productMap[value['id']] = Product(
+              value['id'],
+              value['name'],
+              value['buying_price'],
+              value['description'],
+              value['status'],
+              value['vendor'],
+              value['created_at'],
+              value['contact'],
+              value['updated_at'],
+            );
+          },
+        );
       }
     }
   }

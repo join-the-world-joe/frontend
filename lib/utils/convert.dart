@@ -31,12 +31,26 @@ class Convert {
 
   static List<dynamic> utf8Encode(List<String> temp) {
     List<dynamic> output = [];
-    // for (var element in input) {
-    //   output.add(utf8.encode(element));
-    // }
     for (var element in temp) {
       output.add(utf8.encode(element));
     }
     return output;
+  }
+
+  static String stringList2Json(List<String> input) {
+    String output = "[";
+    for (var i = 0; i < input.length; i++) {
+      if (i < input.length - 1) {
+        output += "\"${input[i]}\",";
+        continue;
+      }
+      output += "\"${input[i]}\"";
+    }
+    output += "]";
+    return output;
+  }
+
+  static List<String> jsonStringToListString(String input) {
+    return (jsonDecode(input) as List<dynamic>).cast<String>();
   }
 }

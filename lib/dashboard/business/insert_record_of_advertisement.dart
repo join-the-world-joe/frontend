@@ -34,7 +34,7 @@ class InsertRecordOfAdvertisementReq {
   Map<String, dynamic> toJson() => {
         'name': utf8.encode(_name),
         'title': utf8.encode(_title),
-        'selling_point': _sellingPoints,
+        'selling_points': _sellingPoints,
         'selling_price': _sellingPrice,
         'description': utf8.encode(_description),
         'status': _status,
@@ -71,23 +71,23 @@ void insertRecordOfAdvertisement({
 }) {
   PacketClient packet = PacketClient.create();
 
-  String sp = "[";
-
-  for (var i = 0; i < sellingPoints.length; i++) {
-    if (i < sellingPoints.length - 1) {
-      sp += "\"${sellingPoints[i]}\",";
-      continue;
-    }
-    sp += "\"${sellingPoints[i]}\"";
-  }
-
-  sp += "]";
+  // String sp = "[";
+  //
+  // for (var i = 0; i < sellingPoints.length; i++) {
+  //   if (i < sellingPoints.length - 1) {
+  //     sp += "\"${sellingPoints[i]}\",";
+  //     continue;
+  //   }
+  //   sp += "\"${sellingPoints[i]}\"";
+  // }
+  //
+  // sp += "]";
 
   InsertRecordOfAdvertisementReq req = InsertRecordOfAdvertisementReq(
     name,
     title,
     sellingPrice,
-    sp,
+    Convert.stringList2Json(sellingPoints),
     placeOfOrigin,
     url,
     stock,
