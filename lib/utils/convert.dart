@@ -28,4 +28,15 @@ class Convert {
   static String bytes2String(Uint8List list) {
     return utf8.decode(list);
   }
+
+  static List<dynamic> utf8Encode(List<String> temp) {
+    List<dynamic> output = [];
+    // for (var element in input) {
+    //   output.add(utf8.encode(element));
+    // }
+    for (var element in temp) {
+      output.add(utf8.encode(element));
+    }
+    return output;
+  }
 }

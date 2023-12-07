@@ -181,4 +181,9 @@ class Language {
   static String productIdIsEmpty = "the product id is empty";
   static String withoutProductInfoInResponse = "there is no product info in response";
   static String nameOfAdvertisementIsEmpty = "the name of advertisement not provided";
+  static String addSellingPointToAdvertisement = "to add selling point to advertisement";
+  static String fillSellingPoint = "to fill selling point";
+  static String pressRightButtonToAddSellingPoint = "press the right button to add selling point";
+  static String incorrectStockValueInController = "the stock value in controller is invalid";
+  static String incorrectSellingPriceInController = "the selling price in controller is invalid";
 }

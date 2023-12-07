@@ -11,7 +11,6 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 
 Future<void> showInsertGoodDialog(BuildContext context) async {
-  String? countryCode;
   bool closed = false;
   int curStage = 0;
   int status = int.parse('1');

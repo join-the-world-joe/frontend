@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/code/code.dart';
@@ -7,8 +9,10 @@ import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/dashboard/business/fetch_records_of_good.dart';
 import 'package:flutter_framework/dashboard/business/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/business/insert_record_of_good.dart';
+import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -17,15 +21,16 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
   bool closed = false;
   int curStage = 0;
   int status = int.parse('1');
+  List<String> sellingPoints = [];
 
   var oriObserve = Runtime.getObserve();
   var productIdController = TextEditingController();
   var nameController = TextEditingController();
   var titleController = TextEditingController();
-  var sellingPriceController = TextEditingController();
+  var sellingPriceController = TextEditingController(text: "0");
   var placeOfOriginController = TextEditingController();
   var sellingPointController = TextEditingController();
-  var stockController = TextEditingController();
+  var stockController = TextEditingController(text: "0");
   var urlController = TextEditingController();
   var descController = TextEditingController();
 
@@ -147,11 +152,36 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                 );
                 return;
               }
+              if (stockController.text.isEmpty) {
+                stockController.text = "0";
+              } else if (stockController.text.length > 1) {
+                if (stockController.text[0].compareTo('0') == 0) {
+                  showMessageDialog(
+                    context,
+                    Translator.translate(Language.titleOfNotification),
+                    Translator.translate(Language.incorrectStockValueInController),
+                  );
+                  return;
+                }
+              }
+              if (sellingPriceController.text.isEmpty) {
+                sellingPriceController.text = "0";
+              } else if (sellingPriceController.text.length > 1) {
+                if (sellingPriceController.text[0].compareTo('0') == 0) {
+                  showMessageDialog(
+                    context,
+                    Translator.translate(Language.titleOfNotification),
+                    Translator.translate(Language.incorrectSellingPriceInController),
+                  );
+                  return;
+                }
+              }
+
               insertRecordOfAdvertisement(
                 name: nameController.text,
                 title: titleController.text,
                 sellingPrice: int.parse(sellingPriceController.text),
-                sellingPoint: sellingPointController.text,
+                sellingPoints: sellingPoints,
                 url: urlController.text,
                 placeOfOrigin: placeOfOriginController.text,
                 description: descController.text,
@@ -228,7 +258,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                                 );
                                 return;
                               } else {
-                                fetchRecordsOfGood(productList: [int.parse(productIdController.text)]);
+                                fetchRecordsOfGood(productIdList: [int.parse(productIdController.text)]);
                                 return;
                               }
                             },
@@ -260,15 +290,67 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                       ),
                     ),
                     Spacing.addVerticalSpace(10),
+                    // SizedBox(
+                    //   width: 350,
+                    //   child: TextFormField(
+                    //     controller: sellingPointController,
+                    //     decoration: InputDecoration(
+                    //       labelText: Translator.translate(Language.sellingPointsOfAdvertisement),
+                    //     ),
+                    //   ),
+                    // ),
                     SizedBox(
                       width: 350,
                       child: TextFormField(
+                        readOnly: true,
                         controller: sellingPointController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.sellingPointsOfAdvertisement),
+                          labelText: sellingPoints.isEmpty ? Translator.translate(Language.pressRightButtonToAddSellingPoint) : "",
+                          suffixIcon: IconButton(
+                            tooltip: Translator.translate(Language.addSellingPointToAdvertisement),
+                            icon: const Icon(Icons.add_circle_outlined),
+                            onPressed: () {
+                              showFillSellingPointDialog(context).then((value) {
+                                print('selling point: $value');
+                                if (value.isNotEmpty) {
+                                  sellingPoints.add(value);
+                                  curStage++;
+                                }
+                              });
+                            },
+                          ),
+                          prefixIcon: Wrap(
+                            children: () {
+                              List<Widget> widgetList = [];
+                              for (var element in sellingPoints) {
+                                widgetList.add(Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: InputChip(
+                                    label: Text(
+                                      element,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onDeleted: () {
+                                      sellingPoints.remove(element);
+                                      curStage++;
+                                    },
+                                    backgroundColor: Colors.green,
+                                    // selectedColor: Colors.green,
+                                    elevation: 6.0,
+                                    shadowColor: Colors.grey[60],
+                                    padding: const EdgeInsets.all(8.0),
+                                  ),
+                                ));
+                              }
+                              return widgetList;
+                            }(),
+                          ),
                         ),
                       ),
                     ),
+
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 350,

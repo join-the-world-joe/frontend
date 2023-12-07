@@ -184,7 +184,12 @@ class English {
     Language.peekInfoFromProductId: "Peek",
     Language.productIdIsEmpty : "Product ID is empty!",
     Language.withoutProductInfoInResponse: "Product not found",
-    Language.nameOfAdvertisementIsEmpty: "Name not provided"
+    Language.nameOfAdvertisementIsEmpty: "Name not provided",
+    Language.addSellingPointToAdvertisement:"Add Selling Point",
+    Language.fillSellingPoint : "Fill Selling Point",
+    Language.pressRightButtonToAddSellingPoint:"Press button to add selling point",
+    Language.incorrectStockValueInController :"Illegal stock",
+    Language.incorrectSellingPriceInController : "Illegal Selling Price",
   };
 
   static String getName() {

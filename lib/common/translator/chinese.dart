@@ -55,7 +55,7 @@ class Chinese {
     // common
     Language.description: '描述',
     Language.valueOfNull: '',
-    Language.loading : "加载中",
+    Language.loading: "加载中",
 
     // menu
     Language.titleOfParentMenu: '父级菜单',
@@ -165,11 +165,11 @@ class Chinese {
     Language.idOfGood: '商品ID',
     Language.nameOfGood: '商品名称',
     Language.listOfGoods: '商品列表',
-    Language.importGood:"录入商品",
-    Language.buyingPrice : "进货价",
-    Language.vendorOfGood : "供应商",
-    Language.statusOfGood : "状态",
-    Language.contactOfVendor : "联系方式",
+    Language.importGood: "录入商品",
+    Language.buyingPrice: "进货价",
+    Language.vendorOfGood: "供应商",
+    Language.statusOfGood: "状态",
+    Language.contactOfVendor: "联系方式",
     Language.idOfAdvertisement: "广告ID",
     Language.nameOfAdvertisement: "广告名称",
     Language.listOfAdvertisements: "广告列表",
@@ -179,12 +179,17 @@ class Chinese {
     Language.sellingPointsOfAdvertisement: "卖点",
     Language.stockOfAdvertisement: "库存",
     Language.urlOfAdvertisement: "图片路径",
-    Language.newAdvertisement : "新增广告",
+    Language.newAdvertisement: "新增广告",
     Language.modifyGood: "更新商品信息",
     Language.peekInfoFromProductId: "查看商品信息",
     Language.productIdIsEmpty: "商品ID为空",
-    Language.withoutProductInfoInResponse : "未找到商品信息",
-    Language.nameOfAdvertisementIsEmpty: "未提供广告名称"
+    Language.withoutProductInfoInResponse: "未找到商品信息",
+    Language.nameOfAdvertisementIsEmpty: "未提供广告名称",
+    Language.addSellingPointToAdvertisement: "添加商品卖点",
+    Language.fillSellingPoint: "请输入商品卖点",
+    Language.pressRightButtonToAddSellingPoint: "点击右则按钮增加商品卖点",
+    Language.incorrectStockValueInController: "库存设定有误",
+    Language.incorrectSellingPriceInController: "出售价格有误",
   };
 
   static String getName() {

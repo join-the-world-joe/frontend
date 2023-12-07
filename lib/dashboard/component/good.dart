@@ -240,7 +240,7 @@ class _State extends State<Good> {
                                 return;
                               }
                               resetSource();
-                              fetchRecordsOfGood(productList: [int.parse(idController.text)]);
+                              fetchRecordsOfGood(productIdList: [int.parse(idController.text)]);
                               return;
                             }
                             if (nameController.text.isNotEmpty) {
@@ -403,7 +403,7 @@ class Source extends DataTableSource {
             requestIdList.add(idList[i]);
           }
         }
-        fetchRecordsOfGood(productList: requestIdList);
+        fetchRecordsOfGood(productIdList: requestIdList);
         print("requestIdList: $requestIdList");
         for (var i = 0; i < requestIdList.length; i++) {
           datetimeMap[i] = DateTime.now();

@@ -12,15 +12,15 @@ import 'package:flutter_framework/framework/packet_client.dart';
 import '../../common/route/major.dart';
 import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
-import '../model/product.dart';
+import '../model/advertisement.dart';
 
-class FetchRecordsOfGoodReq {
-  final List<int> _productIdList;
+class FetchRecordsOfAdvertisementReq {
+  final List<int> _advertisementIdList;
 
-  FetchRecordsOfGoodReq(this._productIdList);
+  FetchRecordsOfAdvertisementReq(this._advertisementIdList);
 
   Map<String, dynamic> toJson() => {
-        'product_id_list': _productIdList,
+        'advertisement_id_list': _advertisementIdList,
       };
 
   Uint8List toBytes() {
@@ -28,35 +28,37 @@ class FetchRecordsOfGoodReq {
   }
 }
 
-class FetchRecordsOfGoodRsp {
+class FetchRecordsOfAdvertisementRsp {
   int code = -1;
-  Map<int, Product> productMap = {};
+  Map<int, Advertisement> advertisementMap = {};
 
   int getCode() {
     return code;
   }
 
-  Map<int, Product> getProductMap() {
-    return productMap;
+  Map<int, Advertisement> getAdvertisementMap() {
+    return advertisementMap;
   }
 
-  FetchRecordsOfGoodRsp.fromJson(Map<String, dynamic> json) {
+  FetchRecordsOfAdvertisementRsp.fromJson(Map<String, dynamic> json) {
     code = json['code'] ?? -1;
     if (json.containsKey('body')) {
       var body = json['body'];
-      if (body.containsKey('records_of_good')) {
-        final Map some = Map.from(body['records_of_good']);
+      if (body.containsKey('records_of_advertisement')) {
+        final Map some = Map.from(body['records_of_advertisement']);
         some.forEach((key, value) {
-          productMap[value['id']] = Product(
+          advertisementMap[value['id']] = Advertisement(
             value['id'],
             value['name'],
-            value['buying_price'],
+            value['title'],
+            value['place_of_origin'],
+            value['selling_point'],
+            value['url'],
+            value['selling_price'],
             value['description'],
             value['status'],
-            value['vendor'],
-            value['created_at'],
-            value['contact'],
-            value['updated_at'],
+            value['stock'],
+            value['product_id'],
           );
         });
       }
@@ -64,13 +66,13 @@ class FetchRecordsOfGoodRsp {
   }
 }
 
-void fetchRecordsOfGood({
-  required List<int> productIdList,
+void fetchRecordsOfAdvertisement({
+  required List<int> advertisementIdList,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchRecordsOfGoodReq req = FetchRecordsOfGoodReq(productIdList);
+  FetchRecordsOfAdvertisementReq req = FetchRecordsOfAdvertisementReq(advertisementIdList);
   packet.getHeader().setMajor(Major.admin);
-  packet.getHeader().setMinor(Minor.admin.fetchRecordsOfGoodReq);
+  packet.getHeader().setMinor(Minor.admin.fetchRecordsOfAdvertisementReq);
   packet.setBody(req.toJson());
   Runtime.wsClient.sendPacket(packet);
 }

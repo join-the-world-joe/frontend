@@ -3,13 +3,15 @@ import 'dart:convert';
 class Advertisement {
   final int _id;
   final String _name;
-  final int _buyingPrice;
+  final String _title;
+  final String _placeOfOrigin;
+  final String _sellingPoint;
+  final String _url;
+  final int _sellingPrice;
   final String _description;
   final int _status;
-  final String _vendor;
-  final String _createdAt;
-  final String _contact;
-  final String _updatedAt;
+  final int _stock;
+  final int _productId;
 
   int getId() {
     return _id;
@@ -19,8 +21,20 @@ class Advertisement {
     return _name;
   }
 
-  int getBuyingPrice() {
-    return _buyingPrice;
+  String getSellingPoint() {
+    return _sellingPoint;
+  }
+
+  String getUrl() {
+    return _url;
+  }
+
+  int getStock() {
+    return _stock;
+  }
+
+  int getSellingPrice() {
+    return _sellingPrice;
   }
 
   String getDescription() {
@@ -31,31 +45,29 @@ class Advertisement {
     return _status;
   }
 
-  String getVendor() {
-    return _vendor;
+  String getTitle() {
+    return _title;
   }
 
-  String getCreatedAt() {
-    return _createdAt;
+  String getPlaceOfOrigin() {
+    return _placeOfOrigin;
   }
 
-  String getUpdatedAt() {
-    return _updatedAt;
-  }
-
-  String getContact() {
-    return _contact;
+  int getProductId() {
+    return _productId;
   }
 
   Advertisement(
     this._id,
     this._name,
-    this._buyingPrice,
+    this._title,
+    this._placeOfOrigin,
+    this._sellingPoint,
+    this._url,
+    this._sellingPrice,
     this._description,
     this._status,
-    this._vendor,
-    this._createdAt,
-    this._contact,
-    this._updatedAt,
+    this._stock,
+    this._productId,
   );
 }

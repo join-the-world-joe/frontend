@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/dialog/message.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/check_permission.dart';
+import 'package:flutter_framework/dashboard/business/fetch_id_list_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
@@ -15,6 +18,8 @@ import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
+import '../model/advertisement.dart' as model;
+import '../business/fetch_records_of_advertisement.dart';
 
 class Advertisement extends StatefulWidget {
   const Advertisement({Key? key}) : super(key: key);
@@ -32,7 +37,7 @@ class _State extends State<Advertisement> {
   final idController = TextEditingController();
   final scrollController = ScrollController();
   List<int> idList = [];
-  Map<int, Product> dataMap = {};
+  Map<int, model.Advertisement> dataMap = {};
   Map<int, DateTime> datetimeMap = {};
   Map<int, bool> boolMap = {};
 
@@ -57,18 +62,12 @@ class _State extends State<Advertisement> {
       closed = true;
       Future.delayed(
         const Duration(milliseconds: 500),
-            () {
+        () {
           print('User.navigate to $page');
           Navigate.to(context, Screen.build(page));
         },
       );
     }
-  }
-
-  void setup() {
-    // print('User.setup');
-    Cache.setUserList(UserList([]));
-    Runtime.setObserve(observe);
   }
 
   void observe(PacketClient packet) {
@@ -77,12 +76,87 @@ class _State extends State<Advertisement> {
     var body = packet.getBody();
 
     try {
-      // print("User.observe: major: $major, minor: $minor");
+      print("Advertisement.observe: major: $major, minor: $minor");
+      if (major == Major.admin && minor == Minor.admin.fetchIdListOfAdvertisementRsp) {
+        fetchIdListOfAdvertisementHandler(body);
+      } else if (major == Major.admin && minor == Minor.admin.fetchRecordsOfAdvertisementRsp) {
+        fetchRecordsOfAdvertisementHandler(body);
+      } else {
+        print("Advertisement.observe warning: $major-$minor doesn't matched");
+      }
       return;
     } catch (e) {
-      print('User.observe($major-$minor).e: ${e.toString()}');
+      print('Advertisement.observe($major-$minor).e: ${e.toString()}');
+      return;
+    } finally {}
+  }
+
+  void setup() {
+    // print('User.setup');
+    Cache.setUserList(UserList([]));
+    Runtime.setObserve(observe);
+  }
+
+  void resetSource() {
+    idList = [];
+    dataMap = {};
+    datetimeMap = {};
+    boolMap = {};
+    curStage++;
+  }
+
+  void fetchIdListOfAdvertisementHandler(Map<String, dynamic> body) {
+    try {
+      FetchIdListOfAdvertisementRsp rsp = FetchIdListOfAdvertisementRsp.fromJson(body);
+      if (rsp.getCode() == Code.oK) {
+        print("fetchIdListOfAdvertisementHandler.idList: ${rsp.getIdList()}");
+        idList = rsp.getIdList();
+        curStage++;
+        return;
+      } else {
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
+        return;
+      }
+    } catch (e) {
+      print("Advertisement.fetchIdListOfAdvertisementHandler failure, $e");
       return;
     }
+  }
+
+  void fetchRecordsOfAdvertisementHandler(Map<String, dynamic> body) {
+    try {
+      FetchRecordsOfAdvertisementRsp rsp = FetchRecordsOfAdvertisementRsp.fromJson(body);
+      if (rsp.getCode() == Code.oK) {
+        print('advertisement map: ${rsp.advertisementMap.toString()}');
+        if (idList.isEmpty) {
+          rsp.getAdvertisementMap().forEach((key, value) {
+            idList.add(key);
+            dataMap[key] = value;
+            boolMap[key] = true;
+          });
+        }
+        rsp.getAdvertisementMap().forEach((key, value) {
+          dataMap[key] = value;
+          boolMap[key] = true;
+        });
+        curStage++;
+        return;
+      } else {
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
+        return;
+      }
+    } catch (e) {
+      print("Advertisement.fetchRecordsOfGoodHandler failure, $e");
+      return;
+    } finally {}
   }
 
   void refresh() {
@@ -146,10 +220,43 @@ class _State extends State<Advertisement> {
                         width: 100,
                         child: ElevatedButton(
                           onPressed: () {
-                            if (!Runtime.allow(
-                              major: int.parse(Major.admin),
-                              minor: int.parse(Minor.admin.fetchIdListOfAdvertisementReq),
-                            )) {
+                            if (idController.text.isEmpty && nameController.text.isEmpty) {
+                              if (!Runtime.allow(
+                                major: int.parse(Major.admin),
+                                minor: int.parse(Minor.admin.fetchIdListOfGoodReq),
+                              )) {
+                                return;
+                              }
+                              resetSource();
+                              fetchIdListOfAdvertisement(
+                                behavior: 1,
+                                advertisementName: "",
+                              );
+                              return;
+                            }
+                            if (idController.text.isNotEmpty) {
+                              if (!Runtime.allow(
+                                major: int.parse(Major.admin),
+                                minor: int.parse(Minor.admin.fetchRecordsOfGoodReq),
+                              )) {
+                                return;
+                              }
+                              resetSource();
+                              fetchRecordsOfAdvertisement(advertisementIdList: [int.parse(idController.text)]);
+                              return;
+                            }
+                            if (nameController.text.isNotEmpty) {
+                              if (!Runtime.allow(
+                                major: int.parse(Major.admin),
+                                minor: int.parse(Minor.admin.fetchIdListOfAdvertisementReq),
+                              )) {
+                                return;
+                              }
+                              resetSource();
+                              fetchIdListOfAdvertisement(
+                                behavior: 2,
+                                advertisementName: nameController.text,
+                              );
                               return;
                             }
                           },
@@ -197,9 +304,7 @@ class _State extends State<Advertisement> {
                           ),
                         ),
                       ],
-                      source: Source(
-                        context,
-                      ),
+                      source: Source(context, idList, dataMap, datetimeMap, boolMap),
                       header: Text(Translator.translate(Language.listOfAdvertisements)),
                       columns: [
                         DataColumn(label: Text(Translator.translate(Language.idOfAdvertisement))),
@@ -231,30 +336,139 @@ class _State extends State<Advertisement> {
 }
 
 class Source extends DataTableSource {
-  BuildContext context;
+  List<int> idList;
+  List<int> requestIdList = [];
+  Map<int, model.Advertisement> dataMap;
+  Map<int, DateTime> datetimeMap;
+  Map<int, bool> boolMap;
+  BuildContext buildContext;
 
   Source(
-      this.context,
-      );
+    this.buildContext,
+    this.idList,
+    this.dataMap,
+    this.datetimeMap,
+    this.boolMap,
+  );
 
   @override
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => 0;
+  int get rowCount => () {
+        print("length: ${idList.length}");
+        return idList.length;
+      }();
 
   @override
   int get selectedRowCount => 0;
 
   @override
   DataRow getRow(int index) {
-    // print("getRow: $index");
+    print("getRow: $index");
+    var idOfAdvertisement = Translator.translate(Language.loading);
+    var idOfGood = Translator.translate(Language.loading);
+    var name = Translator.translate(Language.loading);
+    var buyingPrice = Translator.translate(Language.loading);
+    var vendor = Translator.translate(Language.loading);
+    var status = Translator.translate(Language.loading);
+    var contact = Translator.translate(Language.loading);
+    var desc = Translator.translate(Language.loading);
+
+    var key = idList[index];
+
+    if (boolMap.containsKey(key)) {
+      // fetch row finished
+      if (dataMap.containsKey(key)) {
+        idOfAdvertisement = dataMap[key]!.getId().toString();
+        name = dataMap[key]!.getName();
+        // buyingPrice = dataMap[key]!.getBuyingPrice().toString();
+        // vendor = dataMap[key]!.getVendor();
+        // status = dataMap[key]!.getStatus().toString();
+        // contact = dataMap[key]!.getContact();
+        // desc = dataMap[key]!.getDescription();
+      } else {
+        print("unknown error: dataMap.containsKey(key) == false");
+      }
+    } else {
+      if (datetimeMap.containsKey(key)) {
+        // item requested
+        print("key: ${key}, datetime: ${datetimeMap[key]}");
+      }
+      {
+        // item not requested
+        requestIdList = [];
+        requestIdList.add(key);
+        if (index % 5 == 0 || index == 0) {
+          for (var i = index + 1; i < index + 5; i++) {
+            if (i >= idList.length) {
+              break;
+            }
+            requestIdList.add(idList[i]);
+          }
+        }
+        // fetchRecordsOfGood(productIdList: requestIdList);
+        // print("requestIdList: $requestIdList");
+        // for (var i = 0; i < requestIdList.length; i++) {
+        //   datetimeMap[i] = DateTime.now();
+        // }
+      }
+    }
+
     return DataRow(
       selected: false,
       onSelectChanged: (selected) {
         // print('selected: $selected');
       },
-      cells: [],
+      cells: [
+        DataCell(Text(idOfAdvertisement)),
+        DataCell(Text(idOfGood)),
+        DataCell(Text(buyingPrice)),
+        DataCell(Text(vendor)),
+        DataCell(Text(status)),
+        DataCell(Text(contact)),
+        DataCell(Text(desc)),
+        DataCell(
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.edit),
+                tooltip: Translator.translate(Language.update),
+                onPressed: () async {
+                  // showUpdateGoodDialog(
+                  //     buildContext,
+                  //     Product(
+                  //       int.parse(id),
+                  //       name,
+                  //       int.parse(buyingPrice),
+                  //       desc,
+                  //       int.parse(status),
+                  //       vendor,
+                  //       "",
+                  //       contact,
+                  //       "",
+                  //     ));
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete),
+                tooltip: Translator.translate(Language.remove),
+                onPressed: () async {
+                  // await showRemoveGoodDialog(buildContext, int.parse(id), name, vendor).then(
+                  //       (value) => () {
+                  //     // print('value: $value');
+                  //     if (value) {
+                  //       idList.removeAt(index);
+                  //       notifyListeners();
+                  //     }
+                  //   }(),
+                  // );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

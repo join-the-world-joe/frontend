@@ -10,7 +10,7 @@ class InsertRecordOfAdvertisementReq {
   final String _name;
   final String _title;
   final int _sellingPrice;
-  final String _sellingPoint;
+  final String _sellingPoints;
   final String _placeOfOrigin;
   final String _url;
   final int _stock;
@@ -22,7 +22,7 @@ class InsertRecordOfAdvertisementReq {
     this._name,
     this._title,
     this._sellingPrice,
-    this._sellingPoint,
+    this._sellingPoints,
     this._placeOfOrigin,
     this._url,
     this._stock,
@@ -34,7 +34,7 @@ class InsertRecordOfAdvertisementReq {
   Map<String, dynamic> toJson() => {
         'name': utf8.encode(_name),
         'title': utf8.encode(_title),
-        'selling_point': utf8.encode(_sellingPoint),
+        'selling_point': _sellingPoints,
         'selling_price': _sellingPrice,
         'description': utf8.encode(_description),
         'status': _status,
@@ -61,7 +61,7 @@ void insertRecordOfAdvertisement({
   required String name,
   required String title,
   required int sellingPrice,
-  required String sellingPoint,
+  required List<String> sellingPoints,
   required String url,
   required String placeOfOrigin,
   required String description,
@@ -70,11 +70,24 @@ void insertRecordOfAdvertisement({
   required int productId,
 }) {
   PacketClient packet = PacketClient.create();
+
+  String sp = "[";
+
+  for (var i = 0; i < sellingPoints.length; i++) {
+    if (i < sellingPoints.length - 1) {
+      sp += "\"${sellingPoints[i]}\",";
+      continue;
+    }
+    sp += "\"${sellingPoints[i]}\"";
+  }
+
+  sp += "]";
+
   InsertRecordOfAdvertisementReq req = InsertRecordOfAdvertisementReq(
     name,
     title,
     sellingPrice,
-    sellingPoint,
+    sp,
     placeOfOrigin,
     url,
     stock,
