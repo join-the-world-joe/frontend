@@ -9,6 +9,7 @@ import 'package:flutter_framework/dashboard/business/check_permission.dart';
 import 'package:flutter_framework/dashboard/business/fetch_id_list_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
+import 'package:flutter_framework/dashboard/dialog/remove_advertisement.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -309,6 +310,7 @@ class _State extends State<Advertisement> {
                       columns: [
                         DataColumn(label: Text(Translator.translate(Language.idOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.idOfGood))),
+                        DataColumn(label: Text(Translator.translate(Language.nameOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.titleOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.sellingPriceOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.placeOfOriginOfAdvertisement))),
@@ -368,12 +370,16 @@ class Source extends DataTableSource {
     print("getRow: $index");
     var idOfAdvertisement = Translator.translate(Language.loading);
     var idOfGood = Translator.translate(Language.loading);
-    var name = Translator.translate(Language.loading);
-    var buyingPrice = Translator.translate(Language.loading);
-    var vendor = Translator.translate(Language.loading);
+    var nameOfAdvertisement = Translator.translate(Language.loading);
+    var titleOfAdvertisement = Translator.translate(Language.loading);
+    var sellingPriceOfAdvertisement = Translator.translate(Language.loading);
+    var placeOfOrigin = Translator.translate(Language.loading);
+    var sellingPoints = Translator.translate(Language.loading);
+    var stock = Translator.translate(Language.loading);
+    var url = Translator.translate(Language.loading);
+    var description = Translator.translate(Language.loading);
+    var operation = Translator.translate(Language.loading);
     var status = Translator.translate(Language.loading);
-    var contact = Translator.translate(Language.loading);
-    var desc = Translator.translate(Language.loading);
 
     var key = idList[index];
 
@@ -381,12 +387,16 @@ class Source extends DataTableSource {
       // fetch row finished
       if (dataMap.containsKey(key)) {
         idOfAdvertisement = dataMap[key]!.getId().toString();
-        name = dataMap[key]!.getName();
-        // buyingPrice = dataMap[key]!.getBuyingPrice().toString();
-        // vendor = dataMap[key]!.getVendor();
-        // status = dataMap[key]!.getStatus().toString();
-        // contact = dataMap[key]!.getContact();
-        // desc = dataMap[key]!.getDescription();
+        nameOfAdvertisement = dataMap[key]!.getName();
+        titleOfAdvertisement = dataMap[key]!.getTitle();
+        sellingPriceOfAdvertisement = dataMap[key]!.getSellingPrice().toString();
+        placeOfOrigin = dataMap[key]!.getPlaceOfOrigin();
+        stock = dataMap[key]!.getStock().toString();
+        status = dataMap[key]!.getStatus().toString();
+        idOfGood = dataMap[key]!.getProductId().toString();
+        url = dataMap[key]!.getUrl().toString();
+        description = dataMap[key]!.getDescription().toString();
+        sellingPoints = dataMap[key]!.getSellingPoint().toString();
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
@@ -407,11 +417,11 @@ class Source extends DataTableSource {
             requestIdList.add(idList[i]);
           }
         }
-        // fetchRecordsOfGood(productIdList: requestIdList);
-        // print("requestIdList: $requestIdList");
-        // for (var i = 0; i < requestIdList.length; i++) {
-        //   datetimeMap[i] = DateTime.now();
-        // }
+        fetchRecordsOfAdvertisement(advertisementIdList: requestIdList);
+        print("requestIdList: $requestIdList");
+        for (var i = 0; i < requestIdList.length; i++) {
+          datetimeMap[i] = DateTime.now();
+        }
       }
     }
 
@@ -423,11 +433,14 @@ class Source extends DataTableSource {
       cells: [
         DataCell(Text(idOfAdvertisement)),
         DataCell(Text(idOfGood)),
-        DataCell(Text(buyingPrice)),
-        DataCell(Text(vendor)),
-        DataCell(Text(status)),
-        DataCell(Text(contact)),
-        DataCell(Text(desc)),
+        DataCell(Text(nameOfAdvertisement)),
+        DataCell(Text(titleOfAdvertisement)),
+        DataCell(Text(sellingPriceOfAdvertisement)),
+        DataCell(Text(placeOfOrigin)),
+        DataCell(Text(sellingPoints)),
+        DataCell(Text(stock)),
+        DataCell(Text(url)),
+        DataCell(Text(description)),
         DataCell(
           Row(
             children: [
@@ -454,15 +467,15 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.delete),
                 tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
-                  // await showRemoveGoodDialog(buildContext, int.parse(id), name, vendor).then(
-                  //       (value) => () {
-                  //     // print('value: $value');
-                  //     if (value) {
-                  //       idList.removeAt(index);
-                  //       notifyListeners();
-                  //     }
-                  //   }(),
-                  // );
+                  await showRemoveAdvertisementDialog(buildContext, int.parse(idOfAdvertisement), nameOfAdvertisement).then(
+                    (value) => () {
+                      // print('value: $value');
+                      if (value) {
+                        idList.removeAt(index);
+                        notifyListeners();
+                      }
+                    }(),
+                  );
                 },
               ),
             ],

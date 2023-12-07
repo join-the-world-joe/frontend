@@ -152,6 +152,7 @@ class English {
     Language.networkConnected: 'Network Connected',
     Language.buyingPriceNotProvided: "Buying Price Not Provided",
     Language.productNameNotProvided: "Product Name Not Provided",
+    Language.removeRecordSuccessfully :'Remove Record Successfully',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',

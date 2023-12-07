@@ -148,6 +148,7 @@ class Language {
   static String networkConnected = 'the network has been connected';
   static String buyingPriceNotProvided = "the buying price not provided";
   static String productNameNotProvided = "the name of product not provided";
+  static String removeRecordSuccessfully = "the operation of removal is success";
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';

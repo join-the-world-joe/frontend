@@ -152,6 +152,7 @@ class Chinese {
     Language.networkConnected: '网络已连接',
     Language.buyingPriceNotProvided: "未提供进货价",
     Language.productNameNotProvided: "未提供商品名称",
+    Language.removeRecordSuccessfully :'删除成功',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',

@@ -48,17 +48,18 @@ class FetchRecordsOfAdvertisementRsp {
         final Map some = Map.from(body['records_of_advertisement']);
         some.forEach((key, value) {
           advertisementMap[value['id']] = Advertisement(
-            value['id'],
-            value['name'],
-            value['title'],
-            value['place_of_origin'],
-            value['selling_point'],
-            value['url'],
-            value['selling_price'],
-            value['description'],
-            value['status'],
-            value['stock'],
-            value['product_id'],
+            value['id']??-1,
+            value['name']??"",
+            value['title']??"",
+            value['place_of_origin']??"",
+            // value['selling_point'],
+            "",
+            value['url']??"",
+            value['selling_price']??"",
+            value['description']??"",
+            value['status']??-1,
+            value['stock']??-1,
+            value['product_id']??-1,
           );
         });
       }
