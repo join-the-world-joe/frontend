@@ -27,7 +27,7 @@ Future<bool> showRemoveGoodDialog(BuildContext context, int id, String name, Str
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showRemoveGoodDialog, last: $lastStage, cur: $curStage');
+      // print('showRemoveGoodDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -40,24 +40,28 @@ Future<bool> showRemoveGoodDialog(BuildContext context, int id, String name, Str
     try {
       SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        showMessageDialog(context, '温馨提示：', '删除成功').then(
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.removeRecordSuccessfully),
+        ).then(
           (value) {
-            Navigator.pop(context);
-            curStage++;
+            Navigator.pop(context, true);
           },
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}').then((value) {
-          Navigator.pop(context);
-          curStage = -1;
-        });
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
       print("showRemoveUserDialog failure, $e");
       showMessageDialog(context, '温馨提示：', '删除失败').then((value) {
-        Navigator.pop(context);
+        Navigator.pop(context, false);
         curStage = -1;
       });
       return;
@@ -119,7 +123,7 @@ Future<bool> showRemoveGoodDialog(BuildContext context, int id, String name, Str
                       children: [
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pop(context, false);
                           },
                           child: Text(Translator.translate(Language.cancel)),
                         ),
@@ -144,6 +148,6 @@ Future<bool> showRemoveGoodDialog(BuildContext context, int id, String name, Str
   ).then((value) {
     closed = true;
     Runtime.setObserve(oriObserve);
-    return curStage > 0;
+    return value;
   });
 }

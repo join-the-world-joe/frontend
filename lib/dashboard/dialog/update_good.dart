@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_framework/dashboard/business/update_record_of_good.dart';
 import 'package:flutter_framework/dashboard/business/update_user_record.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
@@ -43,7 +44,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showUpdateGoodDialog, last: $lastStage, cur: $curStage');
+      // print('showUpdateGoodDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -106,6 +107,22 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
           ),
           TextButton(
             onPressed: () async {
+              if (nameController.text.isEmpty) {
+                await showWarningDialog(context, Translator.translate(Language.productNameNotProvided));
+                return;
+              }
+              if (buyingPriceController.text.isEmpty) {
+                await showWarningDialog(context, Translator.translate(Language.buyingPriceNotProvided));
+                return;
+              }
+              if (vendorController.text.isEmpty) {
+                await showWarningDialog(context, Translator.translate(Language.vendorOfProductNotProvided));
+                return;
+              }
+              if (contactController.text.isEmpty) {
+                await showWarningDialog(context, Translator.translate(Language.contactOfVendorNotProvided));
+                return;
+              }
               updateRecordOfGood(
                 name: nameController.text,
                 productId: int.parse(idController.text),
@@ -192,6 +209,11 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
                       width: 350,
                       child: TextFormField(
                         controller: buyingPriceController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                          LengthLimitingTextInputFormatter(11),
+                        ],
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.buyingPrice),
                         ),

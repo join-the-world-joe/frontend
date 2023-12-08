@@ -28,7 +28,7 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showRemoveAdvertisementDialog, last: $lastStage, cur: $curStage');
+      // print('showRemoveAdvertisementDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

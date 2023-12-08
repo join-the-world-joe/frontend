@@ -23,7 +23,7 @@ Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, Strin
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showSellingPointOfAdvertisementDialog, last: $lastStage, cur: $curStage');
+      // print('showSellingPointOfAdvertisementDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

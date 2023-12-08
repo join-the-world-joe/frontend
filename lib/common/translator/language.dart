@@ -1,7 +1,6 @@
 class Language {
   static String titleOfSearch = 'The title of Search';
   static String reset = 'Reset';
-  static String userList = 'User List';
   static String fPhoneNumber = 'field of Phone Number';
   static String fCountryCode = 'field of Country Code';
   static String fName = 'field of Name';
@@ -11,7 +10,6 @@ class Language {
   static String permissionList = 'Permission List';
   static String menuList = 'Menu List';
   static String operation = 'Operation';
-  static String newUser = 'New User';
   static String cancel = 'Cancel';
   static String confirm = 'Confirm';
   static String enable = 'Enable';
@@ -20,13 +18,11 @@ class Language {
   static String philipine = 'Philipine';
   static String password = 'Password';
   static String confirmPassword = 'Confirm Password';
-  static String modifyUser = 'Modify User';
   static String dashboard = 'Dashboard';
   static String ok = 'OK';
   static String viewPermissionList = 'View Permission List';
   static String viewMenuList = 'View Menu List';
   static String viewRoleList = 'View Role List';
-  static String removeUser = 'Remove User';
   static String update = 'Update';
   static String remove = 'Remove';
   static String confirmYourDeletion = 'Confirm Your Deletion';
@@ -43,6 +39,16 @@ class Language {
   static String tMenu = 'title of Menu';
   static String titleOfBeginDate = 'the title of begin date';
   static String titleOfEndDate = 'the title of end date';
+
+  // user
+  static String newUser = 'New User';
+  static String userList = 'User List';
+  static String removeUser = 'Remove User';
+  static String modifyUser = 'Modify User';
+  static String nameOfUserNotProvided = "the name of user not provided";
+  static String passwordOfUserNotProvided = "the password of user not provided";
+  static String twoPasswordNotEqual = "two password are not equal";
+  static String phoneNumberNotProvided = "the phone number of user not provided";
 
   // language
   static String languageOfChinese = 'the languageOfChinese';
@@ -63,9 +69,9 @@ class Language {
   static String menuOfRole = 'Role';
   static String menuOfField = 'Field';
   static String menuOfTrack = 'Track';
-  static String descriptionOfGoodMenu="The description of Good menu";
-  static String descriptionOfAdvertisementMenu="The description of Advertisement menu";
-  static String descriptionOfCategoryMenu="The description of Category menu";
+  static String descriptionOfGoodMenu = "The description of Good menu";
+  static String descriptionOfAdvertisementMenu = "The description of Advertisement menu";
+  static String descriptionOfCategoryMenu = "The description of Category menu";
 
   // field
   static String tableOfField = 'the table of field';
@@ -150,7 +156,6 @@ class Language {
   static String failureWithoutErrorCode = 'the failure from response without error code';
   static String networkDisconnected = 'the network has been disconnected';
   static String networkConnected = 'the network has been connected';
-  static String buyingPriceNotProvided = "the buying price not provided";
   static String productNameNotProvided = "the name of product not provided";
   static String removeRecordSuccessfully = "the operation of removal is success";
   static String updateRecordSuccessfully = "the operation of update is success";
@@ -196,4 +201,10 @@ class Language {
   static String modifyAdvertisement = "to modify the information of advertisement";
   static String noRecordOfGoodInDatabase = "there is no record of good in database";
   static String noRecordsMatchedTheSearchCondition = "no records matched the search conditions";
+
+  // Good
+  static String nameOfProductNotProvided = "the name of product not provided";
+  static String buyingPriceNotProvided = "the buying price not provided";
+  static String vendorOfProductNotProvided = "the vendor of product not provided";
+  static String contactOfVendorNotProvided = "the contact of vendor not provided";
 }

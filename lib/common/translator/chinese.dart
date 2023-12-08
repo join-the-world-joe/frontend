@@ -5,7 +5,6 @@ class Chinese {
   static Map<String, String> model = {
     Language.titleOfSearch: '查询',
     Language.reset: '重置',
-    Language.userList: '用户列表',
     Language.fPhoneNumber: '手机号码',
     Language.fCountryCode: '国家地区码',
     Language.fName: '姓名',
@@ -15,7 +14,6 @@ class Chinese {
     Language.permissionList: '权限列表',
     Language.menuList: '菜单列表',
     Language.operation: '操作',
-    Language.newUser: '新增用户',
     Language.cancel: '取消',
     Language.confirm: "确定",
     Language.enable: '启用',
@@ -24,13 +22,11 @@ class Chinese {
     Language.philipine: '菲律宾',
     Language.password: '密码',
     Language.confirmPassword: '确认密码',
-    Language.modifyUser: '更新用户资料',
     Language.dashboard: '通用后台管理系统',
     Language.ok: '确定',
     Language.viewPermissionList: '查看权限列表',
     Language.viewMenuList: '查看菜单列表',
     Language.viewRoleList: '查看角色列表',
-    Language.removeUser: '删除用户',
     Language.update: '更新',
     Language.remove: '删除',
     Language.confirmYourDeletion: '确认删除?',
@@ -47,6 +43,16 @@ class Chinese {
     Language.tMenu: '菜单',
     Language.titleOfBeginDate: '开始日期',
     Language.titleOfEndDate: '结束日期',
+
+    // user
+    Language.newUser: '新增用户',
+    Language.userList: '用户列表',
+    Language.removeUser: '删除用户',
+    Language.modifyUser: '更新用户资料',
+    Language.nameOfUserNotProvided: "用户名未提供",
+    Language.passwordOfUserNotProvided: "密码为空",
+    Language.twoPasswordNotEqual: "两次输入的密码不一致",
+    Language.phoneNumberNotProvided: "手机号码为空",
 
     // language
     Language.languageOfChinese: '简体中文',
@@ -68,8 +74,8 @@ class Chinese {
     Language.menuOfPermission: '权限管理',
     Language.menuOfTrack: '操作日志',
     Language.descriptionOfGoodMenu: '商品管理',
-    Language.descriptionOfAdvertisementMenu:"广告管理",
-    Language.descriptionOfCategoryMenu:"类目管理",
+    Language.descriptionOfAdvertisementMenu: "广告管理",
+    Language.descriptionOfCategoryMenu: "类目管理",
 
     // field
     Language.tableOfField: '数据表',
@@ -154,8 +160,6 @@ class Chinese {
     Language.failureWithoutErrorCode: '程序异常',
     Language.networkDisconnected: '网络已断开',
     Language.networkConnected: '网络已连接',
-    Language.buyingPriceNotProvided: "未提供进货价",
-    Language.productNameNotProvided: "未提供商品名称",
     Language.removeRecordSuccessfully: '删除成功',
     Language.updateRecordSuccessfully: '更新成功',
 
@@ -199,7 +203,13 @@ class Chinese {
     Language.needToPeekProductInfo: "请先确认商品信息",
     Language.modifyAdvertisement: "更新广告",
     Language.noRecordOfGoodInDatabase: "数据库没有任何商品记录",
-    Language.noRecordsMatchedTheSearchCondition :"未找到匹配记录",
+    Language.noRecordsMatchedTheSearchCondition: "未找到匹配记录",
+
+    // Good
+    Language.productNameNotProvided: "未提供商品名称",
+    Language.buyingPriceNotProvided: "未提供进货价",
+    Language.vendorOfProductNotProvided: "未填写供应商",
+    Language.contactOfVendorNotProvided:"未填写供应商联系方式",
   };
 
   static String getName() {

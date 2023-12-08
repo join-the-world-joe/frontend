@@ -61,7 +61,7 @@ class _State extends State<Permission> {
       closed = true;
       Future.delayed(
         const Duration(milliseconds: 500),
-            () {
+        () {
           print('Permission.navigate to $page');
           Navigate.to(context, Screen.build(page));
         },
@@ -78,13 +78,13 @@ class _State extends State<Permission> {
   void fetchPermissionListOfConditionHandler(Map<String, dynamic> body) {
     try {
       FetchPermissionListOfConditionRsp rsp = FetchPermissionListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print('body: ${rsp.body}');
-        Cache.setPermissionList(PermissionList.fromJson(rsp.body));
+      if (rsp.getCode() == Code.oK) {
+        print('body: ${rsp.getBody()}');
+        Cache.setPermissionList(PermissionList.fromJson(rsp.getBody()));
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
         return;
       }
     } catch (e) {

@@ -35,7 +35,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showInsertUserDialog, last: $lastStage, cur: $curStage');
+      // print('showInsertUserDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -78,15 +78,23 @@ Future<void> showInsertUserDialog(BuildContext context) async {
   void insertUserRecordHandler(Map<String, dynamic> body) {
     try {
       InsertUserRecordRsp rsp = InsertUserRecordRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        showMessageDialog(context, '温馨提示：', '插入成功').then(
+      if (rsp.getCode() == Code.oK) {
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.updateRecordSuccessfully),
+        ).then(
           (value) {
             Navigator.pop(context, null);
           },
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
@@ -136,10 +144,23 @@ Future<void> showInsertUserDialog(BuildContext context) async {
           ),
           TextButton(
             onPressed: () async {
-              if (passwordController.text != verifyPasswordController.text) {
-                await showWarningDialog(context, '两次输入的密码不一致');
+              if (nameController.text.isEmpty) {
+                await showWarningDialog(context, Translator.translate(Language.nameOfUserNotProvided));
                 return;
               }
+              if (passwordController.text.isEmpty) {
+                await showWarningDialog(context, Translator.translate(Language.passwordOfUserNotProvided));
+                return;
+              }
+              if (passwordController.text != verifyPasswordController.text) {
+                await showWarningDialog(context, Translator.translate(Language.twoPasswordNotEqual));
+                return;
+              }
+              if (phoneNumberController.text.isEmpty) {
+                await showWarningDialog(context, Translator.translate(Language.phoneNumberNotProvided));
+                return;
+              }
+
               List<String> roleList = () {
                 List<String> roleList = [];
                 roleStatus.forEach(

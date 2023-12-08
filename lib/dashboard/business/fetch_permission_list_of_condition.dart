@@ -51,12 +51,24 @@ class FetchPermissionListOfConditionReq {
 }
 
 class FetchPermissionListOfConditionRsp {
-  late int code;
-  late dynamic body;
+  int _code = -1;
+  dynamic _body;
+
+  int getCode() {
+    return _code;
+  }
+
+  dynamic getBody() {
+    return _body;
+  }
 
   FetchPermissionListOfConditionRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
-    body = json['body'] ?? '';
+    if (json.containsKey('code')) {
+      _code = json['code'];
+    }
+    if (json.containsKey('body')) {
+      _body = json['body'];
+    }
   }
 }
 

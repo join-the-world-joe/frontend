@@ -509,7 +509,13 @@ class Source extends DataTableSource {
                       stock: int.parse(stock),
                       productId: int.parse(idOfGood),
                     ),
-                  );
+                  ).then((value) {
+                    if (value) {
+                      print("notifyListeners");
+                      fetchRecordsOfAdvertisement(advertisementIdList: [int.parse(idOfAdvertisement)]);
+                      notifyListeners();
+                    }
+                  });
                 },
               ),
               IconButton(

@@ -24,7 +24,7 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showRemoveUserDialog, last: $lastStage, cur: $curStage');
+      // print('showRemoveUserDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         // print('showPermissionListOfUserDialog.last: $lastStage');
@@ -46,10 +46,11 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}').then((value) {
-          Navigator.pop(context);
-          curStage = -1;
-        });
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {

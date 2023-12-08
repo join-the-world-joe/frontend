@@ -23,7 +23,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showRoleListOfUserDialog, last: $lastStage, cur: $curStage');
+      // print('showRoleListOfUserDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

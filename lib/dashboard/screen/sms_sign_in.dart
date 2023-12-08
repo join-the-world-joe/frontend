@@ -38,7 +38,7 @@ class _State extends State<SMSSignIn> {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('SMSSignIn, last: $lastStage, cur: $curStage');
+      // print('SMSSignIn, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

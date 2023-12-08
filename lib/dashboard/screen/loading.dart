@@ -34,7 +34,7 @@ class _State extends State<Loading> {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('Loading, last: $lastStage, cur: $curStage');
+      // print('Loading, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/dashboard/business/update_user_record.dart';
+import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -33,7 +34,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalSmooth);
-      print('showUpdateUserDialog, last: $lastStage, cur: $curStage');
+      // print('showUpdateUserDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -165,15 +166,21 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
           ),
           TextButton(
             onPressed: () async {
-              if (passwordController.text.isNotEmpty || verifiedPasswordController.text.isNotEmpty) {
-                if (passwordController.text != verifiedPasswordController.text) {
-                  showMessageDialog(
-                    context,
-                    Translator.translate(Language.titleOfErrorNotifyDialog),
-                    Translator.translate(Language.passwordInTwoInputControlDoNotMatch),
-                  );
-                  return;
-                }
+              if (nameController.text.isEmpty) {
+                await showWarningDialog(context, Translator.translate(Language.nameOfUserNotProvided));
+                return;
+              }
+              if (passwordController.text.isEmpty) {
+                await showWarningDialog(context, Translator.translate(Language.passwordOfUserNotProvided));
+                return;
+              }
+              if (passwordController.text != verifiedPasswordController.text) {
+                await showWarningDialog(context, Translator.translate(Language.twoPasswordNotEqual));
+                return;
+              }
+              if (phoneNumberController.text.isEmpty) {
+                await showWarningDialog(context, Translator.translate(Language.phoneNumberNotProvided));
+                return;
               }
               List<String> roleList = () {
                 List<String> roleList = [];

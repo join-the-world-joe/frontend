@@ -22,7 +22,7 @@ Future<String> showFillSellingPointDialog(BuildContext context) async {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showFillSellingPointDialog, last: $lastStage, cur: $curStage');
+      // print('showFillSellingPointDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

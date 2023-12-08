@@ -26,7 +26,7 @@ Future<int> showPermissionListOfUserDialog(BuildContext context, User user) asyn
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showPermissionListOfUserDialog, last: $lastStage, cur: $curStage');
+      // print('showPermissionListOfUserDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         // print('showPermissionListOfUserDialog.last: $lastStage');
@@ -39,19 +39,19 @@ Future<int> showPermissionListOfUserDialog(BuildContext context, User user) asyn
     print('showPermissionListOfUserDialog.fetchPermissionListOfConditionHandler');
     try {
       FetchPermissionListOfConditionRsp rsp = FetchPermissionListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print(rsp.body.toString());
-        var permissionList = PermissionList.fromJson(rsp.body);
+      if (rsp.getCode() == Code.oK) {
+        print(rsp.getBody().toString());
+        var permissionList = PermissionList.fromJson(rsp.getBody());
         widgetList = _buildWidgetList(permissionList);
         curStage++;
         return;
-      } else if (rsp.code == Code.accessDenied) {
+      } else if (rsp.getCode() == Code.accessDenied) {
         showMessageDialog(context, '温馨提示：', '没有权限.').then((value) {
           Navigator.pop(context);
         });
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}').then((value) {
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}').then((value) {
           Navigator.pop(context);
         });
         return;

@@ -23,7 +23,7 @@ Future<int> showMenuListOfRoleDialog(BuildContext context, Role role) async {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showInsertUserDialog, last: $lastStage, cur: $curStage');
+      // print('showInsertUserDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         // print('showRoleListOfUserDialog.last: $lastStage');

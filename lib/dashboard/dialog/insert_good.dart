@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/major.dart';
@@ -27,7 +28,7 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showInsertGoodDialog, last: $lastStage, cur: $curStage');
+      // print('showInsertGoodDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -39,14 +40,22 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
     try {
       InsertRecordOfGoodRsp rsp = InsertRecordOfGoodRsp.fromJson(body);
       if (rsp.code == Code.oK) {
-        showMessageDialog(context, '温馨提示：', '插入成功').then(
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.updateRecordSuccessfully),
+        ).then(
           (value) {
             Navigator.pop(context, null);
           },
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.code}',
+        );
         return;
       }
     } catch (e) {
@@ -176,6 +185,11 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
                       width: 350,
                       child: TextFormField(
                         controller: buyingPriceController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                          LengthLimitingTextInputFormatter(11),
+                        ],
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.buyingPrice),
                         ),
@@ -227,4 +241,3 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
     },
   );
 }
-

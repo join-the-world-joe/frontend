@@ -37,7 +37,7 @@ class _State extends State<PasswordSignIn> {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('PasswordSignIn, last: $lastStage, cur: $curStage');
+      // print('PasswordSignIn, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

@@ -47,11 +47,15 @@ class InsertUserRecordReq {
 }
 
 class InsertUserRecordRsp {
-  late int code;
+  int _code = -1;
+
+  int getCode() {
+    return _code;
+  }
 
   InsertUserRecordRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
-      code = json['code'];
+      _code = json['code'];
     }
   }
 }

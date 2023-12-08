@@ -5,7 +5,6 @@ class English {
   static Map<String, String> model = {
     Language.titleOfSearch: 'Search',
     Language.reset: 'Reset',
-    Language.userList: 'User List',
     Language.fPhoneNumber: 'Phone Number',
     Language.fCountryCode: 'Country Code',
     Language.fName: 'Name',
@@ -15,7 +14,6 @@ class English {
     Language.permissionList: 'Permission List',
     Language.menuList: 'Menu List',
     Language.operation: 'Operation',
-    Language.newUser: 'New User',
     Language.cancel: 'Cancel',
     Language.confirm: "Confirm",
     Language.enable: 'Enable',
@@ -24,13 +22,11 @@ class English {
     Language.philipine: 'Philipine',
     Language.password: 'Password',
     Language.confirmPassword: 'Confirm Password',
-    Language.modifyUser: 'Modify User',
     Language.dashboard: 'General Admin Panel',
     Language.ok: 'OK',
     Language.viewPermissionList: 'View Permission List',
     Language.viewMenuList: 'View Menu List',
     Language.viewRoleList: 'View Role List',
-    Language.removeUser: 'Remove User',
     Language.update: 'Update',
     Language.remove: 'Remove',
     Language.confirmYourDeletion: 'Confirm Your Deletion?',
@@ -47,6 +43,16 @@ class English {
     Language.tMenu: 'Menu',
     Language.titleOfBeginDate: 'Begin Date',
     Language.titleOfEndDate: 'End Date',
+
+    // user
+    Language.newUser: 'New User',
+    Language.userList: 'User List',
+    Language.removeUser: 'Remove User',
+    Language.modifyUser: 'Modify User',
+    Language.nameOfUserNotProvided : "User name not provided",
+    Language.passwordOfUserNotProvided :"Password is empty",
+    Language.twoPasswordNotEqual : "Two password not equal",
+    Language.phoneNumberNotProvided : "Phone number not provided",
 
     // language
     Language.languageOfChinese: 'Chinese',
@@ -154,8 +160,6 @@ class English {
     Language.failureWithoutErrorCode: 'Exception',
     Language.networkDisconnected: 'Network Disconnected',
     Language.networkConnected: 'Network Connected',
-    Language.buyingPriceNotProvided: "Buying Price Not Provided",
-    Language.productNameNotProvided: "Product Name Not Provided",
     Language.removeRecordSuccessfully :'Remove Record Successfully',
     Language.updateRecordSuccessfully :'Update Record Successfully',
 
@@ -200,6 +204,12 @@ class English {
     Language.modifyAdvertisement: "Modify Advertisement",
     Language.noRecordOfGoodInDatabase:"No Good Records",
     Language.noRecordsMatchedTheSearchCondition :"No Matched Records",
+
+    // Good
+    Language.productNameNotProvided: "Product Name Not Provided",
+    Language.buyingPriceNotProvided: "Buying Price Not Provided",
+    Language.vendorOfProductNotProvided:"the vendor of product not provided",
+    Language.contactOfVendorNotProvided:"the contact of vendor not provided",
   };
 
   static String getName() {

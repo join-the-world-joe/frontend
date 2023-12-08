@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_framework/dashboard/business/update_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/business/update_record_of_good.dart';
 import 'package:flutter_framework/dashboard/business/update_user_record.dart';
@@ -49,7 +50,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showUpdateAdvertisementDialog, last: $lastStage, cur: $curStage');
+      // print('showUpdateAdvertisementDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -57,17 +58,17 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
     }
   }
 
-  void updateRecordOfGoodHandler(Map<String, dynamic> body) {
+  void updateRecordOfAdvertisementHandler(Map<String, dynamic> body) {
     try {
-      UpdateRecordOfGoodRsp rsp = UpdateRecordOfGoodRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
+      UpdateRecordOfAdvertisementRsp rsp = UpdateRecordOfAdvertisementRsp.fromJson(body);
+      if (rsp.getCode() == Code.oK) {
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
           Translator.translate(Language.updateRecordSuccessfully),
         ).then(
           (value) {
-            Navigator.pop(context, null);
+            Navigator.pop(context, true);
           },
         );
         return;
@@ -75,7 +76,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.code}',
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
         );
         return;
       }
@@ -92,9 +93,9 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
 
     try {
       print("showUpdateGoodDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.updateRecordOfGoodRsp) {
+      if (major == Major.admin && minor == Minor.admin.updateRecordOfAdvertisementRsp) {
         print('body: ${body.toString()}');
-        updateRecordOfGoodHandler(body);
+        updateRecordOfAdvertisementHandler(body);
       } else {
         print("showUpdateGoodDialog.observe warning: $major-$minor doesn't matched");
       }
@@ -120,15 +121,19 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
           ),
           TextButton(
             onPressed: () async {
-              // updateRecordOfAdvertisement(
-              //   name: nameController.text,
-              //   productId: int.parse(idController.text),
-              //   buyingPrice: int.parse(buyingPriceController.text),
-              //   status: status,
-              //   vendor: vendorController.text,
-              //   contact: contactController.text,
-              //   description: descriptionController.text,
-              // );
+              print('advertisement.getId: ${advertisement.getId()}');
+              updateRecordOfAdvertisement(
+                  id: advertisement.getId(),
+                  url: urlController.text,
+                  name: nameController.text,
+                  stock: int.parse(stockController.text),
+                  status: status,
+                  title: titleController.text,
+                  productId: int.parse(productIdController.text),
+                  sellingPrice: int.parse(sellingPriceController.text),
+                  placeOfOrigin: placeOfOriginController.text,
+                  sellingPoints: sellingPoints,
+                  description: descriptionController.text);
             },
             child: Text(Translator.translate(Language.confirm)),
           ),
@@ -196,6 +201,11 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                       width: 350,
                       child: TextFormField(
                         controller: productIdController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                          LengthLimitingTextInputFormatter(11),
+                        ],
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.idOfGood),
                         ),

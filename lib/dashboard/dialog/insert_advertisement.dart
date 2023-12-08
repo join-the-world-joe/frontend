@@ -39,7 +39,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      print('showInsertAdvertisementDialog, last: $lastStage, cur: $curStage');
+      // print('showInsertAdvertisementDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -51,14 +51,22 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
     try {
       InsertRecordOfGoodRsp rsp = InsertRecordOfGoodRsp.fromJson(body);
       if (rsp.code == Code.oK) {
-        showMessageDialog(context, '温馨提示：', '插入成功').then(
-          (value) {
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.updateRecordSuccessfully),
+        ).then(
+              (value) {
             Navigator.pop(context, null);
           },
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.code}',
+        );
         return;
       }
     } catch (e) {
