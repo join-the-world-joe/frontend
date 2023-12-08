@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:math';
 
 class Track {
-  String _operator;
-  String _major;
-  String _minor;
-  String _permission;
-  String _request;
-  String _response;
-  String _timestamp;
+  String _operator = '';
+  String _major = '';
+  String _minor = '';
+  String _permission = '';
+  String _request = '';
+  String _response = '';
+  String _timestamp = '';
 
   String getOperator() {
     return _operator;
@@ -38,38 +38,43 @@ class Track {
     return _timestamp;
   }
 
-  Track(
-    this._operator,
-    this._major,
-    this._minor,
-    this._permission,
-    this._request,
-    this._response,
-    this._timestamp,
-  );
-
-  factory Track.fromJson(Map<String, dynamic> json) {
-    String operator = '', major = '', minor = '', permission = '', request = '', response = '';
-    String timestamp = '';
-    try {
-      operator = json['operator'] ?? 'Empty';
-      major = json['major'] ?? 'Empty';
-      minor = json['minor'] ?? 'Empty';
-      timestamp = json['timestamp'] ?? 'Empty';
-      permission = json['permission'] ?? 'Empty';
-      request = jsonEncode(json['request']) ?? 'Empty';
-      response = jsonEncode(json['response']) ?? 'Empty';
-    } catch (e) {
-      print('e: $e');
-    }
-    return Track(
-      operator,
-      major,
-      minor,
-      permission,
-      request,
-      response,
-      timestamp,
-    );
+  Track.construct({
+    required String operator,
+    required String major,
+    required String minor,
+    required String permission,
+    required String request,
+    required String response,
+    required String timestamp,
+  }) {
+    _operator = operator;
+    _major = major;
+    _minor = minor;
+    _permission = permission;
+    _request = request;
+    _response = response;
+    _timestamp = timestamp;
   }
+
+// Track(
+//   this._operator,
+//   this._major,
+//   this._minor,
+//   this._permission,
+//   this._request,
+//   this._response,
+//   this._timestamp,
+// );
+
+  // factory Track.fromJson(Map<String, dynamic> json) {
+  //   return Track.construct(
+  //     operator: json['operator'],
+  //     major: json['major'],
+  //     minor: json['minor'],
+  //     permission: json['permission'],
+  //     request: json['request'],
+  //     response: json['response'],
+  //     timestamp: json['timestamp'],
+  //   );
+  // }
 }

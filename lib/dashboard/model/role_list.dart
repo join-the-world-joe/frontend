@@ -2,15 +2,13 @@ import 'role.dart';
 
 class RoleList {
   List<Role> _body = [];
-  int _length = 0;
 
   int getLength() {
-    return _length;
+    return _body.length;
   }
 
   RoleList(List<Role> roleList) {
     _body = roleList;
-    _length = _body.length;
   }
 
   List<Role> getBody() {
@@ -19,27 +17,28 @@ class RoleList {
 
   List<String> getNameList() {
     List<String> nameList = [];
-    _body.forEach((element) {
+    for (var element in _body) {
       nameList.add(element.getName());
-    });
+    }
     return nameList;
   }
 
-  factory RoleList.fromJson(Map<String, dynamic> json) {
-    List<Role> rl = [];
-    try {
-      List<Role> roleList = [];
-      if (json['role_list'] != null) {
-        List<dynamic> any = json['role_list'];
-        any.forEach((element) {
-          roleList.add(Role.fromJson(element));
-        });
+  RoleList.fromJson(Map<String, dynamic> json) {
+    List<Role> roleList = [];
+    if (json.containsKey('role_list')) {
+      List<dynamic> any = json['role_list'];
+      for (var element in any) {
+        roleList.add(
+          Role.construct(
+            rank: element['rank'],
+            name: element['name'],
+            department: element['department'],
+            description: element['description'],
+          ),
+        );
       }
-      return RoleList(roleList);
-    } catch (e) {
-      print('RoleList failure, e: $e');
     }
 
-    return RoleList(rl);
+    _body = roleList;
   }
 }

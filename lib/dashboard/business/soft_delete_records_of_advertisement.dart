@@ -7,16 +7,16 @@ import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class SoftDeleteRecordsOfAdvertisementReq {
-  final List<int> _advertisementIdList;
+  List<int> _advertisementIdList = [];
 
-  SoftDeleteRecordsOfAdvertisementReq(this._advertisementIdList);
+  SoftDeleteRecordsOfAdvertisementReq.construct({required List<int> advertisementIdList}) {
+    _advertisementIdList = advertisementIdList;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'advertisement_id_list': _advertisementIdList,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'advertisement_id_list': _advertisementIdList,
+    };
   }
 }
 
@@ -24,7 +24,9 @@ class SoftDeleteRecordsOfAdvertisementRsp {
   int code = -1;
 
   SoftDeleteRecordsOfAdvertisementRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
+    if (json.containsKey('code')) {
+      code = json['code'];
+    }
   }
 }
 
@@ -32,7 +34,9 @@ void softDeleteRecordsOfAdvertisement({
   required List<int> advertisementIdList,
 }) {
   PacketClient packet = PacketClient.create();
-  SoftDeleteRecordsOfAdvertisementReq req = SoftDeleteRecordsOfAdvertisementReq(advertisementIdList);
+  SoftDeleteRecordsOfAdvertisementReq req = SoftDeleteRecordsOfAdvertisementReq.construct(
+    advertisementIdList: advertisementIdList,
+  );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.softDeleteRecordsOfAdvertisementReq);
   packet.setBody(req.toJson());

@@ -120,9 +120,9 @@ class _State extends State<Menu> {
     print('Menu.fetchMenuListOfConditionHandler');
     try {
       FetchMenuListOfConditionRsp rsp = FetchMenuListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print('body: ${rsp.body}');
-        var menuList = MenuList.fromJson(rsp.body);
+      if (rsp.getCode() == Code.oK) {
+        print('body: ${rsp.getBody()}');
+        var menuList = MenuList.fromJson(rsp.getBody());
         var output = menuList;
         if (menuFilter.isNotEmpty || parentFilter.isNotEmpty) {
           output = MenuList([]);
@@ -201,7 +201,7 @@ class _State extends State<Menu> {
         curStage++;
         return;
       } else {
-        print('Menu.fetchMenuListOfConditionHandler failure: ${rsp.code}');
+        print('Menu.fetchMenuListOfConditionHandler failure: ${rsp.getCode()}');
         curStage = -1;
         return;
       }

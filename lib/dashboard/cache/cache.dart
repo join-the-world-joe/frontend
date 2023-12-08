@@ -12,11 +12,11 @@ class Cache {
   static String _secret = '';
   static String _role = '';
   static int _userId = 0;
-  static SideMenuList _sideMenuList = SideMenuList([], 0);
+  static SideMenuList _sideMenuList = SideMenuList.construct(sideMenuList: []);
   static MenuList _menuList = MenuList([]);
   static String _content = '';
   static FieldList fieldList = FieldList([]);
-  static UserList userList = UserList([]);
+  static UserList userList = UserList.construct(userList: []);
   static RoleList _roleList = RoleList([]);
   static TrackList trackList = TrackList([]);
   static PermissionList _permissionList = PermissionList([]);

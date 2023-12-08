@@ -154,6 +154,7 @@ class English {
     Language.buyingPriceNotProvided: "Buying Price Not Provided",
     Language.productNameNotProvided: "Product Name Not Provided",
     Language.removeRecordSuccessfully :'Remove Record Successfully',
+    Language.updateRecordSuccessfully :'Update Record Successfully',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',
@@ -193,6 +194,9 @@ class English {
     Language.incorrectStockValueInController :"Illegal stock",
     Language.incorrectSellingPriceInController : "Illegal Selling Price",
     Language.needToPeekProductInfo: "Please Peek Product",
+    Language.modifyAdvertisement: "Modify Advertisement",
+    Language.noRecordOfGoodInDatabase:"No Good Records",
+    Language.noRecordsMatchedTheSearchCondition :"No Matched Records",
   };
 
   static String getName() {

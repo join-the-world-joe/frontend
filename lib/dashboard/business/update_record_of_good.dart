@@ -7,36 +7,52 @@ import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class UpdateRecordOfGoodReq {
-  final String _name;
-  final int _productId;
-  final int _buyingPrice;
-  final int _status;
-  final String _vendor;
-  final String _contact;
-  final String _description;
+  String _name = '';
+  int _productId = -1;
+  int _buyingPrice = -1;
+  int _status = 0;
+  String _vendor = '';
+  String _contact = '';
+  String _description = '';
 
-  UpdateRecordOfGoodReq(this._productId, this._name, this._buyingPrice, this._status, this._vendor, this._contact, this._description);
+  UpdateRecordOfGoodReq.construct({
+    required String name,
+    required int productId,
+    required int buyingPrice,
+    required int status,
+    required String vendor,
+    required String contact,
+    required String description,
+  }) {
+    _name = name;
+    _productId = productId;
+    _buyingPrice = buyingPrice;
+    _status = status;
+    _vendor = vendor;
+    _contact = contact;
+    _description = description;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'name': utf8.encode(_name),
-        'product_id': _productId,
-        'buying_price': _buyingPrice,
-        'vendor': utf8.encode(_vendor),
-        'status': _status,
-        'contact': utf8.encode(_contact),
-        'description': utf8.encode(_description),
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'name': utf8.encode(_name),
+      'product_id': _productId,
+      'buying_price': _buyingPrice,
+      'vendor': utf8.encode(_vendor),
+      'status': _status,
+      'contact': utf8.encode(_contact),
+      'description': utf8.encode(_description),
+    };
   }
 }
 
 class UpdateRecordOfGoodRsp {
-  late int code;
+  int code = -1;
 
   UpdateRecordOfGoodRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
+    if (json.containsKey('code')) {
+      code = json['code'];
+    }
   }
 }
 
@@ -50,14 +66,14 @@ void updateRecordOfGood({
   required String description,
 }) {
   PacketClient packet = PacketClient.create();
-  UpdateRecordOfGoodReq req = UpdateRecordOfGoodReq(
-    productId,
-    name,
-    buyingPrice,
-    status,
-    vendor,
-    contact,
-    description,
+  UpdateRecordOfGoodReq req = UpdateRecordOfGoodReq.construct(
+    productId: productId,
+    name: name,
+    buyingPrice: buyingPrice,
+    status: status,
+    vendor: vendor,
+    contact: contact,
+    description: description,
   );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.updateRecordOfGoodReq);

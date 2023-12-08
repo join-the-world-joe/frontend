@@ -1,63 +1,60 @@
 import 'dart:convert';
-
 import 'package:flutter_framework/framework/packet_client.dart';
 import '../../common/route/major.dart';
 import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
-import 'package:flutter_framework/framework/rate_limiter.dart';
-import 'dart:convert';
 import 'dart:typed_data';
 import '../../../utils/convert.dart';
-import 'package:flutter_framework/framework/packet_client.dart';
-import '../../common/route/major.dart';
-import '../../common/route/minor.dart';
-import 'package:flutter_framework/runtime/runtime.dart';
 import '../model/product.dart';
 
 class FetchRecordsOfGoodReq {
-  final List<int> _productIdList;
+  List<int> _productIdList = [];
 
-  FetchRecordsOfGoodReq(this._productIdList);
+  FetchRecordsOfGoodReq.construct({
+    required List<int> productIdList,
+  }) {
+    _productIdList = productIdList;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'product_id_list': _productIdList,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'product_id_list': _productIdList,
+    };
   }
 }
 
 class FetchRecordsOfGoodRsp {
-  int code = -1;
-  Map<int, Product> productMap = {};
+  int _code = -1;
+  Map<int, Product> _productMap = {};
 
   int getCode() {
-    return code;
+    return _code;
   }
 
   Map<int, Product> getProductMap() {
-    return productMap;
+    return _productMap;
   }
 
   FetchRecordsOfGoodRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
+    if (json.containsKey('code')) {
+      _code = json['code'];
+    }
     if (json.containsKey('body')) {
-      var body = json['body'];
+      Map<String, dynamic> body = json['body'];
       if (body.containsKey('records_of_good')) {
         final Map some = Map.from(body['records_of_good']);
         some.forEach(
           (key, value) {
-            productMap[value['id']] = Product(
-              value['id'],
-              value['name'],
-              value['buying_price'],
-              value['description'],
-              value['status'],
-              value['vendor'],
-              value['created_at'],
-              value['contact'],
-              value['updated_at'],
+            _productMap[value['id']] = Product.construct(
+              id: value['id'],
+              name: value['name'],
+              buyingPrice: value['buying_price'],
+              description: value['description'],
+              status: value['status'],
+              vendor: value['vendor'],
+              createdAt: value['created_at'],
+              contact: value['contact'],
+              updatedAt: value['updated_at'],
             );
           },
         );
@@ -70,7 +67,7 @@ void fetchRecordsOfGood({
   required List<int> productIdList,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchRecordsOfGoodReq req = FetchRecordsOfGoodReq(productIdList);
+  FetchRecordsOfGoodReq req = FetchRecordsOfGoodReq.construct(productIdList: productIdList);
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.fetchRecordsOfGoodReq);
   packet.setBody(req.toJson());

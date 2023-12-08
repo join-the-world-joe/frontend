@@ -1,15 +1,15 @@
 import 'dart:convert';
 
 class Product {
-  final int _id;
-  final String _name;
-  final int _buyingPrice;
-  final String _description;
-  final int _status;
-  final String _vendor;
-  final String _createdAt;
-  final String _contact;
-  final String _updatedAt;
+  late int _id;
+  late String _name;
+  late int _buyingPrice;
+  late String _description;
+  late int _status;
+  late String _vendor;
+  late String _createdAt;
+  late String _contact;
+  late String _updatedAt;
 
   int getId() {
     return _id;
@@ -47,15 +47,25 @@ class Product {
     return _contact;
   }
 
-  Product(
-    this._id,
-    this._name,
-    this._buyingPrice,
-    this._description,
-    this._status,
-    this._vendor,
-    this._createdAt,
-    this._contact,
-    this._updatedAt,
-  );
+  Product.construct({
+    required int id,
+    required String name,
+    required int buyingPrice,
+    required String description,
+    required int status,
+    required String vendor,
+    required String createdAt,
+    required String contact,
+    required String updatedAt,
+  }) {
+    _id = id;
+    _name = name;
+    _buyingPrice = buyingPrice;
+    _description = description;
+    _status = status;
+    _vendor = vendor;
+    _createdAt = createdAt;
+    _contact = contact;
+    _updatedAt = updatedAt;
+  }
 }

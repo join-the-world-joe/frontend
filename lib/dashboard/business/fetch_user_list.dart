@@ -7,11 +7,19 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class FetchUserListReq {
-  final String _role;
-  final String _name;
-  final String _phoneNumber;
+  String _role = '';
+  String _name = '';
+  String _phoneNumber = '';
 
-  FetchUserListReq(this._role, this._name, this._phoneNumber);
+  FetchUserListReq.construct({
+    required String role,
+    required String name,
+    required phoneNumber,
+  }) {
+    _role = role;
+    _name = name;
+    _phoneNumber = phoneNumber;
+  }
 
   Map<String, dynamic> toJson() => {
         'role': _role,
@@ -25,8 +33,8 @@ class FetchUserListReq {
 }
 
 class FetchUserListRsp {
-  late int _code;
-  late List<String> _roleList;
+  int _code = -1;
+  List<String> _roleList = [];
 
   int getCode() {
     return _code;
@@ -57,7 +65,11 @@ void fetchUserList({
   required String phoneNumber,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchUserListReq req = FetchUserListReq(role, name, phoneNumber);
+  FetchUserListReq req = FetchUserListReq.construct(
+    role: role,
+    name: name,
+    phoneNumber: phoneNumber,
+  );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.signInReq);
   packet.setBody(req.toJson());

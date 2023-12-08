@@ -96,7 +96,7 @@ class _State extends State<Advertisement> {
 
   void setup() {
     // print('User.setup');
-    Cache.setUserList(UserList([]));
+    Cache.setUserList(UserList.construct(userList: []));
     Runtime.setObserve(observe);
   }
 
@@ -135,6 +135,14 @@ class _State extends State<Advertisement> {
       FetchRecordsOfAdvertisementRsp rsp = FetchRecordsOfAdvertisementRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         print('advertisement map: ${rsp.advertisementMap.toString()}');
+        if (rsp.advertisementMap.isEmpty) {
+          showMessageDialog(
+            context,
+            Translator.translate(Language.titleOfNotification),
+            '${Translator.translate(Language.noRecordsMatchedTheSearchCondition)}  ${rsp.getCode()}',
+          );
+          return;
+        }
         if (idList.isEmpty) {
           rsp.getAdvertisementMap().forEach((key, value) {
             idList.add(key);
@@ -277,7 +285,9 @@ class _State extends State<Advertisement> {
                           onPressed: () {
                             idController.text = '';
                             nameController.text = '';
-                            Cache.setUserList(UserList([]));
+                            idController.text = '';
+                            nameController.text = '';
+                            idList = [];
                             refresh();
                           },
                           child: Text(
@@ -398,7 +408,7 @@ class Source extends DataTableSource {
         idOfGood = dataMap[key]!.getProductId().toString();
         url = dataMap[key]!.getUrl().toString();
         description = dataMap[key]!.getDescription().toString();
-        sellingPoints = dataMap[key]!.getSellingPoint();
+        sellingPoints = dataMap[key]!.getSellingPoints();
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
@@ -461,18 +471,18 @@ class Source extends DataTableSource {
                 onPressed: () async {
                   showUpdateAdvertisementDialog(
                     buildContext,
-                    model.Advertisement(
-                      int.parse(idOfAdvertisement),
-                      nameOfAdvertisement,
-                      titleOfAdvertisement,
-                      placeOfOrigin,
-                      sellingPoints,
-                      url,
-                      int.parse(sellingPriceOfAdvertisement),
-                      description,
-                      int.parse(status),
-                      int.parse(stock),
-                      int.parse(idOfGood),
+                    model.Advertisement.construct(
+                      id: int.parse(idOfAdvertisement),
+                      name: nameOfAdvertisement,
+                      title: titleOfAdvertisement,
+                      placeOfOrigin: placeOfOrigin,
+                      sellingPoints: sellingPoints,
+                      url: url,
+                      sellingPrice: int.parse(sellingPriceOfAdvertisement),
+                      description: description,
+                      status: int.parse(status),
+                      stock: int.parse(stock),
+                      productId: int.parse(idOfGood),
                     ),
                   );
                 },

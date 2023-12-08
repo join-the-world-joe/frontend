@@ -43,7 +43,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
   void updateUserRecordHandler(Map<String, dynamic> body) {
     try {
       UpdateUserRecordRsp rsp = UpdateUserRecordRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
+      if (rsp.getCode() == Code.oK) {
         showMessageDialog(context, '温馨提示：', '更新成功').then(
           (value) {
             Navigator.pop(context, null);
@@ -51,7 +51,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.getCode()}');
         return;
       }
     } catch (e) {

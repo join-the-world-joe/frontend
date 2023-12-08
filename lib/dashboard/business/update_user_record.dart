@@ -7,36 +7,56 @@ import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class UpdateUserRecordReq {
-  final String _name;
-  final int _userId;
-  final int _status;
-  final Uint8List _password;
-  final String _countryCode;
-  final String _phoneNumber;
-  final List<String> _roleList;
+  String _name = '';
+  int _userId = -1;
+  int _status = 0;
+  Uint8List _password = Uint8List.fromList([]);
+  String _countryCode = '';
+  String _phoneNumber = '';
+  List<String> _roleList = [];
 
-  UpdateUserRecordReq(this._userId, this._name, this._phoneNumber, this._countryCode, this._status, this._password, this._roleList);
+  UpdateUserRecordReq.construct({
+    required String name,
+    required int userId,
+    required int status,
+    required Uint8List password,
+    required String countryCode,
+    required String phoneNumber,
+    required List<String> roleList,
+  }) {
+    _name = name;
+    _userId = userId;
+    _status = status;
+    _password = password;
+    _countryCode = countryCode;
+    _phoneNumber = phoneNumber;
+    _roleList = roleList;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'name': utf8.encode(_name),
-        'user_id': _userId,
-        'phone_number': _phoneNumber,
-        'country_code': _countryCode,
-        'status': _status,
-        'password': _password,
-        'role_list': _roleList,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'name': utf8.encode(_name),
+      'user_id': _userId,
+      'phone_number': _phoneNumber,
+      'country_code': _countryCode,
+      'status': _status,
+      'password': _password,
+      'role_list': _roleList,
+    };
   }
 }
 
 class UpdateUserRecordRsp {
-  late int code;
+  int _code = -1;
+
+  int getCode() {
+    return _code;
+  }
 
   UpdateUserRecordRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
+    if (json.containsKey('code')) {
+      _code = json['code'];
+    }
   }
 }
 
@@ -50,14 +70,14 @@ void updateUserRecord({
   required List<String> roleList,
 }) {
   PacketClient packet = PacketClient.create();
-  UpdateUserRecordReq req = UpdateUserRecordReq(
-    userId,
-    name,
-    phoneNumber,
-    countryCode,
-    status,
-    password,
-    roleList,
+  UpdateUserRecordReq req = UpdateUserRecordReq.construct(
+    userId: userId,
+    name: name,
+    phoneNumber: phoneNumber,
+    countryCode: countryCode,
+    status: status,
+    password: password,
+    roleList: roleList,
   );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.updateUserRecordReq);

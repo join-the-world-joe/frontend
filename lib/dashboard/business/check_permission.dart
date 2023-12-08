@@ -8,25 +8,29 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class CheckPermissionReq {
-  final int _major;
-  final int _minor;
+  int _major = -1;
+  int _minor = -1;
 
-  CheckPermissionReq(this._major, this._minor);
+  CheckPermissionReq.construct({
+    required int major,
+    required int minor,
+  }) {
+    _major = major;
+    _minor = minor;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'major': _major,
-        'minor': _minor,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'major': _major,
+      'minor': _minor,
+    };
   }
 }
 
 class CheckPermissionRsp {
-  late int _code;
-  late int _major;
-  late int _minor;
+  int _code = -1;
+  int _major = -1;
+  int _minor = -1;
 
   int getCode() {
     return _code;
@@ -50,9 +54,15 @@ class CheckPermissionRsp {
   }
 
   CheckPermissionRsp.fromJson(Map<String, dynamic> json) {
-    _code = json['code'] ?? -1;
-    _major = json['major'] ?? 0;
-    _minor = json['minor'] ?? 0;
+    if (json.containsKey('code')) {
+      _code = json['code'];
+    }
+    if (json.containsKey('major')) {
+      _major = json['major'];
+    }
+    if (json.containsKey('minor')) {
+      _minor = json['minor'];
+    }
   }
 }
 
@@ -61,7 +71,10 @@ void checkPermission({
   required String minor,
 }) {
   PacketClient packet = PacketClient.create();
-  CheckPermissionReq req = CheckPermissionReq(int.parse(major), int.parse(minor));
+  CheckPermissionReq req = CheckPermissionReq.construct(
+    major: int.parse(major),
+    minor: int.parse(minor),
+  );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.checkPermissionReq);
   packet.setBody(req.toJson());

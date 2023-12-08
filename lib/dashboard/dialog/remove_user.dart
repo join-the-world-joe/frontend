@@ -36,7 +36,7 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
     print('showRemoveUserDialog.softDeleteUserRecordHandler');
     try {
       SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
+      if (rsp.getCode() == Code.oK) {
         showMessageDialog(context, '温馨提示：', '删除成功').then(
           (value) {
             Navigator.pop(context);
@@ -45,7 +45,7 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}').then((value) {
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}').then((value) {
           Navigator.pop(context);
           curStage = -1;
         });

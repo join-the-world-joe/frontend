@@ -89,13 +89,13 @@ class _State extends State<Track> {
     try {
       FetchTrackListOfConditionRsp rsp = FetchTrackListOfConditionRsp.fromJson(body);
       print('rsp: ${body.toString()}');
-      if (rsp.code == Code.oK) {
+      if (rsp.getCode() == Code.oK) {
         print('rsp: ${rsp.toString()}');
-        Cache.setTrackList(TrackList.fromJson(rsp.body));
+        Cache.setTrackList(TrackList.fromJson(rsp.getBody()));
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
         return;
       }
     } catch (e) {

@@ -8,18 +8,22 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class FetchIdListOfAdvertisementReq {
-  final int _behavior;
-  final String _advertisementName;
+  int _behavior = -1;
+  String _advertisementName = '';
 
-  FetchIdListOfAdvertisementReq(this._behavior, this._advertisementName);
+  FetchIdListOfAdvertisementReq.construct({
+    required int behavior,
+    required String advertisementName,
+  }) {
+    _behavior = behavior;
+    _advertisementName = advertisementName;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'behavior': _behavior,
-        'advertisement_name': utf8.encode(_advertisementName),
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'behavior': _behavior,
+      'advertisement_name': utf8.encode(_advertisementName),
+    };
   }
 }
 
@@ -49,7 +53,7 @@ class FetchIdListOfAdvertisementRsp {
       _code = json['code'] ?? -1;
     }
     if (json.containsKey('body')) {
-      var body = json['body'];
+      Map<String, dynamic> body = json['body'];
       if (body['id_list_of_advertisement'] != null) {
         _idList = List<int>.from(body['id_list_of_advertisement'] as List);
       }
@@ -62,7 +66,10 @@ void fetchIdListOfAdvertisement({
   required String advertisementName,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchIdListOfAdvertisementReq req = FetchIdListOfAdvertisementReq(behavior, advertisementName);
+  FetchIdListOfAdvertisementReq req = FetchIdListOfAdvertisementReq.construct(
+    behavior: behavior,
+    advertisementName: advertisementName,
+  );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.fetchIdListOfAdvertisementReq);
   packet.setBody(req.toJson());

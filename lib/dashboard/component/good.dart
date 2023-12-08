@@ -79,6 +79,30 @@ class _State extends State<Good> {
       FetchIdListOfGoodRsp rsp = FetchIdListOfGoodRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         print("fetchIdListOfGoodHandler.idList: ${rsp.getIdList()}");
+        if (rsp.getIdList().isEmpty) {
+          if (rsp.getBehavior() == 1) {
+            showMessageDialog(
+              context,
+              Translator.translate(Language.titleOfNotification),
+              Translator.translate(Language.noRecordOfGoodInDatabase),
+            );
+            return;
+          } else if (rsp.getBehavior() == 2) {
+            showMessageDialog(
+              context,
+              Translator.translate(Language.titleOfNotification),
+              Translator.translate(Language.noRecordsMatchedTheSearchCondition),
+            );
+            return;
+          } else {
+            showMessageDialog(
+              context,
+              Translator.translate(Language.titleOfNotification),
+              '${Translator.translate(Language.failureWithErrorCode)} -1',
+            );
+            return;
+          }
+        }
         idList = rsp.getIdList();
         curStage++;
         return;
@@ -96,7 +120,15 @@ class _State extends State<Good> {
     try {
       FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print('product map: ${rsp.productMap.toString()}');
+        print('product map: ${rsp.getProductMap().toString()}');
+        if (rsp.getProductMap().isEmpty) {
+          showMessageDialog(
+            context,
+            Translator.translate(Language.titleOfNotification),
+            Translator.translate(Language.noRecordsMatchedTheSearchCondition),
+          );
+          return;
+        }
         if (idList.isEmpty) {
           rsp.getProductMap().forEach((key, value) {
             idList.add(key);
@@ -129,7 +161,7 @@ class _State extends State<Good> {
   }
 
   void setup() {
-    Cache.setUserList(UserList([]));
+    Cache.setUserList(UserList.construct(userList: []));
     Runtime.setObserve(observe);
   }
 
@@ -433,16 +465,16 @@ class Source extends DataTableSource {
                 onPressed: () async {
                   showUpdateGoodDialog(
                     buildContext,
-                    Product(
-                      int.parse(id),
-                      name,
-                      int.parse(buyingPrice),
-                      desc,
-                      int.parse(status),
-                      vendor,
-                      "",
-                      contact,
-                      "",
+                    Product.construct(
+                      id: int.parse(id),
+                      name: name,
+                      buyingPrice: int.parse(buyingPrice),
+                      description: desc,
+                      status: int.parse(status),
+                      vendor: vendor,
+                      createdAt: "",
+                      contact: contact,
+                      updatedAt: "",
                     ),
                   );
                 },

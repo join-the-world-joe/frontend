@@ -150,6 +150,7 @@ class Language {
   static String buyingPriceNotProvided = "the buying price not provided";
   static String productNameNotProvided = "the name of product not provided";
   static String removeRecordSuccessfully = "the operation of removal is success";
+  static String updateRecordSuccessfully = "the operation of update is success";
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';
@@ -189,4 +190,7 @@ class Language {
   static String incorrectStockValueInController = "the stock value in controller is invalid";
   static String incorrectSellingPriceInController = "the selling price in controller is invalid";
   static String needToPeekProductInfo = "need to peek product info";
+  static String modifyAdvertisement = "to modify the information of advertisement";
+  static String noRecordOfGoodInDatabase = "there is no record of good in database";
+  static String noRecordsMatchedTheSearchCondition = "no records matched the search conditions";
 }

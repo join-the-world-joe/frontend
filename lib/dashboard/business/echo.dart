@@ -7,22 +7,26 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class PingReq {
-  final String _message;
+  String _message = '';
 
-  PingReq(this._message);
+  // PingReq(this._message);
 
-  Map<String, dynamic> toJson() => {
-        'message': _message,
-      };
+  PingReq.construct({
+    required String message,
+  }) {
+    _message = message;
+  }
 
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'message': _message,
+    };
   }
 }
 
 class PongRsp {
-  late int _code;
-  late String _message;
+  int _code = -1;
+  String _message = '';
 
   int getCode() {
     return _code;
@@ -42,8 +46,12 @@ class PongRsp {
   }
 
   PongRsp.fromJson(Map<String, dynamic> json) {
-    _code = json['code'] ?? -1;
-    _message = json['message'] ?? [''];
+    if (json.containsKey('code')) {
+      _code = json['code'];
+    }
+    if (json.containsKey('message')) {
+      _message = json['message'];
+    }
   }
 }
 
@@ -51,7 +59,7 @@ void echo({
   required String message,
 }) {
   PacketClient packet = PacketClient.create();
-  PingReq req = PingReq(message);
+  PingReq req = PingReq.construct(message: message);
   packet.getHeader().setMajor(Major.backendGateway);
   packet.getHeader().setMinor(Minor.backendGateway.pingReq);
   packet.setBody(req.toJson());

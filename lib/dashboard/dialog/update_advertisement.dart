@@ -26,18 +26,23 @@ import 'package:flutter_framework/dashboard/model/user.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import '../model/advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
 
 Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement advertisement) async {
   int status = advertisement.getStatus();
   int curStage = 0;
   bool closed = false;
+  List<String> sellingPoints = advertisement.getSellingPoints();
   var oriObserve = Runtime.getObserve();
-  var nameController = TextEditingController(text: product.getName());
-  var vendorController = TextEditingController(text: product.getVendor());
-  var contactController = TextEditingController(text: product.getContact());
-  var descriptionController = TextEditingController(text: product.getDescription());
-  var buyingPriceController = TextEditingController(text: product.getBuyingPrice().toString());
-  var idController = TextEditingController(text: product.getId().toString());
+  var nameController = TextEditingController(text: advertisement.getName());
+  var titleController = TextEditingController(text: advertisement.getTitle());
+  var sellingPriceController = TextEditingController(text: advertisement.getSellingPrice().toString());
+  var descriptionController = TextEditingController(text: advertisement.getDescription());
+  var placeOfOriginController = TextEditingController(text: advertisement.getPlaceOfOrigin());
+  var urlController = TextEditingController(text: advertisement.getUrl());
+  var stockController = TextEditingController(text: advertisement.getStock().toString());
+  var productIdController = TextEditingController(text: advertisement.getProductId().toString());
+  var sellingPointController = TextEditingController();
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -54,14 +59,22 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
     try {
       UpdateRecordOfGoodRsp rsp = UpdateRecordOfGoodRsp.fromJson(body);
       if (rsp.code == Code.oK) {
-        showMessageDialog(context, '温馨提示：', '更新成功').then(
-              (value) {
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.updateRecordSuccessfully),
+        ).then(
+          (value) {
             Navigator.pop(context, null);
           },
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.code}',
+        );
         return;
       }
     } catch (e) {
@@ -97,7 +110,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(Translator.translate(Language.modifyGood)),
+        title: Text(Translator.translate(Language.modifyAdvertisement)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -105,15 +118,15 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
           ),
           TextButton(
             onPressed: () async {
-              updateRecordOfAdvertisement(
-                name: nameController.text,
-                productId: int.parse(idController.text),
-                buyingPrice: int.parse(buyingPriceController.text),
-                status: status,
-                vendor: vendorController.text,
-                contact: contactController.text,
-                description: descriptionController.text,
-              );
+              // updateRecordOfAdvertisement(
+              //   name: nameController.text,
+              //   productId: int.parse(idController.text),
+              //   buyingPrice: int.parse(buyingPriceController.text),
+              //   status: status,
+              //   vendor: vendorController.text,
+              //   contact: contactController.text,
+              //   description: descriptionController.text,
+              // );
             },
             child: Text(Translator.translate(Language.confirm)),
           ),
@@ -162,7 +175,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                       child: TextFormField(
                         controller: nameController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.nameOfGood),
+                          labelText: Translator.translate(Language.nameOfAdvertisement),
                         ),
                       ),
                     ),
@@ -170,9 +183,9 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: vendorController,
+                        controller: titleController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.vendorOfGood),
+                          labelText: Translator.translate(Language.titleOfAdvertisement),
                         ),
                       ),
                     ),
@@ -180,9 +193,9 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: contactController,
+                        controller: productIdController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.contactOfVendor),
+                          labelText: Translator.translate(Language.idOfGood),
                         ),
                       ),
                     ),
@@ -190,19 +203,101 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: buyingPriceController,
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.buyingPrice),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
+                        readOnly: true,
                         controller: descriptionController,
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.description),
+                        ),
+                      ),
+                    ),
+                    Spacing.addVerticalSpace(10),
+                    SizedBox(
+                      width: 350,
+                      child: TextFormField(
+                        readOnly: true,
+                        controller: sellingPointController,
+                        decoration: InputDecoration(
+                          labelText: sellingPoints.isEmpty ? Translator.translate(Language.pressRightButtonToAddSellingPoint) : "",
+                          suffixIcon: IconButton(
+                            tooltip: Translator.translate(Language.addSellingPointToAdvertisement),
+                            icon: const Icon(Icons.add_circle_outlined),
+                            onPressed: () {
+                              showFillSellingPointDialog(context).then((value) {
+                                if (value.isNotEmpty) {
+                                  sellingPoints.add(value);
+                                  curStage++;
+                                }
+                              });
+                            },
+                          ),
+                          prefixIcon: Wrap(
+                            children: () {
+                              List<Widget> widgetList = [];
+                              for (var element in sellingPoints) {
+                                widgetList.add(Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: InputChip(
+                                    label: Text(
+                                      element,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onDeleted: () {
+                                      sellingPoints.remove(element);
+                                      curStage++;
+                                    },
+                                    backgroundColor: Colors.green,
+                                    // selectedColor: Colors.green,
+                                    elevation: 6.0,
+                                    shadowColor: Colors.grey[60],
+                                    padding: const EdgeInsets.all(8.0),
+                                  ),
+                                ));
+                              }
+                              return widgetList;
+                            }(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Spacing.addVerticalSpace(10),
+                    SizedBox(
+                      width: 350,
+                      child: TextFormField(
+                        controller: sellingPriceController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.sellingPriceOfAdvertisement),
+                        ),
+                      ),
+                    ),
+                    Spacing.addVerticalSpace(10),
+                    SizedBox(
+                      width: 350,
+                      child: TextFormField(
+                        controller: placeOfOriginController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.placeOfOriginOfAdvertisement),
+                        ),
+                      ),
+                    ),
+                    Spacing.addVerticalSpace(10),
+                    SizedBox(
+                      width: 350,
+                      child: TextFormField(
+                        controller: stockController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.stockOfAdvertisement),
+                        ),
+                      ),
+                    ),
+                    Spacing.addVerticalSpace(10),
+                    SizedBox(
+                      width: 350,
+                      child: TextFormField(
+                        controller: urlController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.urlOfAdvertisement),
                         ),
                       ),
                     ),
@@ -216,7 +311,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
       );
     },
   ).then(
-        (value) {
+    (value) {
       closed = true;
       Runtime.setObserve(oriObserve);
       return value;

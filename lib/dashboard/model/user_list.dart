@@ -2,36 +2,39 @@ import 'user.dart';
 
 class UserList {
   List<User> _body = [];
-  int _length = 0;
 
   int getLength() {
-    return _length;
+    return _body.length;
   }
 
-  UserList(List<User> any) {
-    _body = any;
-    _length = any.length;
+  UserList.construct({required List<User> userList}) {
+    _body = userList;
   }
 
   List<User> getBody() {
     return _body;
   }
 
-  factory UserList.fromJson(Map<String, dynamic> json) {
-    List<User> ul = [];
-    try {
-      List<User> userList = [];
-      if (json['user_list'] != null) {
-        List<dynamic> any = json['user_list'];
-        any.forEach((element) {
-          userList.add(User.fromJson(element));
-        });
+  UserList.fromJson(Map<String, dynamic> json) {
+    List<User> userList = [];
+    if (json.containsKey('user_list')) {
+      List<dynamic> any = json['user_list'];
+      for (var element in any) {
+        userList.add(
+          User.construct(
+            id: element['id'],
+            status: element['status'],
+            name: element['name'],
+            account: element['account'],
+            email: element['email'],
+            department: element['department'],
+            countryCode: element['country_code'],
+            phoneNumber: element['phone_number'],
+            createdAt: element['created_at'],
+          ),
+        );
       }
-      return UserList(userList);
-    } catch (e) {
-      print('UserList failure, e: $e');
     }
-
-    return UserList(ul);
+    _body = userList;
   }
 }

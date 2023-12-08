@@ -8,39 +8,51 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class SignInReq {
-  int behavior;
-  String account;
-  String email;
-  String phoneNumber;
-  String countryCode;
-  Uint8List password;
-  String memberId;
-  int verificationCode;
-  int userId;
+  int _behavior = -1;
+  String _account = '';
+  String _email = '';
+  String _phoneNumber = '';
+  String _countryCode = '';
+  Uint8List _password = Uint8List.fromList([]);
+  String _memberId = '';
+  int _verificationCode = -1;
+  int _userId = -1;
 
-  SignInReq({
-    required this.email,
-    required this.memberId,
-    required this.account,
-    required this.behavior,
-    required this.password,
-    required this.phoneNumber,
-    required this.countryCode,
-    required this.verificationCode,
-    required this.userId,
-  });
+  SignInReq.construct({
+    required String email,
+    required String memberId,
+    required String account,
+    required int behavior,
+    required Uint8List password,
+    required String phoneNumber,
+    required String countryCode,
+    required int verificationCode,
+    required int userId,
+  }) {
+    _email = email;
+    _userId = userId;
+    _memberId = memberId;
+    _account = account;
+    _behavior = behavior;
+    _countryCode = countryCode;
+    _phoneNumber = phoneNumber;
+    _password = password;
+    _verificationCode = verificationCode;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'email': email,
-        'member_id': memberId,
-        'account': account,
-        'behavior': behavior,
-        'password': password,
-        'phone_number': phoneNumber,
-        'country_code': countryCode,
-        'verification_code': verificationCode,
-        'user_id': userId,
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      'email': _email,
+      'member_id': _memberId,
+      'account': _account,
+      'behavior': _behavior,
+      'password': _password,
+      'phone_number': _phoneNumber,
+      'country_code': _countryCode,
+      'verification_code': _verificationCode,
+      'user_id': _userId,
+    };
+  }
 
   Uint8List toBytes() {
     return Convert.toBytes(this);
@@ -48,13 +60,25 @@ class SignInReq {
 }
 
 class SignInRsp {
-  late int _code;
-  late int _userId;
-  late String _secret;
-  late String _memberId;
-  late String _name;
+  int _code = -1;
+  int _userId = -1;
+  String _secret = '';
+  String _memberId = '';
+  String _name = '';
 
-  SignInRsp(this._code, this._name, this._secret, this._userId, this._memberId);
+  SignInRsp({
+    required int code,
+    required int userId,
+    required String secret,
+    required String memberId,
+    required String name,
+  }) {
+    _code = code;
+    _name = name;
+    _secret = secret;
+    _userId = userId;
+    _memberId = memberId;
+  }
 
   int getCode() {
     return _code;
@@ -87,12 +111,22 @@ class SignInRsp {
 
   SignInRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('body')) {
-      var body = json['body'];
-      _code = body['code'] ?? -1;
-      _userId = body['user_id'] ?? -1;
-      _secret = body['secret'] ?? "";
-      _memberId = body['member_id'] ?? "";
-      _name = body['name'] ?? "";
+      Map<String, dynamic> body = json['body'];
+      if (body.containsKey('code')) {
+        _code = body['code'];
+      }
+      if (body.containsKey('user_id')) {
+        _userId = body['user_id'];
+      }
+      if (body.containsKey('secret')) {
+        _secret = body['secret'];
+      }
+      if (body.containsKey('name')) {
+        _name = body['name'];
+      }
+      if (body.containsKey('member_id')) {
+        _memberId = body['member_id'];
+      }
     }
   }
 }
@@ -109,7 +143,7 @@ void signIn({
   required int userId,
 }) {
   PacketClient packet = PacketClient.create();
-  SignInReq req = SignInReq(
+  SignInReq req = SignInReq.construct(
     email: email,
     memberId: memberId,
     account: account,

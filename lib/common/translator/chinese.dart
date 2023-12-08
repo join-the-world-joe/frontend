@@ -60,7 +60,7 @@ class Chinese {
 
     // menu
     Language.titleOfParentMenu: '父级菜单',
-    Language.menuOfAdmission: '管理',
+    Language.menuOfAdmission: '系统管理',
     Language.menuOfUser: '用户管理',
     Language.menuOfRole: '角色管理',
     Language.menuOfField: '字段管理',
@@ -154,6 +154,7 @@ class Chinese {
     Language.buyingPriceNotProvided: "未提供进货价",
     Language.productNameNotProvided: "未提供商品名称",
     Language.removeRecordSuccessfully: '删除成功',
+    Language.updateRecordSuccessfully: '更新成功',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',
@@ -193,6 +194,9 @@ class Chinese {
     Language.incorrectStockValueInController: "库存设定有误",
     Language.incorrectSellingPriceInController: "出售价格有误",
     Language.needToPeekProductInfo: "请先确认商品信息",
+    Language.modifyAdvertisement: "更新广告",
+    Language.noRecordOfGoodInDatabase: "数据库没有任何商品记录",
+    Language.noRecordsMatchedTheSearchCondition :"未找到匹配记录",
   };
 
   static String getName() {

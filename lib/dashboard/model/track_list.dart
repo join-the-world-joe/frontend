@@ -17,21 +17,24 @@ class TrackList {
     return _body;
   }
 
-  factory TrackList.fromJson(Map<String, dynamic> json) {
-    List<Track> tl = [];
-    try {
-      List<Track> trackList = [];
-      if (json['track_list'] != null) {
-        List<dynamic> any = json['track_list'];
-        any.forEach((element) {
-          trackList.add(Track.fromJson(element));
-        });
+  TrackList.fromJson(Map<String, dynamic> json) {
+    List<Track> trackList = [];
+    if (json.containsKey('track_list')) {
+      List<dynamic> any = json['track_list'];
+      for (var element in any) {
+        trackList.add(
+          Track.construct(
+            operator: element['operator'],
+            major: element['major'],
+            minor: element['minor'],
+            permission: element['permission'],
+            request: element['request'].toString(),
+            response: element['response'].toString(),
+            timestamp: element['timestamp'],
+          ),
+        );
       }
-      return TrackList(trackList);
-    } catch (e) {
-      print('TrackList failure, e: $e');
     }
-
-    return TrackList(tl);
+    _body = trackList;
   }
 }

@@ -76,8 +76,8 @@ class _State extends State<Loading> {
   void fetchRateLimitingConfigHandler(Map<String, dynamic> body) {
     try {
       FetchRateLimitingConfigRsp rsp = FetchRateLimitingConfigRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        Runtime.updateRateLimiter(rsp.rateLimiter);
+      if (rsp.getCode() == Code.oK) {
+        Runtime.updateRateLimiter(rsp.getRateLimiter());
         fGetRateLimiting = true;
         curStage++;
       }

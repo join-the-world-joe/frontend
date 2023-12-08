@@ -1,9 +1,17 @@
 class Menu {
-  final String _name;
-  final String _parent;
-  final String _description;
+  String _name = '';
+  String _parent = '';
+  String _description = '';
 
-  Menu(this._name, this._parent, this._description);
+  Menu.construct({
+    required String name,
+    required String parent,
+    required String description,
+  }) {
+    _name = name;
+    _parent = parent;
+    _description = description;
+  }
 
   String getName() {
     return _name;

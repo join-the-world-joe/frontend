@@ -1,7 +1,7 @@
 class SideMenu {
-  final String _title;
-  final List<String> _itemList;
-  final List<String> _descList;
+  String _title = '';
+  List<String> _itemList = [];
+  List<String> _descList = [];
 
   String getTitle() {
     return _title;
@@ -15,5 +15,14 @@ class SideMenu {
     return _descList;
   }
 
-  SideMenu(this._title, this._itemList, this._descList);
+  // SideMenu(this._title, this._itemList, this._descList);
+  SideMenu.construct({
+    required String title,
+    required List<String> itemList,
+    required List<String> descList,
+  }) {
+    _title = title;
+    _itemList = itemList;
+    _descList = descList;
+  }
 }

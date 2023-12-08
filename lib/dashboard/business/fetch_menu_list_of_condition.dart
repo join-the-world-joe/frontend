@@ -9,30 +9,48 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class FetchMenuListOfConditionReq {
-  int _behavior;
-  int _userId;
-  RoleList _roleList;
+  int _behavior = -1;
+  int _userId = -1;
+  RoleList _roleList = RoleList([]);
 
-  FetchMenuListOfConditionReq(this._behavior, this._userId, this._roleList);
+  FetchMenuListOfConditionReq.construct({
+    required int behavior,
+    required int userId,
+    required RoleList roleList,
+  }) {
+    _behavior = behavior;
+    _userId = userId;
+    _roleList = roleList;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'behavior': _behavior,
-        'role_list': _roleList.getNameList(),
-        'user_id': _userId,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'behavior': _behavior,
+      'role_list': _roleList.getNameList(),
+      'user_id': _userId,
+    };
   }
 }
 
 class FetchMenuListOfConditionRsp {
-  late int code;
-  late dynamic body;
+  int _code = -1;
+  dynamic _body;
+
+  int getCode() {
+    return _code;
+  }
+
+  dynamic getBody() {
+    return _body;
+  }
 
   FetchMenuListOfConditionRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
-    body = json['body'] ?? '';
+    if (json.containsKey('code')) {
+      _code = json['code'];
+    }
+    if (json.containsKey('body')) {
+      _body = json['body'];
+    }
   }
 }
 
@@ -42,7 +60,11 @@ void fetchMenuListOfCondition({
   required RoleList roleList,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchMenuListOfConditionReq req = FetchMenuListOfConditionReq(behavior, userId, roleList);
+  FetchMenuListOfConditionReq req = FetchMenuListOfConditionReq.construct(
+    behavior: behavior,
+    userId: userId,
+    roleList: roleList,
+  );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.fetchMenuListOfConditionReq);
   packet.setBody(req.toJson());

@@ -7,36 +7,60 @@ import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class FetchTrackListOfConditionReq {
-  final String _operator;
-  final int _behavior;
-  final int _begin;
-  final int _end;
-  final String _major;
-  final String _minor;
+  String _operator = '';
+  int _behavior = 0;
+  int _begin = 0;
+  int _end = 0;
+  String _major = '';
+  String _minor = '';
 
-  FetchTrackListOfConditionReq(this._behavior, this._operator, this._begin, this._end, this._major, this._minor);
+  FetchTrackListOfConditionReq.construct({
+    required String operator,
+    required int behavior,
+    required int begin,
+    required int end,
+    required String major,
+    required String minor,
+  }) {
+    _behavior = behavior;
+    _operator = operator;
+    _begin = begin;
+    _end = end;
+    _major = major;
+    _minor = minor;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'operator': utf8.encode(_operator),
-        'behavior': _behavior,
-        'begin': _begin,
-        'end': _end,
-        'major': _major,
-        'minor': _minor,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'operator': utf8.encode(_operator),
+      'behavior': _behavior,
+      'begin': _begin,
+      'end': _end,
+      'major': _major,
+      'minor': _minor,
+    };
   }
 }
 
 class FetchTrackListOfConditionRsp {
-  late int code;
-  late dynamic body;
+  int _code = -1;
+  dynamic _body;
+
+  int getCode() {
+    return _code;
+  }
+
+  dynamic getBody() {
+    return _body;
+  }
 
   FetchTrackListOfConditionRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
-    body = json['body'] ?? '';
+    if (json.containsKey('code')) {
+      _code = json['code'];
+    }
+    if (json.containsKey('body')) {
+      _body = json['body'];
+    }
   }
 }
 
@@ -49,7 +73,14 @@ void fetchTrackListOfCondition({
   required String minor,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchTrackListOfConditionReq req = FetchTrackListOfConditionReq(behavior, operator, begin, end, major, minor);
+  FetchTrackListOfConditionReq req = FetchTrackListOfConditionReq.construct(
+    behavior: behavior,
+    operator: operator,
+    begin: begin,
+    end: end,
+    major: major,
+    minor: minor,
+  );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.fetchTrackListOfConditionReq);
   packet.setBody(req.toJson());

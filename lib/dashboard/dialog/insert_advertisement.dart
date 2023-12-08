@@ -70,13 +70,13 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
       FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         var key = int.parse(productIdController.text);
-        if (rsp.productMap.containsKey(key)) {
+        if (rsp.getProductMap().containsKey(key)) {
           showMessageDialog(
             context,
             Translator.translate(Language.nameOfGood),
-            rsp.productMap[key]!.getName(),
+            rsp.getProductMap()[key]!.getName(),
           );
-          descController.text = rsp.productMap[key]!.getName();
+          descController.text = rsp.getProductMap()[key]!.getName();
           curStage++;
         } else {
           showMessageDialog(
@@ -320,7 +320,6 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                             icon: const Icon(Icons.add_circle_outlined),
                             onPressed: () {
                               showFillSellingPointDialog(context).then((value) {
-                                print('selling point: $value');
                                 if (value.isNotEmpty) {
                                   sellingPoints.add(value);
                                   curStage++;

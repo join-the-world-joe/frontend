@@ -92,7 +92,7 @@ class _State extends State<User> {
 
   void setup() {
     // print('User.setup');
-    Cache.setUserList(UserList([]));
+    Cache.setUserList(UserList.construct(userList: []));
     Runtime.setObserve(observe);
   }
 
@@ -143,13 +143,13 @@ class _State extends State<User> {
     try {
       FetchUserListOfConditionRsp rsp = FetchUserListOfConditionRsp.fromJson(body);
       print('rsp: ${body.toString()}');
-      if (rsp.code == Code.oK) {
+      if (rsp.getCode() == Code.oK) {
         print('rsp: ${rsp.toString()}');
-        Cache.setUserList(UserList.fromJson(rsp.body));
+        Cache.setUserList(UserList.fromJson(rsp.getBody()));
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
         return;
       }
     } catch (e) {
@@ -229,7 +229,7 @@ class _State extends State<User> {
                         width: 100,
                         child: ElevatedButton(
                           onPressed: () {
-                            Cache.setUserList(UserList([]));
+                            Cache.setUserList(UserList.construct(userList: []));
                             // print('name: ${nameControl.text}');
                             if (!Runtime.allow(
                               major: int.parse(Major.admin),
@@ -267,7 +267,7 @@ class _State extends State<User> {
                           onPressed: () {
                             phoneNumberControl.text = '';
                             nameControl.text = '';
-                            Cache.setUserList(UserList([]));
+                            Cache.setUserList(UserList.construct(userList: []));
                             refresh();
                           },
                           child: Text(

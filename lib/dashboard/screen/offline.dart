@@ -65,11 +65,11 @@ class _State extends State<Offline> {
     print('Offline.fetchRateLimitingConfigHandler');
     try {
       FetchRateLimitingConfigRsp rsp = FetchRateLimitingConfigRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        Runtime.updateRateLimiter(rsp.rateLimiter);
+      if (rsp.getCode() == Code.oK) {
+        Runtime.updateRateLimiter(rsp.getRateLimiter());
         curStage++;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
         curStage--;
         return;
       }

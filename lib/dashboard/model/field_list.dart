@@ -2,11 +2,9 @@ import 'field.dart';
 
 class FieldList {
   List<Field> _body = [];
-  int _length = 0;
 
   FieldList(List<Field> any) {
     _body = any;
-    _length = any.length;
   }
 
   List<Field> getBody() {
@@ -14,25 +12,22 @@ class FieldList {
   }
 
   int getLength() {
-    return _length;
+    return _body.length;
   }
 
-  factory FieldList.fromJson(Map<String, dynamic> json) {
+  FieldList.fromJson(Map<String, dynamic> json) {
     List<Field> fl = [];
-    try {
-      if (json['field_list'] != null) {
-        List<dynamic> any = json['field_list'];
-        any.forEach(
-              (element) {
-            fl.add(Field.fromJson(element));
-          },
-        );
+    if (json.containsKey('field_list')) {
+      List<dynamic> any = json['field_list'];
+      for (var element in any) {
+        Map<String, dynamic> map = Map.from(element);
+        fl.add(Field.construct(
+          name: map['name'],
+          table: map['table'],
+          description: map['description'],
+        ));
       }
-      return FieldList(fl);
-    } catch (e) {
-      print('FieldList failure, e: $e');
     }
-
-    return FieldList(fl);
+    _body = fl;
   }
 }

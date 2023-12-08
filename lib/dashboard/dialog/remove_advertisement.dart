@@ -38,7 +38,7 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
     print('showRemoveAdvertisementDialog.softDeleteRecordOfAdvertisementHandler');
     try {
       SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
+      if (rsp.getCode() == Code.oK) {
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
@@ -54,7 +54,7 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.code}',
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
         ).then((value) {
           Navigator.pop(context);
           curStage = -1;

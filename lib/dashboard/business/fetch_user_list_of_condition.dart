@@ -8,32 +8,52 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class FetchUserListOfConditionReq {
-  final int _behavior;
-  final String _name;
-  final String _phoneNumber;
-  final int _userId;
+  int _behavior = -1;
+  String _name = '';
+  String _phoneNumber = '';
+  int _userId = -1;
 
-  FetchUserListOfConditionReq(this._behavior, this._userId, this._name, this._phoneNumber);
+  FetchUserListOfConditionReq.construct({
+    required int behavior,
+    required String name,
+    required String phoneNumber,
+    required int userId,
+  }) {
+    _behavior = behavior;
+    _name = name;
+    _phoneNumber = phoneNumber;
+    _userId = userId;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'behavior': _behavior,
-        'user_id': _userId,
-        'name': utf8.encode(_name),
-        'phone_number': _phoneNumber,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'behavior': _behavior,
+      'user_id': _userId,
+      'name': utf8.encode(_name),
+      'phone_number': _phoneNumber,
+    };
   }
 }
 
 class FetchUserListOfConditionRsp {
-  late int code;
-  late dynamic body;
+  int _code = -1;
+  dynamic _body;
+
+  int getCode() {
+    return _code;
+  }
+
+  dynamic getBody() {
+    return _body;
+  }
 
   FetchUserListOfConditionRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
-    body = json['body'] ?? '';
+    if (json.containsKey('code')) {
+      _code = json['code'];
+    }
+    if (json.containsKey('body')) {
+      _body = json['body'];
+    }
   }
 }
 
@@ -44,7 +64,12 @@ void fetchUserListOfCondition({
   required int userId,
 }) {
   PacketClient packet = PacketClient.create();
-  FetchUserListOfConditionReq req = FetchUserListOfConditionReq(behavior, userId, name, phoneNumber);
+  FetchUserListOfConditionReq req = FetchUserListOfConditionReq.construct(
+    behavior: behavior,
+    userId: userId,
+    name: name,
+    phoneNumber: phoneNumber,
+  );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.fetchUserListOfConditionReq);
   packet.setBody(req.toJson());

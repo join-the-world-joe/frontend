@@ -7,17 +7,27 @@ import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class FetchRoleListOfConditionReq {
-  final int _userId;
-  final int _behavior;
-  final List<String> _roleNameList;
+  int _userId = -1;
+  int _behavior = -1;
+  List<String> _roleNameList = [];
 
-  FetchRoleListOfConditionReq(this._behavior, this._userId, this._roleNameList);
+  FetchRoleListOfConditionReq.construct({
+    required int userId,
+    required int behavior,
+    required List<String> roleNameList,
+  }) {
+    _userId = userId;
+    _behavior = behavior;
+    _roleNameList = roleNameList;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'user_id': _userId,
-        'behavior': _behavior,
-        'role_list': _roleNameList.map((e) => utf8.encode(e)).toList(),
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      'user_id': _userId,
+      'behavior': _behavior,
+      'role_list': _roleNameList.map((e) => utf8.encode(e)).toList(),
+    };
+  }
 
   Uint8List toBytes() {
     return Convert.toBytes(this);
@@ -39,9 +49,12 @@ void fetchRoleListOfCondition({
   required int behavior,
   required List<String> roleNameList,
 }) {
-  print('fetchRoleListOfCondition');
   PacketClient packet = PacketClient.create();
-  FetchRoleListOfConditionReq req = FetchRoleListOfConditionReq(behavior, userId, roleNameList);
+  FetchRoleListOfConditionReq req = FetchRoleListOfConditionReq.construct(
+    behavior: behavior,
+    userId: userId,
+    roleNameList: roleNameList,
+  );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.fetchRoleListOfConditionReq);
   packet.setBody(req.toJson());

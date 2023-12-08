@@ -7,53 +7,68 @@ import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class InsertRecordOfAdvertisementReq {
-  final String _name;
-  final String _title;
-  final int _sellingPrice;
-  final String _sellingPoints;
-  final String _placeOfOrigin;
-  final String _url;
-  final int _stock;
-  final int _productId;
-  final int _status;
-  final String _description;
+  String _name = '';
+  String _title = '';
+  int _sellingPrice = 0;
+  List<dynamic> _sellingPoints = [];
+  String _placeOfOrigin = '';
+  String _url = '';
+  int _stock = 0;
+  int _productId = 0;
+  int _status = 0;
+  String _description = '';
 
-  InsertRecordOfAdvertisementReq(
-    this._name,
-    this._title,
-    this._sellingPrice,
-    this._sellingPoints,
-    this._placeOfOrigin,
-    this._url,
-    this._stock,
-    this._productId,
-    this._status,
-    this._description,
-  );
+  InsertRecordOfAdvertisementReq.construct({
+    required String name,
+    required String title,
+    required int sellingPrice,
+    required List<String> sellingPoints,
+    required String placeOfOrigin,
+    required String url,
+    required int stock,
+    required int productId,
+    required int status,
+    required String description,
+  }) {
+    _name = name;
+    _title = title;
+    _sellingPrice = sellingPrice;
+    _sellingPoints = Convert.utf8Encode(sellingPoints);
+    _placeOfOrigin = placeOfOrigin;
+    _url = url;
+    _stock = stock;
+    _productId = productId;
+    _status = status;
+    _description = description;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'name': utf8.encode(_name),
-        'title': utf8.encode(_title),
-        'selling_points': _sellingPoints,
-        'selling_price': _sellingPrice,
-        'description': utf8.encode(_description),
-        'status': _status,
-        "url": utf8.encode(_url),
-        "product_id": _productId,
-        "stock": _stock,
-        "place_of_origin": utf8.encode(_placeOfOrigin),
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'name': utf8.encode(_name),
+      'title': utf8.encode(_title),
+      'selling_points': _sellingPoints,
+      'selling_price': _sellingPrice,
+      'description': utf8.encode(_description),
+      'status': _status,
+      "url": utf8.encode(_url),
+      "product_id": _productId,
+      "stock": _stock,
+      "place_of_origin": utf8.encode(_placeOfOrigin),
+    };
   }
 }
 
 class InsertRecordOfAdvertisementRsp {
-  late int code;
+  int _code = -1;
+
+  int getCode() {
+    return _code;
+  }
 
   InsertRecordOfAdvertisementRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
+    if (json.containsKey('code')) {
+      _code = json['code'];
+    }
   }
 }
 
@@ -70,30 +85,17 @@ void insertRecordOfAdvertisement({
   required int productId,
 }) {
   PacketClient packet = PacketClient.create();
-
-  // String sp = "[";
-  //
-  // for (var i = 0; i < sellingPoints.length; i++) {
-  //   if (i < sellingPoints.length - 1) {
-  //     sp += "\"${sellingPoints[i]}\",";
-  //     continue;
-  //   }
-  //   sp += "\"${sellingPoints[i]}\"";
-  // }
-  //
-  // sp += "]";
-
-  InsertRecordOfAdvertisementReq req = InsertRecordOfAdvertisementReq(
-    name,
-    title,
-    sellingPrice,
-    Convert.stringList2Json(sellingPoints),
-    placeOfOrigin,
-    url,
-    stock,
-    productId,
-    status,
-    description,
+  InsertRecordOfAdvertisementReq req = InsertRecordOfAdvertisementReq.construct(
+    name: name,
+    title: title,
+    sellingPrice: sellingPrice,
+    sellingPoints: sellingPoints,
+    placeOfOrigin: placeOfOrigin,
+    url: url,
+    stock: stock,
+    productId: productId,
+    status: status,
+    description: description,
   );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.insertRecordOfAdvertisementReq);

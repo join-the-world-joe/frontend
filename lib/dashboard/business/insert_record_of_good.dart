@@ -7,34 +7,48 @@ import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class InsertRecordOfGoodReq {
-  final String _name;
-  final String _vendor;
-  final String _contact;
-  final int _buyingPrice;
-  final String _desc;
-  final int _status;
+  String _name = '';
+  String _vendor = '';
+  String _contact = '';
+  int _buyingPrice = -1;
+  String _description = '';
+  int _status = 0;
 
-  InsertRecordOfGoodReq(this._name, this._vendor, this._contact, this._buyingPrice, this._desc, this._status);
+  InsertRecordOfGoodReq.construct({
+    required String name,
+    required String vendor,
+    required String contact,
+    required int buyingPrice,
+    required String description,
+    required int status,
+  }) {
+    _name = name;
+    _vendor = vendor;
+    _contact = contact;
+    _buyingPrice = buyingPrice;
+    _description = description;
+    _status = status;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'name': utf8.encode(_name),
-        'vendor': utf8.encode(_vendor),
-        'contact': utf8.encode(_contact),
-        'buying_price': _buyingPrice,
-        'description': utf8.encode(_desc),
-        'status': _status,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'name': utf8.encode(_name),
+      'vendor': utf8.encode(_vendor),
+      'contact': utf8.encode(_contact),
+      'buying_price': _buyingPrice,
+      'description': utf8.encode(_description),
+      'status': _status,
+    };
   }
 }
 
 class InsertRecordOfGoodRsp {
-  late int code;
+  int code = -1;
 
   InsertRecordOfGoodRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
+    if (json.containsKey('code')) {
+      code = json['code'];
+    }
   }
 }
 
@@ -47,13 +61,13 @@ void insertRecordOfGood({
   required String description,
 }) {
   PacketClient packet = PacketClient.create();
-  InsertRecordOfGoodReq req = InsertRecordOfGoodReq(
-    name,
-    vendor,
-    contact,
-    buyingPrice,
-    description,
-    status,
+  InsertRecordOfGoodReq req = InsertRecordOfGoodReq.construct(
+    name: name,
+    vendor: vendor,
+    contact: contact,
+    buyingPrice: buyingPrice,
+    description: description,
+    status: status,
   );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.insertRecordOfGoodReq);

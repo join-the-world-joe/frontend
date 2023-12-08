@@ -1,35 +1,35 @@
 import 'side_menu.dart';
 
 class SideMenuList {
-  int _length;
-  List<SideMenu> _body;
+  List<SideMenu> _body = [];
 
-  SideMenuList(this._body, this._length);
+  // SideMenuList(this._body, );
+
+  SideMenuList.construct({required List<SideMenu> sideMenuList}) {
+    _body = sideMenuList;
+  }
 
   List<SideMenu> getBody() {
     return _body;
   }
 
   int getLength() {
-    return _length;
+    return _body.length;
   }
 
-  factory SideMenuList.fromJson(Map<String, dynamic> json) {
+  SideMenuList.fromJson(Map<String, dynamic> json) {
     List<SideMenu> ml = [];
-    try {
-      json.forEach(
-        (key, value) {
-          // print("key: $key");
-          // print("value: $value");
-          List<String> itemList = List<String>.from(value['item_list'] as List);
-          List<String> descList = List<String>.from(value['description_list'] as List);
-          ml.add(SideMenu(key, itemList, descList));
-        },
-      );
-    } catch (e) {
-      print('e: $e');
-    }
 
-    return SideMenuList(ml, ml.length);
+    json.forEach(
+      (key, value) {
+        // print("key: $key");
+        // print("value: $value");
+        List<String> itemList = List<String>.from(value['item_list'] as List);
+        List<String> descList = List<String>.from(value['description_list'] as List);
+        ml.add(SideMenu.construct(title: key, itemList: itemList, descList: descList));
+      },
+    );
+
+    _body = ml;
   }
 }

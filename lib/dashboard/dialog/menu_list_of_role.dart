@@ -35,14 +35,14 @@ Future<int> showMenuListOfRoleDialog(BuildContext context, Role role) async {
     print('showMenuListOfUserDialog.fetchMenuListOfConditionHandler');
     try {
       FetchMenuListOfConditionRsp rsp = FetchMenuListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print('body: ${rsp.body}');
-        var menuList = SideMenuList.fromJson(rsp.body);
+      if (rsp.getCode() == Code.oK) {
+        print('body: ${rsp.getBody()}');
+        var menuList = SideMenuList.fromJson(rsp.getBody());
         widgetList = _buildWidgetList(menuList);
         curStage++;
         return;
       } else {
-        print('showMenuListOfUserDialog.fetchMenuListOfConditionHandler failure: ${rsp.code}');
+        print('showMenuListOfUserDialog.fetchMenuListOfConditionHandler failure: ${rsp.getCode()}');
         widgetList.add(Text('获取菜单数据失败'));
         curStage = -1;
         return;

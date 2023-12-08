@@ -130,7 +130,7 @@ class _State extends State<Home> {
       if (inform.event.containsKey(notification.event)) {
         Cache.setUserId(0);
         Cache.setMemberId('');
-        Cache.setSideMenuList(SideMenuList([], 0));
+        Cache.setSideMenuList(SideMenuList.construct(sideMenuList: []));
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
@@ -150,12 +150,12 @@ class _State extends State<Home> {
   void fetchMenuListOfConditionHandler(Map<String, dynamic> body) {
     try {
       FetchMenuListOfConditionRsp rsp = FetchMenuListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        Cache.setSideMenuList(SideMenuList.fromJson(rsp.body));
+      if (rsp.getCode() == Code.oK) {
+        Cache.setSideMenuList(SideMenuList.fromJson(rsp.getBody()));
         curStage++;
         refresh();
         return;
-      } else if (rsp.code == Code.accessDenied) {
+      } else if (rsp.getCode() == Code.accessDenied) {
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
@@ -165,11 +165,11 @@ class _State extends State<Home> {
         refresh();
         return;
       } else {
-        print('Home.fetchMenuListOfConditionHandler failure: ${rsp.code}');
+        print('Home.fetchMenuListOfConditionHandler failure: ${rsp.getCode()}');
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.failureWithErrorCode) + rsp.code.toString(),
+          Translator.translate(Language.failureWithErrorCode) + rsp.getCode().toString(),
         );
         curStage = -1;
         refresh();

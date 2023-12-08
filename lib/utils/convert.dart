@@ -41,10 +41,10 @@ class Convert {
     String output = "[";
     for (var i = 0; i < input.length; i++) {
       if (i < input.length - 1) {
-        output += "\"${input[i]}\",";
+        output += "\"${utf8.encode(input[i]).toString()}\",";
         continue;
       }
-      output += "\"${input[i]}\"";
+      output += "\"${utf8.encode(input[i]).toString()}\"";
     }
     output += "]";
     return output;
@@ -52,5 +52,13 @@ class Convert {
 
   static List<String> jsonStringToListString(String input) {
     return (jsonDecode(input) as List<dynamic>).cast<String>();
+  }
+
+  static List<String> base64StringList2ListString(List<String> input) {
+    List<String> output = [];
+    for (var e in input) {
+      output.add(bytes2String(base64Decode(e)));
+    }
+    return output;
   }
 }

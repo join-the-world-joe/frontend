@@ -17,22 +17,41 @@ class MenuList {
 
   factory MenuList.fromJson(Map<String, dynamic> json) {
     List<Menu> ml = [];
-    try {
-      json.forEach(
-        (key, value) {
-          // print("key: $key");
-          // print("value: $value");
-          List<String> itemList = List<String>.from(value['item_list'] as List);
-          List<String> descList = List<String>.from(value['description_list'] as List);
-          ml.add(Menu(key, Language.valueOfNull, key));
+    List<String> itemList = [];
+    List<String> descList = [];
+
+    json.forEach(
+      (key, value) {
+        // print("key: $key");
+        // print("value: $value");
+        itemList = [];
+        descList = [];
+        if (json.containsKey('item_list')) {
+          itemList = List<String>.from(value['item_list'] as List);
+        }
+        if (json.containsKey('description_list')) {
+          descList = List<String>.from(value['description_list'] as List);
+        }
+        if (itemList.isNotEmpty && descList.isNotEmpty) {
+          ml.add(
+            Menu.construct(
+              name: key,
+              parent: Language.valueOfNull,
+              description: key,
+            ),
+          );
           for (var i = 0; i < itemList.length; i++) {
-            ml.add(Menu(itemList[i], key, descList[i]));
+            ml.add(
+              Menu.construct(
+                name: itemList[i],
+                parent: key,
+                description: descList[i],
+              ),
+            );
           }
-        },
-      );
-    } catch (e) {
-      print('e: $e');
-    }
+        }
+      },
+    );
 
     return MenuList(ml);
   }

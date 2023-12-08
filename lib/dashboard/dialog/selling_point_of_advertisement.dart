@@ -88,6 +88,7 @@ Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, Strin
                             children: () {
                               List<Widget> widgetList = [];
                               for (var element in sellingPoints) {
+                                print('element: ${element}');
                                 widgetList.add(Padding(
                                   padding: const EdgeInsets.all(2.0),
                                   child: InputChip(

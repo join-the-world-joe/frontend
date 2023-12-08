@@ -7,24 +7,32 @@ import '../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class SoftDeleteUserRecordReq {
-  final List<int> _userIdList;
+  List<int> _userIdList = [];
 
-  SoftDeleteUserRecordReq(this._userIdList);
+  SoftDeleteUserRecordReq.construct({
+    required List<int> userIdList,
+  }) {
+    _userIdList = userIdList;
+  }
 
-  Map<String, dynamic> toJson() => {
-        'user_id_list': _userIdList,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'user_id_list': _userIdList,
+    };
   }
 }
 
 class SoftDeleteUserRecordRsp {
-  late int code;
+  int _code = -1;
+
+  int getCode() {
+    return _code;
+  }
 
   SoftDeleteUserRecordRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
+    if (json.containsKey('code')) {
+      _code = json['code'];
+    }
   }
 }
 
@@ -32,7 +40,9 @@ void softDeleteUserRecord({
   required List<int> userList,
 }) {
   PacketClient packet = PacketClient.create();
-  SoftDeleteUserRecordReq req = SoftDeleteUserRecordReq(userList);
+  SoftDeleteUserRecordReq req = SoftDeleteUserRecordReq.construct(
+    userIdList: userList,
+  );
   packet.getHeader().setMajor(Major.admin);
   packet.getHeader().setMinor(Minor.admin.softDeleteUserRecordReq);
   packet.setBody(req.toJson());
