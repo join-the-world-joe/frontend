@@ -2,15 +2,13 @@ import 'track.dart';
 
 class TrackList {
   List<Track> _body = [];
-  int _length = 0;
 
   int getLength() {
-    return _length;
+    return _body.length;
   }
 
   TrackList(List<Track> any) {
     _body = any;
-    _length = any.length;
   }
 
   List<Track> getBody() {

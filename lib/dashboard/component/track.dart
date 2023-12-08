@@ -78,7 +78,7 @@ class _State extends State<Track> {
   }
 
   void setup() {
-    print('Track.setup');
+    // print('Track.setup');
     Cache.setTrackList(TrackList([]));
     Runtime.setObserve(observe);
     beginController.text = '$year-$month-$day';
@@ -88,9 +88,7 @@ class _State extends State<Track> {
   void fetchTrackListOfConditionHandler(Map<String, dynamic> body) {
     try {
       FetchTrackListOfConditionRsp rsp = FetchTrackListOfConditionRsp.fromJson(body);
-      print('rsp: ${body.toString()}');
       if (rsp.getCode() == Code.oK) {
-        print('rsp: ${rsp.toString()}');
         Cache.setTrackList(TrackList.fromJson(rsp.getBody()));
         curStage++;
         return;
@@ -130,14 +128,14 @@ class _State extends State<Track> {
 
   @override
   void dispose() {
-    print('Track.dispose');
+    // print('Track.dispose');
     closed = true;
     super.dispose();
   }
 
   @override
   void initState() {
-    print('Track.initState');
+    // print('Track.initState');
     setup();
     super.initState();
   }
@@ -263,8 +261,8 @@ class _State extends State<Track> {
                             return;
                           }
 
-                          print('begin string: ${beginController.text}');
-                          print('end string: ${endController.text}');
+                          // print('begin string: ${beginController.text}');
+                          // print('end string: ${endController.text}');
                           var begin = DateTime.parse(beginController.text);
                           var end = DateTime.parse(endController.text).add(const Duration(days: 0, hours: 23, minutes: 59, seconds: 59, milliseconds: 999));
                           if (end.isBefore(begin)) {

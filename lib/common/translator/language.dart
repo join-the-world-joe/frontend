@@ -63,6 +63,9 @@ class Language {
   static String menuOfRole = 'Role';
   static String menuOfField = 'Field';
   static String menuOfTrack = 'Track';
+  static String descriptionOfGoodMenu="The description of Good menu";
+  static String descriptionOfAdvertisementMenu="The description of Advertisement menu";
+  static String descriptionOfCategoryMenu="The description of Category menu";
 
   // field
   static String tableOfField = 'the table of field';

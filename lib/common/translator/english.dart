@@ -67,6 +67,9 @@ class English {
     Language.menuOfMenu: 'Menu',
     Language.menuOfPermission: 'Permission',
     Language.menuOfTrack: 'Track',
+    Language.descriptionOfGoodMenu: 'Good Management',
+    Language.descriptionOfAdvertisementMenu:"Advertisement Management",
+    Language.descriptionOfCategoryMenu:"Category Management",
 
     // field
     Language.tableOfField: 'Table',

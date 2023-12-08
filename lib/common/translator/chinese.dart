@@ -67,6 +67,9 @@ class Chinese {
     Language.menuOfMenu: '菜单管理',
     Language.menuOfPermission: '权限管理',
     Language.menuOfTrack: '操作日志',
+    Language.descriptionOfGoodMenu: '商品管理',
+    Language.descriptionOfAdvertisementMenu:"广告管理",
+    Language.descriptionOfCategoryMenu:"类目管理",
 
     // field
     Language.tableOfField: '数据表',
