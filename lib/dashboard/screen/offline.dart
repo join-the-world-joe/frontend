@@ -19,6 +19,7 @@ import '../setup.dart';
 import '../../runtime/runtime.dart';
 import '../screen/screen.dart';
 import 'package:otp/otp.dart';
+import '../config/config.dart';
 
 class Offline extends StatefulWidget {
   const Offline({Key? key}) : super(key: key);
@@ -35,7 +36,8 @@ class _State extends State<Offline> {
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('Offline, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

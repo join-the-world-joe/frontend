@@ -15,6 +15,7 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/dashboard/business/sign_in.dart';
 import 'package:flutter_framework/validator/email.dart';
+import '../config/config.dart';
 
 class PasswordSignIn extends StatefulWidget {
   const PasswordSignIn({Key? key}) : super(key: key);
@@ -35,7 +36,8 @@ class _State extends State<PasswordSignIn> {
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('PasswordSignIn, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

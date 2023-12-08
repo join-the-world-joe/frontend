@@ -13,6 +13,7 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
+import '../config/config.dart';
 
 Future<void> showInsertUserDialog(BuildContext context) async {
   String? countryCode;
@@ -33,8 +34,8 @@ Future<void> showInsertUserDialog(BuildContext context) async {
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      print('showInsertUserDialog, last: $lastStage, cur: ${curStage}');
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('showInsertUserDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

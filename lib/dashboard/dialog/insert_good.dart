@@ -9,6 +9,7 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
+import '../config/config.dart';
 
 Future<void> showInsertGoodDialog(BuildContext context) async {
   bool closed = false;
@@ -25,8 +26,8 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('showInsertGoodDialog, last: $lastStage, cur: ${curStage}');
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('showInsertGoodDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

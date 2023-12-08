@@ -29,6 +29,7 @@ class FetchIdListOfAdvertisementReq {
 
 class FetchIdListOfAdvertisementRsp {
   int _code = -1;
+  int _behavior = -1;
   List<int> _idList = [];
 
   int getCode() {
@@ -37,6 +38,10 @@ class FetchIdListOfAdvertisementRsp {
 
   List<int> getIdList() {
     return _idList;
+  }
+
+  int getBehavior() {
+    return _behavior;
   }
 
   Uint8List toBytes() {
@@ -54,6 +59,9 @@ class FetchIdListOfAdvertisementRsp {
     }
     if (json.containsKey('body')) {
       Map<String, dynamic> body = json['body'];
+      if (body.containsKey('behavior')) {
+        _behavior = body['behavior'];
+      }
       if (body['id_list_of_advertisement'] != null) {
         _idList = List<int>.from(body['id_list_of_advertisement'] as List);
       }

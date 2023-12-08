@@ -13,6 +13,7 @@ import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/dashboard/business/fetch_role_list_of_condition.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import '../config/config.dart';
 
 Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
   String countryCode = user.getCountryCode();
@@ -31,8 +32,8 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('showUpdateUserDialog, last: $lastStage, cur: ${curStage}');
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalSmooth);
+      print('showUpdateUserDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

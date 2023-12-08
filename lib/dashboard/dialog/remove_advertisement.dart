@@ -17,6 +17,7 @@ import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
+import '../config/config.dart';
 
 Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String name) async {
   var oriObserve = Runtime.getObserve();
@@ -26,7 +27,8 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('showRemoveAdvertisementDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

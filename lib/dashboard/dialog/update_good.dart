@@ -25,6 +25,7 @@ import 'package:flutter_framework/dashboard/model/user.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import '../model/product.dart';
+import '../config/config.dart';
 
 Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
   int status = product.getStatus();
@@ -41,7 +42,8 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('showUpdateGoodDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -55,7 +57,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
       if (rsp.code == Code.oK) {
         showMessageDialog(context, '温馨提示：', '更新成功').then(
           (value) {
-            Navigator.pop(context, null);
+            Navigator.pop(context, true);
           },
         );
         return;

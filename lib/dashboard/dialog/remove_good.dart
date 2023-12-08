@@ -16,6 +16,7 @@ import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
+import '../config/config.dart';
 
 Future<bool> showRemoveGoodDialog(BuildContext context, int id, String name, String vendor) async {
   var oriObserve = Runtime.getObserve();
@@ -25,7 +26,8 @@ Future<bool> showRemoveGoodDialog(BuildContext context, int id, String name, Str
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('showRemoveGoodDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

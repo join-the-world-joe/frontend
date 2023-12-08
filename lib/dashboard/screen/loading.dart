@@ -33,7 +33,8 @@ class _State extends State<Loading> {
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('Loading, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -102,8 +103,7 @@ class _State extends State<Loading> {
       }
     } catch (e) {
       print('Loading.observe failure($major-$minor), e: ${e.toString()}');
-    } finally {
-    }
+    } finally {}
   }
 
   void refresh() {

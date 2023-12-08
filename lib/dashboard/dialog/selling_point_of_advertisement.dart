@@ -10,6 +10,7 @@ import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
+import '../config/config.dart';
 
 Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, String id, List<String> sellingPoints) async {
   bool closed = false;
@@ -21,8 +22,8 @@ Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, Strin
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('showInsertGoodDialog, last: $lastStage, cur: ${curStage}');
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('showSellingPointOfAdvertisementDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

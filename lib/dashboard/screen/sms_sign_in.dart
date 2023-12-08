@@ -37,7 +37,8 @@ class _State extends State<SMSSignIn> {
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('SMSSignIn, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -55,7 +56,7 @@ class _State extends State<SMSSignIn> {
       closed = true;
       Future.delayed(
         const Duration(milliseconds: 500),
-            () {
+        () {
           print('SMSSignIn.navigate to $page');
           if (countdownTimer != null) {
             if (countdownTimer!.isActive) {

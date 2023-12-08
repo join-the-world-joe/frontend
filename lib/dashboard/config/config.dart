@@ -10,6 +10,9 @@ class Config {
   static String aesKey = '3dd19414e91ac01b';
   static String aesIV = '2624b9a9c447e587';
   static const rsaPrivateKey = '';
+  static const checkStageIntervalNormal = Duration(milliseconds: 300);
+  static const checkStageIntervalSmooth = Duration(milliseconds: 200);
+  static const checkStageIntervalRealtime = Duration(milliseconds: 100);
   static const rsaPublicKey = '''-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDZsfv1qscqYdy4vY+P4e3cAtmv
 ppXQcRvrF1cB4drkv0haU24Y7m5qYtT52Kr539RdbKKdLAM6s20lWy7+5C0Dgacd

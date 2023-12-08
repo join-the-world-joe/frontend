@@ -14,6 +14,7 @@ import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import '../config/config.dart';
 
 Future<int> showPermissionListOfRoleDialog(BuildContext context, Role role) async {
   bool closed = false;
@@ -24,7 +25,8 @@ Future<int> showPermissionListOfRoleDialog(BuildContext context, Role role) asyn
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('showPermissionListOfRoleDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;

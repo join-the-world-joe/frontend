@@ -11,6 +11,7 @@ import 'package:flutter_framework/dashboard/model/user.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
+import '../config/config.dart';
 
 Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
   bool closed = false;
@@ -21,8 +22,8 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
-      // print('showMenuListOfUserDialog.last: $lastStage, showMenuListOfUserDialog.cur: ${curStage}');
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Config.checkStageIntervalNormal);
+      print('showInsertUserDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         // print('showRoleListOfUserDialog.last: $lastStage');

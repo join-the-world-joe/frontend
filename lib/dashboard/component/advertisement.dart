@@ -108,11 +108,36 @@ class _State extends State<Advertisement> {
     curStage++;
   }
 
+
   void fetchIdListOfAdvertisementHandler(Map<String, dynamic> body) {
     try {
       FetchIdListOfAdvertisementRsp rsp = FetchIdListOfAdvertisementRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print("fetchIdListOfAdvertisementHandler.idList: ${rsp.getIdList()}");
+        print("Advertisement.fetchIdListOfGoodHandler.idList: ${rsp.getIdList()}");
+        if (rsp.getIdList().isEmpty) {
+          if (rsp.getBehavior() == 1) {
+            showMessageDialog(
+              context,
+              Translator.translate(Language.titleOfNotification),
+              Translator.translate(Language.noRecordOfGoodInDatabase),
+            );
+            return;
+          } else if (rsp.getBehavior() == 2) {
+            showMessageDialog(
+              context,
+              Translator.translate(Language.titleOfNotification),
+              Translator.translate(Language.noRecordsMatchedTheSearchCondition),
+            );
+            return;
+          } else {
+            showMessageDialog(
+              context,
+              Translator.translate(Language.titleOfNotification),
+              '${Translator.translate(Language.failureWithErrorCode)} -1',
+            );
+            return;
+          }
+        }
         idList = rsp.getIdList();
         curStage++;
         return;
@@ -125,7 +150,7 @@ class _State extends State<Advertisement> {
         return;
       }
     } catch (e) {
-      print("Advertisement.fetchIdListOfAdvertisementHandler failure, $e");
+      print("Advertisement.fetchIdListOfGoodHandler failure, $e");
       return;
     }
   }
@@ -139,7 +164,7 @@ class _State extends State<Advertisement> {
           showMessageDialog(
             context,
             Translator.translate(Language.titleOfNotification),
-            '${Translator.translate(Language.noRecordsMatchedTheSearchCondition)}  ${rsp.getCode()}',
+            Translator.translate(Language.noRecordsMatchedTheSearchCondition),
           );
           return;
         }

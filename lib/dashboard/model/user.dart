@@ -51,7 +51,7 @@ class User {
     _account = account;
     _email = email;
     _department = department;
-    _countryCode = _countryCode;
+    _countryCode = countryCode;
     _phoneNumber = phoneNumber;
     _status = status;
     _createdAt = createdAt;

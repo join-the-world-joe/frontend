@@ -78,7 +78,7 @@ class _State extends State<Good> {
     try {
       FetchIdListOfGoodRsp rsp = FetchIdListOfGoodRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print("fetchIdListOfGoodHandler.idList: ${rsp.getIdList()}");
+        print("Good.fetchIdListOfGoodHandler.idList: ${rsp.getIdList()}");
         if (rsp.getIdList().isEmpty) {
           if (rsp.getBehavior() == 1) {
             showMessageDialog(
@@ -107,11 +107,15 @@ class _State extends State<Good> {
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
-      print("Track.fetchIdListOfGoodHandler failure, $e");
+      print("Good.fetchIdListOfGoodHandler failure, $e");
       return;
     }
   }
@@ -136,14 +140,20 @@ class _State extends State<Good> {
             boolMap[key] = true;
           });
         }
+
         rsp.getProductMap().forEach((key, value) {
           dataMap[key] = value;
           boolMap[key] = true;
         });
+
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
@@ -476,7 +486,13 @@ class Source extends DataTableSource {
                       contact: contact,
                       updatedAt: "",
                     ),
-                  );
+                  ).then((value) {
+                    if (value) {
+                      print("notifyListeners");
+                      fetchRecordsOfGood(productIdList: [int.parse(id)]);
+                      notifyListeners();
+                    }
+                  });
                 },
               ),
               IconButton(
