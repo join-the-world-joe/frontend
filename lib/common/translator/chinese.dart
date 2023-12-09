@@ -66,13 +66,23 @@ class Chinese {
 
     // menu
     Language.titleOfParentMenu: '父级菜单',
-    Language.menuOfAdmission: '系统管理',
+    Language.menuOfAdmission: '管理',
     Language.menuOfUser: '用户管理',
     Language.menuOfRole: '角色管理',
     Language.menuOfField: '字段管理',
     Language.menuOfMenu: '菜单管理',
     Language.menuOfPermission: '权限管理',
     Language.menuOfTrack: '操作日志',
+    Language.menuOfData: '数据管理',
+    Language.menuOfGood: '商品',
+    Language.menuOfWechat: '微信广告',
+    Language.menuOfDeals: '今日特价',
+    Language.menuOfHot: '人气热销',
+    Language.menuOfCarousel: '首页轮播',
+    Language.menuOfSnack: '畅销零食',
+    Language.menuOfBarbecue: '烧烤必备',
+    Language.menuOfCategory: "类目广告",
+    Language.menuOfAdvertisement: '广告',
     Language.descriptionOfGoodMenu: '商品管理',
     Language.descriptionOfAdvertisementMenu: "广告管理",
     Language.descriptionOfCategoryMenu: "类目管理",
@@ -167,11 +177,7 @@ class Chinese {
     Language.eventForceOffline: '强制下线',
     Language.messageForceOffline: '帐号在异地登录, 当前帐号被强制下线.',
 
-    // Operations
-    Language.operations: '运营管理',
-    Language.good: '商品',
-    Language.category: "类目",
-    Language.advertisement: '广告',
+    // Data
     Language.idOfGood: '商品ID',
     Language.nameOfGood: '商品名称',
     Language.listOfGoods: '商品列表',

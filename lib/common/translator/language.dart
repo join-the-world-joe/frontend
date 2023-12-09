@@ -69,6 +69,16 @@ class Language {
   static String menuOfRole = 'Role';
   static String menuOfField = 'Field';
   static String menuOfTrack = 'Track';
+  static String menuOfData = 'Data';
+  static String menuOfGood = "Good";
+  static String menuOfWechat = "Wechat";
+  static String menuOfDeals = "Deals";
+  static String menuOfHot = "Hot";
+  static String menuOfCarousel = "Carousel";
+  static String menuOfSnack = "Snack";
+  static String menuOfBarbecue = "Barbecue";
+  static String menuOfCategory = "Category";
+  static String menuOfAdvertisement = "Advertisement";
   static String descriptionOfGoodMenu = "The description of Good menu";
   static String descriptionOfAdvertisementMenu = "The description of Advertisement menu";
   static String descriptionOfCategoryMenu = "The description of Category menu";
@@ -164,11 +174,7 @@ class Language {
   static String eventForceOffline = 'Force Offline';
   static String messageForceOffline = 'Your account has been logon somewhere! Your have to logout immediately.';
 
-  // Operations
-  static String operations = 'Operations';
-  static String good = "Good";
-  static String category = "Category";
-  static String advertisement = "Advertisement";
+  // Data
   static String idOfGood = "the id of good";
   static String nameOfGood = "the name of good";
   static String listOfGoods = "the list of goods";
@@ -207,4 +213,6 @@ class Language {
   static String buyingPriceNotProvided = "the buying price not provided";
   static String vendorOfProductNotProvided = "the vendor of product not provided";
   static String contactOfVendorNotProvided = "the contact of vendor not provided";
+
+  // Wechat
 }

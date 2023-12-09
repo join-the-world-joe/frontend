@@ -49,10 +49,10 @@ class English {
     Language.userList: 'User List',
     Language.removeUser: 'Remove User',
     Language.modifyUser: 'Modify User',
-    Language.nameOfUserNotProvided : "User name not provided",
-    Language.passwordOfUserNotProvided :"Password is empty",
-    Language.twoPasswordNotEqual : "Two password not equal",
-    Language.phoneNumberNotProvided : "Phone number not provided",
+    Language.nameOfUserNotProvided: "User name not provided",
+    Language.passwordOfUserNotProvided: "Password is empty",
+    Language.twoPasswordNotEqual: "Two password not equal",
+    Language.phoneNumberNotProvided: "Phone number not provided",
 
     // language
     Language.languageOfChinese: 'Chinese',
@@ -61,7 +61,7 @@ class English {
     // common
     Language.description: 'Description',
     Language.valueOfNull: '',
-    Language.loading : "Loading",
+    Language.loading: "Loading",
     Language.clickToView: "Click to view",
 
     // menu
@@ -73,9 +73,19 @@ class English {
     Language.menuOfMenu: 'Menu',
     Language.menuOfPermission: 'Permission',
     Language.menuOfTrack: 'Track',
+    Language.menuOfData: 'Data',
+    Language.menuOfGood: 'Good',
+    Language.menuOfWechat: 'WeChat',
+    Language.menuOfDeals: 'Deals',
+    Language.menuOfHot: 'Hot',
+    Language.menuOfCarousel: 'Carousel',
+    Language.menuOfSnack: 'Snack',
+    Language.menuOfBarbecue: 'Barbecue',
+    Language.menuOfCategory: "Category",
+    Language.menuOfAdvertisement: 'Advertisement',
     Language.descriptionOfGoodMenu: 'Good Management',
-    Language.descriptionOfAdvertisementMenu:"Advertisement Management",
-    Language.descriptionOfCategoryMenu:"Category Management",
+    Language.descriptionOfAdvertisementMenu: "Advertisement Management",
+    Language.descriptionOfCategoryMenu: "Category Management",
 
     // field
     Language.tableOfField: 'Table',
@@ -160,18 +170,14 @@ class English {
     Language.failureWithoutErrorCode: 'Exception',
     Language.networkDisconnected: 'Network Disconnected',
     Language.networkConnected: 'Network Connected',
-    Language.removeRecordSuccessfully :'Remove Record Successfully',
-    Language.updateRecordSuccessfully :'Update Record Successfully',
+    Language.removeRecordSuccessfully: 'Remove Record Successfully',
+    Language.updateRecordSuccessfully: 'Update Record Successfully',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',
     Language.messageForceOffline: 'Your account has been logon somewhere! Your have to logout immediately.',
 
-    // Operations
-    Language.operations: 'Operation',
-    Language.good: 'Good',
-    Language.category: "Category",
-    Language.advertisement: 'Advertisement',
+    // Data
     Language.idOfGood: 'ID',
     Language.nameOfGood: 'Name',
     Language.listOfGoods: 'Good List',
@@ -189,27 +195,27 @@ class English {
     Language.sellingPointsOfAdvertisement: "Selling Points",
     Language.stockOfAdvertisement: "Stock",
     Language.urlOfAdvertisement: "Path",
-    Language.newAdvertisement : "New Advertisement",
+    Language.newAdvertisement: "New Advertisement",
     Language.modifyGood: "Modify Product",
     Language.peekInfoFromProductId: "Peek",
-    Language.productIdIsEmpty : "Product ID is empty!",
+    Language.productIdIsEmpty: "Product ID is empty!",
     Language.withoutProductInfoInResponse: "Product not found",
     Language.nameOfAdvertisementIsEmpty: "Name not provided",
-    Language.addSellingPointToAdvertisement:"Add Selling Point",
-    Language.fillSellingPoint : "Fill Selling Point",
-    Language.pressRightButtonToAddSellingPoint:"Press button to add selling point",
-    Language.incorrectStockValueInController :"Illegal stock",
-    Language.incorrectSellingPriceInController : "Illegal Selling Price",
+    Language.addSellingPointToAdvertisement: "Add Selling Point",
+    Language.fillSellingPoint: "Fill Selling Point",
+    Language.pressRightButtonToAddSellingPoint: "Press button to add selling point",
+    Language.incorrectStockValueInController: "Illegal stock",
+    Language.incorrectSellingPriceInController: "Illegal Selling Price",
     Language.needToPeekProductInfo: "Please Peek Product",
     Language.modifyAdvertisement: "Modify Advertisement",
-    Language.noRecordOfGoodInDatabase:"No Good Records",
-    Language.noRecordsMatchedTheSearchCondition :"No Matched Records",
+    Language.noRecordOfGoodInDatabase: "No Good Records",
+    Language.noRecordsMatchedTheSearchCondition: "No Matched Records",
 
     // Good
     Language.productNameNotProvided: "Product Name Not Provided",
     Language.buyingPriceNotProvided: "Buying Price Not Provided",
-    Language.vendorOfProductNotProvided:"the vendor of product not provided",
-    Language.contactOfVendorNotProvided:"the contact of vendor not provided",
+    Language.vendorOfProductNotProvided: "the vendor of product not provided",
+    Language.contactOfVendorNotProvided: "the contact of vendor not provided",
   };
 
   static String getName() {

@@ -511,7 +511,6 @@ class Source extends DataTableSource {
                     ),
                   ).then((value) {
                     if (value) {
-                      print("notifyListeners");
                       fetchRecordsOfAdvertisement(advertisementIdList: [int.parse(idOfAdvertisement)]);
                       notifyListeners();
                     }
