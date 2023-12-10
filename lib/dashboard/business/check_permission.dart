@@ -57,11 +57,14 @@ class CheckPermissionRsp {
     if (json.containsKey('code')) {
       _code = json['code'];
     }
-    if (json.containsKey('major')) {
-      _major = json['major'];
-    }
-    if (json.containsKey('minor')) {
-      _minor = json['minor'];
+    if (json.containsKey('body')) {
+      Map<String, dynamic> body = json['body'];
+      if (body.containsKey('major')) {
+        _major = body['major'];
+      }
+      if (body.containsKey('minor')) {
+        _minor = body['minor'];
+      }
     }
   }
 }
