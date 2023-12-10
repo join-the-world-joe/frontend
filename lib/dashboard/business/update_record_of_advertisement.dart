@@ -32,7 +32,6 @@ class UpdateRecordOfAdvertisementReq {
     required int stock,
     required String description,
   }) {
-    print('id: $id');
     _id = id;
     _name = name;
     _title = title;

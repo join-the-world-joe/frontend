@@ -44,10 +44,6 @@ class FetchPermissionListOfConditionReq {
       'role_list': _roleList.getNameList(),
     };
   }
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
-  }
 }
 
 class FetchPermissionListOfConditionRsp {

@@ -30,19 +30,15 @@ class InsertUserRecordReq {
     _roleList = roleList;
   }
 
-  // InsertUserRecordReq(this._name, this._phoneNumber, this._countryCode, this._status, this._password, this._roleList);
-
-  Map<String, dynamic> toJson() => {
-        'name': utf8.encode(_name),
-        'phone_number': _phoneNumber,
-        'country_code': _countryCode,
-        'status': _status,
-        'password': _password,
-        'role_list': _roleList,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'name': utf8.encode(_name),
+      'phone_number': _phoneNumber,
+      'country_code': _countryCode,
+      'status': _status,
+      'password': _password,
+      'role_list': _roleList,
+    };
   }
 }
 

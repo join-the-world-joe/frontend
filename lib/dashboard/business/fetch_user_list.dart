@@ -21,14 +21,12 @@ class FetchUserListReq {
     _phoneNumber = phoneNumber;
   }
 
-  Map<String, dynamic> toJson() => {
-        'role': _role,
-        'name': _name,
-        'phone_number': _phoneNumber,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'role': _role,
+      'name': _name,
+      'phone_number': _phoneNumber,
+    };
   }
 }
 

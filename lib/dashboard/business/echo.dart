@@ -9,8 +9,6 @@ import 'package:flutter_framework/common/code/code.dart';
 class PingReq {
   String _message = '';
 
-  // PingReq(this._message);
-
   PingReq.construct({
     required String message,
   }) {

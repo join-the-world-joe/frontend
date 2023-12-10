@@ -7,7 +7,9 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/framework/rate_limiter.dart';
 
 class FetchRateLimitingConfigReq {
-  Map<String, dynamic> toJson() => {};
+  Map<String, dynamic> toJson() {
+    return {};
+  }
 }
 
 class FetchRateLimitingConfigRsp {

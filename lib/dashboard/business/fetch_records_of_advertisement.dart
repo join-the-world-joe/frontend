@@ -40,19 +40,16 @@ class FetchRecordsOfAdvertisementRsp {
     if (json.containsKey('body')) {
       Map<String, dynamic> body = json['body'];
       if (body.containsKey('records_of_advertisement')) {
-        print("body: ${body['records_of_advertisement']}");
+        // print("body: ${body['records_of_advertisement']}");
         final some = Map.from(body['records_of_advertisement']);
-        print('some: $some');
+        // print('some: $some');
         some.forEach(
           (key, value) {
             advertisementMap[int.parse(key)] = Advertisement.construct(
               id: int.parse(key),
               name: value['name'],
-              // name: "",
               title: value['title'],
-              // title: "",
               placeOfOrigin: value['place_of_origin'],
-              // placeOfOrigin: "",
               sellingPoints: Convert.base64StringList2ListString(List<String>.from(value['selling_points'] as List)),
               url: value['url'],
               sellingPrice: value['selling_price'],

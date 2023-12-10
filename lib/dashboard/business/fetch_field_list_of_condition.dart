@@ -26,15 +26,13 @@ class FetchFieldListOfConditionReq {
     _field = field;
   }
 
-  Map<String, dynamic> toJson() => {
-        'behavior': _behavior,
-        'role': _role,
-        'table': _table,
-        'field': _field,
-      };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'behavior': _behavior,
+      'role': _role,
+      'table': _table,
+      'field': _field,
+    };
   }
 }
 
