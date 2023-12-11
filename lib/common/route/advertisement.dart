@@ -1,0 +1,32 @@
+class Advertisement {
+  String fetchVersionOfADOfCarouselReq_ = "1";
+  String fetchVersionOfADOfCarouselRsp_ = "2";
+  String fetchIdListOfADOfCarouselReq_ = "3";
+  String fetchIdListOfADOfCarouselRsp_ = "4";
+  String fetchRecordsOfADOfCarouselReq_ = "5";
+  String fetchRecordsOfADOfCarouselRsp_ = "6";
+  String fetchVersionOfADOfDealsReq_ = "7";
+  String fetchVersionOfADOfDealsRsp_ = "8";
+  String fetchIdListOfADOfDealsReq_ = "9";
+  String fetchIdListOfADOfDealsRsp_ = "10";
+  String fetchRecordsOfADOfDealsReq_ = "11";
+  String fetchRecordsOfADOfDealsRsp_ = "12";
+  String fetchVersionOfADOfHotsReq_ = "13";
+  String fetchVersionOfADOfHotsRsp_ = "14";
+  String fetchIdListOfADOfHotsReq_ = "15";
+  String fetchIdListOfADOfHotsRsp_ = "16";
+  String fetchRecordsOfADOfHotsReq_ = "17";
+  String fetchRecordsOfADOfHotsRsp_ = "18";
+  String fetchVersionOfADOfBarbecueReq_ = "19";
+  String fetchVersionOfADOfBarbecueRsp_ = "20";
+  String fetchIdListOfADOfBarbecueReq_ = "21";
+  String fetchIdListOfADOfBarbecueRsp_ = "22";
+  String fetchRecordsOfADOfBarbecueReq_ = "23";
+  String fetchRecordsOfADOfBarbecueRsp_ = "24";
+  String fetchVersionOfADOfSnacksReq_ = "25";
+  String fetchVersionOfADOfSnacksRsp_ = "26";
+  String fetchIdListOfADOfSnacksReq_ = "27";
+  String fetchIdListOfADOfSnacksRsp_ = "28";
+  String fetchRecordsOfADOfSnacksReq_ = "29";
+  String fetchRecordsOfADOfSnacksRsp_ = "30";
+}

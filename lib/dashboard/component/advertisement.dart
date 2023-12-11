@@ -353,7 +353,7 @@ class _State extends State<Advertisement> {
                         DataColumn(label: Text(Translator.translate(Language.placeOfOriginOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.sellingPointsOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.stockOfAdvertisement))),
-                        DataColumn(label: Text(Translator.translate(Language.urlOfAdvertisement))),
+                        DataColumn(label: Text(Translator.translate(Language.imageOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.description))),
                         DataColumn(label: Text(Translator.translate(Language.operation))),
                       ],

@@ -191,7 +191,7 @@ class Language {
   static String placeOfOriginOfAdvertisement = "the place of origin of an advertisement";
   static String sellingPointsOfAdvertisement = "the selling points of an advertisement";
   static String stockOfAdvertisement = "the stock of an advertisement";
-  static String urlOfAdvertisement = "the image url of an advertisement";
+  static String imageOfAdvertisement = "the image of an advertisement";
   static String newAdvertisement = "to new an advertisement";
   static String modifyGood = "to modify the information of good";
   static String peekInfoFromProductId = "to peek the information from productId";
@@ -215,4 +215,6 @@ class Language {
   static String contactOfVendorNotProvided = "the contact of vendor not provided";
 
   // Wechat
+  static String titleOfPublishOfAdvertisement = 'the title of publish operation of advertisement';
+  static String titleOfApproveOfAdvertisement = 'the title of approve operation of advertisement';
 }

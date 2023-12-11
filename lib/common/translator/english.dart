@@ -194,7 +194,7 @@ class English {
     Language.placeOfOriginOfAdvertisement: "Place Of Origin",
     Language.sellingPointsOfAdvertisement: "Selling Points",
     Language.stockOfAdvertisement: "Stock",
-    Language.urlOfAdvertisement: "Path",
+    Language.imageOfAdvertisement: "Image",
     Language.newAdvertisement: "New Advertisement",
     Language.modifyGood: "Modify Product",
     Language.peekInfoFromProductId: "Peek",
@@ -216,6 +216,10 @@ class English {
     Language.buyingPriceNotProvided: "Buying Price Not Provided",
     Language.vendorOfProductNotProvided: "the vendor of product not provided",
     Language.contactOfVendorNotProvided: "the contact of vendor not provided",
+
+    // WeChat
+    Language.titleOfPublishOfAdvertisement : 'Publish',
+    Language.titleOfApproveOfAdvertisement: "Approve",
   };
 
   static String getName() {

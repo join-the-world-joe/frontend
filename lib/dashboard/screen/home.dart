@@ -10,6 +10,7 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/component/advertisement.dart';
+import 'package:flutter_framework/dashboard/component/deals.dart';
 import 'package:flutter_framework/dashboard/component/field.dart';
 import 'package:flutter_framework/dashboard/component/good.dart';
 import 'package:flutter_framework/dashboard/component/menu.dart';
@@ -56,6 +57,7 @@ class _State extends State<Home> {
   var field = Field();
   var good = Good();
   var advertisement = Advertisement();
+  var deals = Deals();
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -196,6 +198,7 @@ class _State extends State<Home> {
     field = Field();
     good = Good();
     advertisement = Advertisement();
+    deals = Deals();
   }
 
   void setup() {
@@ -383,7 +386,9 @@ class _State extends State<Home> {
                     return good;
                   } else if (Cache.getContent() == Advertisement.content) {
                     return advertisement;
-                  } else {
+                  } else if (Cache.getContent() == Deals.content) {
+                    return deals;
+                  }else {
                     return const Text('Unknown');
                   }
                 }

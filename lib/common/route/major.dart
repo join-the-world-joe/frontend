@@ -6,4 +6,5 @@ class Major {
   static const String sms = "4";
   static const String admin = '5';
   static const String inform = '6';
+  static const String advertisement = '7';
 }

@@ -189,12 +189,12 @@ class Chinese {
     Language.idOfAdvertisement: "广告ID",
     Language.nameOfAdvertisement: "广告名称",
     Language.listOfAdvertisements: "广告列表",
-    Language.titleOfAdvertisement: "销售标语",
-    Language.sellingPriceOfAdvertisement: "出售价格",
+    Language.titleOfAdvertisement: "广告标语",
+    Language.sellingPriceOfAdvertisement: "售价",
     Language.placeOfOriginOfAdvertisement: "产地",
     Language.sellingPointsOfAdvertisement: "卖点",
     Language.stockOfAdvertisement: "库存",
-    Language.urlOfAdvertisement: "图片路径",
+    Language.imageOfAdvertisement: "图片",
     Language.newAdvertisement: "新增广告",
     Language.modifyGood: "更新商品信息",
     Language.peekInfoFromProductId: "查看商品信息",
@@ -216,6 +216,10 @@ class Chinese {
     Language.buyingPriceNotProvided: "未提供进货价",
     Language.vendorOfProductNotProvided: "未填写供应商",
     Language.contactOfVendorNotProvided:"未填写供应商联系方式",
+
+    // Wechat
+    Language.titleOfPublishOfAdvertisement : '发布',
+    Language.titleOfApproveOfAdvertisement: '上架',
   };
 
   static String getName() {

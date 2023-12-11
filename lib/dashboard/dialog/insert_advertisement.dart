@@ -406,7 +406,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                       child: TextFormField(
                         controller: urlController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.urlOfAdvertisement),
+                          labelText: Translator.translate(Language.imageOfAdvertisement),
                         ),
                       ),
                     ),
