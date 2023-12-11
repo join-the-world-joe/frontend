@@ -220,6 +220,8 @@ class Chinese {
     // Wechat
     Language.titleOfPublishOfAdvertisement : '发布',
     Language.titleOfApproveOfAdvertisement: '上架',
+    Language.noRecordsOfADOfDeals: '未发布任何特价广告',
+    Language.titleOfRejectOfAdvertisement : "下架",
   };
 
   static String getName() {

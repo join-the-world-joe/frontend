@@ -159,8 +159,8 @@ class _State extends State<Advertisement> {
     try {
       FetchRecordsOfAdvertisementRsp rsp = FetchRecordsOfAdvertisementRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print('advertisement map: ${rsp.advertisementMap.toString()}');
-        if (rsp.advertisementMap.isEmpty) {
+        print('advertisement map: ${rsp.getDataMap().toString()}');
+        if (rsp.getDataMap().isEmpty) {
           showMessageDialog(
             context,
             Translator.translate(Language.titleOfNotification),
@@ -169,13 +169,13 @@ class _State extends State<Advertisement> {
           return;
         }
         if (idList.isEmpty) {
-          rsp.getAdvertisementMap().forEach((key, value) {
+          rsp.getDataMap().forEach((key, value) {
             idList.add(key);
             dataMap[key] = value;
             boolMap[key] = true;
           });
         }
-        rsp.getAdvertisementMap().forEach((key, value) {
+        rsp.getDataMap().forEach((key, value) {
           dataMap[key] = value;
           boolMap[key] = true;
         });

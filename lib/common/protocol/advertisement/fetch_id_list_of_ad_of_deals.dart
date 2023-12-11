@@ -25,7 +25,7 @@ class FetchIdListOfADOfDealsRsp {
     return _versionOfADOfDeals;
   }
 
-  List<int> getAdvertisementIdList() {
+  List<int> getIdList() {
     return _advertisementIdList;
   }
 

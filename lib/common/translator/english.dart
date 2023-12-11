@@ -218,8 +218,10 @@ class English {
     Language.contactOfVendorNotProvided: "the contact of vendor not provided",
 
     // WeChat
-    Language.titleOfPublishOfAdvertisement : 'Publish',
+    Language.titleOfPublishOfAdvertisement: 'Publish',
     Language.titleOfApproveOfAdvertisement: "Approve",
+    Language.noRecordsOfADOfDeals: 'Records of Deals are empty',
+    Language.titleOfRejectOfAdvertisement : "Reject",
   };
 
   static String getName() {

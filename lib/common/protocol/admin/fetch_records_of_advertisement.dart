@@ -16,20 +16,20 @@ class FetchRecordsOfAdvertisementReq {
 }
 
 class FetchRecordsOfAdvertisementRsp {
-  int code = -1;
-  Map<int, Advertisement> advertisementMap = {};
+  int _code = -1;
+  Map<int, Advertisement> _dataMap = {};
 
   int getCode() {
-    return code;
+    return _code;
   }
 
-  Map<int, Advertisement> getAdvertisementMap() {
-    return advertisementMap;
+  Map<int, Advertisement> getDataMap() {
+    return _dataMap;
   }
 
   FetchRecordsOfAdvertisementRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
-      code = json['code'];
+      _code = json['code'];
     }
     if (json.containsKey('body')) {
       Map<String, dynamic> body = json['body'];
@@ -39,7 +39,7 @@ class FetchRecordsOfAdvertisementRsp {
         // print('some: $some');
         some.forEach(
               (key, value) {
-            advertisementMap[int.parse(key)] = Advertisement.construct(
+                _dataMap[int.parse(key)] = Advertisement.construct(
               id: int.parse(key),
               name: value['name'],
               title: value['title'],

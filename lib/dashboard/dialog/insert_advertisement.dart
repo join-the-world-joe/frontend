@@ -80,13 +80,13 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
       FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         var key = int.parse(productIdController.text);
-        if (rsp.getProductMap().containsKey(key)) {
+        if (rsp.getDataMap().containsKey(key)) {
           showMessageDialog(
             context,
             Translator.translate(Language.nameOfGood),
-            rsp.getProductMap()[key]!.getName(),
+            rsp.getDataMap()[key]!.getName(),
           );
-          descController.text = rsp.getProductMap()[key]!.getName();
+          descController.text = rsp.getDataMap()[key]!.getName();
           curStage++;
         } else {
           showMessageDialog(

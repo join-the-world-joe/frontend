@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/business/advertisement/fetch_id_list_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/business/advertisement/fetch_records_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/protocol/advertisement/fetch_id_list_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/protocol/advertisement/fetch_records_of_ad_of_deals.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_good.dart';
 import 'package:flutter_framework/dashboard/dialog/update_good.dart';
+import 'package:flutter_framework/dashboard/model/ad_of_deals.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -39,7 +44,7 @@ class _State extends State<Deals> {
   final vendorController = TextEditingController();
   final scrollController = ScrollController();
   List<int> idList = [];
-  Map<int, Product> dataMap = {};
+  Map<int, ADOfDeals> dataMap = {};
   Map<int, DateTime> datetimeMap = {};
   Map<int, bool> boolMap = {};
 
@@ -89,34 +94,18 @@ class _State extends State<Deals> {
     } finally {}
   }
 
-  void fetchIdListOfGoodHandler(Map<String, dynamic> body) {
+  void fetchIdListOfADOfDealsHandler(Map<String, dynamic> body) {
     try {
-      FetchIdListOfGoodRsp rsp = FetchIdListOfGoodRsp.fromJson(body);
+      FetchIdListOfADOfDealsRsp rsp = FetchIdListOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print("Good.fetchIdListOfGoodHandler.idList: ${rsp.getIdList()}");
+        print("Good.fetchIdListOfADOfDealsHandler.idList: ${rsp.getIdList()}");
         if (rsp.getIdList().isEmpty) {
-          if (rsp.getBehavior() == 1) {
-            showMessageDialog(
-              context,
-              Translator.translate(Language.titleOfNotification),
-              Translator.translate(Language.noRecordOfGoodInDatabase),
-            );
-            return;
-          } else if (rsp.getBehavior() == 2) {
-            showMessageDialog(
-              context,
-              Translator.translate(Language.titleOfNotification),
-              Translator.translate(Language.noRecordsMatchedTheSearchCondition),
-            );
-            return;
-          } else {
-            showMessageDialog(
-              context,
-              Translator.translate(Language.titleOfNotification),
-              '${Translator.translate(Language.failureWithErrorCode)} -1',
-            );
-            return;
-          }
+          showMessageDialog(
+            context,
+            Translator.translate(Language.titleOfNotification),
+            Translator.translate(Language.noRecordsOfADOfDeals),
+          );
+          return;
         }
         idList = rsp.getIdList();
         curStage++;
@@ -135,12 +124,12 @@ class _State extends State<Deals> {
     }
   }
 
-  void fetchRecordsOfGoodHandler(Map<String, dynamic> body) {
+  void fetchRecordsOfADOfDealsHandler(Map<String, dynamic> body) {
     try {
-      FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
+      FetchRecordsOfADOfDealsRsp rsp = FetchRecordsOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print('product map: ${rsp.getProductMap().toString()}');
-        if (rsp.getProductMap().isEmpty) {
+        // print('data map: ${rsp.getDataMap().toString()}');
+        if (rsp.getDataMap().isEmpty) {
           showMessageDialog(
             context,
             Translator.translate(Language.titleOfNotification),
@@ -149,14 +138,14 @@ class _State extends State<Deals> {
           return;
         }
         if (idList.isEmpty) {
-          rsp.getProductMap().forEach((key, value) {
+          rsp.getDataMap().forEach((key, value) {
             idList.add(key);
             dataMap[key] = value;
             boolMap[key] = true;
           });
         }
 
-        rsp.getProductMap().forEach((key, value) {
+        rsp.getDataMap().forEach((key, value) {
           dataMap[key] = value;
           boolMap[key] = true;
         });
@@ -187,7 +176,8 @@ class _State extends State<Deals> {
 
   void setup() {
     Runtime.setObserve(observe);
-    fetchVersionOfADOfDeals();
+    // fetchVersionOfADOfDeals();
+    fetchIdListOfADOfDeals();
   }
 
   void observe(PacketClient packet) {
@@ -199,8 +189,10 @@ class _State extends State<Deals> {
       print("Good.observe: major: $major, minor: $minor");
       if (major == Major.advertisement && minor == Minor.advertisement.fetchVersionOfADOfDealsRsp) {
         fetchVersionOfADOfDealsHandler(body);
-      } else if (major == Major.admin && minor == Minor.admin.fetchRecordsOfGoodRsp) {
-        fetchRecordsOfGoodHandler(body);
+      } else if (major == Major.advertisement && minor == Minor.advertisement.fetchRecordsOfADOfDealsRsp) {
+        fetchRecordsOfADOfDealsHandler(body);
+      } else if (major == Major.advertisement && minor == Minor.advertisement.fetchIdListOfADOfDealsRsp) {
+        fetchIdListOfADOfDealsHandler(body);
       } else {
         print("Good.observe warning: $major-$minor doesn't matched");
       }
@@ -316,7 +308,7 @@ class _State extends State<Deals> {
 class Source extends DataTableSource {
   List<int> idList;
   List<int> requestIdList = [];
-  Map<int, Product> dataMap;
+  Map<int, ADOfDeals> dataMap;
   Map<int, DateTime> datetimeMap;
   Map<int, bool> boolMap;
   BuildContext buildContext;
@@ -344,12 +336,15 @@ class Source extends DataTableSource {
   @override
   DataRow getRow(int index) {
     print("getRow: $index");
-    var id = Translator.translate(Language.loading);
-    var name = Translator.translate(Language.loading);
-    var buyingPrice = Translator.translate(Language.loading);
-    var vendor = Translator.translate(Language.loading);
-    var status = Translator.translate(Language.loading);
-    var contact = Translator.translate(Language.loading);
+    var advertisementId = Translator.translate(Language.loading);
+    var advertisementName = Translator.translate(Language.loading);
+    var productId = Translator.translate(Language.loading);
+    var productName = Translator.translate(Language.loading);
+    var titleOfAdvertisement = Translator.translate(Language.loading);
+    var sellingPrice = Translator.translate(Language.loading);
+    var placeOfOrigin = Translator.translate(Language.loading);
+    var stockOfAdvertisement = Translator.translate(Language.loading);
+    List<String> sellingPoints = [];
     var desc = Translator.translate(Language.loading);
 
     var key = idList[index];
@@ -357,13 +352,16 @@ class Source extends DataTableSource {
     if (boolMap.containsKey(key)) {
       // fetch row finished
       if (dataMap.containsKey(key)) {
-        id = dataMap[key]!.getId().toString();
-        name = dataMap[key]!.getName();
-        buyingPrice = dataMap[key]!.getBuyingPrice().toString();
-        vendor = dataMap[key]!.getVendor();
-        status = dataMap[key]!.getStatus().toString();
-        contact = dataMap[key]!.getContact();
+        advertisementId = dataMap[key]!.getAdvertisementId().toString();
+        advertisementName = dataMap[key]!.getAdvertisementName();
+        productId = dataMap[key]!.getProductId().toString();
+        productName = dataMap[key]!.getProductName();
+        titleOfAdvertisement = dataMap[key]!.getTitle();
+        sellingPrice = dataMap[key]!.getSellingPrice().toString();
+        placeOfOrigin = dataMap[key]!.getPlaceOfOrigin();
+        stockOfAdvertisement = dataMap[key]!.getStock().toString();
         desc = dataMap[key]!.getDescription();
+        sellingPoints = dataMap[key]!.getSellingPoints();
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
@@ -384,7 +382,7 @@ class Source extends DataTableSource {
             requestIdList.add(idList[i]);
           }
         }
-        fetchRecordsOfGood(productIdList: requestIdList);
+        fetchRecordsOfADOfDeals(advertisementIdList: requestIdList);
         print("requestIdList: $requestIdList");
         for (var i = 0; i < requestIdList.length; i++) {
           datetimeMap[i] = DateTime.now();
@@ -398,56 +396,24 @@ class Source extends DataTableSource {
         // print('selected: $selected');
       },
       cells: [
-        DataCell(Text(id)),
-        DataCell(Text(name)),
-        DataCell(Text(buyingPrice)),
-        DataCell(Text(vendor)),
-        DataCell(Text(status)),
-        DataCell(Text(contact)),
+        DataCell(Text(advertisementId)),
+        DataCell(Text(advertisementName)),
+        DataCell(Text(productId)),
+        DataCell(Text(productName)),
+        DataCell(Text(titleOfAdvertisement)),
+        DataCell(Text(sellingPrice)),
+        DataCell(Text(placeOfOrigin)),
+        DataCell(Text('sellingPoints')),
+        DataCell(Text(stockOfAdvertisement)),
+        DataCell(Text('image')),
         DataCell(Text(desc)),
         DataCell(
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.edit),
-                tooltip: Translator.translate(Language.update),
-                onPressed: () async {
-                  showUpdateGoodDialog(
-                    buildContext,
-                    Product.construct(
-                      id: int.parse(id),
-                      name: name,
-                      buyingPrice: int.parse(buyingPrice),
-                      description: desc,
-                      status: int.parse(status),
-                      vendor: vendor,
-                      createdAt: "",
-                      contact: contact,
-                      updatedAt: "",
-                    ),
-                  ).then((value) {
-                    if (value) {
-                      print("notifyListeners");
-                      fetchRecordsOfGood(productIdList: [int.parse(id)]);
-                      notifyListeners();
-                    }
-                  });
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                tooltip: Translator.translate(Language.remove),
-                onPressed: () async {
-                  await showRemoveGoodDialog(buildContext, int.parse(id), name, vendor).then(
-                    (value) => () {
-                      // print('value: $value');
-                      if (value) {
-                        idList.removeAt(index);
-                        notifyListeners();
-                      }
-                    }(),
-                  );
-                },
+                icon: const Icon(Icons.remove),
+                tooltip: Translator.translate(Language.titleOfRejectOfAdvertisement),
+                onPressed: () async {},
               ),
             ],
           ),

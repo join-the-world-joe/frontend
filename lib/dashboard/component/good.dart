@@ -125,8 +125,8 @@ class _State extends State<Good> {
     try {
       FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print('product map: ${rsp.getProductMap().toString()}');
-        if (rsp.getProductMap().isEmpty) {
+        print('product map: ${rsp.getDataMap().toString()}');
+        if (rsp.getDataMap().isEmpty) {
           showMessageDialog(
             context,
             Translator.translate(Language.titleOfNotification),
@@ -135,14 +135,14 @@ class _State extends State<Good> {
           return;
         }
         if (idList.isEmpty) {
-          rsp.getProductMap().forEach((key, value) {
+          rsp.getDataMap().forEach((key, value) {
             idList.add(key);
             dataMap[key] = value;
             boolMap[key] = true;
           });
         }
 
-        rsp.getProductMap().forEach((key, value) {
+        rsp.getDataMap().forEach((key, value) {
           dataMap[key] = value;
           boolMap[key] = true;
         });

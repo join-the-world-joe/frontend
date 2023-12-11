@@ -217,4 +217,6 @@ class Language {
   // Wechat
   static String titleOfPublishOfAdvertisement = 'the title of publish operation of advertisement';
   static String titleOfApproveOfAdvertisement = 'the title of approve operation of advertisement';
+  static String noRecordsOfADOfDeals = "there is no records of ad of deals";
+  static String titleOfRejectOfAdvertisement = 'the title of reject operation of advertisement';
 }

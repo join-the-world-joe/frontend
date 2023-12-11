@@ -18,14 +18,14 @@ class FetchRecordsOfGoodReq {
 
 class FetchRecordsOfGoodRsp {
   int _code = -1;
-  Map<int, Product> _productMap = {};
+  Map<int, Product> _dataMap = {};
 
   int getCode() {
     return _code;
   }
 
-  Map<int, Product> getProductMap() {
-    return _productMap;
+  Map<int, Product> getDataMap() {
+    return _dataMap;
   }
 
   FetchRecordsOfGoodRsp.fromJson(Map<String, dynamic> json) {
@@ -37,8 +37,8 @@ class FetchRecordsOfGoodRsp {
       if (body.containsKey('records_of_good')) {
         final Map some = Map.from(body['records_of_good']);
         some.forEach(
-              (key, value) {
-            _productMap[value['id']] = Product.construct(
+          (key, value) {
+            _dataMap[value['id']] = Product.construct(
               id: value['id'],
               name: value['name'],
               buyingPrice: value['buying_price'],

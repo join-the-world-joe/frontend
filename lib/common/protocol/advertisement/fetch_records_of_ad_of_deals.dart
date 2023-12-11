@@ -1,5 +1,6 @@
 import 'package:flutter_framework/dashboard/model/ad_of_deals.dart';
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/utils/convert.dart';
 
 class FetchRecordsOfADOfDealsReq {
   List<int> _advertisementIdList = [];
@@ -17,34 +18,62 @@ class FetchRecordsOfADOfDealsReq {
 
 class FetchRecordsOfADOfDealsRsp {
   int _code = Code.internalError;
-  List<int> _advertisementIdList = [];
-  int _versionOfADOfDeals = -1;
   Map<int, ADOfDeals> _dataMap = {};
 
   int getCode() {
     return _code;
   }
 
-  int getVersion() {
-    return _versionOfADOfDeals;
-  }
-
-  List<int> getAdvertisementIdList() {
-    return _advertisementIdList;
+  Map<int, ADOfDeals> getDataMap() {
+    return _dataMap;
   }
 
   FetchRecordsOfADOfDealsRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
       _code = json['code'];
     }
+
     if (json.containsKey('body')) {
       Map<String, dynamic> body = json['body'];
-      if (body.containsKey('version_of_ad_of_deals')) {
-        _versionOfADOfDeals = body['version_of_ad_of_deals'];
+      if (body.containsKey('records_of_ad_of_deals')) {
+        // print("body: ${body['records_of_advertisement']}");
+        List<dynamic> some = body['records_of_ad_of_deals'];
+        // final some = Map.from(body['records_of_ad_of_deals']);
+        // print('some: $some');
+        for (var element in some) {
+          // print('${Convert.base64StringList2ListString(List<String>.from(element['selling_points'] as List))}');
+          _dataMap[element['advertisement_id']] = ADOfDeals.construct(
+            advertisementId: element['advertisement_id'],
+            advertisementName: element['advertisement_name'],
+            title: element['title'],
+            stock: element['stock'],
+            sellingPrice: element['selling_price'],
+            productId: element['product_id'],
+            productName: element['product_name'],
+            description: element['description'],
+            placeOfOrigin: element['place_of_origin'],
+            sellingPoints: Convert.base64StringList2ListString(List<String>.from(element['selling_points'] as List)),
+            imagePath: element['image_path'],
+          );
+        }
       }
-      if (body.containsKey('id_list_of_ad_of_deals')) {
-        _advertisementIdList = List<int>.from(body['id_list_of_ad_of_deals'] as List);
-      }
+      // some.forEach(
+      //       (key, value) {
+      //     _dataMap[int.parse(key)] = ADOfDeals.construct(
+      //       advertisementId: value['advertisement_id'],
+      //       advertisementName: value['advertisement_name'],
+      //       title: value['title'],
+      //       stock: value['stock'],
+      //       sellingPrice: value['selling_price'],
+      //       productId: value['product_id'],
+      //       productName: value['product_name'],
+      //       description: value['description'],
+      //       placeOfOrigin: value['place_of_origin'],
+      //       sellingPoints: Convert.base64StringList2ListString(List<String>.from(value['selling_points'] as List)),
+      //       imagePath: value['image_path'],
+      //     );
+      //   },
+      // );
     }
   }
 }
