@@ -6,8 +6,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/business/check_permission.dart';
-import 'package:flutter_framework/dashboard/business/fetch_id_list_of_good.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_good.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_good.dart';
@@ -22,7 +20,10 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../model/product.dart';
-import '../business/fetch_records_of_good.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_id_list_of_good.dart';
+import 'package:flutter_framework/common/business/admin/fetch_id_list_of_good.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_records_of_good.dart';
+import 'package:flutter_framework/common/business/admin/fetch_records_of_good.dart';
 
 class Good extends StatefulWidget {
   const Good({Key? key}) : super(key: key);

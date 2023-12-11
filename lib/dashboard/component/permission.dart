@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/business/fetch_permission_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/permission_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
@@ -22,6 +21,8 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../setup.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_permission_list_of_condition.dart';
+import 'package:flutter_framework/common/business/admin/fetch_permission_list_of_condition.dart';
 
 class Permission extends StatefulWidget {
   const Permission({Key? key}) : super(key: key);

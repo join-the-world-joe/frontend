@@ -103,4 +103,16 @@ class Runtime {
       }
     },
   );
+
+  static void request({required dynamic body, required String major, required String minor}) {
+    try {
+      PacketClient packet = PacketClient.create();
+      packet.getHeader().setMajor(major);
+      packet.getHeader().setMinor(minor);
+      packet.setBody(body.toJson());
+      Runtime.wsClient.sendPacket(packet);
+    } catch (e) {
+      print('Runtime.request failure, err: $e');
+    }
+  }
 }

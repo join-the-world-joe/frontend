@@ -7,7 +7,6 @@ import 'package:flutter_framework/common/translator/chinese.dart';
 import 'package:flutter_framework/common/translator/english.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/menu_list.dart';
 import 'package:flutter_framework/dashboard/model/side_menu_list.dart';
@@ -24,6 +23,8 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../setup.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_menu_list_of_condition.dart';
+import 'package:flutter_framework/common/business/admin/fetch_menu_list_of_condition.dart';
 
 class Menu extends StatefulWidget {
   const Menu({Key? key}) : super(key: key);

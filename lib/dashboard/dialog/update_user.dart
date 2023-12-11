@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_framework/dashboard/business/update_user_record.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
@@ -11,10 +10,13 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
-import 'package:flutter_framework/dashboard/business/fetch_role_list_of_condition.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import '../config/config.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_role_list_of_condition.dart';
+import 'package:flutter_framework/common/business/admin/fetch_role_list_of_condition.dart';
+import 'package:flutter_framework/common/protocol/admin/update_user_record.dart';
+import 'package:flutter_framework/common/business//admin/update_user_record.dart';
 
 Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
   String countryCode = user.getCountryCode();

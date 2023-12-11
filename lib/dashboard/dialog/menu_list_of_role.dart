@@ -4,7 +4,6 @@ import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/side_menu_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
@@ -12,6 +11,8 @@ import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import '../config/config.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_menu_list_of_condition.dart';
+import 'package:flutter_framework/common/business/admin/fetch_menu_list_of_condition.dart';
 
 Future<int> showMenuListOfRoleDialog(BuildContext context, Role role) async {
   bool closed = false;

@@ -5,15 +5,13 @@ import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/business/soft_delete_user_recode.dart';
-import 'package:flutter_framework/dashboard/cache/cache.dart';
-import 'package:flutter_framework/dashboard/model/role.dart';
-import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 import '../config/config.dart';
+import 'package:flutter_framework/common/protocol/admin/soft_delete_user_record.dart';
+import 'package:flutter_framework/common/business//admin/soft_delete_user_record.dart';
 
 Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
   var oriObserve = Runtime.getObserve();

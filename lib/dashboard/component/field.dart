@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/business/fetch_field_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/field_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -21,6 +20,8 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../setup.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_field_list_of_condition.dart';
+import 'package:flutter_framework/common/business/admin/fetch_field_list_of_condition.dart';
 
 class Field extends StatefulWidget {
   const Field({Key? key}) : super(key: key);
@@ -243,7 +244,6 @@ class _State extends State<Field> {
     );
   }
 }
-
 
 class Source extends DataTableSource {
   BuildContext context;

@@ -5,8 +5,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/business/check_permission.dart';
-import 'package:flutter_framework/dashboard/business/fetch_id_list_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_advertisement.dart';
@@ -22,7 +20,10 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../model/advertisement.dart' as model;
-import '../business/fetch_records_of_advertisement.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_id_list_of_advertisement.dart';
+import 'package:flutter_framework/common/business/admin/fetch_id_list_of_advertisement.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_records_of_advertisement.dart';
+import 'package:flutter_framework/common/business/admin/fetch_records_of_advertisement.dart';
 
 class Advertisement extends StatefulWidget {
   const Advertisement({Key? key}) : super(key: key);
@@ -107,7 +108,6 @@ class _State extends State<Advertisement> {
     boolMap = {};
     curStage++;
   }
-
 
   void fetchIdListOfAdvertisementHandler(Map<String, dynamic> body) {
     try {

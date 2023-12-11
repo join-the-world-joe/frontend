@@ -6,14 +6,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/business/advertisement/fetch_version_of_ad_of_deals.dart';
-import 'package:flutter_framework/dashboard/business/check_permission.dart';
-import 'package:flutter_framework/dashboard/business/fetch_id_list_of_good.dart';
-import 'package:flutter_framework/dashboard/dialog/insert_good.dart';
-import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_good.dart';
 import 'package:flutter_framework/dashboard/dialog/update_good.dart';
-import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -21,9 +15,12 @@ import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
-import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../model/product.dart';
-import '../business/fetch_records_of_good.dart';
+import 'package:flutter_framework/common/protocol/advertisement/fetch_version_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_id_list_of_good.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_records_of_good.dart';
+import 'package:flutter_framework/common/business/admin/fetch_records_of_good.dart';
+import 'package:flutter_framework/common/business/advertisement/fetch_version_of_ad_of_deals.dart';
 
 class Deals extends StatefulWidget {
   const Deals({Key? key}) : super(key: key);
@@ -200,7 +197,7 @@ class _State extends State<Deals> {
 
     try {
       print("Good.observe: major: $major, minor: $minor");
-      if (major == Major.advertisement && minor == Minor.advertisement.fetchVersionOfADOfDealsRsp_) {
+      if (major == Major.advertisement && minor == Minor.advertisement.fetchVersionOfADOfDealsRsp) {
         fetchVersionOfADOfDealsHandler(body);
       } else if (major == Major.admin && minor == Minor.admin.fetchRecordsOfGoodRsp) {
         fetchRecordsOfGoodHandler(body);

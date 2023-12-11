@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/business/fetch_permission_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/model/permission_list.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -15,6 +14,9 @@ import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import '../config/config.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_permission_list_of_condition.dart';
+import 'package:flutter_framework/common/business/admin/fetch_permission_list_of_condition.dart';
+
 
 Future<int> showPermissionListOfUserDialog(BuildContext context, User user) async {
   bool closed = false;

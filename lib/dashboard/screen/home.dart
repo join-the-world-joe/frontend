@@ -8,7 +8,6 @@ import 'package:flutter_framework/common/translator/chinese.dart';
 import 'package:flutter_framework/common/translator/english.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/business/fetch_menu_list_of_condition.dart';
 import 'package:flutter_framework/dashboard/component/advertisement.dart';
 import 'package:flutter_framework/dashboard/component/deals.dart';
 import 'package:flutter_framework/dashboard/component/field.dart';
@@ -32,7 +31,9 @@ import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../setup.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
-import 'package:flutter_framework/dashboard/business/inform.dart' as inform;
+import 'package:flutter_framework/common/business/inform/inform.dart' as inform;
+import 'package:flutter_framework/common/protocol/admin/fetch_menu_list_of_condition.dart';
+import 'package:flutter_framework/common/business/admin/fetch_menu_list_of_condition.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
