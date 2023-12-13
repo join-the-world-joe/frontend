@@ -30,6 +30,7 @@ class AliYunOSS {
     required File file,
     required Duration connectTimeout,
     required Duration receiveTimeout,
+    required Function onProgress,
   }) async {
     String fileType = path.extension(file.path).toLowerCase();
     MediaType mediaType = MediaType('image', fileType);
@@ -59,9 +60,11 @@ class AliYunOSS {
             }
           },
           contentType: mediaType.mimeType,
-        ), onSendProgress: (int count, int total) {
-        print(((count / total) * 100).toStringAsFixed(2));
-      });
+        ),
+        onSendProgress: (count, total) {
+          onProgress(count, total);
+        },
+      );
       return url;
     } catch (e) {
       print('AliYunOSS.putObject failure, err: $e');
@@ -120,7 +123,7 @@ class AliYunOSS {
     final date = requestTime();
     final canonicalString = [
       httpMethod,
-      '',
+      '', // md5 of content
       contentType,
       date,
       if (canonicalizedOSSHeaders.isNotEmpty) canonicalizedOSSHeaders,
@@ -131,7 +134,6 @@ class AliYunOSS {
     return {
       'Date': date,
       'Authorization': 'OSS $_id:$signature',
-      // if (securityToken != null) 'x-oss-security-token': securityToken!,
     };
   }
 }
