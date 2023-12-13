@@ -49,6 +49,7 @@ class FetchRecordsOfAdvertisementRsp {
               thumbnail: value['thumbnail'],
               sellingPrice: value['selling_price'],
               stock: value['stock'],
+              status: value['status'],
               productId: value['product_id'],
             );
           },

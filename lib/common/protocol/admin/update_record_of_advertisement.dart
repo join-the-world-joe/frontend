@@ -11,6 +11,7 @@ class UpdateRecordOfAdvertisementReq {
   List<String> _sellingPoints = [];
   String _image = '';
   int _stock = 0;
+  int _status = 0;
   String _thumbnail = '';
 
   UpdateRecordOfAdvertisementReq.construct({
@@ -24,6 +25,7 @@ class UpdateRecordOfAdvertisementReq {
     required String image,
     required String thumbnail,
     required int stock,
+    required int status,
   }) {
     _id = id;
     _name = name;
@@ -34,6 +36,7 @@ class UpdateRecordOfAdvertisementReq {
     _sellingPoints = sellingPoints;
     _image = image;
     _stock = stock;
+    _status = status;
     _thumbnail = thumbnail;
   }
 
@@ -43,6 +46,7 @@ class UpdateRecordOfAdvertisementReq {
       'name': utf8.encode(_name),
       'title': utf8.encode(_title),
       'stock': _stock,
+      'status':_status,
       'product_id': _productId,
       'selling_points': Convert.utf8EncodeListString(_sellingPoints),
       'selling_price': _sellingPrice,

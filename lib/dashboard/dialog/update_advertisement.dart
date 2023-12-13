@@ -17,6 +17,7 @@ import 'package:flutter_framework/common/protocol/admin/update_record_of_adverti
 import 'package:flutter_framework/common/business/admin/update_record_of_advertisement.dart';
 
 Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement advertisement) async {
+  int status = advertisement.getStatus();
   int curStage = 0;
   bool closed = false;
   List<String> sellingPoints = advertisement.getSellingPoints();
@@ -112,6 +113,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                 image: imageController.text,
                 name: nameController.text,
                 stock: int.parse(stockController.text),
+                status : status,
                 title: titleController.text,
                 productId: int.parse(productIdController.text),
                 sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
@@ -133,6 +135,34 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    Spacing.addVerticalSpace(10),
+                    SizedBox(
+                      width: 350,
+                      child: Row(
+                        children: [
+                          Spacing.addHorizontalSpace(85),
+                          Text(Translator.translate(Language.enable)),
+                          Radio<int?>(
+                            value: 1,
+                            groupValue: status,
+                            onChanged: (b) {
+                              status = b!;
+                              curStage++;
+                            },
+                          ),
+                          Spacing.addHorizontalSpace(50),
+                          Text(Translator.translate(Language.disable)),
+                          Radio<int?>(
+                            value: 0,
+                            groupValue: status,
+                            onChanged: (b) {
+                              status = b!;
+                              curStage++;
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 350,

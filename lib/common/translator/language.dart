@@ -194,6 +194,7 @@ class Language {
   static String placeOfOriginOfAdvertisement = "the place of origin of an advertisement";
   static String sellingPointsOfAdvertisement = "the selling points of an advertisement";
   static String stockOfAdvertisement = "the stock of an advertisement";
+  static String statusOfAdvertisement = "the status of an advertisement";
   static String imageOfAdvertisement = "the image of an advertisement";
   static String thumbnailOfAdvertisement = 'the thumbnail of an advertisement';
   static String newAdvertisement = "to new an advertisement";

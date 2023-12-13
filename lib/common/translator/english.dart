@@ -197,6 +197,7 @@ class English {
     Language.placeOfOriginOfAdvertisement: "Place Of Origin",
     Language.sellingPointsOfAdvertisement: "Selling Points",
     Language.stockOfAdvertisement: "Stock",
+    Language.statusOfAdvertisement : "Status",
     Language.imageOfAdvertisement: "Image",
     Language.thumbnailOfAdvertisement: 'Thumbnail',
     Language.newAdvertisement: "New Advertisement",

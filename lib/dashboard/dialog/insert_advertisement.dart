@@ -32,6 +32,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
   var placeOfOriginController = TextEditingController();
   var sellingPointController = TextEditingController();
   var stockController = TextEditingController();
+  var statusController = TextEditingController();
   var imageController = TextEditingController();
   var thumbnailController = TextEditingController();
 

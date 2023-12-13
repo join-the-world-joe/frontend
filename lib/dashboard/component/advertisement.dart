@@ -354,6 +354,7 @@ class _State extends State<Advertisement> {
                         DataColumn(label: Text(Translator.translate(Language.placeOfOriginOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.sellingPointsOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.stockOfAdvertisement))),
+                        DataColumn(label: Text(Translator.translate(Language.statusOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.thumbnailOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.imageOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.operation))),
@@ -414,6 +415,7 @@ class Source extends DataTableSource {
     var placeOfOrigin = Translator.translate(Language.loading);
     List<String> sellingPoints = [];
     var stock = Translator.translate(Language.loading);
+    var status = Translator.translate(Language.loading);
     var image = Translator.translate(Language.loading);
     var thumbnail = Translator.translate(Language.loading);
     var key = idList[index];
@@ -427,6 +429,7 @@ class Source extends DataTableSource {
         sellingPriceOfAdvertisement = dataMap[key]!.getSellingPrice().toString();
         placeOfOrigin = dataMap[key]!.getPlaceOfOrigin();
         stock = dataMap[key]!.getStock().toString();
+        status = dataMap[key]!.getStatus().toString();
         idOfGood = dataMap[key]!.getProductId().toString();
         image = dataMap[key]!.getImage().toString();
         sellingPoints = dataMap[key]!.getSellingPoints();
@@ -484,6 +487,7 @@ class Source extends DataTableSource {
           ),
         ),
         DataCell(Text(stock)),
+        DataCell(Text(status)),
         DataCell(Text(thumbnail)),
         DataCell(Text(image)),
         DataCell(
@@ -508,6 +512,7 @@ class Source extends DataTableSource {
                       thumbnail: thumbnail,
                       sellingPrice: int.parse(sellingPriceOfAdvertisement),
                       stock: int.parse(stock),
+                      status: int.parse(status),
                       productId: int.parse(idOfGood),
                     ),
                   ).then((value) {

@@ -17,6 +17,7 @@ import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisemen
 import 'package:flutter_framework/dashboard/model/ad_of_deals.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
@@ -454,7 +455,7 @@ class Source extends DataTableSource {
         DataCell(Text(productId)),
         DataCell(Text(productName)),
         DataCell(Text(titleOfAdvertisement)),
-        DataCell(Text(sellingPrice)),
+        DataCell(Text(Convert.intStringDivide10toDoubleString(sellingPrice))),
         DataCell(Text(placeOfOrigin)),
         DataCell(
           IconButton(

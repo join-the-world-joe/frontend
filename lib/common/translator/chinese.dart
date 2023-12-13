@@ -197,6 +197,7 @@ class Chinese {
     Language.placeOfOriginOfAdvertisement: "产地",
     Language.sellingPointsOfAdvertisement: "卖点",
     Language.stockOfAdvertisement: "库存",
+    Language.statusOfAdvertisement : "状态",
     Language.imageOfAdvertisement: "图片",
     Language.thumbnailOfAdvertisement: '缩略图',
     Language.newAdvertisement: "新增广告",

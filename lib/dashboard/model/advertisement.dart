@@ -11,6 +11,7 @@ class Advertisement {
   String _image = '';
   int _sellingPrice = 0;
   int _stock = 0;
+  int _status = 0;
   int _productId = 0;
   String _thumbnail = '';
 
@@ -38,6 +39,10 @@ class Advertisement {
     return _stock;
   }
 
+  int getStatus() {
+    return _status;
+  }
+
   int getSellingPrice() {
     return _sellingPrice;
   }
@@ -63,6 +68,7 @@ class Advertisement {
     required String image,
     required int sellingPrice,
     required int stock,
+    required int status,
     required int productId,
     required String thumbnail,
   }) {
@@ -74,6 +80,7 @@ class Advertisement {
     _image = image;
     _sellingPrice = sellingPrice;
     _stock = stock;
+    _status = status;
     _thumbnail = thumbnail;
     _productId = productId;
   }
