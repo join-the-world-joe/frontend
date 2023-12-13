@@ -3,7 +3,6 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../../plugin/crypto/aes.dart';
 import 'packet_client.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_framework/common/code/code.dart';
 
 class Websocket {
   String _url = '';
@@ -38,8 +37,8 @@ class Websocket {
       _channel = WebSocketChannel.connect(
         Uri.parse(_url),
       );
-    }catch(e) {
-     print('Websocket.connect fail: $e');
+    } catch (e) {
+      print('Websocket.connect fail: $e');
     }
     return '';
   }

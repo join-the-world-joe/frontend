@@ -5,7 +5,7 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/framework/result.dart';
 import 'package:http/http.dart' as http;
 
-class HTTP {
+class API {
   static Future<Result> get({required String scheme, required String host, required String port, required String endpoint, required Map<String, String> header, required Map<String, dynamic> query, required Duration timeout}) async {
     http.Response rsp;
     var uri = scheme == "http" ? Uri.http('$host:$port', endpoint, query) : Uri.https('$host:$port', endpoint, query);
