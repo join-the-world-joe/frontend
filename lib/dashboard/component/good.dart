@@ -13,6 +13,7 @@ import 'package:flutter_framework/dashboard/dialog/update_good.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
@@ -353,9 +354,7 @@ class _State extends State<Good> {
                         DataColumn(label: Text(Translator.translate(Language.nameOfGood))),
                         DataColumn(label: Text(Translator.translate(Language.buyingPrice))),
                         DataColumn(label: Text(Translator.translate(Language.vendorOfGood))),
-                        DataColumn(label: Text(Translator.translate(Language.statusOfGood))),
                         DataColumn(label: Text(Translator.translate(Language.contactOfVendor))),
-                        DataColumn(label: Text(Translator.translate(Language.description))),
                         DataColumn(label: Text(Translator.translate(Language.operation))),
                       ],
                       columnSpacing: 60,
@@ -410,9 +409,7 @@ class Source extends DataTableSource {
     var name = Translator.translate(Language.loading);
     var buyingPrice = Translator.translate(Language.loading);
     var vendor = Translator.translate(Language.loading);
-    var status = Translator.translate(Language.loading);
     var contact = Translator.translate(Language.loading);
-    var desc = Translator.translate(Language.loading);
 
     var key = idList[index];
 
@@ -423,9 +420,7 @@ class Source extends DataTableSource {
         name = dataMap[key]!.getName();
         buyingPrice = dataMap[key]!.getBuyingPrice().toString();
         vendor = dataMap[key]!.getVendor();
-        status = dataMap[key]!.getStatus().toString();
         contact = dataMap[key]!.getContact();
-        desc = dataMap[key]!.getDescription();
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
@@ -462,11 +457,9 @@ class Source extends DataTableSource {
       cells: [
         DataCell(Text(id)),
         DataCell(Text(name)),
-        DataCell(Text(buyingPrice)),
+        DataCell(Text(Convert.intStringDivide10toDoubleString(buyingPrice))),
         DataCell(Text(vendor)),
-        DataCell(Text(status)),
         DataCell(Text(contact)),
-        DataCell(Text(desc)),
         DataCell(
           Row(
             children: [
@@ -474,14 +467,15 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.edit),
                 tooltip: Translator.translate(Language.update),
                 onPressed: () async {
+                  if (id.compareTo(Translator.translate(Language.loading)) == 0) {
+                    return;
+                  }
                   showUpdateGoodDialog(
                     buildContext,
                     Product.construct(
                       id: int.parse(id),
                       name: name,
                       buyingPrice: int.parse(buyingPrice),
-                      description: desc,
-                      status: int.parse(status),
                       vendor: vendor,
                       createdAt: "",
                       contact: contact,

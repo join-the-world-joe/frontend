@@ -59,6 +59,7 @@ class Language {
   static String valueOfNull = "the value of null";
   static String loading = "the status of loading";
   static String clickToView = "press button to view the detail info";
+  static String titleOfRefreshOperation = "the title of refresh operation";
 
   // menu
   static String titleOfParentMenu = 'the title of parent menu';
@@ -169,6 +170,8 @@ class Language {
   static String productNameNotProvided = "the name of product not provided";
   static String removeRecordSuccessfully = "the operation of removal is success";
   static String updateRecordSuccessfully = "the operation of update is success";
+  static String insertRecordSuccessfully = 'the operation of inert is success';
+  static String removeOperationFailure = 'the operation of removal is fail';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';
@@ -192,9 +195,9 @@ class Language {
   static String sellingPointsOfAdvertisement = "the selling points of an advertisement";
   static String stockOfAdvertisement = "the stock of an advertisement";
   static String imageOfAdvertisement = "the image of an advertisement";
+  static String thumbnailOfAdvertisement = 'the thumbnail of an advertisement';
   static String newAdvertisement = "to new an advertisement";
   static String modifyGood = "to modify the information of good";
-  static String peekInfoFromProductId = "to peek the information from productId";
   static String productIdIsEmpty = "the product id is empty";
   static String withoutProductInfoInResponse = "there is no product info in response";
   static String nameOfAdvertisementIsEmpty = "the name of advertisement not provided";
@@ -213,10 +216,16 @@ class Language {
   static String buyingPriceNotProvided = "the buying price not provided";
   static String vendorOfProductNotProvided = "the vendor of product not provided";
   static String contactOfVendorNotProvided = "the contact of vendor not provided";
+  static String descriptionOfProduct = 'the description of product';
 
   // Wechat
   static String titleOfPublishOfAdvertisement = 'the title of publish operation of advertisement';
-  static String titleOfApproveOfAdvertisement = 'the title of approve operation of advertisement';
+  static String approveAdvertisementToGroup = 'to approve an advertisement to group';
   static String noRecordsOfADOfDeals = "there is no records of ad of deals";
-  static String titleOfRejectOfAdvertisement = 'the title of reject operation of advertisement';
+  static String rejectAdvertisementFromGroup = 'to reject an advertisement from group';
+  static String advertisementOfADOfDealsNotProvided = 'there is no advertisements provided for deals';
+  static String publishAdvertisementsSuccessfully = 'publish advertisements successfully';
+  static String advertisementIdIsEmpty = 'the advertisement id is empty';
+  static String peekInfoFromProductId = "to peek the information from product id";
+  static String peekInfoFromAdvertisementId = 'to peek the information from advertisement id';
 }

@@ -63,6 +63,7 @@ class English {
     Language.valueOfNull: '',
     Language.loading: "Loading",
     Language.clickToView: "Click to view",
+    Language.titleOfRefreshOperation: 'Refresh',
 
     // menu
     Language.titleOfParentMenu: 'Parent',
@@ -172,6 +173,8 @@ class English {
     Language.networkConnected: 'Network Connected',
     Language.removeRecordSuccessfully: 'Remove Record Successfully',
     Language.updateRecordSuccessfully: 'Update Record Successfully',
+    Language.insertRecordSuccessfully: 'Insert Record Successfully',
+    Language.removeOperationFailure: 'Remove Operation Fail',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',
@@ -195,9 +198,9 @@ class English {
     Language.sellingPointsOfAdvertisement: "Selling Points",
     Language.stockOfAdvertisement: "Stock",
     Language.imageOfAdvertisement: "Image",
+    Language.thumbnailOfAdvertisement: 'Thumbnail',
     Language.newAdvertisement: "New Advertisement",
     Language.modifyGood: "Modify Product",
-    Language.peekInfoFromProductId: "Peek",
     Language.productIdIsEmpty: "Product ID is empty!",
     Language.withoutProductInfoInResponse: "Product not found",
     Language.nameOfAdvertisementIsEmpty: "Name not provided",
@@ -216,12 +219,18 @@ class English {
     Language.buyingPriceNotProvided: "Buying Price Not Provided",
     Language.vendorOfProductNotProvided: "the vendor of product not provided",
     Language.contactOfVendorNotProvided: "the contact of vendor not provided",
+    Language.descriptionOfProduct: 'Product Info',
 
     // WeChat
     Language.titleOfPublishOfAdvertisement: 'Publish',
-    Language.titleOfApproveOfAdvertisement: "Approve",
+    Language.approveAdvertisementToGroup: "Approve",
     Language.noRecordsOfADOfDeals: 'Records of Deals are empty',
-    Language.titleOfRejectOfAdvertisement : "Reject",
+    Language.rejectAdvertisementFromGroup: "Reject",
+    Language.advertisementOfADOfDealsNotProvided: 'Advertisement Not Provided',
+    Language.publishAdvertisementsSuccessfully: 'Publish Successfully',
+    Language.advertisementIdIsEmpty: 'Advertisement ID Not Provided',
+    Language.peekInfoFromProductId: "Peek",
+    Language.peekInfoFromAdvertisementId: 'Peek',
   };
 
   static String getName() {

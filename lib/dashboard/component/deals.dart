@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/business/admin/insert_record_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/business/advertisement/fetch_id_list_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/business/advertisement/fetch_records_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/protocol/admin/insert_record_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/protocol/advertisement/fetch_id_list_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/protocol/advertisement/fetch_records_of_ad_of_deals.dart';
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/dialog/remove_good.dart';
-import 'package:flutter_framework/dashboard/dialog/update_good.dart';
+import 'package:flutter_framework/dashboard/dialog/approve_advertisement_of_ad_of_deals.dart';
+import 'package:flutter_framework/dashboard/dialog/reject_advertisement_of_ad_of_deals.dart';
+import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/model/ad_of_deals.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -20,12 +22,7 @@ import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
-import '../model/product.dart';
 import 'package:flutter_framework/common/protocol/advertisement/fetch_version_of_ad_of_deals.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_id_list_of_good.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_records_of_good.dart';
-import 'package:flutter_framework/common/business/admin/fetch_records_of_good.dart';
-import 'package:flutter_framework/common/business/advertisement/fetch_version_of_ad_of_deals.dart';
 
 class Deals extends StatefulWidget {
   const Deals({Key? key}) : super(key: key);
@@ -70,11 +67,32 @@ class _State extends State<Deals> {
       Future.delayed(
         const Duration(milliseconds: 500),
         () {
-          print('Good.navigate to $page');
+          print('Deals.navigate to $page');
           Navigate.to(context, Screen.build(page));
         },
       );
     }
+  }
+
+  void insertRecordOfADOfDealsHandler(Map<String, dynamic> body) {
+    try {
+      InsertRecordOfADOfDealsRsp rsp = InsertRecordOfADOfDealsRsp.fromJson(body);
+      if (rsp.getCode() == Code.oK) {
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.publishAdvertisementsSuccessfully),
+        );
+      } else {
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
+      }
+    } catch (e) {
+      print("Deals.insertRecordOfADOfDealsHandler failure, $e");
+    } finally {}
   }
 
   void fetchVersionOfADOfDealsHandler(Map<String, dynamic> body) {
@@ -98,7 +116,7 @@ class _State extends State<Deals> {
     try {
       FetchIdListOfADOfDealsRsp rsp = FetchIdListOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print("Good.fetchIdListOfADOfDealsHandler.idList: ${rsp.getIdList()}");
+        print("Deals.fetchIdListOfADOfDealsHandler.idList: ${rsp.getIdList()}");
         if (rsp.getIdList().isEmpty) {
           showMessageDialog(
             context,
@@ -119,7 +137,7 @@ class _State extends State<Deals> {
         return;
       }
     } catch (e) {
-      print("Good.fetchIdListOfGoodHandler failure, $e");
+      print("Deals.fetchIdListOfGoodHandler failure, $e");
       return;
     }
   }
@@ -161,7 +179,7 @@ class _State extends State<Deals> {
         return;
       }
     } catch (e) {
-      print("Good.fetchRecordsOfGoodHandler failure, $e");
+      print("Deals.fetchRecordsOfADOfDealsHandler failure, $e");
       return;
     } finally {}
   }
@@ -186,19 +204,21 @@ class _State extends State<Deals> {
     var body = packet.getBody();
 
     try {
-      print("Good.observe: major: $major, minor: $minor");
+      print("Deals.observe: major: $major, minor: $minor");
       if (major == Major.advertisement && minor == Minor.advertisement.fetchVersionOfADOfDealsRsp) {
         fetchVersionOfADOfDealsHandler(body);
       } else if (major == Major.advertisement && minor == Minor.advertisement.fetchRecordsOfADOfDealsRsp) {
         fetchRecordsOfADOfDealsHandler(body);
       } else if (major == Major.advertisement && minor == Minor.advertisement.fetchIdListOfADOfDealsRsp) {
         fetchIdListOfADOfDealsHandler(body);
+      } else if (major == Major.admin && minor == Minor.admin.insertRecordOfADOfDealsRsp) {
+        insertRecordOfADOfDealsHandler(body);
       } else {
-        print("Good.observe warning: $major-$minor doesn't matched");
+        print("Deals.observe warning: $major-$minor doesn't matched");
       }
       return;
     } catch (e) {
-      print('Good.observe($major-$minor).e: ${e.toString()}');
+      print('Deals.observe($major-$minor).e: ${e.toString()}');
       return;
     }
   }
@@ -256,16 +276,51 @@ class _State extends State<Deals> {
                       controller: scrollController,
                       actions: [
                         ElevatedButton.icon(
-                          icon: const Icon(Icons.approval_rounded),
-                          onPressed: () async {},
+                          icon: const Icon(Icons.refresh),
+                          onPressed: () async {
+                            resetSource();
+                            curStage++;
+                            fetchIdListOfADOfDeals();
+                          },
                           label: Text(
-                            Translator.translate(Language.titleOfApproveOfAdvertisement),
+                            Translator.translate(Language.titleOfRefreshOperation),
+                            style: const TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.add),
+                          onPressed: () async {
+                            showApproveAdvertisementOfADOfDealsDialog(context).then(
+                              (value) => () {
+                                if (value > 0) {
+                                  if (!idList.contains(value)) {
+                                    idList.add(value);
+                                    curStage++;
+                                  }
+                                }
+                              }(),
+                            );
+                          },
+                          label: Text(
+                            Translator.translate(Language.approveAdvertisementToGroup),
                             style: const TextStyle(color: Colors.white, fontSize: 15),
                           ),
                         ),
                         ElevatedButton.icon(
                           icon: const Icon(Icons.publish),
-                          onPressed: () async {},
+                          onPressed: () async {
+                            if (idList.isEmpty) {
+                              showMessageDialog(
+                                context,
+                                Translator.translate(Language.titleOfNotification),
+                                Translator.translate(Language.advertisementOfADOfDealsNotProvided),
+                              );
+                              return;
+                            }
+                            insertRecordOfADOfDeals(
+                              advertisementIdList: idList,
+                            );
+                          },
                           label: Text(
                             Translator.translate(Language.titleOfPublishOfAdvertisement),
                             style: const TextStyle(color: Colors.white, fontSize: 15),
@@ -284,8 +339,8 @@ class _State extends State<Deals> {
                         DataColumn(label: Text(Translator.translate(Language.placeOfOriginOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.sellingPointsOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.stockOfAdvertisement))),
+                        DataColumn(label: Text(Translator.translate(Language.thumbnailOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.imageOfAdvertisement))),
-                        DataColumn(label: Text(Translator.translate(Language.description))),
                         DataColumn(label: Text(Translator.translate(Language.operation))),
                       ],
                       columnSpacing: 60,
@@ -345,7 +400,6 @@ class Source extends DataTableSource {
     var placeOfOrigin = Translator.translate(Language.loading);
     var stockOfAdvertisement = Translator.translate(Language.loading);
     List<String> sellingPoints = [];
-    var desc = Translator.translate(Language.loading);
 
     var key = idList[index];
 
@@ -360,7 +414,6 @@ class Source extends DataTableSource {
         sellingPrice = dataMap[key]!.getSellingPrice().toString();
         placeOfOrigin = dataMap[key]!.getPlaceOfOrigin();
         stockOfAdvertisement = dataMap[key]!.getStock().toString();
-        desc = dataMap[key]!.getDescription();
         sellingPoints = dataMap[key]!.getSellingPoints();
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
@@ -403,17 +456,50 @@ class Source extends DataTableSource {
         DataCell(Text(titleOfAdvertisement)),
         DataCell(Text(sellingPrice)),
         DataCell(Text(placeOfOrigin)),
-        DataCell(Text('sellingPoints')),
+        DataCell(
+          IconButton(
+            tooltip: Translator.translate(Language.clickToView),
+            icon: const Icon(Icons.more_horiz),
+            onPressed: () {
+              showSellingPointOfAdvertisementDialog(buildContext, advertisementId, sellingPoints);
+            },
+          ),
+        ),
         DataCell(Text(stockOfAdvertisement)),
-        DataCell(Text('image')),
-        DataCell(Text(desc)),
+        DataCell(
+          IconButton(
+            tooltip: Translator.translate(Language.clickToView),
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // show image
+            },
+          ),
+        ),
+        DataCell(
+          IconButton(
+            tooltip: Translator.translate(Language.clickToView),
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // show image
+            },
+          ),
+        ),
         DataCell(
           Row(
             children: [
               IconButton(
                 icon: const Icon(Icons.remove),
-                tooltip: Translator.translate(Language.titleOfRejectOfAdvertisement),
-                onPressed: () async {},
+                tooltip: Translator.translate(Language.rejectAdvertisementFromGroup),
+                onPressed: () async {
+                  await showRejectAdvertisementOfADOfDealsDialog(buildContext, advertisementId, advertisementName).then(
+                    (value) => () {
+                      if (value) {
+                        idList.removeAt(index);
+                        notifyListeners();
+                      }
+                    }(),
+                  );
+                },
               ),
             ],
           ),

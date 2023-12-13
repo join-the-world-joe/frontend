@@ -8,11 +8,10 @@ class UpdateRecordOfAdvertisementReq {
   int _productId = 0;
   int _sellingPrice = 0;
   String _placeOfOrigin = '';
-  int _status = 0;
   List<String> _sellingPoints = [];
-  String _url = '';
+  String _image = '';
   int _stock = 0;
-  String _description = '';
+  String _thumbnail = '';
 
   UpdateRecordOfAdvertisementReq.construct({
     required int id,
@@ -21,11 +20,10 @@ class UpdateRecordOfAdvertisementReq {
     required int productId,
     required int sellingPrice,
     required String placeOfOrigin,
-    required int status,
     required List<String> sellingPoints,
-    required String url,
+    required String image,
+    required String thumbnail,
     required int stock,
-    required String description,
   }) {
     _id = id;
     _name = name;
@@ -34,10 +32,9 @@ class UpdateRecordOfAdvertisementReq {
     _sellingPrice = sellingPrice;
     _placeOfOrigin = placeOfOrigin;
     _sellingPoints = sellingPoints;
-    _status = status;
-    _url = url;
+    _image = image;
     _stock = stock;
-    _description = description;
+    _thumbnail = thumbnail;
   }
 
   Map<String, dynamic> toJson() {
@@ -47,12 +44,11 @@ class UpdateRecordOfAdvertisementReq {
       'title': utf8.encode(_title),
       'stock': _stock,
       'product_id': _productId,
-      'selling_points': Convert.utf8Encode(_sellingPoints),
+      'selling_points': Convert.utf8EncodeListString(_sellingPoints),
       'selling_price': _sellingPrice,
-      'url': utf8.encode(_url),
-      'status': _status,
+      'image': utf8.encode(_image),
       'place_of_origin': utf8.encode(_placeOfOrigin),
-      'description': utf8.encode(_description),
+      'thumbnail': utf8.encode(_thumbnail),
     };
   }
 }

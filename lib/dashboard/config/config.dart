@@ -4,6 +4,7 @@ class Config {
   static String host = '127.0.0.1';
   static String port = '10001';
   static String url = 'ws://$host:$port/ws';
+
   // static String url = 'www.baidu.com';
   static const bool encryption = true;
   static Duration httpDefaultTimeout = const Duration(seconds: 5);
@@ -19,4 +20,8 @@ ppXQcRvrF1cB4drkv0haU24Y7m5qYtT52Kr539RdbKKdLAM6s20lWy7+5C0Dgacd
 wYWd/7PeCELyEipZJL07Vro7Ate8Bfjya+wltGK9+XNUIHiumUKULW4KDx21+1NL
 AUeJ6PeW+DAkmJWF6QIDAQAB
 -----END PUBLIC KEY-----''';
+
+  static RegExp doubleRegExp = RegExp(r'^(\d+)?\.?\d?');
+  static int lengthOfBuyingPrice = 11;
+  static int lengthOfSellingPrice = 11;
 }

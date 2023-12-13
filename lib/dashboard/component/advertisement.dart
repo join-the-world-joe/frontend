@@ -13,6 +13,7 @@ import 'package:flutter_framework/dashboard/dialog/update_advertisement.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
@@ -190,7 +191,7 @@ class _State extends State<Advertisement> {
         return;
       }
     } catch (e) {
-      print("Advertisement.fetchRecordsOfGoodHandler failure, $e");
+      print("Advertisement.fetchRecordsOfAdvertisementHandler failure, $e");
       return;
     } finally {}
   }
@@ -353,8 +354,8 @@ class _State extends State<Advertisement> {
                         DataColumn(label: Text(Translator.translate(Language.placeOfOriginOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.sellingPointsOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.stockOfAdvertisement))),
+                        DataColumn(label: Text(Translator.translate(Language.thumbnailOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.imageOfAdvertisement))),
-                        DataColumn(label: Text(Translator.translate(Language.description))),
                         DataColumn(label: Text(Translator.translate(Language.operation))),
                       ],
                       columnSpacing: 60,
@@ -413,11 +414,8 @@ class Source extends DataTableSource {
     var placeOfOrigin = Translator.translate(Language.loading);
     List<String> sellingPoints = [];
     var stock = Translator.translate(Language.loading);
-    var url = Translator.translate(Language.loading);
-    var description = Translator.translate(Language.loading);
-    var operation = Translator.translate(Language.loading);
-    var status = Translator.translate(Language.loading);
-
+    var image = Translator.translate(Language.loading);
+    var thumbnail = Translator.translate(Language.loading);
     var key = idList[index];
 
     if (boolMap.containsKey(key)) {
@@ -429,11 +427,10 @@ class Source extends DataTableSource {
         sellingPriceOfAdvertisement = dataMap[key]!.getSellingPrice().toString();
         placeOfOrigin = dataMap[key]!.getPlaceOfOrigin();
         stock = dataMap[key]!.getStock().toString();
-        status = dataMap[key]!.getStatus().toString();
         idOfGood = dataMap[key]!.getProductId().toString();
-        url = dataMap[key]!.getUrl().toString();
-        description = dataMap[key]!.getDescription().toString();
+        image = dataMap[key]!.getImage().toString();
         sellingPoints = dataMap[key]!.getSellingPoints();
+        thumbnail = dataMap[key]!.getThumbnail();
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
@@ -472,21 +469,23 @@ class Source extends DataTableSource {
         DataCell(Text(idOfGood)),
         DataCell(Text(nameOfAdvertisement)),
         DataCell(Text(titleOfAdvertisement)),
-        DataCell(Text(sellingPriceOfAdvertisement)),
+        DataCell(Text(Convert.intStringDivide10toDoubleString(sellingPriceOfAdvertisement))),
         DataCell(Text(placeOfOrigin)),
         DataCell(
           IconButton(
             tooltip: Translator.translate(Language.clickToView),
             icon: const Icon(Icons.more_horiz),
             onPressed: () {
-              //   showRoleListOfUserDialog(context, _data[index]);
+              if (idOfAdvertisement.compareTo(Translator.translate(Language.loading)) == 0) {
+                return;
+              }
               showSellingPointOfAdvertisementDialog(buildContext, idOfAdvertisement, sellingPoints);
             },
           ),
         ),
         DataCell(Text(stock)),
-        DataCell(Text(url)),
-        DataCell(Text(description)),
+        DataCell(Text(thumbnail)),
+        DataCell(Text(image)),
         DataCell(
           Row(
             children: [
@@ -494,6 +493,9 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.edit),
                 tooltip: Translator.translate(Language.update),
                 onPressed: () async {
+                  if (idOfAdvertisement.compareTo(Translator.translate(Language.loading)) == 0) {
+                    return;
+                  }
                   showUpdateAdvertisementDialog(
                     buildContext,
                     model.Advertisement.construct(
@@ -502,10 +504,9 @@ class Source extends DataTableSource {
                       title: titleOfAdvertisement,
                       placeOfOrigin: placeOfOrigin,
                       sellingPoints: sellingPoints,
-                      url: url,
+                      image: image,
+                      thumbnail: thumbnail,
                       sellingPrice: int.parse(sellingPriceOfAdvertisement),
-                      description: description,
-                      status: int.parse(status),
                       stock: int.parse(stock),
                       productId: int.parse(idOfGood),
                     ),

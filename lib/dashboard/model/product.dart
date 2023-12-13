@@ -4,8 +4,6 @@ class Product {
   late int _id;
   late String _name;
   late int _buyingPrice;
-  late String _description;
-  late int _status;
   late String _vendor;
   late String _createdAt;
   late String _contact;
@@ -21,14 +19,6 @@ class Product {
 
   int getBuyingPrice() {
     return _buyingPrice;
-  }
-
-  String getDescription() {
-    return _description;
-  }
-
-  int getStatus() {
-    return _status;
   }
 
   String getVendor() {
@@ -51,8 +41,6 @@ class Product {
     required int id,
     required String name,
     required int buyingPrice,
-    required String description,
-    required int status,
     required String vendor,
     required String createdAt,
     required String contact,
@@ -61,8 +49,6 @@ class Product {
     _id = id;
     _name = name;
     _buyingPrice = buyingPrice;
-    _description = description;
-    _status = status;
     _vendor = vendor;
     _createdAt = createdAt;
     _contact = contact;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -16,15 +17,13 @@ import 'package:flutter_framework/common/protocol/admin/update_record_of_good.da
 import 'package:flutter_framework/common/business/admin/update_record_of_good.dart';
 
 Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
-  int status = product.getStatus();
   int curStage = 0;
   bool closed = false;
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController(text: product.getName());
   var vendorController = TextEditingController(text: product.getVendor());
   var contactController = TextEditingController(text: product.getContact());
-  var descriptionController = TextEditingController(text: product.getDescription());
-  var buyingPriceController = TextEditingController(text: product.getBuyingPrice().toString());
+  var buyingPriceController = TextEditingController(text: Convert.intStringDivide10toDoubleString(product.getBuyingPrice().toString()));
   var idController = TextEditingController(text: product.getId().toString());
 
   Stream<int>? yeildData() async* {
@@ -113,11 +112,9 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
               updateRecordOfGood(
                 name: nameController.text,
                 productId: int.parse(idController.text),
-                buyingPrice: int.parse(buyingPriceController.text),
-                status: status,
+                buyingPrice: Convert.doubleStringMultiple10toInt(buyingPriceController.text),
                 vendor: vendorController.text,
                 contact: contactController.text,
-                description: descriptionController.text,
               );
             },
             child: Text(Translator.translate(Language.confirm)),
@@ -133,34 +130,6 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: Row(
-                        children: [
-                          Spacing.addHorizontalSpace(85),
-                          Text(Translator.translate(Language.enable)),
-                          Radio<int?>(
-                            value: 1,
-                            groupValue: status,
-                            onChanged: (b) {
-                              status = b!;
-                              curStage++;
-                            },
-                          ),
-                          Spacing.addHorizontalSpace(50),
-                          Text(Translator.translate(Language.disable)),
-                          Radio<int?>(
-                            value: 0,
-                            groupValue: status,
-                            onChanged: (b) {
-                              status = b!;
-                              curStage++;
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 350,
@@ -197,22 +166,11 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
                       child: TextFormField(
                         controller: buyingPriceController,
                         inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                          LengthLimitingTextInputFormatter(11),
+                          FilteringTextInputFormatter.allow(Config.doubleRegExp),
+                          LengthLimitingTextInputFormatter(Config.lengthOfBuyingPrice),
                         ],
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.buyingPrice),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: descriptionController,
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.description),
                         ),
                       ),
                     ),

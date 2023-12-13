@@ -29,24 +29,29 @@ class Convert {
     return utf8.decode(list);
   }
 
-  static List<dynamic> utf8Encode(List<String> temp) {
+  static List<dynamic> utf8EncodeListString(List<String> input) {
     List<dynamic> output = [];
-    for (var element in temp) {
-      output.add(utf8.encode(element));
+    try {
+      List<dynamic> temp = [];
+      for (var element in input) {
+        temp.add(utf8.encode(element));
+      }
+      output = temp;
+    } catch (e) {
+      print('Convert.utf8EncodeListString failure, err: $e');
     }
+
     return output;
   }
 
-  static String stringList2Json(List<String> input) {
-    String output = "[";
-    for (var i = 0; i < input.length; i++) {
-      if (i < input.length - 1) {
-        output += "\"${utf8.encode(input[i]).toString()}\",";
-        continue;
-      }
-      output += "\"${utf8.encode(input[i]).toString()}\"";
+  static dynamic utf8Encode(String input) {
+    dynamic output = '';
+    try {
+      var temp = utf8.encode(input);
+      output = temp;
+    } catch (e) {
+      print('Convert.utf8Encode failure, err: $e');
     }
-    output += "]";
     return output;
   }
 
@@ -58,6 +63,28 @@ class Convert {
     List<String> output = [];
     for (var e in input) {
       output.add(bytes2String(base64Decode(e)));
+    }
+    return output;
+  }
+
+  static int doubleStringMultiple10toInt(String input) {
+    int output = -999999;
+    try {
+      var temp = (double.parse(input) * 10).toInt();
+      output = temp;
+    } catch (e) {
+      print('doubleMultiple10toInt failure($input), err: $e');
+    }
+    return output;
+  }
+
+  static String intStringDivide10toDoubleString(String input) {
+    String output = input;
+    try {
+      String temp = (double.parse(input) / 10).toString();
+      output = temp;
+    } catch (e) {
+      print('intDivide10toDoubleString failure($input), err: $e');
     }
     return output;
   }

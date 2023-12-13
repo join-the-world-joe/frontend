@@ -8,9 +8,7 @@ void insertRecordOfGood({
   required String name,
   required String vendor,
   required String contact,
-  required int status,
   required int buyingPrice,
-  required String description,
 }) {
   Runtime.request(
     major: Major.admin,
@@ -20,8 +18,6 @@ void insertRecordOfGood({
       vendor: vendor,
       contact: contact,
       buyingPrice: buyingPrice,
-      description: description,
-      status: status,
     ),
   );
 

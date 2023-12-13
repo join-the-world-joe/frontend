@@ -50,10 +50,9 @@ class FetchRecordsOfADOfDealsRsp {
             sellingPrice: element['selling_price'],
             productId: element['product_id'],
             productName: element['product_name'],
-            description: element['description'],
             placeOfOrigin: element['place_of_origin'],
             sellingPoints: Convert.base64StringList2ListString(List<String>.from(element['selling_points'] as List)),
-            imagePath: element['image_path'],
+            image: element['image'],
           );
         }
       }

@@ -5,23 +5,17 @@ class InsertRecordOfGoodReq {
   String _vendor = '';
   String _contact = '';
   int _buyingPrice = -1;
-  String _description = '';
-  int _status = 0;
 
   InsertRecordOfGoodReq.construct({
     required String name,
     required String vendor,
     required String contact,
     required int buyingPrice,
-    required String description,
-    required int status,
   }) {
     _name = name;
     _vendor = vendor;
     _contact = contact;
     _buyingPrice = buyingPrice;
-    _description = description;
-    _status = status;
   }
 
   Map<String, dynamic> toJson() {
@@ -30,8 +24,6 @@ class InsertRecordOfGoodReq {
       'vendor': utf8.encode(_vendor),
       'contact': utf8.encode(_contact),
       'buying_price': _buyingPrice,
-      'description': utf8.encode(_description),
-      'status': _status,
     };
   }
 }

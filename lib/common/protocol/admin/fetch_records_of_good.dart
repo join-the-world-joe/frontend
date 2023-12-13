@@ -42,8 +42,6 @@ class FetchRecordsOfGoodRsp {
               id: value['id'],
               name: value['name'],
               buyingPrice: value['buying_price'],
-              description: value['description'],
-              status: value['status'],
               vendor: value['vendor'],
               createdAt: value['created_at'],
               contact: value['contact'],

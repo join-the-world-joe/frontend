@@ -8,12 +8,11 @@ void insertRecordOfAdvertisement({
   required String title,
   required int sellingPrice,
   required List<String> sellingPoints,
-  required String url,
+  required String image,
   required String placeOfOrigin,
-  required String description,
-  required int status,
   required int stock,
   required int productId,
+  required String thumbnail,
 }) {
   Runtime.request(
     major: Major.admin,
@@ -24,11 +23,10 @@ void insertRecordOfAdvertisement({
       sellingPrice: sellingPrice,
       sellingPoints: sellingPoints,
       placeOfOrigin: placeOfOrigin,
-      url: url,
+      image: image,
       stock: stock,
       productId: productId,
-      status: status,
-      description: description,
+      thumbnail: thumbnail,
     ),
   );
 

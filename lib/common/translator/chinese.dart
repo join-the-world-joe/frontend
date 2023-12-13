@@ -63,6 +63,7 @@ class Chinese {
     Language.valueOfNull: '',
     Language.loading: "加载中",
     Language.clickToView: "点击查看",
+    Language.titleOfRefreshOperation: '刷新',
 
     // menu
     Language.titleOfParentMenu: '父级菜单',
@@ -172,6 +173,8 @@ class Chinese {
     Language.networkConnected: '网络已连接',
     Language.removeRecordSuccessfully: '删除成功',
     Language.updateRecordSuccessfully: '更新成功',
+    Language.insertRecordSuccessfully: '插入成功',
+    Language.removeOperationFailure: '删除失败',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',
@@ -195,9 +198,9 @@ class Chinese {
     Language.sellingPointsOfAdvertisement: "卖点",
     Language.stockOfAdvertisement: "库存",
     Language.imageOfAdvertisement: "图片",
+    Language.thumbnailOfAdvertisement: '缩略图',
     Language.newAdvertisement: "新增广告",
     Language.modifyGood: "更新商品信息",
-    Language.peekInfoFromProductId: "查看商品信息",
     Language.productIdIsEmpty: "商品ID为空",
     Language.withoutProductInfoInResponse: "未找到商品信息",
     Language.nameOfAdvertisementIsEmpty: "未提供广告名称",
@@ -215,13 +218,19 @@ class Chinese {
     Language.productNameNotProvided: "未提供商品名称",
     Language.buyingPriceNotProvided: "未提供进货价",
     Language.vendorOfProductNotProvided: "未填写供应商",
-    Language.contactOfVendorNotProvided:"未填写供应商联系方式",
+    Language.contactOfVendorNotProvided: "未填写供应商联系方式",
+    Language.descriptionOfProduct: '商品描述',
 
     // Wechat
-    Language.titleOfPublishOfAdvertisement : '发布',
-    Language.titleOfApproveOfAdvertisement: '上架',
+    Language.titleOfPublishOfAdvertisement: '发布',
+    Language.approveAdvertisementToGroup: '添加广告',
     Language.noRecordsOfADOfDeals: '未发布任何特价广告',
-    Language.titleOfRejectOfAdvertisement : "下架",
+    Language.rejectAdvertisementFromGroup: "移除广告",
+    Language.advertisementOfADOfDealsNotProvided: '未关联任何广告',
+    Language.publishAdvertisementsSuccessfully: '发布成功',
+    Language.advertisementIdIsEmpty: '广告ID为空',
+    Language.peekInfoFromProductId: "查看商品信息",
+    Language.peekInfoFromAdvertisementId: '查看广告信息',
   };
 
   static String getName() {

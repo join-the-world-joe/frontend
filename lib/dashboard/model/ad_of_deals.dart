@@ -5,11 +5,10 @@ class ADOfDeals {
   int _productId = -1;
   String _productName = '';
   List<String> _sellingPoints = [];
-  String _description = '';
   String _placeOfOrigin = '';
   int _advertisementId = -1;
   String _advertisementName = '';
-  String _imagePath = '';
+  String _image = '';
 
   ADOfDeals.construct({
     required String title,
@@ -18,9 +17,8 @@ class ADOfDeals {
     required int productId,
     required String productName,
     required List<String> sellingPoints,
-    required String description,
     required String placeOfOrigin,
-    required String imagePath,
+    required String image,
     required int advertisementId,
     required String advertisementName,
   }) {
@@ -30,9 +28,8 @@ class ADOfDeals {
     _productId = productId;
     _productName = productName;
     _sellingPoints = sellingPoints;
-    _description = description;
     _placeOfOrigin = placeOfOrigin;
-    _imagePath = imagePath;
+    _image = image;
     _advertisementId = advertisementId;
     _advertisementName = advertisementName;
   }
@@ -57,12 +54,8 @@ class ADOfDeals {
     return _productName;
   }
 
-  String getDescription() {
-    return _description;
-  }
-
-  String getImagePath() {
-    return _imagePath;
+  String getImage() {
+    return _image;
   }
 
   List<String> getSellingPoints() {

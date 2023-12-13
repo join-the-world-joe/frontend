@@ -38,17 +38,16 @@ class FetchRecordsOfAdvertisementRsp {
         final some = Map.from(body['records_of_advertisement']);
         // print('some: $some');
         some.forEach(
-              (key, value) {
-                _dataMap[int.parse(key)] = Advertisement.construct(
+          (key, value) {
+            _dataMap[int.parse(key)] = Advertisement.construct(
               id: int.parse(key),
               name: value['name'],
               title: value['title'],
               placeOfOrigin: value['place_of_origin'],
               sellingPoints: Convert.base64StringList2ListString(List<String>.from(value['selling_points'] as List)),
-              url: value['url'],
+              image: value['image'],
+              thumbnail: value['thumbnail'],
               sellingPrice: value['selling_price'],
-              description: value['description'],
-              status: value['status'],
               stock: value['stock'],
               productId: value['product_id'],
             );

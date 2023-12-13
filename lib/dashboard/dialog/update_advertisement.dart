@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -16,20 +17,19 @@ import 'package:flutter_framework/common/protocol/admin/update_record_of_adverti
 import 'package:flutter_framework/common/business/admin/update_record_of_advertisement.dart';
 
 Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement advertisement) async {
-  int status = advertisement.getStatus();
   int curStage = 0;
   bool closed = false;
   List<String> sellingPoints = advertisement.getSellingPoints();
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController(text: advertisement.getName());
   var titleController = TextEditingController(text: advertisement.getTitle());
-  var sellingPriceController = TextEditingController(text: advertisement.getSellingPrice().toString());
-  var descriptionController = TextEditingController(text: advertisement.getDescription());
+  var sellingPriceController = TextEditingController(text: Convert.intStringDivide10toDoubleString(advertisement.getSellingPrice().toString()));
   var placeOfOriginController = TextEditingController(text: advertisement.getPlaceOfOrigin());
-  var urlController = TextEditingController(text: advertisement.getUrl());
+  var imageController = TextEditingController(text: advertisement.getImage());
   var stockController = TextEditingController(text: advertisement.getStock().toString());
   var productIdController = TextEditingController(text: advertisement.getProductId().toString());
   var sellingPointController = TextEditingController();
+  var thumbnailController = TextEditingController(text: advertisement.getThumbnail());
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -52,7 +52,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
           Translator.translate(Language.titleOfNotification),
           Translator.translate(Language.updateRecordSuccessfully),
         ).then(
-          (value) {
+              (value) {
             Navigator.pop(context, true);
           },
         );
@@ -108,17 +108,17 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
             onPressed: () async {
               print('advertisement.getId: ${advertisement.getId()}');
               updateRecordOfAdvertisement(
-                  id: advertisement.getId(),
-                  url: urlController.text,
-                  name: nameController.text,
-                  stock: int.parse(stockController.text),
-                  status: status,
-                  title: titleController.text,
-                  productId: int.parse(productIdController.text),
-                  sellingPrice: int.parse(sellingPriceController.text),
-                  placeOfOrigin: placeOfOriginController.text,
-                  sellingPoints: sellingPoints,
-                  description: descriptionController.text);
+                id: advertisement.getId(),
+                image: imageController.text,
+                name: nameController.text,
+                stock: int.parse(stockController.text),
+                title: titleController.text,
+                productId: int.parse(productIdController.text),
+                sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
+                placeOfOrigin: placeOfOriginController.text,
+                sellingPoints: sellingPoints,
+                thumbnail: thumbnailController.text,
+              );
             },
             child: Text(Translator.translate(Language.confirm)),
           ),
@@ -133,34 +133,6 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: Row(
-                        children: [
-                          Spacing.addHorizontalSpace(85),
-                          Text(Translator.translate(Language.enable)),
-                          Radio<int?>(
-                            value: 1,
-                            groupValue: status,
-                            onChanged: (b) {
-                              status = b!;
-                              curStage++;
-                            },
-                          ),
-                          Spacing.addHorizontalSpace(50),
-                          Text(Translator.translate(Language.disable)),
-                          Radio<int?>(
-                            value: 0,
-                            groupValue: status,
-                            onChanged: (b) {
-                              status = b!;
-                              curStage++;
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 350,
@@ -185,6 +157,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                     SizedBox(
                       width: 350,
                       child: TextFormField(
+                        readOnly: true,
                         controller: productIdController,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -193,17 +166,6 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                         ],
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.idOfGood),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        readOnly: true,
-                        controller: descriptionController,
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.description),
                         ),
                       ),
                     ),
@@ -263,6 +225,10 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                       width: 350,
                       child: TextFormField(
                         controller: sellingPriceController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(Config.doubleRegExp),
+                          LengthLimitingTextInputFormatter(11),
+                        ],
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.sellingPriceOfAdvertisement),
                         ),
@@ -283,6 +249,11 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                       width: 350,
                       child: TextFormField(
                         controller: stockController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                          LengthLimitingTextInputFormatter(11),
+                        ],
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.stockOfAdvertisement),
                         ),
@@ -292,7 +263,17 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: urlController,
+                        controller: thumbnailController,
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.thumbnailOfAdvertisement),
+                        ),
+                      ),
+                    ),
+                    Spacing.addVerticalSpace(10),
+                    SizedBox(
+                      width: 350,
+                      child: TextFormField(
+                        controller: imageController,
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.imageOfAdvertisement),
                         ),
@@ -308,7 +289,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
       );
     },
   ).then(
-    (value) {
+        (value) {
       closed = true;
       Runtime.setObserve(oriObserve);
       return value;

@@ -3,17 +3,16 @@ import 'dart:convert';
 import 'package:flutter_framework/utils/convert.dart';
 
 class Advertisement {
-  late int _id;
-  late String _name;
-  late String _title;
-  late String _placeOfOrigin;
-  late List<String> _sellingPoints;
-  late String _url;
-  late int _sellingPrice;
-  late String _description;
-  late int _status;
-  late int _stock;
-  late int _productId;
+  int _id = 0;
+  String _name = '';
+  String _title = '';
+  String _placeOfOrigin = '';
+  List<String> _sellingPoints = [];
+  String _image = '';
+  int _sellingPrice = 0;
+  int _stock = 0;
+  int _productId = 0;
+  String _thumbnail = '';
 
   int getId() {
     return _id;
@@ -23,12 +22,16 @@ class Advertisement {
     return _name;
   }
 
+  String getThumbnail() {
+    return _thumbnail;
+  }
+
   List<String> getSellingPoints() {
     return _sellingPoints;
   }
 
-  String getUrl() {
-    return _url;
+  String getImage() {
+    return _image;
   }
 
   int getStock() {
@@ -37,14 +40,6 @@ class Advertisement {
 
   int getSellingPrice() {
     return _sellingPrice;
-  }
-
-  String getDescription() {
-    return _description;
-  }
-
-  int getStatus() {
-    return _status;
   }
 
   String getTitle() {
@@ -65,23 +60,21 @@ class Advertisement {
     required String title,
     required String placeOfOrigin,
     required List<String> sellingPoints,
-    required String url,
+    required String image,
     required int sellingPrice,
-    required String description,
-    required int status,
     required int stock,
     required int productId,
+    required String thumbnail,
   }) {
     _id = id;
     _name = name;
     _title = title;
     _placeOfOrigin = placeOfOrigin;
     _sellingPoints = sellingPoints;
-    _url = url;
+    _image = image;
     _sellingPrice = sellingPrice;
-    _description = description;
     _stock = stock;
-    _status = status;
+    _thumbnail = thumbnail;
     _productId = productId;
   }
 }

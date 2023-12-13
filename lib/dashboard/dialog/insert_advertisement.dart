@@ -9,6 +9,7 @@ import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -21,19 +22,18 @@ import 'package:flutter_framework/common/protocol/admin/insert_record_of_good.da
 Future<void> showInsertAdvertisementDialog(BuildContext context) async {
   bool closed = false;
   int curStage = 0;
-  int status = int.parse('1');
   List<String> sellingPoints = [];
 
   var oriObserve = Runtime.getObserve();
   var productIdController = TextEditingController();
   var nameController = TextEditingController();
   var titleController = TextEditingController();
-  var sellingPriceController = TextEditingController(text: "0");
+  var sellingPriceController = TextEditingController();
   var placeOfOriginController = TextEditingController();
   var sellingPointController = TextEditingController();
-  var stockController = TextEditingController(text: "0");
-  var urlController = TextEditingController();
-  var descController = TextEditingController();
+  var stockController = TextEditingController();
+  var imageController = TextEditingController();
+  var thumbnailController = TextEditingController();
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -54,9 +54,9 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.updateRecordSuccessfully),
+          Translator.translate(Language.insertRecordSuccessfully),
         ).then(
-              (value) {
+          (value) {
             Navigator.pop(context, null);
           },
         );
@@ -86,7 +86,6 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
             Translator.translate(Language.nameOfGood),
             rsp.getDataMap()[key]!.getName(),
           );
-          descController.text = rsp.getDataMap()[key]!.getName();
           curStage++;
         } else {
           showMessageDialog(
@@ -163,50 +162,34 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                 );
                 return;
               }
-              if (descController.text.isEmpty) {
+              if (stockController.text.isEmpty) {
                 showMessageDialog(
                   context,
                   Translator.translate(Language.titleOfNotification),
-                  Translator.translate(Language.needToPeekProductInfo),
+                  Translator.translate(Language.incorrectStockValueInController),
                 );
                 return;
               }
-              if (stockController.text.isEmpty) {
-                stockController.text = "0";
-              } else if (stockController.text.length > 1) {
-                if (stockController.text[0].compareTo('0') == 0) {
-                  showMessageDialog(
-                    context,
-                    Translator.translate(Language.titleOfNotification),
-                    Translator.translate(Language.incorrectStockValueInController),
-                  );
-                  return;
-                }
-              }
+
               if (sellingPriceController.text.isEmpty) {
-                sellingPriceController.text = "0";
-              } else if (sellingPriceController.text.length > 1) {
-                if (sellingPriceController.text[0].compareTo('0') == 0) {
-                  showMessageDialog(
-                    context,
-                    Translator.translate(Language.titleOfNotification),
-                    Translator.translate(Language.incorrectSellingPriceInController),
-                  );
-                  return;
-                }
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.incorrectSellingPriceInController),
+                );
+                return;
               }
 
               insertRecordOfAdvertisement(
                 name: nameController.text,
                 title: titleController.text,
-                sellingPrice: int.parse(sellingPriceController.text),
+                sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
                 sellingPoints: sellingPoints,
-                url: urlController.text,
+                image: imageController.text,
                 placeOfOrigin: placeOfOriginController.text,
-                description: descController.text,
-                status: status,
                 stock: int.parse(stockController.text),
                 productId: int.parse(productIdController.text),
+                thumbnail: thumbnailController.text,
               );
             },
             child: Text(Translator.translate(Language.confirm)),
@@ -222,34 +205,6 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(
-                      width: 350,
-                      child: Row(
-                        children: [
-                          Spacing.addHorizontalSpace(85),
-                          Text(Translator.translate(Language.enable)),
-                          Radio<int?>(
-                              value: 1,
-                              groupValue: status,
-                              onChanged: (b) {
-                                status = b!;
-                                curStage++;
-                                // print("status: $b");
-                              }),
-                          Spacing.addHorizontalSpace(50),
-                          Text(Translator.translate(Language.disable)),
-                          Radio<int?>(
-                            value: 0,
-                            groupValue: status,
-                            onChanged: (b) {
-                              status = b!;
-                              curStage++;
-                              // print("status: $b");
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 350,
@@ -309,15 +264,6 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                       ),
                     ),
                     Spacing.addVerticalSpace(10),
-                    // SizedBox(
-                    //   width: 350,
-                    //   child: TextFormField(
-                    //     controller: sellingPointController,
-                    //     decoration: InputDecoration(
-                    //       labelText: Translator.translate(Language.sellingPointsOfAdvertisement),
-                    //     ),
-                    //   ),
-                    // ),
                     SizedBox(
                       width: 350,
                       child: TextFormField(
@@ -374,6 +320,10 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                       width: 350,
                       child: TextFormField(
                         controller: sellingPriceController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(Config.doubleRegExp),
+                          LengthLimitingTextInputFormatter(Config.lengthOfSellingPrice),
+                        ],
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.sellingPriceOfAdvertisement),
                         ),
@@ -384,6 +334,10 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                       width: 350,
                       child: TextFormField(
                         controller: stockController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(Config.lengthOfBuyingPrice),
+                        ],
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.stockOfAdvertisement),
                         ),
@@ -400,13 +354,12 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                       ),
                     ),
                     Spacing.addVerticalSpace(10),
-                    Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: urlController,
+                        controller: thumbnailController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.imageOfAdvertisement),
+                          labelText: Translator.translate(Language.thumbnailOfAdvertisement),
                         ),
                       ),
                     ),
@@ -414,10 +367,9 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        readOnly: true,
-                        controller: descController,
+                        controller: imageController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.description),
+                          labelText: Translator.translate(Language.imageOfAdvertisement),
                         ),
                       ),
                     ),

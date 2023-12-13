@@ -6,6 +6,7 @@ import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -23,7 +24,6 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
   var buyingPriceController = TextEditingController();
   var vendorController = TextEditingController();
   var contactController = TextEditingController();
-  var descController = TextEditingController();
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -44,7 +44,7 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.updateRecordSuccessfully),
+          Translator.translate(Language.insertRecordSuccessfully),
         ).then(
           (value) {
             Navigator.pop(context, null);
@@ -122,12 +122,10 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
                 return;
               }
               insertRecordOfGood(
-                status: status,
                 name: nameController.text,
                 vendor: vendorController.text,
                 contact: contactController.text,
-                description: descController.text,
-                buyingPrice: int.parse(buyingPriceController.text),
+                buyingPrice: Convert.doubleStringMultiple10toInt(buyingPriceController.text),
               );
             },
             child: Text(Translator.translate(Language.confirm)),
@@ -187,9 +185,8 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
                       child: TextFormField(
                         controller: buyingPriceController,
                         inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                          LengthLimitingTextInputFormatter(11),
+                          LengthLimitingTextInputFormatter(Config.lengthOfBuyingPrice),
+                          FilteringTextInputFormatter.allow(Config.doubleRegExp),
                         ],
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.buyingPrice),
@@ -213,16 +210,6 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
                         controller: contactController,
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.contactOfVendor),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: descController,
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.description),
                         ),
                       ),
                     ),

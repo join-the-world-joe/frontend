@@ -7,10 +7,8 @@ void updateRecordOfGood({
   required String name,
   required int productId,
   required int buyingPrice,
-  required int status,
   required String vendor,
   required String contact,
-  required String description,
 }) {
 
   Runtime.request(
@@ -20,10 +18,8 @@ void updateRecordOfGood({
       productId: productId,
       name: name,
       buyingPrice: buyingPrice,
-      status: status,
       vendor: vendor,
       contact: contact,
-      description: description,
     ),
   );
 

@@ -41,4 +41,24 @@ class Admin {
   String softDeleteRecordsOfAdvertisementRsp = "40";
   String updateRecordOfAdvertisementReq = "41";
   String updateRecordOfAdvertisementRsp = "42";
+  String insertRecordOfADOfCarouselReq = "43";
+  String insertRecordOfADOfCarouselRsp = "44";
+  String removeOutdatedRecordsOfADOfCarouselReq = "45";
+  String removeOutdatedRecordsOfADOfCarouselRsp = "46";
+  String insertRecordOfADOfDealsReq = "47";
+  String insertRecordOfADOfDealsRsp = "48";
+  String removeOutdatedRecordsOfADOfDealsReq = "49";
+  String removeOutdatedRecordsOfADOfDealsRsp = "50";
+  String insertRecordOfADOfHotsReq = "51";
+  String insertRecordOfADOfHotsRsp = "52";
+  String removeOutdatedRecordsOfADOfHotsReq = "53";
+  String removeOutdatedRecordsOfADOfHotsRsp = "54";
+  String insertRecordOfADOfBarbecueReq = "55";
+  String insertRecordOfADOfBarbecueRsp = "56";
+  String removeOutdatedRecordsOfADOfBarbecueReq = "57";
+  String removeOutdatedRecordsOfADOfBarbecueRsp = "58";
+  String insertRecordOfADOfSnacksReq = "59";
+  String insertRecordOfADOfSnacksRsp = "60";
+  String removeOutdatedRecordsOfADOfSnacksReq = "61";
+  String removeOutdatedRecordsOfADOfSnacksRsp = "62";
 }
