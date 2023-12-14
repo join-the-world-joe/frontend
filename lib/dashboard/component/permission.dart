@@ -12,6 +12,7 @@ import 'package:flutter_framework/dashboard/model/permission_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import '../responsive.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -77,53 +78,89 @@ class _State extends State<Permission> {
     Runtime.setObserve(observe);
   }
 
-  void fetchPermissionListOfConditionHandler(Map<String, dynamic> body) {
+  void fetchPermissionListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = "fetchPermissionListOfConditionHandler";
     try {
       FetchPermissionListOfConditionRsp rsp = FetchPermissionListOfConditionRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Permission.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
-        print('body: ${rsp.getBody()}');
         Cache.setPermissionList(PermissionList.fromJson(rsp.getBody()));
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)} ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
-      print("Permission.fetchPermissionListOfConditionHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Permission.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
 
     try {
-      print("Permission.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Permission.content,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.admin && minor == Admin.fetchPermissionListOfConditionRsp) {
-        fetchPermissionListOfConditionHandler(body);
+        fetchPermissionListOfConditionHandler(major: major, minor: minor, body: body);
         curStage++;
       } else {
-        print("Permission.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Permission.content,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('Permission.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Permission.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
   @override
   void dispose() {
-    print('Permission.dispose');
+    // print('Permission.dispose');
     super.dispose();
   }
 
   @override
   void initState() {
-    print('Permission.initState');
+    // print('Permission.initState');
     setup();
     super.initState();
   }

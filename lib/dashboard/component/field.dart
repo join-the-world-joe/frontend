@@ -11,6 +11,7 @@ import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/field_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import '../responsive.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -70,45 +71,81 @@ class _State extends State<Field> {
   }
 
   void setup() {
-    print('Field.setup');
+    // print('Field.setup');
     Cache.setFieldList(FieldList([]));
     Runtime.setObserve(observe);
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
 
     try {
-      print("Field.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Field.content,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.admin && minor == Admin.fetchFieldListOfConditionRsp) {
-        fetchFieldListOfConditionHandler(body);
+        fetchFieldListOfConditionHandler(major: major, minor: minor, body: body);
         curStage++;
       } else {
-        print("Field.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Field.content,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('Field.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Field.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
-  void fetchFieldListOfConditionHandler(Map<String, dynamic> body) {
+  void fetchFieldListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchFieldListOfConditionHandler';
     try {
       FetchFieldListOfConditionRsp rsp = FetchFieldListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print('body: ${rsp.body}');
-        Cache.setFieldList(FieldList.fromJson(rsp.body));
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Field.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (rsp.getCode() == Code.oK) {
+        Cache.setFieldList(FieldList.fromJson(rsp.getBody()));
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)} ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
-      print("Field.fetchFieldListOfConditionHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Field.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }

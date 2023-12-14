@@ -14,6 +14,7 @@ import 'package:flutter_framework/dashboard/dialog/role_list_of_user.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
@@ -83,31 +84,56 @@ class _State extends State<User> {
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
 
     try {
-      // print("User.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: User.content,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.admin && minor == Admin.fetchUserListOfConditionRsp) {
-        fetchUserListOfConditionHandler(body);
+        fetchUserListOfConditionHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.checkPermissionRsp) {
-        checkPermissionHandler(body);
+        checkPermissionHandler(major: major, minor: minor, body: body);
       } else {
-        print("User.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: User.content,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('User.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: User.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
-  void checkPermissionHandler(Map<String, dynamic> body) {
-    print('User.checkPermissionHandler');
+  void checkPermissionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'checkPermissionHandler';
     try {
-      print('body: ${body.toString()}');
       CheckPermissionRsp rsp = CheckPermissionRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: User.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getMinor() == int.parse(Admin.fetchPermissionListOfConditionReq)) {
         hasFetchPermissionListOfCondition = rsp.getCode() == Code.oK ? true : false;
       } else if (rsp.getMinor() == int.parse(Admin.fetchMenuListOfConditionReq)) {
@@ -120,26 +146,48 @@ class _State extends State<User> {
       curStage++;
       return;
     } catch (e) {
-      print("User.checkPermissionHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: User.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
-  void fetchUserListOfConditionHandler(Map<String, dynamic> body) {
+  void fetchUserListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchUserListOfConditionHandler';
     try {
       FetchUserListOfConditionRsp rsp = FetchUserListOfConditionRsp.fromJson(body);
-      print('rsp: ${body.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: User.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
-        print('rsp: ${rsp.toString()}');
         Cache.setUserList(UserList.fromJson(rsp.getBody()));
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)} ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
-      print("Track.fetchTrackListOfConditionHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: User.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }

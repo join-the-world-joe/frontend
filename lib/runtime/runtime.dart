@@ -25,9 +25,16 @@ class Runtime {
   static bool debug = true;
 
   static bool allow({required int major, required int minor}) {
+    var caller = 'allow';
     var key = '$major-$minor';
     if (!_rateLimiter.containsKey(key)) {
-      print('new rate limiter, key: $key');
+      Log.debug(
+        major: major.toString(),
+        minor: minor.toString(),
+        from: 'Runtime',
+        caller: caller,
+        message: 'new rate limiter',
+      );
       _rateLimiter[key] = RateLimiter(major, minor, defaultRateLimitDuration);
       return _rateLimiter[key]!.allow();
     }

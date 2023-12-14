@@ -8,6 +8,7 @@ import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/model/track_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
@@ -77,38 +78,75 @@ class _State extends State<Track> {
     endController.text = '$year-$month-$day';
   }
 
-  void fetchTrackListOfConditionHandler(Map<String, dynamic> body) {
+  void fetchTrackListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchTrackListOfConditionHandler';
     try {
       FetchTrackListOfConditionRsp rsp = FetchTrackListOfConditionRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Track.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         Cache.setTrackList(TrackList.fromJson(rsp.getBody()));
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)} ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
-      print("Track.fetchTrackListOfConditionHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Track.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
 
     try {
-      // print("User.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Track.content,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.admin && minor == Admin.fetchTrackListOfConditionRsp) {
-        fetchTrackListOfConditionHandler(body);
+        fetchTrackListOfConditionHandler(major: major, minor: minor, body: body);
       } else {
-        print("Track.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Track.content,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('Track.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Track.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }

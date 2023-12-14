@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'screen.dart';
 import 'package:flutter_framework/utils/navigate.dart';
@@ -57,7 +60,7 @@ class _State extends State<PasswordSignIn> {
       closed = true;
       Future.delayed(
         const Duration(milliseconds: 500),
-            () {
+        () {
           print('PasswordSignIn.navigate to $page');
           Navigate.to(context, Screen.build(page));
         },
@@ -66,41 +69,76 @@ class _State extends State<PasswordSignIn> {
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
-    print("PasswordSignIn.observe: major: $major, minor: $minor");
+
     try {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.passwordSignIn,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.admin && minor == Admin.signInRsp) {
-        signInHandler(body);
+        signInHandler(major: major, minor: minor, body: body);
       } else {
-        print("PasswordSignIn.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Screen.passwordSignIn,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('PasswordSignIn.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.passwordSignIn,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
-  void signInHandler(Map<String, dynamic> body) {
-    print('PasswordSignIn.signInHandler');
+  void signInHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'signInHandler';
     try {
       SignInRsp rsp = SignInRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.passwordSignIn,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
-        print("PasswordSignIn: ${body.toString()}");
         Cache.setUserId(rsp.getUserId());
         Cache.setMemberId(rsp.getMemberId());
         Cache.setSecret(rsp.getSecret());
         navigate(Screen.home);
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         return;
       }
       return;
     } catch (e) {
-      print("PasswordSignIn.signInHandler failure, $e");
-      showMessageDialog(context, '温馨提示：', '未知错误');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.passwordSignIn,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }

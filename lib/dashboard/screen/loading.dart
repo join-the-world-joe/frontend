@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/route/backend_gateway.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import '../setup.dart';
@@ -58,9 +60,17 @@ class _State extends State<Loading> {
     }
   }
 
-  void echoHandler(Map<String, dynamic> body) {
+  void echoHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'echoHandler';
     try {
       PongRsp rsp = PongRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         if (message.compareTo(rsp.getMessage()) == 0) {
           curStage++;
@@ -68,39 +78,78 @@ class _State extends State<Loading> {
         }
       }
     } catch (e) {
-      print("Loading.echoHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     } finally {}
   }
 
-  void fetchRateLimitingConfigHandler(Map<String, dynamic> body) {
+  void fetchRateLimitingConfigHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRateLimitingConfigHandler';
     try {
       FetchRateLimitingConfigRsp rsp = FetchRateLimitingConfigRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         Runtime.updateRateLimiter(rsp.getRateLimiter());
         fGetRateLimiting = true;
         curStage++;
       }
     } catch (e) {
-      print("Loading.fetchRateLimitingConfigHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     } finally {}
   }
 
   void observe(PacketClient packet) {
+    var caller = "observe";
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
-    print("Loading.observe: major: $major, minor: $minor");
     try {
-      if (major == Major.backendGateway && minor == Minor.backendGateway.fetchRateLimitingConfigRsp) {
-        fetchRateLimitingConfigHandler(body);
-      } else if (major == Major.backendGateway && minor == Minor.backendGateway.pongRsp) {
-        echoHandler(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: '',
+      );
+      if (major == Major.backendGateway && minor == BackendGateway.fetchRateLimitingConfigRsp) {
+        fetchRateLimitingConfigHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.backendGateway && minor == BackendGateway.pongRsp) {
+        echoHandler(major: major, minor: minor, body: body);
       } else {
-        print("Loading.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Screen.loading,
+          caller: caller,
+          message: 'not matched',
+        );
       }
     } catch (e) {
-      print('Loading.observe failure($major-$minor), e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     } finally {}
   }
 

@@ -233,6 +233,7 @@ class Chinese {
     Language.advertisementIdIsEmpty: '广告ID为空',
     Language.peekInfoFromProductId: "查看商品信息",
     Language.peekInfoFromAdvertisementId: '查看广告信息',
+    Language.illegalPhoneNumber:'非法的手机号码',
   };
 
   static String getName() {

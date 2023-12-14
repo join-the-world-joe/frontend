@@ -30,15 +30,23 @@ class FetchFieldListOfConditionReq {
 }
 
 class FetchFieldListOfConditionRsp {
-  int code = -1;
-  dynamic body;
+  int _code = -1;
+  dynamic _body;
+
+  int getCode() {
+    return _code;
+  }
+
+  dynamic getBody() {
+    return _body;
+  }
 
   FetchFieldListOfConditionRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
-      code = json['code'];
+      _code = json['code'];
     }
     if (json.containsKey('body')) {
-      body = json['body'];
+      _body = json['body'];
     }
   }
 }

@@ -21,6 +21,7 @@ import 'package:flutter_framework/dashboard/component/user.dart';
 import 'package:flutter_framework/dashboard/model/side_menu_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import '../responsive.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -93,44 +94,89 @@ class _State extends State<Home> {
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
-    print("Home.observe: major: $major, minor: $minor");
     try {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.home,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.admin && minor == Admin.fetchMenuListOfConditionRsp) {
-        fetchMenuListOfConditionHandler(body);
+        fetchMenuListOfConditionHandler(major: major, minor: minor, body: body);
       } else {
-        print("Home.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Screen.home,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('Home.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.home,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
   void observer(PacketClient packet) {
+    var caller = 'observer';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
-    // print("Home.observer: major: $major, minor: $minor");
     try {
-      if (major == Major.inform && minor == Minor.inform.notification) {
-        notificationHandler(body);
+      if (major == Major.inform && minor == Inform.notification) {
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Screen.home,
+          caller: caller,
+          message: 'Notification',
+        );
+        notificationHandler(major: major, minor: minor, body: body);
       } else {
-        // print("Home.observer warning: $major-$minor doesn't matched");
+        // Log.debug(
+        //   major: major,
+        //   minor: minor,
+        //   from: Screen.home,
+        //   caller: caller,
+        //   message: 'not matched',
+        // );
       }
       return;
     } catch (e) {
-      // print('Home.observer($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.home,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
-  void notificationHandler(Map<String, dynamic> body) {
-    print('Home.notificationHandler');
+  void notificationHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'notificationHandler';
     try {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: '',
+      );
       inform.Notification notification = inform.Notification.fromJson(body);
       if (inform.event.containsKey(notification.event)) {
         Cache.setUserId(0);
@@ -147,14 +193,28 @@ class _State extends State<Home> {
         });
       }
     } catch (e) {
-      print("notificationHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.home,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
-  void fetchMenuListOfConditionHandler(Map<String, dynamic> body) {
+  void fetchMenuListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchMenuListOfConditionHandler';
     try {
       FetchMenuListOfConditionRsp rsp = FetchMenuListOfConditionRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.home,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         Cache.setSideMenuList(SideMenuList.fromJson(rsp.getBody()));
         curStage++;
@@ -170,7 +230,6 @@ class _State extends State<Home> {
         refresh();
         return;
       } else {
-        print('Home.fetchMenuListOfConditionHandler failure: ${rsp.getCode()}');
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
@@ -181,7 +240,13 @@ class _State extends State<Home> {
         return;
       }
     } catch (e) {
-      print("Home.fetchMenuListOfConditionHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.home,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }

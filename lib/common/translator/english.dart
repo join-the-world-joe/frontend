@@ -233,6 +233,7 @@ class English {
     Language.advertisementIdIsEmpty: 'Advertisement ID Not Provided',
     Language.peekInfoFromProductId: "Peek",
     Language.peekInfoFromAdvertisementId: 'Peek',
+    Language.illegalPhoneNumber:'illegal phone number',
   };
 
   static String getName() {

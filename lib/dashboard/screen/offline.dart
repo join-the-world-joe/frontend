@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/route/backend_gateway.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_framework/utils/navigate.dart';
@@ -67,21 +69,38 @@ class _State extends State<Offline> {
     }
   }
 
-  void fetchRateLimitingConfigHandler(Map<String, dynamic> body) {
-    print('Offline.fetchRateLimitingConfigHandler');
+  void fetchRateLimitingConfigHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRateLimitingConfigHandler';
     try {
       FetchRateLimitingConfigRsp rsp = FetchRateLimitingConfigRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         Runtime.updateRateLimiter(rsp.getRateLimiter());
         curStage++;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         curStage--;
         return;
       }
       return;
     } catch (e) {
-      print("Offline.fetchRateLimitingConfigHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       showMessageDialog(
         context,
         Translator.translate(Language.titleOfNotification),
@@ -92,10 +111,17 @@ class _State extends State<Offline> {
     }
   }
 
-  void echoHandler(Map<String, dynamic> body) {
-    print('Offline.echoHandler');
+  void echoHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'echoHandler';
     try {
       PongRsp rsp = PongRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         if (message.compareTo(rsp.getMessage()) == 0) {
           curStage++;
@@ -112,11 +138,17 @@ class _State extends State<Offline> {
     }
   }
 
-  void signInHandler(Map<String, dynamic> body) {
-    print('Offline.signInHandler');
+  void signInHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'signInHandler';
     try {
-      print('body: ${body.toString()}');
       SignInRsp rsp = SignInRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         // print("SignInRsp: ${body.toString()}");
         Cache.setUserId(rsp.getUserId());
@@ -133,32 +165,56 @@ class _State extends State<Offline> {
         return;
       }
     } catch (e) {
-      print("Offline.signInHandler failure, $e");
-      showMessageDialog(context, '温馨提示：', '未知错误');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
     try {
-      // print("Offline.observe: major: $major, minor: $minor");
-      if (major == Major.backendGateway && minor == Minor.backendGateway.pongRsp) {
-        echoHandler(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.offline,
+        caller: caller,
+        message: '',
+      );
+      if (major == Major.backendGateway && minor == BackendGateway.pongRsp) {
+        echoHandler(major: major, minor: minor, body: body);
         Runtime.setConnectivity(true);
-      } else if (major == Major.backendGateway && minor == Minor.backendGateway.fetchRateLimitingConfigRsp) {
-        fetchRateLimitingConfigHandler(body);
+      } else if (major == Major.backendGateway && minor == BackendGateway.fetchRateLimitingConfigRsp) {
+        fetchRateLimitingConfigHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.signInRsp) {
         Runtime.setConnectivity(true);
-        signInHandler(body);
+        signInHandler(major: major, minor: minor, body: body);
       } else {
-        print("Offline.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Screen.offline,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('Offline.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.offline,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -228,7 +284,7 @@ class _State extends State<Offline> {
 
                         fetchRateLimitingConfig(from: Screen.offline);
 
-                        if (Runtime.allow(major: int.parse(Major.backendGateway), minor: int.parse(Minor.backendGateway.pingReq))) {
+                        if (Runtime.allow(major: int.parse(Major.backendGateway), minor: int.parse(BackendGateway.pingReq))) {
                           echo(from: Screen.offline, message: message);
                         }
 

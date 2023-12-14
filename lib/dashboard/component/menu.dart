@@ -14,6 +14,7 @@ import 'package:flutter_framework/dashboard/model/side_menu_list.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import '../responsive.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -99,46 +100,72 @@ class _State extends State<Menu> {
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
 
     try {
-      print("Menu.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Menu.content,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.admin && minor == Admin.fetchMenuListOfConditionRsp) {
-        fetchMenuListOfConditionHandler(body);
+        fetchMenuListOfConditionHandler(major: major, minor: minor, body: body);
         curStage++;
       } else {
-        print("Menu.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Menu.content,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('Menu.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Menu.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
-  void fetchMenuListOfConditionHandler(Map<String, dynamic> body) {
-    print('Menu.fetchMenuListOfConditionHandler');
+  void fetchMenuListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchMenuListOfConditionHandler';
     try {
       FetchMenuListOfConditionRsp rsp = FetchMenuListOfConditionRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Menu.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
-        print('body: ${rsp.getBody()}');
+        // print('body: ${rsp.getBody()}');
         var menuList = MenuList.fromJson(rsp.getBody());
         var output = menuList;
         if (menuFilter.isNotEmpty || parentFilter.isNotEmpty) {
           output = MenuList([]);
           if (menuFilter.isNotEmpty) {
-            print('menuFilter: $menuFilter');
+            // print('menuFilter: $menuFilter');
             chinese.forEach(
               (key, value) {
                 if (key.contains(menuFilter)) {
-                  print('contains.key: $key, value: $value');
+                  // print('contains.key: $key, value: $value');
                   menuList.getBody().forEach(
                     (element) {
                       if (element.getName().compareTo(value) == 0) {
                         if (!output.getBody().contains(element)) {
-                          print('chinese menu add: ${element.getName()}');
+                          // print('chinese menu add: ${element.getName()}');
                           output.getBody().add(element);
                         }
                       }
@@ -150,12 +177,12 @@ class _State extends State<Menu> {
             english.forEach(
               (key, value) {
                 if (key.contains(menuFilter)) {
-                  print('contains.key: $key, value: $value');
+                  // print('contains.key: $key, value: $value');
                   menuList.getBody().forEach(
                     (element) {
                       if (element.getName().compareTo(value) == 0) {
                         if (!output.getBody().contains(element)) {
-                          print('english menu add: ${element.getName()}');
+                          // print('english menu add: ${element.getName()}');
                           output.getBody().add(element);
                         }
                       }
@@ -166,7 +193,7 @@ class _State extends State<Menu> {
             );
           }
           if (parentFilter.isNotEmpty) {
-            print('parentFilter: $menuFilter');
+            // print('parentFilter: $menuFilter');
             chinese.forEach(
               (key, value) {
                 if (value.contains(parentFilter)) {
@@ -208,7 +235,13 @@ class _State extends State<Menu> {
         return;
       }
     } catch (e) {
-      print("Menu.fetchMenuListOfConditionHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Menu.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       curStage = -1;
       return;
     }

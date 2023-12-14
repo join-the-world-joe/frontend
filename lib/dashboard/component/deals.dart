@@ -21,6 +21,7 @@ import 'package:flutter_framework/dashboard/model/ad_of_deals.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
@@ -78,9 +79,8 @@ class _State extends State<Deals> {
     }
   }
 
-  void insertRecordOfADOfDealsHandler(String routingKey, Map<String, dynamic> body) {
-    var self = '${Deals.content}.insertRecordOfADOfDealsHandler';
-    var prompt = '$self($routingKey)';
+  void insertRecordOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'insertRecordOfADOfDealsHandler';
     try {
       InsertRecordOfADOfDealsRsp rsp = InsertRecordOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
@@ -97,18 +97,28 @@ class _State extends State<Deals> {
         );
       }
     } catch (e) {
-      print("$prompt failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Deals.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     } finally {}
   }
 
-  void fetchVersionOfADOfDealsHandler(String routingKey, Map<String, dynamic> body) {
-    var self = '${Deals.content}.fetchVersionOfADOfDealsHandler ';
+  void fetchVersionOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchVersionOfADOfDealsHandler';
     try {
       FetchVersionOfADOfDealsRsp rsp = FetchVersionOfADOfDealsRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Deals.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
-        if (Config.debug) {
-          print('$self($routingKey), version: ${rsp.getVersion()}');
-        }
       } else {
         showMessageDialog(
           context,
@@ -117,18 +127,36 @@ class _State extends State<Deals> {
         );
       }
     } catch (e) {
-      print("$self failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Deals.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     } finally {}
   }
 
-  void fetchIdListOfADOfDealsHandler(String routingKey, Map<String, dynamic> body) {
-    var self = '${Deals.content}.fetchIdListOfADOfDealsHandler';
-    var prompt = '$self($routingKey)';
+  void fetchIdListOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchIdListOfADOfDealsHandler';
     try {
       FetchIdListOfADOfDealsRsp rsp = FetchIdListOfADOfDealsRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Deals.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         if (Config.debug) {
-          print('$prompt, advertisement id list: ${rsp.getIdList()}');
+          Log.debug(
+            major: major,
+            minor: minor,
+            from: Deals.content,
+            caller: caller,
+            message: 'advertisement id list: ${rsp.getIdList()}',
+          );
         }
         if (rsp.getIdList().isEmpty) {
           showMessageDialog(
@@ -150,16 +178,28 @@ class _State extends State<Deals> {
         return;
       }
     } catch (e) {
-      print("$prompt failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Deals.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
-  void fetchRecordsOfADOfDealsHandler(String routingKey, Map<String, dynamic> body) {
-    var self = "${Deals.content}.fetchRecordsOfADOfDealsHandler";
-    var prompt = '$self($routingKey)';
+  void fetchRecordsOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRecordsOfADOfDealsHandler';
     try {
       FetchRecordsOfADOfDealsRsp rsp = FetchRecordsOfADOfDealsRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Deals.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         // print('data map: ${rsp.getDataMap().toString()}');
         if (Config.debug) {
@@ -169,7 +209,13 @@ class _State extends State<Deals> {
               tempIdList.add(value.getAdvertisementId());
             });
           }
-          print('$prompt, advertisement id list: $tempIdList');
+          Log.debug(
+            major: major,
+            minor: minor,
+            from: Deals.content,
+            caller: caller,
+            message: 'advertisement id list: $tempIdList',
+          );
         }
         if (rsp.getDataMap().isEmpty) {
           showMessageDialog(
@@ -203,8 +249,13 @@ class _State extends State<Deals> {
         return;
       }
     } catch (e) {
-      print("$prompt failure, $e");
-      return;
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Deals.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     } finally {}
   }
 
@@ -223,27 +274,46 @@ class _State extends State<Deals> {
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var routingKey = '$major-$minor';
     var body = packet.getBody();
 
     try {
-      print("${Deals.content}.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Deals.content,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.advertisement && minor == Advertisement.fetchVersionOfADOfDealsRsp) {
-        fetchVersionOfADOfDealsHandler(routingKey, body);
+        fetchVersionOfADOfDealsHandler(major: major, minor: minor, body: body);
       } else if (major == Major.advertisement && minor == Advertisement.fetchRecordsOfADOfDealsRsp) {
-        fetchRecordsOfADOfDealsHandler(routingKey, body);
+        fetchRecordsOfADOfDealsHandler(major: major, minor: minor, body: body);
       } else if (major == Major.advertisement && minor == Advertisement.fetchIdListOfADOfDealsRsp) {
-        fetchIdListOfADOfDealsHandler(routingKey, body);
+        fetchIdListOfADOfDealsHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.insertRecordOfADOfDealsRsp) {
-        insertRecordOfADOfDealsHandler(routingKey, body);
+        insertRecordOfADOfDealsHandler(major: major, minor: minor, body: body);
       } else {
-        print("${Deals.content}.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Deals.content,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('${Deals.content}.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Deals.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -447,17 +517,17 @@ class Source extends DataTableSource {
         // statusOfAdvertisement = dataMap[key]!.getStatus() == 1 ? Translator.translate(Language.enable) : Translator.translate(Language.disable);
         status = dataMap[key]!.getStatus() == 1
             ? Text(
-          Translator.translate(Language.enable),
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.green,
-          ),
-        )
+                Translator.translate(Language.enable),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              )
             : Text(Translator.translate(Language.disable),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.red,
-            ));
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ));
         sellingPoints = dataMap[key]!.getSellingPoints();
         sellingPrice = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
       } else {

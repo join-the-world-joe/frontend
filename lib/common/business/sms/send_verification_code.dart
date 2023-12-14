@@ -35,10 +35,10 @@ class SendVerificationCodeReq {
 }
 
 class SendVerificationCodeRsp {
-  late int code;
+   int _code = -1;
 
   int getCode() {
-    return code;
+    return _code;
   }
 
   Uint8List toBytes() {
@@ -51,11 +51,15 @@ class SendVerificationCodeRsp {
   }
 
   Map<String, dynamic> toJson() => {
-        "code": code,
+        "code": _code,
       };
 
-  SendVerificationCodeRsp.fromJson(Map<String, dynamic> json)
-      : code = json['code'] ?? -1;
+  SendVerificationCodeRsp.fromJson(Map<String, dynamic> json) {
+    if(json.containsKey('code')){
+      _code = json['code'];
+    }
+  }
+
 }
 
 void sendVerificationCode(

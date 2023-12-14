@@ -57,7 +57,7 @@ class _State extends State<Login> {
   void smsHandler(Map<String, dynamic> body) {
     try {
       SendVerificationCodeRsp rsp = SendVerificationCodeRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
+      if (rsp.getCode() == Code.oK) {
         // sent sms successfully
         countdown = 10;
         timer = Timer.periodic(
@@ -76,13 +76,13 @@ class _State extends State<Login> {
           },
         );
         return;
-      } else if (rsp.code == Code.invalidDataType) {
+      } else if (rsp.getCode() == Code.invalidDataType) {
         showMessageDialog(context, '温馨提示：', '您输入的手机号不正确.');
         hasSentSMS = false;
         refresh();
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.getCode()}');
       }
     } catch (e) {
       print("Login.smsHandler failure, $e");

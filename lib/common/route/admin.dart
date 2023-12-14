@@ -99,7 +99,7 @@ class Admin {
       case fetchFieldListOfConditionReq:
         return 'fetchFieldListOfConditionReq';
       case fetchFieldListOfConditionRsp:
-        return fetchFieldListOfConditionRsp;
+        return 'fetchFieldListOfConditionRsp';
       case fetchTrackListOfConditionReq:
         return 'fetchTrackListOfConditionReq';
       case fetchTrackListOfConditionRsp:

@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter_framework/common/route/backend_gateway.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 
@@ -18,6 +19,6 @@ void echo({
       message: message,
     ),
     major: Major.backendGateway,
-    minor: Minor.backendGateway.pingReq,
+    minor: BackendGateway.pingReq,
   );
 }

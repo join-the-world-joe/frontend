@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_framework/common/route/backend_gateway.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -11,7 +12,7 @@ void fetchRateLimitingConfig({
   Runtime.request(
     from: from,
     major: Major.backendGateway,
-    minor: Minor.backendGateway.fetchRateLimitingConfigReq,
+    minor: BackendGateway.fetchRateLimitingConfigReq,
     body: FetchRateLimitingConfigReq(),
   );
 }

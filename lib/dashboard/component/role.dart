@@ -10,6 +10,7 @@ import 'package:flutter_framework/dashboard/dialog/permission_list_of_role.dart'
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
@@ -65,58 +66,94 @@ class _State extends State<Role> {
   }
 
   void setup() {
-    print('Role.setup');
+    // print('Role.setup');
     Cache.setRoleList(RoleList([]));
     Runtime.setObserve(observe);
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
 
     try {
-      print("Role.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Role.content,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.admin && minor == Admin.fetchRoleListOfConditionRsp) {
-        fetchRoleListOfConditionHandler(body);
+        fetchRoleListOfConditionHandler(major: major, minor: minor, body: body);
         curStage++;
       } else {
-        print("Role.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Role.content,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('Role.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Role.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
-  void fetchRoleListOfConditionHandler(Map<String, dynamic> body) {
-    print('Role.fetchRoleListOfConditionHandler');
+  void fetchRoleListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRoleListOfConditionHandler';
     try {
       FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Role.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         RoleList roleList = RoleList.fromJson(rsp.getBody());
         Cache.setRoleList(roleList);
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)} ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
-      print("fetchRoleListOfConditionHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Role.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     }
   }
 
   @override
   void dispose() {
-    print('Role.dispose');
+    // print('Role.dispose');
     super.dispose();
   }
 
   @override
   void initState() {
-    print('Role.initState');
+    // print('Role.initState');
     setup();
     super.initState();
   }

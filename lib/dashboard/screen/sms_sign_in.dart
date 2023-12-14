@@ -2,8 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'screen.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import 'package:flutter_framework/validator/mobile.dart';
@@ -16,7 +19,6 @@ import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/common/protocol/admin/sign_in.dart';
 import 'package:flutter_framework/common/business//admin/sign_in.dart';
-
 
 class SMSSignIn extends StatefulWidget {
   const SMSSignIn({Key? key}) : super(key: key);
@@ -74,28 +76,55 @@ class _State extends State<SMSSignIn> {
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
-    print("SMSSignIn.observe: major: $major, minor: $minor");
+
     try {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.smsSignIn,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.sms && minor == Minor.sms.sendVerificationCodeRsp) {
-        smsHandler(body);
+        smsHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.signInRsp) {
-        signInHandler(body);
+        signInHandler(major: major, minor: minor, body: body);
       } else {
-        print("SMSSignIn.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Screen.smsSignIn,
+          caller: caller,
+          message: 'not matched',
+        );
       }
     } catch (e) {
-      print('SMSSignIn.observe failure($major-$minor), e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.smsSignIn,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     } finally {}
   }
 
-  void smsHandler(Map<String, dynamic> body) {
-    print('SMSSignIn.smsHandler');
+  void smsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'smsHandler';
     try {
       SendVerificationCodeRsp rsp = SendVerificationCodeRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.smsSignIn,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (rsp.getCode() == Code.oK) {
         // sent sms successfully
         countdown = 60;
         countdownTimer = Timer.periodic(
@@ -114,35 +143,67 @@ class _State extends State<SMSSignIn> {
           },
         );
         return;
-      } else if (rsp.code == Code.invalidDataType) {
-        showMessageDialog(context, '温馨提示：', '您输入的手机号不正确.');
+      } else if (rsp.getCode() == Code.invalidDataType) {
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.illegalPhoneNumber),
+        );
         fSent = false;
         refresh();
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
-      print("SMSSignIn.smsHandler failure, $e");
+      SendVerificationCodeRsp rsp = SendVerificationCodeRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.smsSignIn,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     }
   }
 
-  void signInHandler(Map<String, dynamic> body) {
+  void signInHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'signInHandler';
     try {
       SignInRsp rsp = SignInRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         Cache.setUserId(rsp.getUserId());
         Cache.setMemberId(rsp.getMemberId());
         Cache.setSecret(rsp.getSecret());
         navigate(Screen.home);
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
-      print("SMSSignIn.signInHandler failure, $e");
-      showMessageDialog(context, '温馨提示：', '未知错误');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.loading,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     } finally {}
   }
