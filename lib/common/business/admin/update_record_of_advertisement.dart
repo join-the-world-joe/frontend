@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 
@@ -9,6 +10,7 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/protocol/admin/update_record_of_advertisement.dart';
 
 void updateRecordOfAdvertisement({
+  required String from,
   required int id,
   required String image,
   required String name,
@@ -22,8 +24,9 @@ void updateRecordOfAdvertisement({
   required String thumbnail,
 }) {
   Runtime.request(
+    from: from,
     major: Major.admin,
-    minor: Minor.admin.updateRecordOfAdvertisementReq,
+    minor: Admin.updateRecordOfAdvertisementReq,
     body: UpdateRecordOfAdvertisementReq.construct(
       id: id,
       image: image,

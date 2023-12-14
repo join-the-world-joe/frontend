@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_good.dart';
-import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_good.dart';
 import 'package:flutter_framework/dashboard/dialog/update_good.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
@@ -77,11 +77,18 @@ class _State extends State<Good> {
     }
   }
 
-  void fetchIdListOfGoodHandler(Map<String, dynamic> body) {
+  void fetchIdListOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchIdListOfGoodHandler';
     try {
       FetchIdListOfGoodRsp rsp = FetchIdListOfGoodRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print("Good.fetchIdListOfGoodHandler.idList: ${rsp.getIdList()}");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Good.content,
+          caller: caller,
+          message: 'product id list: ${rsp.getIdList()}',
+        );
         if (rsp.getIdList().isEmpty) {
           if (rsp.getBehavior() == 1) {
             showMessageDialog(
@@ -118,12 +125,20 @@ class _State extends State<Good> {
         return;
       }
     } catch (e) {
-      print("Good.fetchIdListOfGoodHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Good.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
+
       return;
     }
   }
 
-  void fetchRecordsOfGoodHandler(Map<String, dynamic> body) {
+  void fetchRecordsOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRecordsOfGoodHandler';
     try {
       FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
@@ -133,8 +148,15 @@ class _State extends State<Good> {
           rsp.getDataMap().forEach((key, value) {
             tempList.add(value.getId());
           });
-          print('Good.fetchRecordsOfGoodHandler, id list: $tempList');
+          Log.debug(
+            major: major,
+            minor: minor,
+            from: Good.content,
+            caller: caller,
+            message: 'id list: $tempList',
+          );
         }
+
         if (rsp.getDataMap().isEmpty) {
           showMessageDialog(
             context,
@@ -167,7 +189,13 @@ class _State extends State<Good> {
         return;
       }
     } catch (e) {
-      print("Good.fetchRecordsOfGoodHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Good.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     } finally {}
   }
@@ -189,19 +217,38 @@ class _State extends State<Good> {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
+    var caller = 'observe';
 
     try {
-      print("Good.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchIdListOfGoodRsp) {
-        fetchIdListOfGoodHandler(body);
-      } else if (major == Major.admin && minor == Minor.admin.fetchRecordsOfGoodRsp) {
-        fetchRecordsOfGoodHandler(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Good.content,
+        caller: caller,
+        message: '',
+      );
+      if (major == Major.admin && minor == Admin.fetchIdListOfGoodRsp) {
+        fetchIdListOfGoodHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.admin && minor == Admin.fetchRecordsOfGoodRsp) {
+        fetchRecordsOfGoodHandler(major: major, minor: minor, body: body);
       } else {
-        print("Good.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Good.content,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('Good.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Good.content,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -272,12 +319,13 @@ class _State extends State<Good> {
                             if (idController.text.isEmpty && nameController.text.isEmpty) {
                               if (!Runtime.allow(
                                 major: int.parse(Major.admin),
-                                minor: int.parse(Minor.admin.fetchIdListOfGoodReq),
+                                minor: int.parse(Admin.fetchIdListOfGoodReq),
                               )) {
                                 return;
                               }
                               resetSource();
                               fetchIdListOfGood(
+                                from: Good.content,
                                 behavior: 1,
                                 productName: "",
                                 categoryId: 0,
@@ -287,23 +335,24 @@ class _State extends State<Good> {
                             if (idController.text.isNotEmpty) {
                               if (!Runtime.allow(
                                 major: int.parse(Major.admin),
-                                minor: int.parse(Minor.admin.fetchRecordsOfGoodReq),
+                                minor: int.parse(Admin.fetchRecordsOfGoodReq),
                               )) {
                                 return;
                               }
                               resetSource();
-                              fetchRecordsOfGood(productIdList: [int.parse(idController.text)]);
+                              fetchRecordsOfGood(from: Good.content, productIdList: [int.parse(idController.text)]);
                               return;
                             }
                             if (nameController.text.isNotEmpty) {
                               if (!Runtime.allow(
                                 major: int.parse(Major.admin),
-                                minor: int.parse(Minor.admin.fetchIdListOfGoodReq),
+                                minor: int.parse(Admin.fetchIdListOfGoodReq),
                               )) {
                                 return;
                               }
                               resetSource();
                               fetchIdListOfGood(
+                                from: Good.content,
                                 behavior: 2,
                                 productName: nameController.text,
                                 categoryId: 0,
@@ -452,7 +501,7 @@ class Source extends DataTableSource {
           }
         }
         // print("requestIdList: $requestIdList");
-        fetchRecordsOfGood(productIdList: requestIdList);
+        fetchRecordsOfGood(from: Good.content, productIdList: requestIdList);
       }
     }
 
@@ -481,7 +530,7 @@ class Source extends DataTableSource {
                   showUpdateGoodDialog(buildContext, dataMap[key]!).then((value) {
                     if (value) {
                       print("notifyListeners");
-                      fetchRecordsOfGood(productIdList: [dataMap[key]!.getId()]);
+                      fetchRecordsOfGood(from: Good.content, productIdList: [dataMap[key]!.getId()]);
                       notifyListeners();
                     }
                   });

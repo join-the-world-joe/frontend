@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/inform.dart';
 import 'package:flutter_framework/common/translator/chinese.dart';
 import 'package:flutter_framework/common/translator/english.dart';
@@ -97,7 +98,7 @@ class _State extends State<Home> {
     var body = packet.getBody();
     print("Home.observe: major: $major, minor: $minor");
     try {
-      if (major == Major.admin && minor == Minor.admin.fetchMenuListOfConditionRsp) {
+      if (major == Major.admin && minor == Admin.fetchMenuListOfConditionRsp) {
         fetchMenuListOfConditionHandler(body);
       } else {
         print("Home.observe warning: $major-$minor doesn't matched");
@@ -206,7 +207,9 @@ class _State extends State<Home> {
     // print('home.setup');
     Runtime.setObserve(observe);
     Runtime.setObserver(observer);
-    fetchMenuListOfCondition(behavior: 1, userId: 0, roleList: RoleList([]));
+    fetchMenuListOfCondition(
+        from: Screen.home,
+        behavior: 1, userId: 0, roleList: RoleList([]));
   }
 
   @override

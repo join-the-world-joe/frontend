@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -36,7 +37,7 @@ Future<String> showFillSellingPointDialog(BuildContext context) async {
 
     try {
       print("showInsertGoodDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.insertRecordOfGoodRsp) {
+      if (major == Major.admin && minor == Admin.insertRecordOfGoodRsp) {
       } else {
         print("showInsertGoodDialog.observe warning: $major-$minor doesn't matched");
       }

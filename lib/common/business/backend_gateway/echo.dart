@@ -9,9 +9,11 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/protocol/backend_gateway/echo.dart';
 
 void echo({
+  required String from,
   required String message,
 }) {
   Runtime.request(
+    from: from,
     body: PingReq.construct(
       message: message,
     ),

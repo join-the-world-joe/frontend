@@ -8,6 +8,8 @@ import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/protocol/admin/insert_record_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/protocol/advertisement/fetch_id_list_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/protocol/advertisement/fetch_records_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/route/advertisement.dart';
 import 'dart:async';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -76,7 +78,9 @@ class _State extends State<Deals> {
     }
   }
 
-  void insertRecordOfADOfDealsHandler(Map<String, dynamic> body) {
+  void insertRecordOfADOfDealsHandler(String routingKey, Map<String, dynamic> body) {
+    var self = '${Deals.content}.insertRecordOfADOfDealsHandler';
+    var prompt = '$self($routingKey)';
     try {
       InsertRecordOfADOfDealsRsp rsp = InsertRecordOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
@@ -93,16 +97,17 @@ class _State extends State<Deals> {
         );
       }
     } catch (e) {
-      print("Deals.insertRecordOfADOfDealsHandler failure, $e");
+      print("$prompt failure, $e");
     } finally {}
   }
 
-  void fetchVersionOfADOfDealsHandler(Map<String, dynamic> body) {
+  void fetchVersionOfADOfDealsHandler(String routingKey, Map<String, dynamic> body) {
+    var self = '${Deals.content}.fetchVersionOfADOfDealsHandler ';
     try {
       FetchVersionOfADOfDealsRsp rsp = FetchVersionOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         if (Config.debug) {
-          print('fetchVersionOfADOfDealsHandler, version: ${rsp.getVersion()}');
+          print('$self($routingKey), version: ${rsp.getVersion()}');
         }
       } else {
         showMessageDialog(
@@ -112,16 +117,18 @@ class _State extends State<Deals> {
         );
       }
     } catch (e) {
-      print("Deals.fetchVersionOfADOfDealsHandler failure, $e");
+      print("$self failure, $e");
     } finally {}
   }
 
-  void fetchIdListOfADOfDealsHandler(Map<String, dynamic> body) {
+  void fetchIdListOfADOfDealsHandler(String routingKey, Map<String, dynamic> body) {
+    var self = '${Deals.content}.fetchIdListOfADOfDealsHandler';
+    var prompt = '$self($routingKey)';
     try {
       FetchIdListOfADOfDealsRsp rsp = FetchIdListOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         if (Config.debug) {
-          print('fetchIdListOfADOfDealsHandler, advertisement id list: ${rsp.getIdList()}');
+          print('$prompt, advertisement id list: ${rsp.getIdList()}');
         }
         if (rsp.getIdList().isEmpty) {
           showMessageDialog(
@@ -143,12 +150,14 @@ class _State extends State<Deals> {
         return;
       }
     } catch (e) {
-      print("Deals.fetchIdListOfGoodHandler failure, $e");
+      print("$prompt failure, $e");
       return;
     }
   }
 
-  void fetchRecordsOfADOfDealsHandler(Map<String, dynamic> body) {
+  void fetchRecordsOfADOfDealsHandler(String routingKey, Map<String, dynamic> body) {
+    var self = "${Deals.content}.fetchRecordsOfADOfDealsHandler";
+    var prompt = '$self($routingKey)';
     try {
       FetchRecordsOfADOfDealsRsp rsp = FetchRecordsOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
@@ -160,7 +169,7 @@ class _State extends State<Deals> {
               tempIdList.add(value.getAdvertisementId());
             });
           }
-          print('fetchRecordsOfADOfDealsHandler, advertisement id list: $tempIdList');
+          print('$prompt, advertisement id list: $tempIdList');
         }
         if (rsp.getDataMap().isEmpty) {
           showMessageDialog(
@@ -194,7 +203,7 @@ class _State extends State<Deals> {
         return;
       }
     } catch (e) {
-      print("Deals.fetchRecordsOfADOfDealsHandler failure, $e");
+      print("$prompt failure, $e");
       return;
     } finally {}
   }
@@ -210,30 +219,31 @@ class _State extends State<Deals> {
   void setup() {
     Runtime.setObserve(observe);
     // fetchVersionOfADOfDeals();
-    fetchIdListOfADOfDeals();
+    fetchIdListOfADOfDeals(from: Deals.content);
   }
 
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
+    var routingKey = '$major-$minor';
     var body = packet.getBody();
 
     try {
-      print("Deals.observe: major: $major, minor: $minor");
-      if (major == Major.advertisement && minor == Minor.advertisement.fetchVersionOfADOfDealsRsp) {
-        fetchVersionOfADOfDealsHandler(body);
-      } else if (major == Major.advertisement && minor == Minor.advertisement.fetchRecordsOfADOfDealsRsp) {
-        fetchRecordsOfADOfDealsHandler(body);
-      } else if (major == Major.advertisement && minor == Minor.advertisement.fetchIdListOfADOfDealsRsp) {
-        fetchIdListOfADOfDealsHandler(body);
-      } else if (major == Major.admin && minor == Minor.admin.insertRecordOfADOfDealsRsp) {
-        insertRecordOfADOfDealsHandler(body);
+      print("${Deals.content}.observe: major: $major, minor: $minor");
+      if (major == Major.advertisement && minor == Advertisement.fetchVersionOfADOfDealsRsp) {
+        fetchVersionOfADOfDealsHandler(routingKey, body);
+      } else if (major == Major.advertisement && minor == Advertisement.fetchRecordsOfADOfDealsRsp) {
+        fetchRecordsOfADOfDealsHandler(routingKey, body);
+      } else if (major == Major.advertisement && minor == Advertisement.fetchIdListOfADOfDealsRsp) {
+        fetchIdListOfADOfDealsHandler(routingKey, body);
+      } else if (major == Major.admin && minor == Admin.insertRecordOfADOfDealsRsp) {
+        insertRecordOfADOfDealsHandler(routingKey, body);
       } else {
-        print("Deals.observe warning: $major-$minor doesn't matched");
+        print("${Deals.content}.observe warning: $major-$minor doesn't matched");
       }
       return;
     } catch (e) {
-      print('Deals.observe($major-$minor).e: ${e.toString()}');
+      print('${Deals.content}.observe($major-$minor).e: ${e.toString()}');
       return;
     }
   }
@@ -298,7 +308,7 @@ class _State extends State<Deals> {
                           onPressed: () async {
                             resetSource();
                             curStage++;
-                            fetchIdListOfADOfDeals();
+                            fetchIdListOfADOfDeals(from: Deals.content);
                           },
                           label: Text(
                             Translator.translate(Language.titleOfRefreshOperation),
@@ -336,6 +346,7 @@ class _State extends State<Deals> {
                               return;
                             }
                             insertRecordOfADOfDeals(
+                              from: Deals.content,
                               advertisementIdList: idList,
                             );
                           },
@@ -453,7 +464,7 @@ class Source extends DataTableSource {
           }
         }
         // print("requestIdList: $requestIdList");
-        fetchRecordsOfADOfDeals(advertisementIdList: requestIdList);
+        fetchRecordsOfADOfDeals(from: Deals.content, advertisementIdList: requestIdList);
       }
     }
 

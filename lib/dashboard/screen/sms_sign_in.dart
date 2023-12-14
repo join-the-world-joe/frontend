@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'screen.dart';
@@ -80,7 +81,7 @@ class _State extends State<SMSSignIn> {
     try {
       if (major == Major.sms && minor == Minor.sms.sendVerificationCodeRsp) {
         smsHandler(body);
-      } else if (major == Major.admin && minor == Minor.admin.signInRsp) {
+      } else if (major == Major.admin && minor == Admin.signInRsp) {
         signInHandler(body);
       } else {
         print("SMSSignIn.observe warning: $major-$minor doesn't matched");
@@ -370,11 +371,12 @@ class _State extends State<SMSSignIn> {
                         onPressed: () {
                           if (!Runtime.allow(
                             major: int.parse(Major.admin),
-                            minor: int.parse(Minor.admin.signInReq),
+                            minor: int.parse(Admin.signInReq),
                           )) {
                             return;
                           }
                           signIn(
+                            from: Screen.smsSignIn,
                             behavior: 2,
                             verificationCode: int.parse(verificationCodeControl.text),
                             countryCode: countryCodeControl.text,

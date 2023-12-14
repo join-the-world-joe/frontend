@@ -7,4 +7,27 @@ class Major {
   static const String admin = '5';
   static const String inform = '6';
   static const String advertisement = '7';
+
+  static String getName({required String major}) {
+    switch (major) {
+      case generic:
+        return 'generic';
+      case frontendGateway:
+        return 'frontendGateway';
+      case backendGateway:
+        return 'backendGateway';
+      case account:
+        return 'account';
+      case sms:
+        return 'sms';
+      case admin:
+        return 'admin';
+      case inform:
+        return 'inform';
+      case advertisement:
+        return 'advertisement';
+      default:
+        return 'unknown';
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
@@ -88,9 +89,9 @@ class _State extends State<User> {
 
     try {
       // print("User.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchUserListOfConditionRsp) {
+      if (major == Major.admin && minor == Admin.fetchUserListOfConditionRsp) {
         fetchUserListOfConditionHandler(body);
-      } else if (major == Major.admin && minor == Minor.admin.checkPermissionRsp) {
+      } else if (major == Major.admin && minor == Admin.checkPermissionRsp) {
         checkPermissionHandler(body);
       } else {
         print("User.observe warning: $major-$minor doesn't matched");
@@ -107,13 +108,13 @@ class _State extends State<User> {
     try {
       print('body: ${body.toString()}');
       CheckPermissionRsp rsp = CheckPermissionRsp.fromJson(body);
-      if (rsp.getMinor() == int.parse(Minor.admin.fetchPermissionListOfConditionReq)) {
+      if (rsp.getMinor() == int.parse(Admin.fetchPermissionListOfConditionReq)) {
         hasFetchPermissionListOfCondition = rsp.getCode() == Code.oK ? true : false;
-      } else if (rsp.getMinor() == int.parse(Minor.admin.fetchMenuListOfConditionReq)) {
+      } else if (rsp.getMinor() == int.parse(Admin.fetchMenuListOfConditionReq)) {
         hasFetchMenuListOfCondition = rsp.getCode() == Code.oK ? true : false;
-      } else if (rsp.getMinor() == int.parse(Minor.admin.insertUserRecordReq)) {
+      } else if (rsp.getMinor() == int.parse(Admin.insertUserRecordReq)) {
         hasInsertUserRecord = rsp.getCode() == Code.oK ? true : false;
-      } else if (rsp.getMinor() == int.parse(Minor.admin.softDeleteUserRecordReq)) {
+      } else if (rsp.getMinor() == int.parse(Admin.softDeleteUserRecordReq)) {
         hasSoftDeleteUserRecord = rsp.getCode() == Code.oK ? true : false;
       }
       curStage++;
@@ -164,15 +165,19 @@ class _State extends State<User> {
 
   @override
   Widget build(BuildContext context) {
-    checkPermission(major: Major.admin, minor: Minor.admin.fetchPermissionListOfConditionReq);
+    checkPermission(
+      from: User.content,
+      major: Major.admin,
+      minor: Admin.fetchPermissionListOfConditionReq,
+    );
     Future.delayed(const Duration(milliseconds: 100), () {
-      checkPermission(major: Major.admin, minor: Minor.admin.fetchMenuListOfConditionReq);
+      checkPermission(from: User.content, major: Major.admin, minor: Admin.fetchMenuListOfConditionReq);
     });
     Future.delayed(const Duration(milliseconds: 200), () {
-      checkPermission(major: Major.admin, minor: Minor.admin.insertUserRecordReq);
+      checkPermission(from: User.content, major: Major.admin, minor: Admin.insertUserRecordReq);
     });
     Future.delayed(const Duration(milliseconds: 300), () {
-      checkPermission(major: Major.admin, minor: Minor.admin.softDeleteUserRecordReq);
+      checkPermission(from: User.content, major: Major.admin, minor: Admin.softDeleteUserRecordReq);
     });
     return Scaffold(
       body: SafeArea(
@@ -218,12 +223,13 @@ class _State extends State<User> {
                             // print('name: ${nameControl.text}');
                             if (!Runtime.allow(
                               major: int.parse(Major.admin),
-                              minor: int.parse(Minor.admin.fetchUserListOfConditionReq),
+                              minor: int.parse(Admin.fetchUserListOfConditionReq),
                             )) {
                               return;
                             }
                             if (nameControl.text.isEmpty && phoneNumberControl.text.isEmpty) {
                               fetchUserListOfCondition(
+                                from: User.content,
                                 behavior: 1,
                                 name: '',
                                 phoneNumber: '',
@@ -231,6 +237,7 @@ class _State extends State<User> {
                               );
                             } else {
                               fetchUserListOfCondition(
+                                from: User.content,
                                 behavior: 2,
                                 name: nameControl.text,
                                 phoneNumber: phoneNumberControl.text,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_framework/common/business/admin/fetch_menu_list_of_condi
 
 Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
   bool closed = false;
+  String from = 'showMenuListOfUserDialog';
   int curStage = 0;
   List<Widget> widgetList = [];
   var oriObserve = Runtime.getObserve();
@@ -64,7 +66,7 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
 
     try {
       print("showMenuListOfUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchMenuListOfConditionRsp) {
+      if (major == Major.admin && minor == Admin.fetchMenuListOfConditionRsp) {
         fetchMenuListOfConditionHandler(body);
       } else {
         print("showMenuListOfUserDialog.observe warning: $major-$minor doesn't matched");
@@ -83,6 +85,7 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
     context: context,
     builder: (context) {
       fetchMenuListOfCondition(
+        from: from,
         behavior: 2,
         userId: int.parse(user.getId()),
         roleList: RoleList([]),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/translator/chinese.dart';
 import 'package:flutter_framework/common/translator/english.dart';
 import 'package:flutter_framework/common/translator/language.dart';
@@ -104,7 +105,7 @@ class _State extends State<Menu> {
 
     try {
       print("Menu.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchMenuListOfConditionRsp) {
+      if (major == Major.admin && minor == Admin.fetchMenuListOfConditionRsp) {
         fetchMenuListOfConditionHandler(body);
         curStage++;
       } else {
@@ -267,7 +268,7 @@ class _State extends State<Menu> {
                         onPressed: () {
                           if (!Runtime.allow(
                             major: int.parse(Major.admin),
-                            minor: int.parse(Minor.admin.fetchMenuListOfConditionReq),
+                            minor: int.parse(Admin.fetchMenuListOfConditionReq),
                           )) {
                             return;
                           }
@@ -279,6 +280,7 @@ class _State extends State<Menu> {
                             parentFilter = parentController.text;
                           }
                           fetchMenuListOfCondition(
+                            from: Menu.content,
                             behavior: 2,
                             userId: Cache.getUserId(),
                             roleList: RoleList([]),

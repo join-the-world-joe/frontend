@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
@@ -26,6 +27,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
   RoleList roleList = RoleList([]);
   int curStage = 0;
   bool closed = false;
+  String from = 'showUpdateUserDialog';
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController(text: user.getName());
   var passwordController = TextEditingController(text: '');
@@ -44,36 +46,48 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
     }
   }
 
-  void updateUserRecordHandler(Map<String, dynamic> body) {
+  void updateUserRecordHandler(String routingKey, Map<String, dynamic> body) {
+    var self = '${from}.updateUserRecordHandler';
+    var prompt = '$self($routingKey)';
     try {
       UpdateUserRecordRsp rsp = UpdateUserRecordRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        showMessageDialog(context, '温馨提示：', '更新成功').then(
+        if (Config.debug) {
+          print('$prompt, code: ${rsp.getCode()}');
+        }
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.updateRecordSuccessfully),
+        ).then(
           (value) {
             Navigator.pop(context, null);
           },
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.getCode()}');
+        showMessageDialog(context, Translator.translate(Language.titleOfNotification), '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}');
         return;
       }
     } catch (e) {
-      print("showUpdateUserDialog.updateUserRecordHandler failure, $e");
+      print("$prompt failure, $e");
       return;
     }
   }
 
-  void fetchRoleListOfConditionHandler(Map<String, dynamic> body) {
-    print('showRoleListOfUserDialog.fetchRoleListOfConditionHandler');
+  void fetchRoleListOfConditionHandler(String routingKey, Map<String, dynamic> body) {
+    var self = '${from}.fetchRoleListOfConditionHandler';
+    var prompt = '$self($routingKey)';
     try {
       FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print(rsp.body.toString());
+      if (rsp.getCode() == Code.oK) {
+        if (Config.debug) {
+          print('$prompt, code: ${rsp.getCode()}');
+        }
         if (wholeRoleList.getBody().isEmpty) {
-          wholeRoleList = RoleList.fromJson(rsp.body);
+          wholeRoleList = RoleList.fromJson(rsp.getBody());
         } else {
-          roleList = RoleList.fromJson(rsp.body);
+          roleList = RoleList.fromJson(rsp.getBody());
           for (var i = 0; i < wholeRoleList.getBody().length; i++) {
             roleStatus[wholeRoleList.getBody()[i]] = false;
             for (var j = 0; j < roleList.getBody().length; j++) {
@@ -86,38 +100,48 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
         }
         curStage++;
         return;
-      } else if (rsp.code == Code.accessDenied) {
-        showMessageDialog(context, '温馨提示：', '没有权限.');
+      } else if (rsp.getCode() == Code.accessDenied) {
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.accessDenied),
+        );
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         curStage++;
         return;
       }
     } catch (e) {
-      print("showRoleListOfUserDialog.fetchRoleListOfConditionHandler failure, $e");
+      print("$prompt failure, $e");
     }
   }
 
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
+    var routingKey = '$major-$minor';
     var body = packet.getBody();
+    var self = '${from}.observe';
+    var prompt = '$self($routingKey)';
 
     try {
-      print("showInsertUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchRoleListOfConditionRsp) {
-        print('body: ${body.toString()}');
-        fetchRoleListOfConditionHandler(body);
-      } else if (major == Major.admin && minor == Minor.admin.updateUserRecordRsp) {
-        updateUserRecordHandler(body);
+      print("$prompt: $routingKey");
+      if (major == Major.admin && minor == Admin.fetchRoleListOfConditionRsp) {
+        fetchRoleListOfConditionHandler(routingKey, body);
+      } else if (major == Major.admin && minor == Admin.updateUserRecordRsp) {
+        updateUserRecordHandler(routingKey, body);
       } else {
-        print("showInsertUserDialog.observe warning: $major-$minor doesn't matched");
+        print("$prompt warning: $routingKey doesn't matched");
       }
       return;
     } catch (e) {
-      print('showInsertUserDialog.observe($major-$minor).e: ${e.toString()}');
+      print('$prompt.e: ${e.toString()}');
       return;
     }
   }
@@ -139,6 +163,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
     context: context,
     builder: (context) {
       fetchRoleListOfCondition(
+        from: from,
         behavior: 1,
         userId: 0,
         roleNameList: [''],
@@ -152,6 +177,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
         const Duration(milliseconds: 100),
         () {
           fetchRoleListOfCondition(
+            from: from,
             behavior: 2,
             userId: int.parse(user.getId()),
             roleNameList: [''],
@@ -196,6 +222,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
                 return roleList;
               }();
               updateUserRecord(
+                from: from,
                 name: nameController.text,
                 userId: int.parse(user.getId()),
                 phoneNumber: phoneNumberController.text,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
@@ -22,6 +23,7 @@ import 'package:flutter_framework/common/protocol/admin/insert_record_of_good.da
 Future<void> showInsertAdvertisementDialog(BuildContext context) async {
   bool closed = false;
   int curStage = 0;
+  String from = 'showInsertAdvertisementDialog';
   List<String> sellingPoints = [];
 
   var oriObserve = Runtime.getObserve();
@@ -51,7 +53,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
   void insertRecordOfAdvertisementHandler(Map<String, dynamic> body) {
     try {
       InsertRecordOfGoodRsp rsp = InsertRecordOfGoodRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
+      if (rsp.getCode() == Code.oK) {
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
@@ -66,7 +68,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.code}',
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
         );
         return;
       }
@@ -117,10 +119,10 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
 
     try {
       print("showInsertAdvertisementDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.insertRecordOfAdvertisementRsp) {
+      if (major == Major.admin && minor == Admin.insertRecordOfAdvertisementRsp) {
         insertRecordOfAdvertisementHandler(body);
       }
-      if (major == Major.admin && minor == Minor.admin.fetchRecordsOfGoodRsp) {
+      if (major == Major.admin && minor == Admin.fetchRecordsOfGoodRsp) {
         fetchRecordsOfGoodHandler(body);
       } else {
         print("showInsertAdvertisementDialog.observe warning: $major-$minor doesn't matched");
@@ -182,6 +184,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
               }
 
               insertRecordOfAdvertisement(
+                from: from,
                 name: nameController.text,
                 title: titleController.text,
                 sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
@@ -233,7 +236,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                                 );
                                 return;
                               } else {
-                                fetchRecordsOfGood(productIdList: [int.parse(productIdController.text)]);
+                                fetchRecordsOfGood(from: from, productIdList: [int.parse(productIdController.text)]);
                                 return;
                               }
                             },
@@ -315,7 +318,6 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                         ),
                       ),
                     ),
-
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 350,

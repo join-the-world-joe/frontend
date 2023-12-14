@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/framework/rate_limiter.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../plugin/crypto/rsa.dart';
@@ -21,6 +22,7 @@ class Runtime {
   static Function? _observer; // common observe for all pages
   static Map<String, RateLimiter> _rateLimiter = {};
   static int defaultRateLimitDuration = 1000; // default, one seconds
+  static bool debug = true;
 
   static bool allow({required int major, required int minor}) {
     var key = '$major-$minor';
@@ -104,9 +106,23 @@ class Runtime {
     },
   );
 
-  static void request({required dynamic body, required String major, required String minor}) {
+  static void request({
+    required String from,
+    required dynamic body,
+    required String major,
+    required String minor,
+  }) {
     try {
-      print("Business Request: major:$major minor:$minor");
+      // if (Config.debug) {
+      //   print("Business Request($from): major:$major minor:$minor");
+      // }
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: 'Request',
+        message: '',
+      );
       PacketClient packet = PacketClient.create();
       packet.getHeader().setMajor(major);
       packet.getHeader().setMinor(minor);

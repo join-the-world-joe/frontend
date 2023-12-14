@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/model/track_list.dart';
@@ -100,7 +101,7 @@ class _State extends State<Track> {
 
     try {
       // print("User.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchTrackListOfConditionRsp) {
+      if (major == Major.admin && minor == Admin.fetchTrackListOfConditionRsp) {
         fetchTrackListOfConditionHandler(body);
       } else {
         print("Track.observe warning: $major-$minor doesn't matched");
@@ -247,7 +248,7 @@ class _State extends State<Track> {
                         onPressed: () {
                           if (!Runtime.allow(
                             major: int.parse(Major.admin),
-                            minor: int.parse(Minor.admin.fetchTrackListOfConditionReq),
+                            minor: int.parse(Admin.fetchTrackListOfConditionReq),
                           )) {
                             return;
                           }
@@ -265,6 +266,7 @@ class _State extends State<Track> {
                           // print('begin int: ${d1 ~/ 1000}');
                           // print('end int: ${d2 ~/ 1000}');
                           fetchTrackListOfCondition(
+                            from: Track.content,
                             operator: operatorController.text,
                             behavior: 2,
                             begin: d1 ~/ 1000,

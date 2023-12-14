@@ -6,6 +6,7 @@ import 'package:flutter_framework/common/business/admin/fetch_records_of_adverti
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/protocol/admin/fetch_records_of_advertisement.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
@@ -24,7 +25,7 @@ import 'package:flutter_framework/common/protocol/admin/insert_record_of_good.da
 Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) async {
   bool closed = false;
   int curStage = 0;
-
+  String from = 'showApproveAdvertisementOfADOfDealsDialog';
   var oriObserve = Runtime.getObserve();
   var advertisementIdController = TextEditingController();
   var advertisementNameController = TextEditingController();
@@ -84,7 +85,7 @@ Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) asyn
 
     try {
       print("showInsertAdvertisementDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchRecordsOfAdvertisementRsp) {
+      if (major == Major.admin && minor == Admin.fetchRecordsOfAdvertisementRsp) {
         return fetchRecordsOfAdvertisementHandler(body);
       }
       print("showInsertAdvertisementDialog.observe warning: $major-$minor doesn't matched");
@@ -170,6 +171,7 @@ Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) asyn
                               }
 
                               fetchRecordsOfAdvertisement(
+                                from: from,
                                 advertisementIdList: [int.parse(advertisementIdController.text)],
                               );
 

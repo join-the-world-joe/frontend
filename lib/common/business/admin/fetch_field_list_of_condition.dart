@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/protocol/admin/fetch_field_list_of_condition.dart';
 
 void fetchFieldListOfCondition({
+  required String from,
   required int behavior,
   required String table,
   required String role,
@@ -17,8 +19,9 @@ void fetchFieldListOfCondition({
 }) {
 
   Runtime.request(
+    from: from,
     major: Major.admin,
-    minor: Minor.admin.fetchFieldListOfConditionReq,
+    minor: Admin.fetchFieldListOfConditionReq,
     body: FetchFieldListOfConditionReq.construct(
       behavior: behavior,
       table: table,

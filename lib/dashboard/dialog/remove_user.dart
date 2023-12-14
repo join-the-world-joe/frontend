@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
@@ -17,6 +18,7 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
   var oriObserve = Runtime.getObserve();
   bool closed = false;
   int curStage = 0;
+  String from = 'showRemoveUserDialog';
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -68,7 +70,7 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
 
     try {
       print("showRemoveUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.softDeleteUserRecordRsp) {
+      if (major == Major.admin && minor == Admin.softDeleteUserRecordRsp) {
         softDeleteUserRecordHandler(body);
       } else {
         print("showRemoveUserDialog.observe warning: $major-$minor doesn't matched");
@@ -122,7 +124,7 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
                         ),
                         TextButton(
                           onPressed: () {
-                            softDeleteUserRecord(userList: [int.parse(user.getId())]);
+                            softDeleteUserRecord(from: from, userList: [int.parse(user.getId())]);
                           },
                           child: Text(Translator.translate(Language.confirm)),
                         ),

@@ -2,6 +2,7 @@ import 'dart:js_util';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/model/permission_list.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_framework/common/business/admin/fetch_permission_list_of
 
 Future<int> showPermissionListOfUserDialog(BuildContext context, User user) async {
   bool closed = false;
+  String from = 'showPermissionListOfUserDialog';
   int curStage = 0;
   List<Widget> widgetList = [];
   var oriObserve = Runtime.getObserve();
@@ -71,7 +73,7 @@ Future<int> showPermissionListOfUserDialog(BuildContext context, User user) asyn
 
     try {
       print("showPermissionListOfUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchPermissionListOfConditionRsp) {
+      if (major == Major.admin && minor == Admin.fetchPermissionListOfConditionRsp) {
         fetchPermissionListOfConditionHandler(body);
       } else {
         print("showPermissionListOfUserDialog.observe warning: $major-$minor doesn't matched");
@@ -90,6 +92,7 @@ Future<int> showPermissionListOfUserDialog(BuildContext context, User user) asyn
     context: context,
     builder: (context) {
       fetchPermissionListOfCondition(
+        from: from,
         name: '',
         major: '',
         minor: '',

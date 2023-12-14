@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
@@ -20,6 +21,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
   int status = advertisement.getStatus();
   int curStage = 0;
   bool closed = false;
+  String from = 'showUpdateAdvertisementDialog';
   List<String> sellingPoints = advertisement.getSellingPoints();
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController(text: advertisement.getName());
@@ -44,7 +46,9 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
     }
   }
 
-  void updateRecordOfAdvertisementHandler(Map<String, dynamic> body) {
+  void updateRecordOfAdvertisementHandler(String routingKey, Map<String, dynamic> body) {
+    var self = '${from}.updateRecordOfAdvertisementHandler';
+    var prompt = '$self($routingKey)';
     try {
       UpdateRecordOfAdvertisementRsp rsp = UpdateRecordOfAdvertisementRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
@@ -67,7 +71,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
         return;
       }
     } catch (e) {
-      print("showUpdateGoodDialog.updateRecordOfGoodHandler failure, $e");
+      print("$prompt failure, $e");
       return;
     } finally {}
   }
@@ -75,19 +79,19 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
+    var routingKey = '$major-$minor';
     var body = packet.getBody();
 
     try {
-      print("showUpdateGoodDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.updateRecordOfAdvertisementRsp) {
-        print('body: ${body.toString()}');
-        updateRecordOfAdvertisementHandler(body);
+      print("$from.observe: $routingKey");
+      if (major == Major.admin && minor == Admin.updateRecordOfAdvertisementRsp) {
+        updateRecordOfAdvertisementHandler(routingKey, body);
       } else {
-        print("showUpdateGoodDialog.observe warning: $major-$minor doesn't matched");
+        print("$from.observe warning: $routingKey doesn't matched");
       }
       return;
     } catch (e) {
-      print('showUpdateGoodDialog.observe($major-$minor).e: ${e.toString()}');
+      print('$from.observe($routingKey).e: ${e.toString()}');
       return;
     }
   }
@@ -109,6 +113,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
             onPressed: () async {
               print('advertisement.getId: ${advertisement.getId()}');
               updateRecordOfAdvertisement(
+                from: from,
                 id: advertisement.getId(),
                 image: imageController.text,
                 name: nameController.text,

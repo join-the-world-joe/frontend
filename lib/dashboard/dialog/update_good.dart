@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/utils/convert.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -19,6 +21,7 @@ import 'package:flutter_framework/common/business/admin/update_record_of_good.da
 Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
   int curStage = 0;
   bool closed = false;
+  String from = 'showUpdateGoodDialog';
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController(text: product.getName());
   var vendorController = TextEditingController(text: product.getVendor());
@@ -38,22 +41,46 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
     }
   }
 
-  void updateRecordOfGoodHandler(Map<String, dynamic> body) {
+  void updateRecordOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'updateRecordOfGoodHandler';
     try {
       UpdateRecordOfGoodRsp rsp = UpdateRecordOfGoodRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        showMessageDialog(context, '温馨提示：', '更新成功').then(
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (rsp.getCode() == Code.oK) {
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(
+            Language.updateRecordSuccessfully,
+          ),
+        ).then(
           (value) {
             Navigator.pop(context, true);
           },
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         return;
       }
     } catch (e) {
-      print("showUpdateGoodDialog.updateRecordOfGoodHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     } finally {}
   }
@@ -62,18 +89,35 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
-
+    var caller = 'observe';
     try {
-      print("showUpdateGoodDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.updateRecordOfGoodRsp) {
-        print('body: ${body.toString()}');
-        updateRecordOfGoodHandler(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: '',
+      );
+      if (major == Major.admin && minor == Admin.updateRecordOfGoodRsp) {
+        updateRecordOfGoodHandler(major: major, minor: minor, body: body);
       } else {
-        print("showUpdateGoodDialog.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('showUpdateGoodDialog.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -110,6 +154,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
                 return;
               }
               updateRecordOfGood(
+                from: from,
                 name: nameController.text,
                 productId: int.parse(idController.text),
                 buyingPrice: Convert.doubleStringMultiple10toInt(buyingPriceController.text),

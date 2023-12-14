@@ -31,12 +31,20 @@ class FetchRoleListOfConditionReq {
 }
 
 class FetchRoleListOfConditionRsp {
-  late int code;
-  late dynamic body;
+   int _code = -1;
+   dynamic _body;
+
+   int getCode() {
+     return _code;
+   }
+
+   dynamic getBody() {
+     return _body;
+   }
 
   FetchRoleListOfConditionRsp.fromJson(Map<String, dynamic> json) {
-    code = json['code'] ?? -1;
-    body = json['body'] ?? '';
+    _code = json['code'] ?? -1;
+    _body = json['body'] ?? '';
   }
 }
 

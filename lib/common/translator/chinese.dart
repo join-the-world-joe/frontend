@@ -64,6 +64,7 @@ class Chinese {
     Language.loading: "加载中",
     Language.clickToView: "点击查看",
     Language.titleOfRefreshOperation: '刷新',
+    Language.accessDenied : '没有权限',
 
     // menu
     Language.titleOfParentMenu: '父级菜单',

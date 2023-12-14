@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -18,6 +20,7 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
   bool closed = false;
   int curStage = 0;
   int status = int.parse('1');
+  String from = 'showInsertGoodDialog';
 
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController();
@@ -37,10 +40,18 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
     }
   }
 
-  void insertRecordOfGoodHandler(Map<String, dynamic> body) {
+  void insertRecordOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'insertRecordOfGoodHandler';
     try {
       InsertRecordOfGoodRsp rsp = InsertRecordOfGoodRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (rsp.getCode() == Code.oK) {
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
@@ -55,12 +66,18 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.code}',
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
         );
         return;
       }
     } catch (e) {
-      print("showInsertGoodDialog.insertUserRecordHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -68,18 +85,38 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
+    var routingKey = '$major-$minor';
     var body = packet.getBody();
+    var caller = 'observe';
 
     try {
-      print("showInsertGoodDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.insertRecordOfGoodRsp) {
-        insertRecordOfGoodHandler(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: '',
+      );
+      if (major == Major.admin && minor == Admin.insertRecordOfGoodRsp) {
+        insertRecordOfGoodHandler(major: major, minor: minor, body: body);
       } else {
-        print("showInsertGoodDialog.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('showInsertGoodDialog.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     } finally {}
   }
@@ -117,11 +154,12 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
               }
               if (!Runtime.allow(
                 major: int.parse(Major.admin),
-                minor: int.parse(Minor.admin.insertRecordOfGoodReq),
+                minor: int.parse(Admin.insertRecordOfGoodReq),
               )) {
                 return;
               }
               insertRecordOfGood(
+                from: from,
                 name: nameController.text,
                 vendor: vendorController.text,
                 contact: contactController.text,

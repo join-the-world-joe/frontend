@@ -60,6 +60,7 @@ class Language {
   static String loading = "the status of loading";
   static String clickToView = "press button to view the detail info";
   static String titleOfRefreshOperation = "the title of refresh operation";
+  static String accessDenied = 'the title of access denied';
 
   // menu
   static String titleOfParentMenu = 'the title of parent menu';

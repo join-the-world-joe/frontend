@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 
@@ -76,7 +77,7 @@ class _State extends State<Role> {
 
     try {
       print("Role.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchRoleListOfConditionRsp) {
+      if (major == Major.admin && minor == Admin.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(body);
         curStage++;
       } else {
@@ -93,14 +94,13 @@ class _State extends State<Role> {
     print('Role.fetchRoleListOfConditionHandler');
     try {
       FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print(rsp.body.toString());
-        RoleList roleList = RoleList.fromJson(rsp.body);
+      if (rsp.getCode() == Code.oK) {
+        RoleList roleList = RoleList.fromJson(rsp.getBody());
         Cache.setRoleList(roleList);
         curStage++;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}');
         return;
       }
     } catch (e) {
@@ -152,7 +152,7 @@ class _State extends State<Role> {
                         onPressed: () {
                           if (!Runtime.allow(
                             major: int.parse(Major.admin),
-                            minor: int.parse(Minor.admin.fetchRoleListOfConditionReq),
+                            minor: int.parse(Admin.fetchRoleListOfConditionReq),
                           )) {
                             return;
                           }
@@ -162,6 +162,7 @@ class _State extends State<Role> {
                             List<String> roleList = [];
                             roleList.add(inputName);
                             fetchRoleListOfCondition(
+                              from: Role.content,
                               userId: 0,
                               behavior: 2,
                               roleNameList: roleList,
@@ -169,6 +170,7 @@ class _State extends State<Role> {
                             return;
                           }
                           fetchRoleListOfCondition(
+                            from: Role.content,
                             userId: 0,
                             behavior: 1,
                             roleNameList: [],

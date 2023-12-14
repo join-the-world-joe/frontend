@@ -14,6 +14,7 @@ import '../config/config.dart';
 Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, String id, List<String> sellingPoints) async {
   bool closed = false;
   int curStage = 0;
+  String from = 'showSellingPointOfAdvertisementDialog';
 
   var oriObserve = Runtime.getObserve();
   var sellingPointController = TextEditingController();
@@ -33,17 +34,17 @@ Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, Strin
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
+    var routingKey = '$major-$minor';
     var body = packet.getBody();
+    var self = '${from}.observe';
+    var prompt = '$self($routingKey)';
 
     try {
-      print("showInsertGoodDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.insertRecordOfGoodRsp) {
-      } else {
-        print("showInsertGoodDialog.observe warning: $major-$minor doesn't matched");
-      }
+      print("$prompt");
+      print("$prompt doesn't matched");
       return;
     } catch (e) {
-      print('showInsertGoodDialog.observe($major-$minor).e: ${e.toString()}');
+      print('$prompt.e: ${e.toString()}');
       return;
     } finally {}
   }

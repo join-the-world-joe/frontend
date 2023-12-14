@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
@@ -17,6 +18,7 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
   var oriObserve = Runtime.getObserve();
   bool closed = false;
   int curStage = 0;
+  String from = 'showRemoveGoodDialog';
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -30,11 +32,15 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
     }
   }
 
-  void softDeleteRecordOfGoodHandler(Map<String, dynamic> body) {
-    print('showRemoveGoodDialog.softDeleteRecordOfGood');
+  void softDeleteRecordOfGoodHandler(String routingKey, Map<String, dynamic> body) {
+    var self = '${from}.softDeleteRecordOfGoodHandler';
+    var prompt = '$self($routingKey)';
     try {
       SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
+        if (Config.debug) {
+          print("$prompt, code: ${rsp.getCode()}");
+        }
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
@@ -54,8 +60,8 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
         return;
       }
     } catch (e) {
-      print("showRemoveUserDialog failure, $e");
-      showMessageDialog(context, '温馨提示：', '删除失败').then((value) {
+      print("$prompt, $e");
+      showMessageDialog(context, Translator.translate(Language.titleOfNotification), Translator.translate(Language.removeOperationFailure)).then((value) {
         Navigator.pop(context, false);
         curStage = -1;
       });
@@ -66,18 +72,19 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
+    var routingKey = '$major-$minor';
     var body = packet.getBody();
 
     try {
-      print("showRemoveUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.softDeleteRecordsOfGoodRsp) {
-        softDeleteRecordOfGoodHandler(body);
+      print("$from.observe: $routingKey");
+      if (major == Major.admin && minor == Admin.softDeleteRecordsOfGoodRsp) {
+        softDeleteRecordOfGoodHandler(routingKey, body);
       } else {
-        print("showRemoveUserDialog.observe warning: $major-$minor doesn't matched");
+        print("$from.observe warning: $routingKey doesn't matched");
       }
       return;
     } catch (e) {
-      print('showRemoveUserDialog.observe($major-$minor).e: ${e.toString()}');
+      print('$from.observe($routingKey).e: ${e.toString()}');
       return;
     }
   }
@@ -124,7 +131,7 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
                         ),
                         TextButton(
                           onPressed: () {
-                            softDeleteRecordsOfGood(productIdList: [product.getId()]);
+                            softDeleteRecordsOfGood(from: from, productIdList: [product.getId()]);
                           },
                           child: Text(Translator.translate(Language.confirm)),
                         ),

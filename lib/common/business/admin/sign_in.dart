@@ -1,11 +1,13 @@
 import 'dart:html';
 import 'dart:typed_data';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/protocol/admin/sign_in.dart';
 
 void signIn({
+  required String from,
   required String email,
   required String memberId,
   required String account,
@@ -17,8 +19,9 @@ void signIn({
   required int userId,
 }) {
   Runtime.request(
+    from: from,
     major: Major.admin,
-    minor: Minor.admin.signInReq,
+    minor: Admin.signInReq,
     body: SignInReq.construct(
       email: email,
       memberId: memberId,

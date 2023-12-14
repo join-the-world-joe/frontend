@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -70,7 +71,7 @@ class _State extends State<PasswordSignIn> {
     var body = packet.getBody();
     print("PasswordSignIn.observe: major: $major, minor: $minor");
     try {
-      if (major == Major.admin && minor == Minor.admin.signInRsp) {
+      if (major == Major.admin && minor == Admin.signInRsp) {
         signInHandler(body);
       } else {
         print("PasswordSignIn.observe warning: $major-$minor doesn't matched");
@@ -265,7 +266,7 @@ class _State extends State<PasswordSignIn> {
                         onPressed: () {
                           if (!Runtime.allow(
                             major: int.parse(Major.admin),
-                            minor: int.parse(Minor.admin.signInReq),
+                            minor: int.parse(Admin.signInReq),
                           )) {
                             return;
                           }
@@ -273,6 +274,7 @@ class _State extends State<PasswordSignIn> {
                           if (!isEmailValid(idControl.text)) {
                             behavior = 4;
                             signIn(
+                              from: Screen.passwordSignIn,
                               behavior: behavior,
                               verificationCode: 0,
                               countryCode: '',
@@ -287,6 +289,7 @@ class _State extends State<PasswordSignIn> {
                             return;
                           }
                           signIn(
+                            from: Screen.passwordSignIn,
                             behavior: behavior,
                             verificationCode: 0,
                             countryCode: '',

@@ -111,8 +111,8 @@ class _State extends State<Loading> {
   void setup() {
     setup_();
     Runtime.setObserve(observe);
-    echo(message: message);
-    fetchRateLimitingConfig();
+    echo(from: Screen.loading, message: message);
+    fetchRateLimitingConfig(from: Screen.loading);
   }
 
   @override

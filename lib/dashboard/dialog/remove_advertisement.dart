@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/common/business/admin/soft_delete_records_of_advertisement.dart';
@@ -16,6 +18,7 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
   var oriObserve = Runtime.getObserve();
   bool closed = false;
   int curStage = 0;
+  String from = 'showRemoveAdvertisementDialog';
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -29,10 +32,17 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
     }
   }
 
-  void softDeleteRecordOfAdvertisementHandler(Map<String, dynamic> body) {
-    print('showRemoveAdvertisementDialog.softDeleteRecordOfAdvertisementHandler');
+  void softDeleteRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'softDeleteRecordOfAdvertisementHandler';
     try {
       SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         showMessageDialog(
           context,
@@ -70,17 +80,35 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
-
+    var caller = 'observe';
     try {
-      print("showRemoveUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.softDeleteRecordsOfAdvertisementRsp) {
-        softDeleteRecordOfAdvertisementHandler(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: '',
+      );
+      if (major == Major.admin && minor == Admin.softDeleteRecordsOfAdvertisementRsp) {
+        softDeleteRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else {
-        print("showRemoveUserDialog.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('showRemoveUserDialog.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -125,7 +153,7 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
                         ),
                         TextButton(
                           onPressed: () {
-                            softDeleteRecordsOfAdvertisement(advertisementIdList: [id]);
+                            softDeleteRecordsOfAdvertisement(from: from, advertisementIdList: [id]);
                           },
                           child: Text(Translator.translate(Language.confirm)),
                         ),

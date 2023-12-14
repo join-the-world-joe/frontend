@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
@@ -23,7 +24,6 @@ import 'package:flutter_framework/common/protocol/backend_gateway/fetch_rate_lim
 import 'package:flutter_framework/common/business/backend_gateway/fetch_rate_limiting_config.dart';
 import 'package:flutter_framework/common/protocol/admin/sign_in.dart';
 import 'package:flutter_framework/common/business//admin/sign_in.dart';
-
 
 class Offline extends StatefulWidget {
   const Offline({Key? key}) : super(key: key);
@@ -150,7 +150,7 @@ class _State extends State<Offline> {
         Runtime.setConnectivity(true);
       } else if (major == Major.backendGateway && minor == Minor.backendGateway.fetchRateLimitingConfigRsp) {
         fetchRateLimitingConfigHandler(body);
-      } else if (major == Major.admin && minor == Minor.admin.signInRsp) {
+      } else if (major == Major.admin && minor == Admin.signInRsp) {
         Runtime.setConnectivity(true);
         signInHandler(body);
       } else {
@@ -226,13 +226,13 @@ class _State extends State<Offline> {
                           setup();
                         }
 
-                        fetchRateLimitingConfig();
+                        fetchRateLimitingConfig(from: Screen.offline);
 
                         if (Runtime.allow(major: int.parse(Major.backendGateway), minor: int.parse(Minor.backendGateway.pingReq))) {
-                          echo(message: message);
+                          echo(from: Screen.offline, message: message);
                         }
 
-                        if (!Runtime.allow(major: int.parse(Major.admin), minor: int.parse(Minor.admin.signInReq))) {
+                        if (!Runtime.allow(major: int.parse(Major.admin), minor: int.parse(Admin.signInReq))) {
                           return;
                         }
 
@@ -242,6 +242,7 @@ class _State extends State<Offline> {
                             () {
                               var totp = OTP.generateTOTPCodeString(Cache.getSecret(), DateTime.now().millisecondsSinceEpoch, algorithm: Algorithm.SHA1, isGoogle: true);
                               signIn(
+                                from: Screen.offline,
                                 userId: Cache.getUserId(),
                                 email: '',
                                 memberId: Cache.getMemberId(),

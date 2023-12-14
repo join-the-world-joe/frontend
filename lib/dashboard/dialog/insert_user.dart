@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
@@ -21,6 +22,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
   String? countryCode;
   bool closed = false;
   int curStage = 0;
+  String from = 'showInsertUserDialog';
   RoleList wholeRoleList;
   Map<Role, bool> roleStatus = {};
   RoleList roleList = RoleList([]);
@@ -49,9 +51,9 @@ Future<void> showInsertUserDialog(BuildContext context) async {
     print('showRoleListOfUserDialog.fetchRoleListOfConditionHandler');
     try {
       FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
+      if (rsp.getCode() == Code.oK) {
         // print(rsp.body.toString());
-        wholeRoleList = RoleList.fromJson(rsp.body);
+        wholeRoleList = RoleList.fromJson(rsp.getBody());
         for (var i = 0; i < wholeRoleList.getBody().length; i++) {
           roleStatus[wholeRoleList.getBody()[i]] = false;
           for (var j = 0; j < roleList.getBody().length; j++) {
@@ -63,12 +65,12 @@ Future<void> showInsertUserDialog(BuildContext context) async {
         }
         curStage++;
         return;
-      } else if (rsp.code == Code.accessDenied) {
+      } else if (rsp.getCode() == Code.accessDenied) {
         showMessageDialog(context, '温馨提示：', '没有权限.');
         curStage = -1;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.code}');
+        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.getCode()}');
         curStage = -1;
         return;
       }
@@ -112,9 +114,9 @@ Future<void> showInsertUserDialog(BuildContext context) async {
 
     try {
       print("showInsertUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.insertUserRecordRsp) {
+      if (major == Major.admin && minor == Admin.insertUserRecordRsp) {
         insertUserRecordHandler(body);
-      } else if (major == Major.admin && minor == Minor.admin.fetchRoleListOfConditionRsp) {
+      } else if (major == Major.admin && minor == Admin.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(body);
       } else {
         print("showInsertUserDialog.observe warning: $major-$minor doesn't matched");
@@ -133,6 +135,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
     context: context,
     builder: (context) {
       fetchRoleListOfCondition(
+        from: from,
         behavior: 1,
         userId: 0,
         roleNameList: [''],
@@ -176,6 +179,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                 return roleList;
               }();
               insertUserRecord(
+                from: from,
                 name: nameController.text,
                 phoneNumber: phoneNumberController.text,
                 countryCode: countryCode ?? '86',

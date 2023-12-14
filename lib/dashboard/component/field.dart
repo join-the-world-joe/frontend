@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
@@ -81,7 +82,7 @@ class _State extends State<Field> {
 
     try {
       print("Field.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchFieldListOfConditionRsp) {
+      if (major == Major.admin && minor == Admin.fetchFieldListOfConditionRsp) {
         fetchFieldListOfConditionHandler(body);
         curStage++;
       } else {
@@ -176,12 +177,13 @@ class _State extends State<Field> {
                         onPressed: () {
                           if (!Runtime.allow(
                             major: int.parse(Major.admin),
-                            minor: int.parse(Minor.admin.fetchFieldListOfConditionReq),
+                            minor: int.parse(Admin.fetchFieldListOfConditionReq),
                           )) {
                             return;
                           }
                           if (nameController.text.isEmpty && tableController.text.isEmpty && roleController.text.isEmpty) {
                             fetchFieldListOfCondition(
+                              from: Field.content,
                               behavior: 1,
                               field: '',
                               table: '',
@@ -190,6 +192,7 @@ class _State extends State<Field> {
                             return;
                           }
                           fetchFieldListOfCondition(
+                            from: Field.content,
                             behavior: 2,
                             field: nameController.text,
                             table: tableController.text,

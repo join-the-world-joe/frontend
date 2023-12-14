@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
@@ -19,6 +20,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
   int curStage = 0;
   List<Widget> widgetList = [];
   var oriObserve = Runtime.getObserve();
+  String from = 'showRoleListOfUserDialog';
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -36,13 +38,12 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
     print('showRoleListOfUserDialog.fetchRoleListOfConditionHandler');
     try {
       FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
-      if (rsp.code == Code.oK) {
-        print(rsp.body.toString());
-        RoleList roleList = RoleList.fromJson(rsp.body);
+      if (rsp.getCode() == Code.oK) {
+        RoleList roleList = RoleList.fromJson(rsp.getBody());
         widgetList = _buildWidgetList(roleList);
         curStage++;
         return;
-      } else if (rsp.code == Code.accessDenied) {
+      } else if (rsp.getCode() == Code.accessDenied) {
         showMessageDialog(context, '温馨提示：', '没有权限.').then(
           (value) {
             Navigator.pop(context);
@@ -50,7 +51,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.code}').then(
+        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}').then(
           (value) {
             Navigator.pop(context);
           },
@@ -69,7 +70,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
 
     try {
       print("showRoleListOfUserDialog.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchRoleListOfConditionRsp) {
+      if (major == Major.admin && minor == Admin.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(body);
       } else {
         print("showRoleListOfUserDialog.observe warning: $major-$minor doesn't matched");
@@ -88,6 +89,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
     context: context,
     builder: (context) {
       fetchRoleListOfCondition(
+        from: from,
         behavior: 2,
         userId: int.parse(user.getId()),
         roleNameList: [''],

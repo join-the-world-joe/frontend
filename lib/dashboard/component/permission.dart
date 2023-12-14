@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
@@ -101,7 +102,7 @@ class _State extends State<Permission> {
 
     try {
       print("Permission.observe: major: $major, minor: $minor");
-      if (major == Major.admin && minor == Minor.admin.fetchPermissionListOfConditionRsp) {
+      if (major == Major.admin && minor == Admin.fetchPermissionListOfConditionRsp) {
         fetchPermissionListOfConditionHandler(body);
         curStage++;
       } else {
@@ -178,11 +179,12 @@ class _State extends State<Permission> {
                         onPressed: () {
                           if (!Runtime.allow(
                             major: int.parse(Major.admin),
-                            minor: int.parse(Minor.admin.fetchTrackListOfConditionReq),
+                            minor: int.parse(Admin.fetchTrackListOfConditionReq),
                           )) {
                             return;
                           }
                           fetchPermissionListOfCondition(
+                            from: Permission.content,
                             behavior: 1,
                             name: nameController.text,
                             major: '',

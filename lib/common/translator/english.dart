@@ -64,6 +64,7 @@ class English {
     Language.loading: "Loading",
     Language.clickToView: "Click to view",
     Language.titleOfRefreshOperation: 'Refresh',
+    Language.accessDenied : 'Access Denied',
 
     // menu
     Language.titleOfParentMenu: 'Parent',
