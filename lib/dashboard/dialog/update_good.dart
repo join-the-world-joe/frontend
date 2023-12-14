@@ -23,7 +23,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
   var nameController = TextEditingController(text: product.getName());
   var vendorController = TextEditingController(text: product.getVendor());
   var contactController = TextEditingController(text: product.getContact());
-  var buyingPriceController = TextEditingController(text: Convert.intStringDivide10toDoubleString(product.getBuyingPrice().toString()));
+  var buyingPriceController = TextEditingController(text: Convert.intDivide10toDoubleString(product.getBuyingPrice()));
   var idController = TextEditingController(text: product.getId().toString());
 
   Stream<int>? yeildData() async* {

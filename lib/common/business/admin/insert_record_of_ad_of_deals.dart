@@ -20,17 +20,4 @@ void insertRecordOfADOfDeals({
       advertisementIdList: advertisementIdList,
     ),
   );
-
-  //
-  // PacketClient packet = PacketClient.create();
-  // FetchUserListOfConditionReq req = FetchUserListOfConditionReq.construct(
-  //   behavior: behavior,
-  //   userId: userId,
-  //   name: name,
-  //   phoneNumber: phoneNumber,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.fetchUserListOfConditionReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

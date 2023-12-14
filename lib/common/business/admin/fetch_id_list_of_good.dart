@@ -22,15 +22,4 @@ void fetchIdListOfGood({
       categoryId: categoryId,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // FetchIdListOfGoodReq req = FetchIdListOfGoodReq.construct(
-  //   behavior: behavior,
-  //   productName: productName,
-  //   categoryId: categoryId,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.fetchIdListOfGoodReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

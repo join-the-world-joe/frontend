@@ -23,15 +23,4 @@ void fetchMenuListOfCondition({
       roleList: roleList,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // FetchMenuListOfConditionReq req = FetchMenuListOfConditionReq.construct(
-  //   behavior: behavior,
-  //   userId: userId,
-  //   roleList: roleList,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.fetchMenuListOfConditionReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

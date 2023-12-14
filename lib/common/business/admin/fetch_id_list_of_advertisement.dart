@@ -21,15 +21,4 @@ void fetchIdListOfAdvertisement({
       advertisementName: advertisementName,
     ),
   );
-
-  //
-  // PacketClient packet = PacketClient.create();
-  // FetchIdListOfAdvertisementReq req = FetchIdListOfAdvertisementReq.construct(
-  //   behavior: behavior,
-  //   advertisementName: advertisementName,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.fetchIdListOfAdvertisementReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

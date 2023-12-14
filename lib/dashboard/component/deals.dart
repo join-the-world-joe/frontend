@@ -11,6 +11,7 @@ import 'package:flutter_framework/common/protocol/advertisement/fetch_records_of
 import 'dart:async';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
+import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/dialog/approve_advertisement_of_ad_of_deals.dart';
 import 'package:flutter_framework/dashboard/dialog/reject_advertisement_of_ad_of_deals.dart';
 import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
@@ -100,7 +101,9 @@ class _State extends State<Deals> {
     try {
       FetchVersionOfADOfDealsRsp rsp = FetchVersionOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print('fetchVersionOfADOfDealsHandler ok, ${rsp.getVersion()}');
+        if (Config.debug) {
+          print('fetchVersionOfADOfDealsHandler, version: ${rsp.getVersion()}');
+        }
       } else {
         showMessageDialog(
           context,
@@ -117,7 +120,9 @@ class _State extends State<Deals> {
     try {
       FetchIdListOfADOfDealsRsp rsp = FetchIdListOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print("Deals.fetchIdListOfADOfDealsHandler.idList: ${rsp.getIdList()}");
+        if (Config.debug) {
+          print('fetchIdListOfADOfDealsHandler, advertisement id list: ${rsp.getIdList()}');
+        }
         if (rsp.getIdList().isEmpty) {
           showMessageDialog(
             context,
@@ -148,6 +153,15 @@ class _State extends State<Deals> {
       FetchRecordsOfADOfDealsRsp rsp = FetchRecordsOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         // print('data map: ${rsp.getDataMap().toString()}');
+        if (Config.debug) {
+          List<int> tempIdList = [];
+          if (rsp.getDataMap().isNotEmpty) {
+            rsp.getDataMap().forEach((key, value) {
+              tempIdList.add(value.getAdvertisementId());
+            });
+          }
+          print('fetchRecordsOfADOfDealsHandler, advertisement id list: $tempIdList');
+        }
         if (rsp.getDataMap().isEmpty) {
           showMessageDialog(
             context,
@@ -275,6 +289,9 @@ class _State extends State<Deals> {
                     scrollbarOrientation: ScrollbarOrientation.bottom,
                     child: PaginatedDataTable(
                       controller: scrollController,
+                      onPageChanged: (int? n) {
+                        curStage++;
+                      },
                       actions: [
                         ElevatedButton.icon(
                           icon: const Icon(Icons.refresh),
@@ -363,7 +380,6 @@ class _State extends State<Deals> {
 
 class Source extends DataTableSource {
   List<int> idList;
-  List<int> requestIdList = [];
   Map<int, ADOfDeals> dataMap;
   Map<int, DateTime> datetimeMap;
   Map<int, bool> boolMap;
@@ -382,7 +398,7 @@ class Source extends DataTableSource {
 
   @override
   int get rowCount => () {
-        print("length: ${idList.length}");
+        // print("length: ${idList.length}");
         return idList.length;
       }();
 
@@ -391,7 +407,7 @@ class Source extends DataTableSource {
 
   @override
   DataRow getRow(int index) {
-    print("getRow: $index");
+    // print("getRow: $index");
     var advertisementId = Translator.translate(Language.loading);
     var advertisementName = Translator.translate(Language.loading);
     var productId = Translator.translate(Language.loading);
@@ -412,35 +428,32 @@ class Source extends DataTableSource {
         productId = dataMap[key]!.getProductId().toString();
         productName = dataMap[key]!.getProductName();
         titleOfAdvertisement = dataMap[key]!.getTitle();
-        sellingPrice = dataMap[key]!.getSellingPrice().toString();
         placeOfOrigin = dataMap[key]!.getPlaceOfOrigin();
         stockOfAdvertisement = dataMap[key]!.getStock().toString();
         sellingPoints = dataMap[key]!.getSellingPoints();
+        sellingPrice = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
     } else {
       if (datetimeMap.containsKey(key)) {
         // item requested
-        print("key: ${key}, datetime: ${datetimeMap[key]}");
-      }
-      {
+      } else {
         // item not requested
-        requestIdList = [];
+        List<int> requestIdList = [];
         requestIdList.add(key);
+        datetimeMap[key] = DateTime.now();
         if (index % 5 == 0 || index == 0) {
           for (var i = index + 1; i < index + 5; i++) {
             if (i >= idList.length) {
               break;
             }
             requestIdList.add(idList[i]);
+            datetimeMap[idList[i]] = DateTime.now();
           }
         }
+        // print("requestIdList: $requestIdList");
         fetchRecordsOfADOfDeals(advertisementIdList: requestIdList);
-        print("requestIdList: $requestIdList");
-        for (var i = 0; i < requestIdList.length; i++) {
-          datetimeMap[i] = DateTime.now();
-        }
       }
     }
 
@@ -455,7 +468,7 @@ class Source extends DataTableSource {
         DataCell(Text(productId)),
         DataCell(Text(productName)),
         DataCell(Text(titleOfAdvertisement)),
-        DataCell(Text(Convert.intStringDivide10toDoubleString(sellingPrice))),
+        DataCell(Text(sellingPrice)),
         DataCell(Text(placeOfOrigin)),
         DataCell(
           IconButton(

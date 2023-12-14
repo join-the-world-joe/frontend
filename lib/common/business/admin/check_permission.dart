@@ -20,15 +20,4 @@ void checkPermission({
       minor: int.parse(minor),
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // CheckPermissionReq req = CheckPermissionReq.construct(
-  //   major: int.parse(major),
-  //   minor: int.parse(minor),
-  // );
-  //
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.checkPermissionReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

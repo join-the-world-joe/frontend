@@ -18,11 +18,4 @@ void echo({
     major: Major.backendGateway,
     minor: Minor.backendGateway.pingReq,
   );
-  //
-  // PacketClient packet = PacketClient.create();
-  // PingReq req = PingReq.construct(message: message);
-  // packet.getHeader().setMajor(Major.backendGateway);
-  // packet.getHeader().setMinor(Minor.backendGateway.pingReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

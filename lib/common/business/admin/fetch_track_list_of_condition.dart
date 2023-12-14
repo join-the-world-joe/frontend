@@ -28,18 +28,4 @@ void fetchTrackListOfCondition({
       minor: minor,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // FetchTrackListOfConditionReq req = FetchTrackListOfConditionReq.construct(
-  //   behavior: behavior,
-  //   operator: operator,
-  //   begin: begin,
-  //   end: end,
-  //   major: major,
-  //   minor: minor,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.fetchTrackListOfConditionReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

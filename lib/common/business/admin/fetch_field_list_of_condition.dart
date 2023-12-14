@@ -26,17 +26,4 @@ void fetchFieldListOfCondition({
       role: role,
     ),
   );
-
-  //
-  // PacketClient packet = PacketClient.create();
-  // FetchFieldListOfConditionReq req = FetchFieldListOfConditionReq.construct(
-  //   behavior: behavior,
-  //   table: table,
-  //   field: field,
-  //   role: role,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.fetchFieldListOfConditionReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

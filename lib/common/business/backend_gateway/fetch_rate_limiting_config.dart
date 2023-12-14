@@ -11,11 +11,4 @@ void fetchRateLimitingConfig() {
     minor: Minor.backendGateway.fetchRateLimitingConfigReq,
     body: FetchRateLimitingConfigReq(),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // FetchRateLimitingConfigReq req = FetchRateLimitingConfigReq();
-  // packet.getHeader().setMajor(Major.backendGateway);
-  // packet.getHeader().setMinor(Minor.backendGateway.fetchRateLimitingConfigReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

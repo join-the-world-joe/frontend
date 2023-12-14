@@ -18,13 +18,4 @@ void softDeleteRecordsOfAdvertisement({
       advertisementIdList: advertisementIdList,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // SoftDeleteRecordsOfAdvertisementReq req = SoftDeleteRecordsOfAdvertisementReq.construct(
-  //   advertisementIdList: advertisementIdList,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.softDeleteRecordsOfAdvertisementReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

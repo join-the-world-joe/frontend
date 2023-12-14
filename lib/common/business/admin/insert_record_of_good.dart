@@ -20,18 +20,4 @@ void insertRecordOfGood({
       buyingPrice: buyingPrice,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // InsertRecordOfGoodReq req = InsertRecordOfGoodReq.construct(
-  //   name: name,
-  //   vendor: vendor,
-  //   contact: contact,
-  //   buyingPrice: buyingPrice,
-  //   description: description,
-  //   status: status,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.insertRecordOfGoodReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

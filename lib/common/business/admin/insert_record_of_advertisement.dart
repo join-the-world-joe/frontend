@@ -29,23 +29,4 @@ void insertRecordOfAdvertisement({
       thumbnail: thumbnail,
     ),
   );
-
-  //
-  // PacketClient packet = PacketClient.create();
-  // InsertRecordOfAdvertisementReq req = InsertRecordOfAdvertisementReq.construct(
-  //   name: name,
-  //   title: title,
-  //   sellingPrice: sellingPrice,
-  //   sellingPoints: sellingPoints,
-  //   placeOfOrigin: placeOfOrigin,
-  //   url: url,
-  //   stock: stock,
-  //   productId: productId,
-  //   status: status,
-  //   description: description,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.insertRecordOfAdvertisementReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

@@ -15,13 +15,4 @@ void fetchRecordsOfAdvertisement({
       advertisementIdList: advertisementIdList,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // FetchRecordsOfAdvertisementReq req = FetchRecordsOfAdvertisementReq.construct(
-  //   advertisementIdList: advertisementIdList,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.fetchRecordsOfAdvertisementReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

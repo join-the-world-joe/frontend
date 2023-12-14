@@ -38,23 +38,4 @@ void updateRecordOfAdvertisement({
       thumbnail: thumbnail,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // UpdateRecordOfAdvertisementReq req = UpdateRecordOfAdvertisementReq.construct(
-  //   id: id,
-  //   url: url,
-  //   name: name,
-  //   status: status,
-  //   title: title,
-  //   stock: stock,
-  //   productId: productId,
-  //   sellingPrice: sellingPrice,
-  //   sellingPoints: sellingPoints,
-  //   placeOfOrigin: placeOfOrigin,
-  //   description: description,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.updateRecordOfAdvertisementReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

@@ -78,10 +78,10 @@ class Convert {
     return output;
   }
 
-  static String intStringDivide10toDoubleString(String input) {
-    String output = input;
+  static String intDivide10toDoubleString(int input) {
+    String output = input.toString();
     try {
-      String temp = (double.parse(input) / 10).toString();
+      String temp = (double.parse(input.toString()) / 10).toString();
       output = temp;
     } catch (e) {
       print('intDivide10toDoubleString failure($input), err: $e');

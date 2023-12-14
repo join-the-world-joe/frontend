@@ -15,11 +15,4 @@ void fetchRecordsOfGood({
       productIdList: productIdList,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // FetchRecordsOfGoodReq req = FetchRecordsOfGoodReq.construct(productIdList: productIdList);
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.fetchRecordsOfGoodReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

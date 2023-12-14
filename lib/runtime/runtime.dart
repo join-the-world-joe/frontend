@@ -106,6 +106,7 @@ class Runtime {
 
   static void request({required dynamic body, required String major, required String minor}) {
     try {
+      print("Business Request: major:$major minor:$minor");
       PacketClient packet = PacketClient.create();
       packet.getHeader().setMajor(major);
       packet.getHeader().setMinor(minor);

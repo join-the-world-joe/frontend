@@ -23,16 +23,4 @@ void fetchRoleListOfCondition({
       roleNameList: roleNameList,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // FetchRoleListOfConditionReq req = FetchRoleListOfConditionReq.construct(
-  //   behavior: behavior,
-  //   userId: userId,
-  //   roleNameList: roleNameList,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.fetchRoleListOfConditionReq);
-  // packet.setBody(req.toJson());
-  // print('req: ${req.toJson()}');
-  // Runtime.wsClient.sendPacket(packet);
 }

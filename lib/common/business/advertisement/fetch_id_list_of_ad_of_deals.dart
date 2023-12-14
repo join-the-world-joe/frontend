@@ -9,11 +9,4 @@ void fetchIdListOfADOfDeals() {
     major: Major.advertisement,
     minor: Minor.advertisement.fetchIdListOfADOfDealsReq,
   );
-
-  // PacketClient packet = PacketClient.create();
-  // FetchIdListOfADOfDealsReq req = FetchIdListOfADOfDealsReq();
-  // packet.getHeader().setMajor(Major.advertisement);
-  // packet.getHeader().setMinor(Minor.advertisement.fetchIdListOfADOfDealsReq_);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

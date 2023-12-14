@@ -22,19 +22,4 @@ void updateRecordOfGood({
       contact: contact,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // UpdateRecordOfGoodReq req = UpdateRecordOfGoodReq.construct(
-  //   productId: productId,
-  //   name: name,
-  //   buyingPrice: buyingPrice,
-  //   status: status,
-  //   vendor: vendor,
-  //   contact: contact,
-  //   description: description,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.updateRecordOfGoodReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

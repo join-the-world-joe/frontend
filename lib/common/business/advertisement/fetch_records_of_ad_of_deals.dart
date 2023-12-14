@@ -13,12 +13,12 @@ import 'package:flutter_framework/common/protocol/advertisement/fetch_records_of
 void fetchRecordsOfADOfDeals({
   required List<int> advertisementIdList,
 }) {
-  PacketClient packet = PacketClient.create();
-  FetchRecordsOfADOfDealsReq req = FetchRecordsOfADOfDealsReq.construct(
-    advertisementIdList: advertisementIdList,
+
+  Runtime.request(
+    major: Major.advertisement,
+    minor: Minor.advertisement.fetchRecordsOfADOfDealsReq,
+    body:FetchRecordsOfADOfDealsReq.construct(
+        advertisementIdList: advertisementIdList,
+    ),
   );
-  packet.getHeader().setMajor(Major.advertisement);
-  packet.getHeader().setMinor(Minor.advertisement.fetchRecordsOfADOfDealsReq);
-  packet.setBody(req.toJson());
-  Runtime.wsClient.sendPacket(packet);
 }

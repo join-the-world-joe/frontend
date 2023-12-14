@@ -15,13 +15,4 @@ void softDeleteUserRecord({
       userIdList: userList,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // SoftDeleteUserRecordReq req = SoftDeleteUserRecordReq.construct(
-  //   userIdList: userList,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.softDeleteUserRecordReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

@@ -25,19 +25,4 @@ void insertUserRecord({
       roleList: roleList,
     ),
   );
-
-  //
-  // PacketClient packet = PacketClient.create();
-  // InsertUserRecordReq req = InsertUserRecordReq.construct(
-  //   name: name,
-  //   phoneNumber: phoneNumber,
-  //   countryCode: countryCode,
-  //   status: status,
-  //   password: password,
-  //   roleList: roleList,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.insertUserRecordReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

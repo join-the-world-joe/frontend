@@ -24,7 +24,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController(text: advertisement.getName());
   var titleController = TextEditingController(text: advertisement.getTitle());
-  var sellingPriceController = TextEditingController(text: Convert.intStringDivide10toDoubleString(advertisement.getSellingPrice().toString()));
+  var sellingPriceController = TextEditingController(text: Convert.intDivide10toDoubleString(advertisement.getSellingPrice()));
   var placeOfOriginController = TextEditingController(text: advertisement.getPlaceOfOrigin());
   var imageController = TextEditingController(text: advertisement.getImage());
   var stockController = TextEditingController(text: advertisement.getStock().toString());

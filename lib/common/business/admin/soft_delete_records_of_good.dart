@@ -15,13 +15,4 @@ void softDeleteRecordsOfGood({
       productIdList: productIdList,
     ),
   );
-
-  // PacketClient packet = PacketClient.create();
-  // SoftDeleteRecordsOfGoodReq req = SoftDeleteRecordsOfGoodReq.construct(
-  //   productIdList: productIdList,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.softDeleteRecordsOfGoodReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

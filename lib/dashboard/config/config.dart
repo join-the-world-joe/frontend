@@ -4,6 +4,7 @@ class Config {
   static String host = '127.0.0.1';
   static String port = '10001';
   static String url = 'ws://$host:$port/ws';
+  static bool debug = true;
 
   // static String url = 'www.baidu.com';
   static const bool encryption = true;

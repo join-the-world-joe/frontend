@@ -31,22 +31,4 @@ void signIn({
       userId: userId,
     ),
   );
-
-  //
-  // PacketClient packet = PacketClient.create();
-  // SignInReq req = SignInReq.construct(
-  //   email: email,
-  //   memberId: memberId,
-  //   account: account,
-  //   behavior: behavior,
-  //   password: password,
-  //   phoneNumber: phoneNumber,
-  //   countryCode: countryCode,
-  //   verificationCode: verificationCode,
-  //   userId: userId,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.signInReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
+import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_advertisement.dart';
@@ -114,7 +115,7 @@ class _State extends State<Advertisement> {
     try {
       FetchIdListOfAdvertisementRsp rsp = FetchIdListOfAdvertisementRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print("Advertisement.fetchIdListOfGoodHandler.idList: ${rsp.getIdList()}");
+        // print("Advertisement.fetchIdListOfGoodHandler.idList: ${rsp.getIdList()}");
         if (rsp.getIdList().isEmpty) {
           if (rsp.getBehavior() == 1) {
             showMessageDialog(
@@ -160,7 +161,14 @@ class _State extends State<Advertisement> {
     try {
       FetchRecordsOfAdvertisementRsp rsp = FetchRecordsOfAdvertisementRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print('advertisement map: ${rsp.getDataMap().toString()}');
+        // print('advertisement map: ${rsp.getDataMap().toString()}');
+        if (Config.debug) {
+          List<int> tempList = [];
+          rsp.getDataMap().forEach((key, value) {
+            tempList.add(value.getId());
+          });
+          print('Advertisement.fetchRecordsOfAdvertisementHandler, id list: $tempList');
+        }
         if (rsp.getDataMap().isEmpty) {
           showMessageDialog(
             context,
@@ -331,6 +339,9 @@ class _State extends State<Advertisement> {
                     scrollbarOrientation: ScrollbarOrientation.bottom,
                     child: PaginatedDataTable(
                       controller: scrollController,
+                      onPageChanged: (int? n) {
+                        curStage++;
+                      },
                       actions: [
                         ElevatedButton.icon(
                           icon: const Icon(Icons.add),
@@ -378,7 +389,6 @@ class _State extends State<Advertisement> {
 
 class Source extends DataTableSource {
   List<int> idList;
-  List<int> requestIdList = [];
   Map<int, model.Advertisement> dataMap;
   Map<int, DateTime> datetimeMap;
   Map<int, bool> boolMap;
@@ -397,7 +407,7 @@ class Source extends DataTableSource {
 
   @override
   int get rowCount => () {
-        print("length: ${idList.length}");
+        // print("length: ${idList.length}");
         return idList.length;
       }();
 
@@ -406,7 +416,7 @@ class Source extends DataTableSource {
 
   @override
   DataRow getRow(int index) {
-    print("getRow: $index");
+    // print("getRow: $index");
     var idOfAdvertisement = Translator.translate(Language.loading);
     var idOfGood = Translator.translate(Language.loading);
     var nameOfAdvertisement = Translator.translate(Language.loading);
@@ -426,39 +436,36 @@ class Source extends DataTableSource {
         idOfAdvertisement = dataMap[key]!.getId().toString();
         nameOfAdvertisement = dataMap[key]!.getName();
         titleOfAdvertisement = dataMap[key]!.getTitle();
-        sellingPriceOfAdvertisement = dataMap[key]!.getSellingPrice().toString();
         placeOfOrigin = dataMap[key]!.getPlaceOfOrigin();
         stock = dataMap[key]!.getStock().toString();
-        status = dataMap[key]!.getStatus().toString();
+        status = dataMap[key]!.getStatus() == 1 ? Translator.translate(Language.enable) : Translator.translate(Language.disable);
         idOfGood = dataMap[key]!.getProductId().toString();
         image = dataMap[key]!.getImage().toString();
         sellingPoints = dataMap[key]!.getSellingPoints();
         thumbnail = dataMap[key]!.getThumbnail();
+        sellingPriceOfAdvertisement = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
     } else {
       if (datetimeMap.containsKey(key)) {
         // item requested
-        print("key: ${key}, datetime: ${datetimeMap[key]}");
-      }
-      {
+      } else {
         // item not requested
-        requestIdList = [];
+        List<int> requestIdList = [];
         requestIdList.add(key);
+        datetimeMap[key] = DateTime.now();
         if (index % 5 == 0 || index == 0) {
           for (var i = index + 1; i < index + 5; i++) {
             if (i >= idList.length) {
               break;
             }
             requestIdList.add(idList[i]);
+            datetimeMap[idList[i]] = DateTime.now();
           }
         }
+        // print("requestIdList: $requestIdList");
         fetchRecordsOfAdvertisement(advertisementIdList: requestIdList);
-        print("requestIdList: $requestIdList");
-        for (var i = 0; i < requestIdList.length; i++) {
-          datetimeMap[i] = DateTime.now();
-        }
       }
     }
 
@@ -472,7 +479,7 @@ class Source extends DataTableSource {
         DataCell(Text(idOfGood)),
         DataCell(Text(nameOfAdvertisement)),
         DataCell(Text(titleOfAdvertisement)),
-        DataCell(Text(Convert.intStringDivide10toDoubleString(sellingPriceOfAdvertisement))),
+        DataCell(Text(sellingPriceOfAdvertisement)),
         DataCell(Text(placeOfOrigin)),
         DataCell(
           IconButton(
@@ -497,27 +504,12 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.edit),
                 tooltip: Translator.translate(Language.update),
                 onPressed: () async {
-                  if (idOfAdvertisement.compareTo(Translator.translate(Language.loading)) == 0) {
+                  if (!boolMap.containsKey(key)) {
                     return;
                   }
-                  showUpdateAdvertisementDialog(
-                    buildContext,
-                    model.Advertisement.construct(
-                      id: int.parse(idOfAdvertisement),
-                      name: nameOfAdvertisement,
-                      title: titleOfAdvertisement,
-                      placeOfOrigin: placeOfOrigin,
-                      sellingPoints: sellingPoints,
-                      image: image,
-                      thumbnail: thumbnail,
-                      sellingPrice: int.parse(sellingPriceOfAdvertisement),
-                      stock: int.parse(stock),
-                      status: int.parse(status),
-                      productId: int.parse(idOfGood),
-                    ),
-                  ).then((value) {
+                  showUpdateAdvertisementDialog(buildContext, dataMap[key]!).then((value) {
                     if (value) {
-                      fetchRecordsOfAdvertisement(advertisementIdList: [int.parse(idOfAdvertisement)]);
+                      fetchRecordsOfAdvertisement(advertisementIdList: [dataMap[key]!.getId()]);
                       notifyListeners();
                     }
                   });
@@ -527,7 +519,7 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.delete),
                 tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
-                  await showRemoveAdvertisementDialog(buildContext, int.parse(idOfAdvertisement), nameOfAdvertisement).then(
+                  await showRemoveAdvertisementDialog(buildContext, dataMap[key]!.getId(), dataMap[key]!.getName()).then(
                     (value) => () {
                       // print('value: $value');
                       if (value) {

@@ -28,20 +28,4 @@ void updateUserRecord({
       roleList: roleList,
     ),
   );
-
-
-  // PacketClient packet = PacketClient.create();
-  // UpdateUserRecordReq req = UpdateUserRecordReq.construct(
-  //   userId: userId,
-  //   name: name,
-  //   phoneNumber: phoneNumber,
-  //   countryCode: countryCode,
-  //   status: status,
-  //   password: password,
-  //   roleList: roleList,
-  // );
-  // packet.getHeader().setMajor(Major.admin);
-  // packet.getHeader().setMinor(Minor.admin.updateUserRecordReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

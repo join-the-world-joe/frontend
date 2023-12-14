@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
+import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_good.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_good.dart';
@@ -126,7 +127,14 @@ class _State extends State<Good> {
     try {
       FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
-        print('product map: ${rsp.getDataMap().toString()}');
+        // print('product map: ${rsp.getDataMap().toString()}');
+        if (Config.debug) {
+          List<int> tempList = [];
+          rsp.getDataMap().forEach((key, value) {
+            tempList.add(value.getId());
+          });
+          print('Good.fetchRecordsOfGoodHandler, id list: $tempList');
+        }
         if (rsp.getDataMap().isEmpty) {
           showMessageDialog(
             context,
@@ -335,6 +343,9 @@ class _State extends State<Good> {
                     scrollbarOrientation: ScrollbarOrientation.bottom,
                     child: PaginatedDataTable(
                       controller: scrollController,
+                      onPageChanged: (int? n) {
+                        curStage++;
+                      },
                       actions: [
                         ElevatedButton.icon(
                           icon: const Icon(Icons.add),
@@ -376,7 +387,6 @@ class _State extends State<Good> {
 
 class Source extends DataTableSource {
   List<int> idList;
-  List<int> requestIdList = [];
   Map<int, Product> dataMap;
   Map<int, DateTime> datetimeMap;
   Map<int, bool> boolMap;
@@ -395,7 +405,7 @@ class Source extends DataTableSource {
 
   @override
   int get rowCount => () {
-        print("length: ${idList.length}");
+        // print("length: ${idList.length}");
         return idList.length;
       }();
 
@@ -404,7 +414,7 @@ class Source extends DataTableSource {
 
   @override
   DataRow getRow(int index) {
-    print("getRow: $index");
+    // print("getRow: $index");
     var id = Translator.translate(Language.loading);
     var name = Translator.translate(Language.loading);
     var buyingPrice = Translator.translate(Language.loading);
@@ -418,34 +428,31 @@ class Source extends DataTableSource {
       if (dataMap.containsKey(key)) {
         id = dataMap[key]!.getId().toString();
         name = dataMap[key]!.getName();
-        buyingPrice = dataMap[key]!.getBuyingPrice().toString();
         vendor = dataMap[key]!.getVendor();
         contact = dataMap[key]!.getContact();
+        buyingPrice = Convert.intDivide10toDoubleString(dataMap[key]!.getBuyingPrice());
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
     } else {
       if (datetimeMap.containsKey(key)) {
         // item requested
-        print("key: ${key}, datetime: ${datetimeMap[key]}");
-      }
-      {
+      } else {
         // item not requested
-        requestIdList = [];
+        List<int> requestIdList = [];
         requestIdList.add(key);
+        datetimeMap[key] = DateTime.now();
         if (index % 5 == 0 || index == 0) {
           for (var i = index + 1; i < index + 5; i++) {
             if (i >= idList.length) {
               break;
             }
             requestIdList.add(idList[i]);
+            datetimeMap[idList[i]] = DateTime.now();
           }
         }
+        // print("requestIdList: $requestIdList");
         fetchRecordsOfGood(productIdList: requestIdList);
-        print("requestIdList: $requestIdList");
-        for (var i = 0; i < requestIdList.length; i++) {
-          datetimeMap[i] = DateTime.now();
-        }
       }
     }
 
@@ -453,11 +460,12 @@ class Source extends DataTableSource {
       selected: false,
       onSelectChanged: (selected) {
         // print('selected: $selected');
+        // notifyListeners();
       },
       cells: [
         DataCell(Text(id)),
         DataCell(Text(name)),
-        DataCell(Text(Convert.intStringDivide10toDoubleString(buyingPrice))),
+        DataCell(Text(buyingPrice)),
         DataCell(Text(vendor)),
         DataCell(Text(contact)),
         DataCell(
@@ -467,24 +475,13 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.edit),
                 tooltip: Translator.translate(Language.update),
                 onPressed: () async {
-                  if (id.compareTo(Translator.translate(Language.loading)) == 0) {
+                  if (!boolMap.containsKey(key)) {
                     return;
                   }
-                  showUpdateGoodDialog(
-                    buildContext,
-                    Product.construct(
-                      id: int.parse(id),
-                      name: name,
-                      buyingPrice: int.parse(buyingPrice),
-                      vendor: vendor,
-                      createdAt: "",
-                      contact: contact,
-                      updatedAt: "",
-                    ),
-                  ).then((value) {
+                  showUpdateGoodDialog(buildContext, dataMap[key]!).then((value) {
                     if (value) {
                       print("notifyListeners");
-                      fetchRecordsOfGood(productIdList: [int.parse(id)]);
+                      fetchRecordsOfGood(productIdList: [dataMap[key]!.getId()]);
                       notifyListeners();
                     }
                   });
@@ -494,7 +491,10 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.delete),
                 tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
-                  await showRemoveGoodDialog(buildContext, int.parse(id), name, vendor).then(
+                  if (!boolMap.containsKey(key)) {
+                    return;
+                  }
+                  await showRemoveGoodDialog(buildContext, dataMap[key]!).then(
                     (value) => () {
                       // print('value: $value');
                       if (value) {
