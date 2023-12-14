@@ -47,6 +47,7 @@ class FetchRecordsOfADOfDealsRsp {
             advertisementName: element['advertisement_name'],
             title: element['title'],
             stock: element['stock'],
+            status: element['status'],
             sellingPrice: element['selling_price'],
             productId: element['product_id'],
             productName: element['product_name'],

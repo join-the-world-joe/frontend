@@ -7,8 +7,14 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 
 class FetchIdListOfADOfDealsReq {
+  int _behavior = -1;
+
   Map<String, dynamic> toJson() {
-    return {};
+    return {"behavior": _behavior};
+  }
+
+  FetchIdListOfADOfDealsReq.construct({required int behavior}) {
+    _behavior = behavior;
   }
 }
 

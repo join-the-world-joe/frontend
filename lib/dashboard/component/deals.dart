@@ -368,6 +368,7 @@ class _State extends State<Deals> {
                         DataColumn(label: Text(Translator.translate(Language.placeOfOriginOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.sellingPointsOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.stockOfAdvertisement))),
+                        DataColumn(label: Text(Translator.translate(Language.statusOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.thumbnailOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.imageOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.operation))),
@@ -427,6 +428,8 @@ class Source extends DataTableSource {
     var sellingPrice = Translator.translate(Language.loading);
     var placeOfOrigin = Translator.translate(Language.loading);
     var stockOfAdvertisement = Translator.translate(Language.loading);
+    // var statusOfAdvertisement = Translator.translate(Language.loading);
+    Text status = Text(Translator.translate(Language.loading));
     List<String> sellingPoints = [];
 
     var key = idList[index];
@@ -441,6 +444,20 @@ class Source extends DataTableSource {
         titleOfAdvertisement = dataMap[key]!.getTitle();
         placeOfOrigin = dataMap[key]!.getPlaceOfOrigin();
         stockOfAdvertisement = dataMap[key]!.getStock().toString();
+        // statusOfAdvertisement = dataMap[key]!.getStatus() == 1 ? Translator.translate(Language.enable) : Translator.translate(Language.disable);
+        status = dataMap[key]!.getStatus() == 1
+            ? Text(
+          Translator.translate(Language.enable),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
+        )
+            : Text(Translator.translate(Language.disable),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ));
         sellingPoints = dataMap[key]!.getSellingPoints();
         sellingPrice = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
       } else {
@@ -491,6 +508,7 @@ class Source extends DataTableSource {
           ),
         ),
         DataCell(Text(stockOfAdvertisement)),
+        DataCell(status),
         DataCell(
           IconButton(
             tooltip: Translator.translate(Language.clickToView),

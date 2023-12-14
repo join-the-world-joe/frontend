@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/utils/convert.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -46,11 +47,17 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
     }
   }
 
-  void updateRecordOfAdvertisementHandler(String routingKey, Map<String, dynamic> body) {
-    var self = '${from}.updateRecordOfAdvertisementHandler';
-    var prompt = '$self($routingKey)';
+  void updateRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'updateRecordOfAdvertisementHandler';
     try {
       UpdateRecordOfAdvertisementRsp rsp = UpdateRecordOfAdvertisementRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: '${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         showMessageDialog(
           context,
@@ -71,27 +78,51 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
         return;
       }
     } catch (e) {
-      print("$prompt failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     } finally {}
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
-    var routingKey = '$major-$minor';
     var body = packet.getBody();
 
     try {
-      print("$from.observe: $routingKey");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.admin && minor == Admin.updateRecordOfAdvertisementRsp) {
-        updateRecordOfAdvertisementHandler(routingKey, body);
+        updateRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else {
-        print("$from.observe warning: $routingKey doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('$from.observe($routingKey).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -111,7 +142,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
           ),
           TextButton(
             onPressed: () async {
-              print('advertisement.getId: ${advertisement.getId()}');
+              // print('advertisement.getId: ${advertisement.getId()}');
               updateRecordOfAdvertisement(
                 from: from,
                 id: advertisement.getId(),

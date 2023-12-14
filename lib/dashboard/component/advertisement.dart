@@ -192,7 +192,7 @@ class _State extends State<Advertisement> {
   }
 
   void fetchRecordsOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-  var caller = 'fetchRecordsOfAdvertisementHandler';
+    var caller = 'fetchRecordsOfAdvertisementHandler';
     try {
       FetchRecordsOfAdvertisementRsp rsp = FetchRecordsOfAdvertisementRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
@@ -476,7 +476,7 @@ class Source extends DataTableSource {
     var placeOfOrigin = Translator.translate(Language.loading);
     List<String> sellingPoints = [];
     var stock = Translator.translate(Language.loading);
-    var status = Translator.translate(Language.loading);
+    Text status = Text(Translator.translate(Language.loading));
     var image = Translator.translate(Language.loading);
     var thumbnail = Translator.translate(Language.loading);
     var key = idList[index];
@@ -489,7 +489,19 @@ class Source extends DataTableSource {
         titleOfAdvertisement = dataMap[key]!.getTitle();
         placeOfOrigin = dataMap[key]!.getPlaceOfOrigin();
         stock = dataMap[key]!.getStock().toString();
-        status = dataMap[key]!.getStatus() == 1 ? Translator.translate(Language.enable) : Translator.translate(Language.disable);
+        status = dataMap[key]!.getStatus() == 1
+            ? Text(
+                Translator.translate(Language.enable),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              )
+            : Text(Translator.translate(Language.disable),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ));
         idOfGood = dataMap[key]!.getProductId().toString();
         image = dataMap[key]!.getImage().toString();
         sellingPoints = dataMap[key]!.getSellingPoints();
@@ -545,7 +557,7 @@ class Source extends DataTableSource {
           ),
         ),
         DataCell(Text(stock)),
-        DataCell(Text(status)),
+        DataCell(status),
         DataCell(Text(thumbnail)),
         DataCell(Text(image)),
         DataCell(

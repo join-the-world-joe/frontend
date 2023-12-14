@@ -11,6 +11,7 @@ import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -50,9 +51,17 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
     }
   }
 
-  void insertRecordOfAdvertisementHandler(Map<String, dynamic> body) {
+  void insertRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'insertRecordOfAdvertisementHandler';
     try {
       InsertRecordOfGoodRsp rsp = InsertRecordOfGoodRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         showMessageDialog(
           context,
@@ -73,14 +82,28 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
         return;
       }
     } catch (e) {
-      print("showInsertAdvertisementDialog.insertUserRecordHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
-  void fetchRecordsOfGoodHandler(Map<String, dynamic> body) {
+  void fetchRecordsOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRecordsOfGoodHandler';
     try {
       FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: '',
+      );
       if (rsp.getCode() == Code.oK) {
         var key = int.parse(productIdController.text);
         if (rsp.getDataMap().containsKey(key)) {
@@ -107,7 +130,13 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
         return;
       }
     } catch (e) {
-      print("showInsertAdvertisementDialog.fetchRecordsOfGoodHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     } finally {}
   }
@@ -116,20 +145,37 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
-
+    var caller = 'observe';
     try {
-      print("showInsertAdvertisementDialog.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: '',
+      );
       if (major == Major.admin && minor == Admin.insertRecordOfAdvertisementRsp) {
-        insertRecordOfAdvertisementHandler(body);
-      }
-      if (major == Major.admin && minor == Admin.fetchRecordsOfGoodRsp) {
-        fetchRecordsOfGoodHandler(body);
+        insertRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.admin && minor == Admin.fetchRecordsOfGoodRsp) {
+        fetchRecordsOfGoodHandler(major: major, minor: minor, body: body);
       } else {
-        print("showInsertAdvertisementDialog.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('showInsertAdvertisementDialog.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     } finally {}
   }

@@ -9,10 +9,12 @@ class ADOfDeals {
   int _advertisementId = -1;
   String _advertisementName = '';
   String _image = '';
+  int _status = -1;
 
   ADOfDeals.construct({
     required String title,
     required int stock,
+    required int status,
     required int sellingPrice,
     required int productId,
     required String productName,
@@ -24,6 +26,7 @@ class ADOfDeals {
   }) {
     _title = title;
     _stock = stock;
+    _status = status;
     _sellingPrice = sellingPrice;
     _productId = productId;
     _productName = productName;
@@ -40,6 +43,10 @@ class ADOfDeals {
 
   int getStock() {
     return _stock;
+  }
+
+  int getStatus() {
+    return _status;
   }
 
   int getSellingPrice() {
