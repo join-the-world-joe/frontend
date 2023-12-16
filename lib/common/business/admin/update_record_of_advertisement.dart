@@ -11,6 +11,7 @@ import 'package:flutter_framework/common/protocol/admin/update_record_of_adverti
 
 void updateRecordOfAdvertisement({
   required String from,
+  required String caller,
   required int id,
   required String image,
   required String name,
@@ -25,6 +26,7 @@ void updateRecordOfAdvertisement({
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.updateRecordOfAdvertisementReq,
     body: UpdateRecordOfAdvertisementReq.construct(

@@ -7,9 +7,11 @@ import 'package:flutter_framework/common/protocol/advertisement/fetch_version_of
 
 void fetchVersionOfADOfDeals({
   required String from,
+  required String caller,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     body: FetchVersionOfADOfDealsReq(),
     major: Major.advertisement,
     minor: Advertisement.fetchVersionOfADOfDealsReq,

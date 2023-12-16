@@ -6,6 +6,7 @@ import 'package:flutter_framework/common/protocol/admin/update_record_of_good.da
 
 void updateRecordOfGood({
   required String from,
+  required String caller,
   required String name,
   required int productId,
   required int buyingPrice,
@@ -14,6 +15,7 @@ void updateRecordOfGood({
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.updateRecordOfGoodReq,
     body: UpdateRecordOfGoodReq.construct(

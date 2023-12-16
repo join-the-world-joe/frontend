@@ -7,6 +7,7 @@ import 'package:flutter_framework/common/protocol/admin/insert_record_of_good.da
 
 void insertRecordOfGood({
   required String from,
+  required String caller,
   required String name,
   required String vendor,
   required String contact,
@@ -14,6 +15,7 @@ void insertRecordOfGood({
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.insertRecordOfGoodReq,
     body: InsertRecordOfGoodReq.construct(

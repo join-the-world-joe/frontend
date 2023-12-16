@@ -6,6 +6,7 @@ import 'package:flutter_framework/common/protocol/admin/insert_record_of_adverti
 
 void insertRecordOfAdvertisement({
   required String from,
+  required String caller,
   required String name,
   required String title,
   required int sellingPrice,
@@ -18,6 +19,7 @@ void insertRecordOfAdvertisement({
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.insertRecordOfAdvertisementReq,
     body: InsertRecordOfAdvertisementReq.construct(

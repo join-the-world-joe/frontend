@@ -133,6 +133,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
     barrierDismissible: false,
     context: context,
     builder: (context) {
+      var caller = 'builder';
       return AlertDialog(
         title: Text(Translator.translate(Language.modifyAdvertisement)),
         actions: [
@@ -145,6 +146,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
               // print('advertisement.getId: ${advertisement.getId()}');
               updateRecordOfAdvertisement(
                 from: from,
+                caller: '$caller.updateRecordOfAdvertisement',
                 id: advertisement.getId(),
                 image: imageController.text,
                 name: nameController.text,

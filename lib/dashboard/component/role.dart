@@ -83,7 +83,7 @@ class _State extends State<Role> {
         minor: minor,
         from: Role.content,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
       if (major == Major.admin && minor == Admin.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(major: major, minor: minor, body: body);
@@ -160,6 +160,7 @@ class _State extends State<Role> {
 
   @override
   Widget build(BuildContext context) {
+    var caller = 'build';
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
@@ -200,6 +201,7 @@ class _State extends State<Role> {
                             roleList.add(inputName);
                             fetchRoleListOfCondition(
                               from: Role.content,
+                              caller: '$caller.fetchRoleListOfCondition',
                               userId: 0,
                               behavior: 2,
                               roleNameList: roleList,
@@ -208,6 +210,7 @@ class _State extends State<Role> {
                           }
                           fetchRoleListOfCondition(
                             from: Role.content,
+                            caller: '$caller.fetchRoleListOfCondition',
                             userId: 0,
                             behavior: 1,
                             roleNameList: [],

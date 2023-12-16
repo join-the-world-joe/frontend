@@ -125,7 +125,7 @@ class _State extends State<Permission> {
         minor: minor,
         from: Permission.content,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
       if (major == Major.admin && minor == Admin.fetchPermissionListOfConditionRsp) {
         fetchPermissionListOfConditionHandler(major: major, minor: minor, body: body);
@@ -167,6 +167,7 @@ class _State extends State<Permission> {
 
   @override
   Widget build(BuildContext context) {
+    var caller = 'build';
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
@@ -222,6 +223,7 @@ class _State extends State<Permission> {
                           }
                           fetchPermissionListOfCondition(
                             from: Permission.content,
+                            caller: '$caller.fetchPermissionListOfCondition',
                             behavior: 1,
                             name: nameController.text,
                             major: '',

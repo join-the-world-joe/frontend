@@ -6,6 +6,7 @@ import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/model/permission_list.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/major.dart';
@@ -17,7 +18,6 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/common/protocol/admin/fetch_permission_list_of_condition.dart';
 import 'package:flutter_framework/common/business/admin/fetch_permission_list_of_condition.dart';
-
 
 Future<int> showPermissionListOfRoleDialog(BuildContext context, Role role) async {
   bool closed = false;
@@ -38,10 +38,17 @@ Future<int> showPermissionListOfRoleDialog(BuildContext context, Role role) asyn
     }
   }
 
-  void fetchPermissionListOfConditionHandler(Map<String, dynamic> body) {
-    print('showPermissionListOfRoleDialog.fetchPermissionListOfConditionHandler');
+  void fetchPermissionListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchPermissionListOfConditionHandler';
     try {
       FetchPermissionListOfConditionRsp rsp = FetchPermissionListOfConditionRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         print(rsp.getBody().toString());
         var permissionList = PermissionList.fromJson(rsp.getBody());
@@ -49,7 +56,11 @@ Future<int> showPermissionListOfRoleDialog(BuildContext context, Role role) asyn
         curStage++;
         return;
       } else if (rsp.getCode() == Code.accessDenied) {
-        showMessageDialog(context, '温馨提示：', '没有权限.').then((value) {
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.accessDenied),
+        ).then((value) {
           Navigator.pop(context);
         });
         return;
@@ -60,26 +71,51 @@ Future<int> showPermissionListOfRoleDialog(BuildContext context, Role role) asyn
         return;
       }
     } catch (e) {
-      print("showPermissionListOfRoleDialog.fetchPermissionListOfConditionHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
   void observe(PacketClient packet) {
+    var caller = "observe";
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
 
     try {
-      print("showPermissionListOfRoleDialog.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'responded',
+      );
       if (major == Major.admin && minor == Admin.fetchPermissionListOfConditionRsp) {
-        fetchPermissionListOfConditionHandler(body);
+        fetchPermissionListOfConditionHandler(major: major, minor: minor, body: body);
       } else {
-        print("showPermissionListOfRoleDialog.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('showPermissionListOfRoleDialog.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -90,8 +126,10 @@ Future<int> showPermissionListOfRoleDialog(BuildContext context, Role role) asyn
     barrierDismissible: true,
     context: context,
     builder: (context) {
+      var caller = 'builder';
       fetchPermissionListOfCondition(
         from: from,
+        caller: '$caller.fetchPermissionListOfCondition',
         name: '',
         major: '',
         minor: '',

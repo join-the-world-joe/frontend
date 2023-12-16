@@ -14,6 +14,7 @@ import 'package:flutter_framework/common/protocol/admin/fetch_permission_list_of
 
 void fetchPermissionListOfCondition({
   required String from,
+  required String caller,
   required String name,
   required String major,
   required String minor,
@@ -24,6 +25,7 @@ void fetchPermissionListOfCondition({
 
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.fetchPermissionListOfConditionReq,
     body:FetchPermissionListOfConditionReq.construct(

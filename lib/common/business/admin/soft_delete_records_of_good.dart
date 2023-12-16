@@ -7,11 +7,13 @@ import 'package:flutter_framework/common/protocol/admin/soft_delete_records_of_g
 
 void softDeleteRecordsOfGood({
   required String from,
+  required String caller,
   required List<int> productIdList,
 }) {
 
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.softDeleteRecordsOfGoodReq,
     body: SoftDeleteRecordsOfGoodReq.construct(

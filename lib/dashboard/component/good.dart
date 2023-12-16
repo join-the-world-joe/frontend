@@ -225,7 +225,7 @@ class _State extends State<Good> {
         minor: minor,
         from: Good.content,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
       if (major == Major.admin && minor == Admin.fetchIdListOfGoodRsp) {
         fetchIdListOfGoodHandler(major: major, minor: minor, body: body);
@@ -271,6 +271,7 @@ class _State extends State<Good> {
 
   @override
   Widget build(BuildContext context) {
+    var caller = 'build';
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
@@ -326,6 +327,7 @@ class _State extends State<Good> {
                               resetSource();
                               fetchIdListOfGood(
                                 from: Good.content,
+                                caller: '${caller}.fetchIdListOfGood',
                                 behavior: 1,
                                 productName: "",
                                 categoryId: 0,
@@ -340,7 +342,11 @@ class _State extends State<Good> {
                                 return;
                               }
                               resetSource();
-                              fetchRecordsOfGood(from: Good.content, productIdList: [int.parse(idController.text)]);
+                              fetchRecordsOfGood(
+                                from: Good.content,
+                                caller: '${caller}fetchRecordsOfGood',
+                                productIdList: [int.parse(idController.text)],
+                              );
                               return;
                             }
                             if (nameController.text.isNotEmpty) {
@@ -353,6 +359,7 @@ class _State extends State<Good> {
                               resetSource();
                               fetchIdListOfGood(
                                 from: Good.content,
+                                caller: '${caller}fetchIdListOfGood',
                                 behavior: 2,
                                 productName: nameController.text,
                                 categoryId: 0,
@@ -463,6 +470,7 @@ class Source extends DataTableSource {
 
   @override
   DataRow getRow(int index) {
+    var caller = 'getRow';
     // print("getRow: $index");
     var id = Translator.translate(Language.loading);
     var name = Translator.translate(Language.loading);
@@ -501,7 +509,11 @@ class Source extends DataTableSource {
           }
         }
         // print("requestIdList: $requestIdList");
-        fetchRecordsOfGood(from: Good.content, productIdList: requestIdList);
+        fetchRecordsOfGood(
+          from: Good.content,
+          caller: '$caller.fetchRecordsOfGood',
+          productIdList: requestIdList,
+        );
       }
     }
 
@@ -530,7 +542,11 @@ class Source extends DataTableSource {
                   showUpdateGoodDialog(buildContext, dataMap[key]!).then((value) {
                     if (value) {
                       print("notifyListeners");
-                      fetchRecordsOfGood(from: Good.content, productIdList: [dataMap[key]!.getId()]);
+                      fetchRecordsOfGood(
+                        from: Good.content,
+                        caller: '$caller.fetchRecordsOfGood',
+                        productIdList: [dataMap[key]!.getId()],
+                      );
                       notifyListeners();
                     }
                   });

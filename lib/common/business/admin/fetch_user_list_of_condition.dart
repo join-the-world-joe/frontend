@@ -12,6 +12,7 @@ import 'package:flutter_framework/common/protocol/admin/fetch_user_list_of_condi
 
 void fetchUserListOfCondition({
   required String from,
+  required String caller,
   required int behavior,
   required String name,
   required String phoneNumber,
@@ -19,6 +20,7 @@ void fetchUserListOfCondition({
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.fetchUserListOfConditionReq,
     body: FetchUserListOfConditionReq.construct(

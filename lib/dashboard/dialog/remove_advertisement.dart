@@ -67,7 +67,13 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
         return;
       }
     } catch (e) {
-      print("showRemoveUserDialog failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       showMessageDialog(context, '温馨提示：', '删除失败').then((value) {
         Navigator.pop(context);
         curStage = -1;
@@ -87,7 +93,7 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
         minor: minor,
         from: from,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
       if (major == Major.admin && minor == Admin.softDeleteRecordsOfAdvertisementRsp) {
         softDeleteRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
@@ -119,6 +125,7 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
     barrierDismissible: true,
     context: context,
     builder: (context) {
+      var caller = 'builder';
       return AlertDialog(
         // actions: [
         // ],
@@ -153,7 +160,11 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
                         ),
                         TextButton(
                           onPressed: () {
-                            softDeleteRecordsOfAdvertisement(from: from, advertisementIdList: [id]);
+                            softDeleteRecordsOfAdvertisement(
+                              from: from,
+                              caller: '$caller.softDeleteRecordsOfAdvertisement',
+                              advertisementIdList: [id],
+                            );
                           },
                           child: Text(Translator.translate(Language.confirm)),
                         ),

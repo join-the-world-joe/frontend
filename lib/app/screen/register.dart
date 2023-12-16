@@ -14,6 +14,8 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../../validator/mobile.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
+import 'package:flutter_framework/common/protocol/sms/send_verification_code.dart';
+import 'package:flutter_framework/common/business/sms/send_verification_code.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -39,7 +41,7 @@ class _State extends State<Register> {
     var body = packet.getBody();
     print("Register.observe: major: $major, minor: $minor");
     try {
-      if (major == Major.sms && minor == Minor.sms.sendVerificationCodeRsp) {
+      if (major == Major.sms && minor == SMS.sendVerificationCodeRsp) {
         smsHandler(body);
       } else if (major == Major.account && minor == Minor.account.registerRsp) {
         registerhandler(body);
@@ -145,6 +147,7 @@ class _State extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
+    var caller = 'build';
     return Builder(
       builder: (context) {
         return Scaffold(
@@ -278,6 +281,8 @@ class _State extends State<Register> {
                                 return;
                               }
                               sendVerificationCode(
+                                from: Screen.register,
+                                caller: '$caller.sendVerificationCode',
                                 behavior: Behavior.register,
                                 countryCode: countryCodeControl.text,
                                 phoneNumber: phoneNumberControl.text,

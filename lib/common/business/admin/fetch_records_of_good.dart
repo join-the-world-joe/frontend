@@ -8,10 +8,12 @@ import 'package:flutter_framework/common/protocol/admin/fetch_records_of_good.da
 
 void fetchRecordsOfGood({
   required String from,
+  required String caller,
   required List<int> productIdList,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.fetchRecordsOfGoodReq,
     body: FetchRecordsOfGoodReq.construct(

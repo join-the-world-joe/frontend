@@ -2,6 +2,8 @@ import 'package:flutter_framework/common/route/route.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class Log {
+   static const bool _debug = true;
+
   static void debug({
     required String major,
     required String minor,
@@ -9,7 +11,7 @@ class Log {
     required String caller, // the caller of debug
     required String message,
   }) {
-    if (Runtime.debug) {
+    if (_debug) {
       var routingKey = Route.getKey(major: major, minor: minor);
       print('$from.$caller($routingKey:$major-$minor) ${message.isNotEmpty?', $message':''}');
     }

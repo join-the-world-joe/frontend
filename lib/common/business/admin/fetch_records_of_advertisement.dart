@@ -8,10 +8,12 @@ import 'package:flutter_framework/common/protocol/admin/fetch_records_of_adverti
 
 void fetchRecordsOfAdvertisement({
   required String from,
+  required String caller,
   required List<int> advertisementIdList,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.fetchRecordsOfAdvertisementReq,
     body: FetchRecordsOfAdvertisementReq.construct(

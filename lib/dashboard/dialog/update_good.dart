@@ -128,6 +128,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
     barrierDismissible: false,
     context: context,
     builder: (context) {
+      var caller = 'builder';
       return AlertDialog(
         title: Text(Translator.translate(Language.modifyGood)),
         actions: [
@@ -155,6 +156,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
               }
               updateRecordOfGood(
                 from: from,
+                caller: '$caller.updateRecordOfGood',
                 name: nameController.text,
                 productId: int.parse(idController.text),
                 buyingPrice: Convert.doubleStringMultiple10toInt(buyingPriceController.text),

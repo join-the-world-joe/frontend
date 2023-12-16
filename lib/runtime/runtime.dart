@@ -22,7 +22,6 @@ class Runtime {
   static Function? _observer; // common observe for all pages
   static Map<String, RateLimiter> _rateLimiter = {};
   static int defaultRateLimitDuration = 1000; // default, one seconds
-  static bool debug = true;
 
   static bool allow({required int major, required int minor}) {
     var caller = 'allow';
@@ -115,6 +114,7 @@ class Runtime {
 
   static void request({
     required String from,
+    required String caller,
     required dynamic body,
     required String major,
     required String minor,
@@ -127,8 +127,8 @@ class Runtime {
         major: major,
         minor: minor,
         from: from,
-        caller: 'Request',
-        message: '',
+        caller: caller,
+        message: 'Requested',
       );
       PacketClient packet = PacketClient.create();
       packet.getHeader().setMajor(major);

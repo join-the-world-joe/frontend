@@ -10,6 +10,7 @@ import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/common/protocol/admin/fetch_role_list_of_condition.dart';
@@ -34,24 +35,39 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
     }
   }
 
-  void fetchRoleListOfConditionHandler(Map<String, dynamic> body) {
-    print('showRoleListOfUserDialog.fetchRoleListOfConditionHandler');
+  void fetchRoleListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRoleListOfConditionHandler';
     try {
       FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         RoleList roleList = RoleList.fromJson(rsp.getBody());
         widgetList = _buildWidgetList(roleList);
         curStage++;
         return;
       } else if (rsp.getCode() == Code.accessDenied) {
-        showMessageDialog(context, '温馨提示：', '没有权限.').then(
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.accessDenied),
+        ).then(
           (value) {
             Navigator.pop(context);
           },
         );
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '错误代码  ${rsp.getCode()}').then(
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        ).then(
           (value) {
             Navigator.pop(context);
           },
@@ -59,25 +75,50 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
         return;
       }
     } catch (e) {
-      print("showRoleListOfUserDialog.fetchRoleListOfConditionHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     }
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
 
     try {
-      print("showRoleListOfUserDialog.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'responded',
+      );
       if (major == Major.admin && minor == Admin.fetchRoleListOfConditionRsp) {
-        fetchRoleListOfConditionHandler(body);
+        fetchRoleListOfConditionHandler(major: major, minor: minor, body: body);
       } else {
-        print("showRoleListOfUserDialog.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('showRoleListOfUserDialog.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -88,8 +129,10 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
     barrierDismissible: true,
     context: context,
     builder: (context) {
+      var caller = 'builder';
       fetchRoleListOfCondition(
         from: from,
+        caller: caller,
         behavior: 2,
         userId: int.parse(user.getId()),
         roleNameList: [''],
@@ -106,9 +149,9 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
         ],
         content: StreamBuilder(
           builder: (context, snap) {
-            print('data: ${snap.data}');
+            // print('data: ${snap.data}');
             if (snap.data != null) {
-              print('data: ${snap.data}');
+              // print('data: ${snap.data}');
               return SizedBox(
                 width: 400,
                 height: 250,

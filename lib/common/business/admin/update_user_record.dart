@@ -8,6 +8,7 @@ import 'package:flutter_framework/common/protocol/admin/update_user_record.dart'
 
 void updateUserRecord({
   required String from,
+  required String caller,
   required String name,
   required int userId,
   required String phoneNumber,
@@ -18,6 +19,7 @@ void updateUserRecord({
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.updateUserRecordReq,
     body: UpdateUserRecordReq.construct(

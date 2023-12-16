@@ -9,6 +9,7 @@ import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/model/product.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/common/business/admin/soft_delete_records_of_good.dart';
@@ -32,15 +33,18 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
     }
   }
 
-  void softDeleteRecordOfGoodHandler(String routingKey, Map<String, dynamic> body) {
-    var self = '${from}.softDeleteRecordOfGoodHandler';
-    var prompt = '$self($routingKey)';
+  void softDeleteRecordOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'softDeleteRecordOfGoodHandler';
     try {
       SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
-        if (Config.debug) {
-          print("$prompt, code: ${rsp.getCode()}");
-        }
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
@@ -60,7 +64,13 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
         return;
       }
     } catch (e) {
-      print("$prompt, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       showMessageDialog(context, Translator.translate(Language.titleOfNotification), Translator.translate(Language.removeOperationFailure)).then((value) {
         Navigator.pop(context, false);
         curStage = -1;
@@ -70,21 +80,39 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
-    var routingKey = '$major-$minor';
     var body = packet.getBody();
 
     try {
-      print("$from.observe: $routingKey");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'responded',
+      );
       if (major == Major.admin && minor == Admin.softDeleteRecordsOfGoodRsp) {
-        softDeleteRecordOfGoodHandler(routingKey, body);
+        softDeleteRecordOfGoodHandler(major: major, minor: minor, body: body);
       } else {
-        print("$from.observe warning: $routingKey doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('$from.observe($routingKey).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -100,7 +128,8 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
         // ],
         content: StreamBuilder(
           builder: (context, snap) {
-            print('data: ${snap.data}');
+            var caller = 'builder';
+            // print('data: ${snap.data}');
             // if (snap.data != null) {
             return SizedBox(
               width: 220,
@@ -131,7 +160,11 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
                         ),
                         TextButton(
                           onPressed: () {
-                            softDeleteRecordsOfGood(from: from, productIdList: [product.getId()]);
+                            softDeleteRecordsOfGood(
+                              from: from,
+                              caller: '$caller.softDeleteRecordsOfGood',
+                              productIdList: [product.getId()],
+                            );
                           },
                           child: Text(Translator.translate(Language.confirm)),
                         ),

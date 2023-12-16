@@ -11,12 +11,14 @@ import 'package:flutter_framework/common/protocol/admin/fetch_id_list_of_good.da
 
 void fetchIdListOfGood({
   required String from,
+  required String caller,
   required int behavior,
   required String productName,
   required int categoryId,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.fetchIdListOfGoodReq,
     body:  FetchIdListOfGoodReq.construct(

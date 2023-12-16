@@ -8,19 +8,13 @@ import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/protocol/admin/fetch_records_of_advertisement.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
-import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
-import 'package:flutter_framework/dashboard/model/advertisement.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_records_of_good.dart';
-import 'package:flutter_framework/common/business/admin/fetch_records_of_good.dart';
-import 'package:flutter_framework/common/business/admin/insert_record_of_advertisement.dart';
-import 'package:flutter_framework/common/protocol/admin/insert_record_of_good.dart';
 
 Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) async {
   bool closed = false;
@@ -44,9 +38,17 @@ Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) asyn
     }
   }
 
-  void fetchRecordsOfAdvertisementHandler(Map<String, dynamic> body) {
+  void fetchRecordsOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRecordsOfAdvertisementHandler';
     try {
       FetchRecordsOfAdvertisementRsp rsp = FetchRecordsOfAdvertisementRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         if (rsp.getDataMap().length == 1) {
           rsp.getDataMap().forEach((key, value) {
@@ -74,23 +76,50 @@ Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) asyn
         return;
       }
     } catch (e) {
-      print('fetchRecordsOfAdvertisementHandler failure, err: $e');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     }
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
 
     try {
-      print("showInsertAdvertisementDialog.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'responded',
+      );
       if (major == Major.admin && minor == Admin.fetchRecordsOfAdvertisementRsp) {
-        return fetchRecordsOfAdvertisementHandler(body);
+        return fetchRecordsOfAdvertisementHandler(major: major, minor: minor, body: body);
+      } else {
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
+      return;
       }
-      print("showInsertAdvertisementDialog.observe warning: $major-$minor doesn't matched");
     } catch (e) {
-      print('showInsertAdvertisementDialog.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     } finally {}
   }
@@ -134,6 +163,7 @@ Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) asyn
         content: StreamBuilder(
           stream: yeildData(),
           builder: (context, snap) {
+            var caller = 'builder';
             return SizedBox(
               width: 450,
               height: 435,
@@ -172,6 +202,7 @@ Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) asyn
 
                               fetchRecordsOfAdvertisement(
                                 from: from,
+                                caller: '$caller.fetchRecordsOfAdvertisement',
                                 advertisementIdList: [int.parse(advertisementIdController.text)],
                               );
 

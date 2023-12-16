@@ -8,6 +8,7 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 import '../config/config.dart';
@@ -33,12 +34,23 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
     }
   }
 
-  void softDeleteUserRecordHandler(Map<String, dynamic> body) {
-    print('showRemoveUserDialog.softDeleteUserRecordHandler');
+  void softDeleteUserRecordHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'softDeleteUserRecordHandler';
     try {
       SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
-        showMessageDialog(context, '温馨提示：', '删除成功').then(
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.removeRecordSuccessfully),
+        ).then(
           (value) {
             Navigator.pop(context);
             curStage++;
@@ -54,8 +66,18 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
         return;
       }
     } catch (e) {
-      print("showRemoveUserDialog failure, $e");
-      showMessageDialog(context, '温馨提示：', '删除失败').then((value) {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
+      showMessageDialog(
+        context,
+        Translator.translate(Language.titleOfNotification),
+        Translator.translate(Language.removeRecordSuccessfully),
+      ).then((value) {
         Navigator.pop(context);
         curStage = -1;
       });
@@ -64,20 +86,39 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
 
     try {
-      print("showRemoveUserDialog.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'responded',
+      );
       if (major == Major.admin && minor == Admin.softDeleteUserRecordRsp) {
-        softDeleteUserRecordHandler(body);
+        softDeleteUserRecordHandler(major: major, minor: minor, body: body);
       } else {
-        print("showRemoveUserDialog.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('showRemoveUserDialog.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -88,6 +129,7 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
     barrierDismissible: true,
     context: context,
     builder: (context) {
+      var caller = 'builder';
       return AlertDialog(
         // actions: [
         // ],
@@ -124,7 +166,11 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
                         ),
                         TextButton(
                           onPressed: () {
-                            softDeleteUserRecord(from: from, userList: [int.parse(user.getId())]);
+                            softDeleteUserRecord(
+                              from: from,
+                              caller: '$caller.softDeleteUserRecord',
+                              userList: [int.parse(user.getId())],
+                            );
                           },
                           child: Text(Translator.translate(Language.confirm)),
                         ),

@@ -127,7 +127,7 @@ class _State extends State<Loading> {
         minor: minor,
         from: Screen.loading,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
       if (major == Major.backendGateway && minor == BackendGateway.fetchRateLimitingConfigRsp) {
         fetchRateLimitingConfigHandler(major: major, minor: minor, body: body);
@@ -158,10 +158,18 @@ class _State extends State<Loading> {
   }
 
   void setup() {
+    var caller = 'setup';
     setup_();
     Runtime.setObserve(observe);
-    echo(from: Screen.loading, message: message);
-    fetchRateLimitingConfig(from: Screen.loading);
+    echo(
+      from: Screen.loading,
+      caller: '$caller.echo',
+      message: message,
+    );
+    fetchRateLimitingConfig(
+      from: Screen.loading,
+      caller: '$caller.fetchRateLimitingConfig',
+    );
   }
 
   @override

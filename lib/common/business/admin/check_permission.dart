@@ -11,11 +11,13 @@ import '../../protocol/admin/check_permission.dart';
 
 void checkPermission({
   required String from,
+  required String caller,
   required String major,
   required String minor,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.checkPermissionReq,
     body: CheckPermissionReq.construct(

@@ -11,10 +11,12 @@ import 'package:flutter_framework/common/protocol/admin/soft_delete_records_of_a
 
 void softDeleteRecordsOfAdvertisement({
   required String from,
+  required String caller,
   required List<int> advertisementIdList,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.softDeleteRecordsOfAdvertisementReq,
     body: SoftDeleteRecordsOfAdvertisementReq.construct(

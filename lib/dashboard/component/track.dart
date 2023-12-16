@@ -125,7 +125,7 @@ class _State extends State<Track> {
         minor: minor,
         from: Track.content,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
       if (major == Major.admin && minor == Admin.fetchTrackListOfConditionRsp) {
         fetchTrackListOfConditionHandler(major: major, minor: minor, body: body);
@@ -189,6 +189,7 @@ class _State extends State<Track> {
 
   @override
   Widget build(BuildContext context) {
+    var caller = 'build';
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
@@ -305,6 +306,7 @@ class _State extends State<Track> {
                           // print('end int: ${d2 ~/ 1000}');
                           fetchTrackListOfCondition(
                             from: Track.content,
+                            caller: '$caller.fetchTrackListOfCondition',
                             operator: operatorController.text,
                             behavior: 2,
                             begin: d1 ~/ 1000,

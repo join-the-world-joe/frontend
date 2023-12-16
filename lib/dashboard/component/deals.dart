@@ -268,9 +268,13 @@ class _State extends State<Deals> {
   }
 
   void setup() {
+    var caller = 'setup';
     Runtime.setObserve(observe);
     // fetchVersionOfADOfDeals();
-    fetchIdListOfADOfDeals(from: Deals.content);
+    fetchIdListOfADOfDeals(
+      from: Deals.content,
+      caller: caller,
+    );
   }
 
   void observe(PacketClient packet) {
@@ -286,7 +290,7 @@ class _State extends State<Deals> {
         minor: minor,
         from: Deals.content,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
       if (major == Major.advertisement && minor == Advertisement.fetchVersionOfADOfDealsRsp) {
         fetchVersionOfADOfDealsHandler(major: major, minor: minor, body: body);
@@ -336,6 +340,7 @@ class _State extends State<Deals> {
 
   @override
   Widget build(BuildContext context) {
+    var caller = 'build';
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
@@ -378,7 +383,10 @@ class _State extends State<Deals> {
                           onPressed: () async {
                             resetSource();
                             curStage++;
-                            fetchIdListOfADOfDeals(from: Deals.content);
+                            fetchIdListOfADOfDeals(
+                              from: Deals.content,
+                              caller: '$caller.fetchIdListOfADOfDeals',
+                            );
                           },
                           label: Text(
                             Translator.translate(Language.titleOfRefreshOperation),
@@ -417,6 +425,7 @@ class _State extends State<Deals> {
                             }
                             insertRecordOfADOfDeals(
                               from: Deals.content,
+                              caller: '$caller.insertRecordOfADOfDeals',
                               advertisementIdList: idList,
                             );
                           },
@@ -489,6 +498,7 @@ class Source extends DataTableSource {
 
   @override
   DataRow getRow(int index) {
+    var caller = 'Source.getRow';
     // print("getRow: $index");
     var advertisementId = Translator.translate(Language.loading);
     var advertisementName = Translator.translate(Language.loading);
@@ -551,7 +561,11 @@ class Source extends DataTableSource {
           }
         }
         // print("requestIdList: $requestIdList");
-        fetchRecordsOfADOfDeals(from: Deals.content, advertisementIdList: requestIdList);
+        fetchRecordsOfADOfDeals(
+          from: Deals.content,
+          caller: '$caller.fetchRecordsOfADOfDeals',
+          advertisementIdList: requestIdList,
+        );
       }
     }
 

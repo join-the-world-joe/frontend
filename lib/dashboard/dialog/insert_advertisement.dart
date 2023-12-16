@@ -152,7 +152,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
         minor: minor,
         from: from,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
       if (major == Major.admin && minor == Admin.insertRecordOfAdvertisementRsp) {
         insertRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
@@ -186,6 +186,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
     barrierDismissible: false,
     context: context,
     builder: (context) {
+      var caller = 'builder';
       return AlertDialog(
         title: Text(Translator.translate(Language.newAdvertisement)),
         actions: [
@@ -231,6 +232,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
 
               insertRecordOfAdvertisement(
                 from: from,
+                caller: '$caller.insertRecordOfAdvertisement',
                 name: nameController.text,
                 title: titleController.text,
                 sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
@@ -282,7 +284,11 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                                 );
                                 return;
                               } else {
-                                fetchRecordsOfGood(from: from, productIdList: [int.parse(productIdController.text)]);
+                                fetchRecordsOfGood(
+                                  from: from,
+                                  caller: '$caller.fetchRecordsOfGood',
+                                  productIdList: [int.parse(productIdController.text)],
+                                );
                                 return;
                               }
                             },

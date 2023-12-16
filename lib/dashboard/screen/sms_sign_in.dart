@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/protocol/sms/send_verification_code.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/route/sms.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
@@ -61,7 +63,7 @@ class _State extends State<SMSSignIn> {
       closed = true;
       Future.delayed(
         const Duration(milliseconds: 500),
-        () {
+            () {
           print('SMSSignIn.navigate to $page');
           if (countdownTimer != null) {
             if (countdownTimer!.isActive) {
@@ -87,9 +89,9 @@ class _State extends State<SMSSignIn> {
         minor: minor,
         from: Screen.smsSignIn,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
-      if (major == Major.sms && minor == Minor.sms.sendVerificationCodeRsp) {
+      if (major == Major.sms && minor == SMS.sendVerificationCodeRsp) {
         smsHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.signInRsp) {
         signInHandler(major: major, minor: minor, body: body);
@@ -129,7 +131,7 @@ class _State extends State<SMSSignIn> {
         countdown = 60;
         countdownTimer = Timer.periodic(
           const Duration(seconds: 1),
-          (timer) {
+              (timer) {
             countdown--;
             // print('countdown: $countdown');
             smsButtonLabel = '$countdown';
@@ -179,7 +181,7 @@ class _State extends State<SMSSignIn> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Screen.loading,
+        from: Screen.smsSignIn,
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
@@ -233,6 +235,7 @@ class _State extends State<SMSSignIn> {
 
   @override
   Widget build(BuildContext context) {
+    var caller = 'build';
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
@@ -407,6 +410,8 @@ class _State extends State<SMSSignIn> {
                                   return;
                                 }
                                 sendVerificationCode(
+                                  from: Screen.smsSignIn,
+                                  caller: '$caller.sendVerificationCode',
                                   behavior: Behavior.signIn,
                                   countryCode: countryCodeControl.text,
                                   phoneNumber: phoneNumberControl.text,
@@ -438,6 +443,7 @@ class _State extends State<SMSSignIn> {
                           }
                           signIn(
                             from: Screen.smsSignIn,
+                            caller:  '$caller.signIn',
                             behavior: 2,
                             verificationCode: int.parse(verificationCodeControl.text),
                             countryCode: countryCodeControl.text,

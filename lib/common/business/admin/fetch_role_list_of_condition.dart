@@ -11,6 +11,7 @@ import 'package:flutter_framework/common/protocol/admin/fetch_role_list_of_condi
 
 void fetchRoleListOfCondition({
   required String from,
+  required String caller,
   required int userId,
   required int behavior,
   required List<String> roleNameList,
@@ -18,6 +19,7 @@ void fetchRoleListOfCondition({
 
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.fetchRoleListOfConditionReq,
     body: FetchRoleListOfConditionReq.construct(

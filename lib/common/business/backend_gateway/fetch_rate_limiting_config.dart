@@ -8,9 +8,11 @@ import 'package:flutter_framework/common/protocol/backend_gateway/fetch_rate_lim
 
 void fetchRateLimitingConfig({
   required String from,
+  required String caller,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.backendGateway,
     minor: BackendGateway.fetchRateLimitingConfigReq,
     body: FetchRateLimitingConfigReq(),

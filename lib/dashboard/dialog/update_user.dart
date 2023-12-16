@@ -3,6 +3,7 @@ import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 import 'package:flutter_framework/common/translator/language.dart';
@@ -46,15 +47,18 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
     }
   }
 
-  void updateUserRecordHandler(String routingKey, Map<String, dynamic> body) {
-    var self = '${from}.updateUserRecordHandler';
-    var prompt = '$self($routingKey)';
+  void updateUserRecordHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'updateUserRecordHandler';
     try {
       UpdateUserRecordRsp rsp = UpdateUserRecordRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
-        if (Config.debug) {
-          print('$prompt, code: ${rsp.getCode()}');
-        }
         showMessageDialog(
           context,
           Translator.translate(Language.titleOfNotification),
@@ -70,20 +74,29 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
         return;
       }
     } catch (e) {
-      print("$prompt failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
-  void fetchRoleListOfConditionHandler(String routingKey, Map<String, dynamic> body) {
-    var self = '${from}.fetchRoleListOfConditionHandler';
-    var prompt = '$self($routingKey)';
+  void fetchRoleListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRoleListOfConditionHandler';
     try {
       FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
-        if (Config.debug) {
-          print('$prompt, code: ${rsp.getCode()}');
-        }
         if (wholeRoleList.getBody().isEmpty) {
           wholeRoleList = RoleList.fromJson(rsp.getBody());
         } else {
@@ -118,30 +131,52 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
         return;
       }
     } catch (e) {
-      print("$prompt failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     }
   }
 
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
-    var routingKey = '$major-$minor';
     var body = packet.getBody();
-    var self = '${from}.observe';
-    var prompt = '$self($routingKey)';
+    var caller = 'observe';
 
     try {
-      print("$prompt: $routingKey");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'responded',
+      );
       if (major == Major.admin && minor == Admin.fetchRoleListOfConditionRsp) {
-        fetchRoleListOfConditionHandler(routingKey, body);
+        fetchRoleListOfConditionHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.updateUserRecordRsp) {
-        updateUserRecordHandler(routingKey, body);
+        updateUserRecordHandler(major: major, minor: minor, body: body);
       } else {
-        print("$prompt warning: $routingKey doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('$prompt.e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -162,8 +197,10 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
     barrierDismissible: false,
     context: context,
     builder: (context) {
+      var caller = 'builder';
       fetchRoleListOfCondition(
         from: from,
+        caller: caller,
         behavior: 1,
         userId: 0,
         roleNameList: [''],
@@ -178,6 +215,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
         () {
           fetchRoleListOfCondition(
             from: from,
+            caller: '$caller.fetchRoleListOfCondition',
             behavior: 2,
             userId: int.parse(user.getId()),
             roleNameList: [''],
@@ -223,6 +261,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
               }();
               updateUserRecord(
                 from: from,
+                caller: '$caller.updateUserRecord',
                 name: nameController.text,
                 userId: int.parse(user.getId()),
                 phoneNumber: phoneNumberController.text,

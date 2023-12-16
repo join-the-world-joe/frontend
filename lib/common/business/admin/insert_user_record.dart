@@ -8,6 +8,7 @@ import 'package:flutter_framework/common/protocol/admin/insert_user_record.dart'
 
 void insertUserRecord({
   required String from,
+  required String caller,
   required String name,
   required String phoneNumber,
   required String countryCode,
@@ -17,6 +18,7 @@ void insertUserRecord({
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.insertUserRecordReq,
     body: InsertUserRecordReq.construct(

@@ -8,10 +8,12 @@ import 'package:flutter_framework/common/protocol/admin/soft_delete_user_record.
 
 void softDeleteUserRecord({
   required String from,
+  required String caller,
   required List<int> userList,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.softDeleteUserRecordReq,
     body: SoftDeleteUserRecordReq.construct(

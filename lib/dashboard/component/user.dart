@@ -78,9 +78,40 @@ class _State extends State<User> {
   }
 
   void setup() {
+    var caller = 'setup';
     // print('User.setup');
     Cache.setUserList(UserList.construct(userList: []));
     Runtime.setObserve(observe);
+    checkPermission(
+      from: User.content,
+      caller: caller,
+      major: Major.admin,
+      minor: Admin.fetchPermissionListOfConditionReq,
+    );
+    Future.delayed(const Duration(milliseconds: 100), () {
+      checkPermission(
+        from: User.content,
+        caller: caller,
+        major: Major.admin,
+        minor: Admin.fetchMenuListOfConditionReq,
+      );
+    });
+    Future.delayed(const Duration(milliseconds: 200), () {
+      checkPermission(
+        from: User.content,
+        caller: caller,
+        major: Major.admin,
+        minor: Admin.insertUserRecordReq,
+      );
+    });
+    Future.delayed(const Duration(milliseconds: 300), () {
+      checkPermission(
+        from: User.content,
+        caller: caller,
+        major: Major.admin,
+        minor: Admin.softDeleteUserRecordReq,
+      );
+    });
   }
 
   void observe(PacketClient packet) {
@@ -95,7 +126,7 @@ class _State extends State<User> {
         minor: minor,
         from: User.content,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
       if (major == Major.admin && minor == Admin.fetchUserListOfConditionRsp) {
         fetchUserListOfConditionHandler(major: major, minor: minor, body: body);
@@ -213,20 +244,7 @@ class _State extends State<User> {
 
   @override
   Widget build(BuildContext context) {
-    checkPermission(
-      from: User.content,
-      major: Major.admin,
-      minor: Admin.fetchPermissionListOfConditionReq,
-    );
-    Future.delayed(const Duration(milliseconds: 100), () {
-      checkPermission(from: User.content, major: Major.admin, minor: Admin.fetchMenuListOfConditionReq);
-    });
-    Future.delayed(const Duration(milliseconds: 200), () {
-      checkPermission(from: User.content, major: Major.admin, minor: Admin.insertUserRecordReq);
-    });
-    Future.delayed(const Duration(milliseconds: 300), () {
-      checkPermission(from: User.content, major: Major.admin, minor: Admin.softDeleteUserRecordReq);
-    });
+    var caller = 'build';
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
@@ -278,6 +296,7 @@ class _State extends State<User> {
                             if (nameControl.text.isEmpty && phoneNumberControl.text.isEmpty) {
                               fetchUserListOfCondition(
                                 from: User.content,
+                                caller: '$caller.fetchUserListOfCondition',
                                 behavior: 1,
                                 name: '',
                                 phoneNumber: '',
@@ -286,6 +305,7 @@ class _State extends State<User> {
                             } else {
                               fetchUserListOfCondition(
                                 from: User.content,
+                                caller: '$caller.fetchUserListOfCondition',
                                 behavior: 2,
                                 name: nameControl.text,
                                 phoneNumber: phoneNumberControl.text,

@@ -9,6 +9,7 @@ import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -47,12 +48,18 @@ Future<void> showInsertUserDialog(BuildContext context) async {
     }
   }
 
-  void fetchRoleListOfConditionHandler(Map<String, dynamic> body) {
-    print('showRoleListOfUserDialog.fetchRoleListOfConditionHandler');
+  void fetchRoleListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRoleListOfConditionHandler';
     try {
       FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
-        // print(rsp.body.toString());
         wholeRoleList = RoleList.fromJson(rsp.getBody());
         for (var i = 0; i < wholeRoleList.getBody().length; i++) {
           roleStatus[wholeRoleList.getBody()[i]] = false;
@@ -66,22 +73,44 @@ Future<void> showInsertUserDialog(BuildContext context) async {
         curStage++;
         return;
       } else if (rsp.getCode() == Code.accessDenied) {
-        showMessageDialog(context, '温馨提示：', '没有权限.');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          Translator.translate(Language.accessDenied),
+        );
         curStage = -1;
         return;
       } else {
-        showMessageDialog(context, '温馨提示：', '未知错误  ${rsp.getCode()}');
+        showMessageDialog(
+          context,
+          Translator.translate(Language.titleOfNotification),
+          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        );
         curStage = -1;
         return;
       }
     } catch (e) {
-      print("showRoleListOfUserDialog.fetchRoleListOfConditionHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
     }
   }
 
-  void insertUserRecordHandler(Map<String, dynamic> body) {
+  void insertUserRecordHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'insertUserRecordHandler';
     try {
       InsertUserRecordRsp rsp = InsertUserRecordRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
       if (rsp.getCode() == Code.oK) {
         showMessageDialog(
           context,
@@ -102,28 +131,53 @@ Future<void> showInsertUserDialog(BuildContext context) async {
         return;
       }
     } catch (e) {
-      print("insertUserRecordHandler.insertUserRecordHandler failure, $e");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
 
     try {
-      print("showInsertUserDialog.observe: major: $major, minor: $minor");
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'responded',
+      );
       if (major == Major.admin && minor == Admin.insertUserRecordRsp) {
-        insertUserRecordHandler(body);
+        insertUserRecordHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.fetchRoleListOfConditionRsp) {
-        fetchRoleListOfConditionHandler(body);
+        fetchRoleListOfConditionHandler(major: major, minor: minor, body: body);
       } else {
-        print("showInsertUserDialog.observe warning: $major-$minor doesn't matched");
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
       }
       return;
     } catch (e) {
-      print('showInsertUserDialog.observe($major-$minor).e: ${e.toString()}');
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
       return;
     }
   }
@@ -134,8 +188,10 @@ Future<void> showInsertUserDialog(BuildContext context) async {
     barrierDismissible: false,
     context: context,
     builder: (context) {
+      var caller = 'builder';
       fetchRoleListOfCondition(
         from: from,
+        caller: caller,
         behavior: 1,
         userId: 0,
         roleNameList: [''],
@@ -180,6 +236,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
               }();
               insertUserRecord(
                 from: from,
+                caller: '$caller.insertUserRecord',
                 name: nameController.text,
                 phoneNumber: phoneNumberController.text,
                 countryCode: countryCode ?? '86',

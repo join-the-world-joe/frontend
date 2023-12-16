@@ -5,11 +5,13 @@ import 'package:flutter_framework/common/protocol/admin/fetch_id_list_of_adverti
 
 void fetchIdListOfAdvertisement({
   required String from,
+  required String caller,
   required int behavior,
   required String advertisementName,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.fetchIdListOfAdvertisementReq,
     body: FetchIdListOfAdvertisementReq.construct(

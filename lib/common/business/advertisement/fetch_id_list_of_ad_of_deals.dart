@@ -6,10 +6,16 @@ import '../../../common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/protocol/advertisement/fetch_version_of_ad_of_deals.dart';
 
-void fetchIdListOfADOfDeals({required String from}) {
+void fetchIdListOfADOfDeals({
+  required String from,
+  required String caller,
+}) {
   Runtime.request(
     from: from,
-    body: FetchIdListOfADOfDealsReq.construct(behavior: 1),
+    caller: caller,
+    body: FetchIdListOfADOfDealsReq.construct(
+      behavior: 1,
+    ),
     major: Major.advertisement,
     minor: Advertisement.fetchIdListOfADOfDealsReq,
   );

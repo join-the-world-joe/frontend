@@ -12,10 +12,12 @@ import 'package:flutter_framework/common/protocol/advertisement/fetch_records_of
 
 void fetchRecordsOfADOfDeals({
   required String from,
+  required String caller,
   required List<int> advertisementIdList,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.advertisement,
     minor: Advertisement.fetchRecordsOfADOfDealsReq,
     body: FetchRecordsOfADOfDealsReq.construct(

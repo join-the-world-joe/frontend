@@ -104,7 +104,7 @@ class _State extends State<Home> {
         minor: minor,
         from: Screen.home,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
       if (major == Major.admin && minor == Admin.fetchMenuListOfConditionRsp) {
         fetchMenuListOfConditionHandler(major: major, minor: minor, body: body);
@@ -269,11 +269,13 @@ class _State extends State<Home> {
   }
 
   void setup() {
+    var caller = 'setup';
     // print('home.setup');
     Runtime.setObserve(observe);
     Runtime.setObserver(observer);
     fetchMenuListOfCondition(
         from: Screen.home,
+        caller: caller,
         behavior: 1, userId: 0, roleList: RoleList([]));
   }
 

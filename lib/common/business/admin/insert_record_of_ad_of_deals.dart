@@ -13,10 +13,12 @@ import 'package:flutter_framework/common/protocol/admin/fetch_user_list_of_condi
 
 void insertRecordOfADOfDeals({
   required String from,
+  required String caller,
   required List<int> advertisementIdList,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.insertRecordOfADOfDealsReq,
     body: InsertRecordOfADOfDealsReq.construct(

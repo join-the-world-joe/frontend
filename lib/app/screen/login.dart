@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/protocol/sms/send_verification_code.dart';
+import 'package:flutter_framework/common/route/sms.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import 'screen.dart';
@@ -40,7 +42,7 @@ class _State extends State<Login> {
     var body = packet.getBody();
     print("Login.observe: major: $major, minor: $minor");
     try {
-      if (major == Major.sms && minor == Minor.sms.sendVerificationCodeRsp) {
+      if (major == Major.sms && minor == SMS.sendVerificationCodeRsp) {
         smsHandler(body);
       } else if (major == Major.account && minor == Minor.account.loginRsp) {
         loginHandler(body);
@@ -145,6 +147,7 @@ class _State extends State<Login> {
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
+        var caller = 'builder';
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
@@ -268,6 +271,8 @@ class _State extends State<Login> {
                                 return;
                               }
                               sendVerificationCode(
+                                from: Screen.login,
+                                caller: '$caller.sendVerificationCode',
                                 behavior: Behavior.login,
                                 countryCode: countryCodeControl.text,
                                 phoneNumber: phoneNumberControl.text,

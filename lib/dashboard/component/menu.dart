@@ -111,7 +111,7 @@ class _State extends State<Menu> {
         minor: minor,
         from: Menu.content,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
       if (major == Major.admin && minor == Admin.fetchMenuListOfConditionRsp) {
         fetchMenuListOfConditionHandler(major: major, minor: minor, body: body);
@@ -262,6 +262,7 @@ class _State extends State<Menu> {
 
   @override
   Widget build(BuildContext context) {
+    var caller = 'build';
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
@@ -314,6 +315,7 @@ class _State extends State<Menu> {
                           }
                           fetchMenuListOfCondition(
                             from: Menu.content,
+                            caller: '$caller.fetchMenuListOfCondition',
                             behavior: 2,
                             userId: Cache.getUserId(),
                             roleList: RoleList([]),

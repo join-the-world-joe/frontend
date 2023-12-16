@@ -12,12 +12,14 @@ import 'package:flutter_framework/common/protocol/admin/fetch_menu_list_of_condi
 
 void fetchMenuListOfCondition({
   required String from,
+  required String caller,
   required int behavior,
   required int userId,
   required RoleList roleList,
 }) {
   Runtime.request(
     from: from,
+    caller: caller,
     major: Major.admin,
     minor: Admin.fetchMenuListOfConditionReq,
     body: FetchMenuListOfConditionReq.construct(
