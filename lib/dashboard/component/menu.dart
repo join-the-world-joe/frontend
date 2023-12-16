@@ -300,12 +300,12 @@ class _State extends State<Menu> {
                       width: 100,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (!Runtime.allow(
-                            major: int.parse(Major.admin),
-                            minor: int.parse(Admin.fetchMenuListOfConditionReq),
-                          )) {
-                            return;
-                          }
+                          // if (!Runtime.allow(
+                          //   major: int.parse(Major.admin),
+                          //   minor: int.parse(Admin.fetchMenuListOfConditionReq),
+                          // )) {
+                          //   return;
+                          // }
                           Cache.setMenuList(MenuList([]));
                           if (menuController.text.isNotEmpty) {
                             menuFilter = menuController.text;

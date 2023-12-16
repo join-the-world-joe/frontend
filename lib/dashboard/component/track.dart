@@ -285,13 +285,12 @@ class _State extends State<Track> {
                       width: 100,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (!Runtime.allow(
-                            major: int.parse(Major.admin),
-                            minor: int.parse(Admin.fetchTrackListOfConditionReq),
-                          )) {
-                            return;
-                          }
-
+                          // if (!Runtime.allow(
+                          //   major: int.parse(Major.admin),
+                          //   minor: int.parse(Admin.fetchTrackListOfConditionReq),
+                          // )) {
+                          //   return;
+                          // }
                           // print('begin string: ${beginController.text}');
                           // print('end string: ${endController.text}');
                           var begin = DateTime.parse(beginController.text);

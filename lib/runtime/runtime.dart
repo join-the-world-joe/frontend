@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_framework/common/route/route.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/framework/rate_limiter.dart';
 import 'package:flutter_framework/utils/log.dart';
@@ -120,9 +121,11 @@ class Runtime {
     required String minor,
   }) {
     try {
-      // if (Config.debug) {
-      //   print("Business Request($from): major:$major minor:$minor");
-      // }
+      if (!allow(major: int.parse(major), minor: int.parse(minor))) {
+        var routingKey = Route.getKey(major: major, minor: minor);
+        print('$from.$caller($routingKey:$major-$minor) Dropped');
+        return;
+      }
       Log.debug(
         major: major,
         minor: minor,

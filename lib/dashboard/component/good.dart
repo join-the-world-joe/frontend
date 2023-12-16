@@ -318,12 +318,12 @@ class _State extends State<Good> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (idController.text.isEmpty && nameController.text.isEmpty) {
-                              if (!Runtime.allow(
-                                major: int.parse(Major.admin),
-                                minor: int.parse(Admin.fetchIdListOfGoodReq),
-                              )) {
-                                return;
-                              }
+                              // if (!Runtime.allow(
+                              //   major: int.parse(Major.admin),
+                              //   minor: int.parse(Admin.fetchIdListOfGoodReq),
+                              // )) {
+                              //   return;
+                              // }
                               resetSource();
                               fetchIdListOfGood(
                                 from: Good.content,
@@ -335,12 +335,12 @@ class _State extends State<Good> {
                               return;
                             }
                             if (idController.text.isNotEmpty) {
-                              if (!Runtime.allow(
-                                major: int.parse(Major.admin),
-                                minor: int.parse(Admin.fetchRecordsOfGoodReq),
-                              )) {
-                                return;
-                              }
+                              // if (!Runtime.allow(
+                              //   major: int.parse(Major.admin),
+                              //   minor: int.parse(Admin.fetchRecordsOfGoodReq),
+                              // )) {
+                              //   return;
+                              // }
                               resetSource();
                               fetchRecordsOfGood(
                                 from: Good.content,
@@ -350,12 +350,12 @@ class _State extends State<Good> {
                               return;
                             }
                             if (nameController.text.isNotEmpty) {
-                              if (!Runtime.allow(
-                                major: int.parse(Major.admin),
-                                minor: int.parse(Admin.fetchIdListOfGoodReq),
-                              )) {
-                                return;
-                              }
+                              // if (!Runtime.allow(
+                              //   major: int.parse(Major.admin),
+                              //   minor: int.parse(Admin.fetchIdListOfGoodReq),
+                              // )) {
+                              //   return;
+                              // }
                               resetSource();
                               fetchIdListOfGood(
                                 from: Good.content,

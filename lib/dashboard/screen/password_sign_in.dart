@@ -303,12 +303,12 @@ class _State extends State<PasswordSignIn> {
                       width: widgetWidth,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (!Runtime.allow(
-                            major: int.parse(Major.admin),
-                            minor: int.parse(Admin.signInReq),
-                          )) {
-                            return;
-                          }
+                          // if (!Runtime.allow(
+                          //   major: int.parse(Major.admin),
+                          //   minor: int.parse(Admin.signInReq),
+                          // )) {
+                          //   return;
+                          // }
                           var behavior = 1; // email, by default
                           if (!isEmailValid(idControl.text)) {
                             behavior = 4;

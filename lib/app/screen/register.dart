@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/route/account.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/route/sms.dart';
@@ -16,6 +17,9 @@ import '../screen/screen.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/common/protocol/sms/send_verification_code.dart';
 import 'package:flutter_framework/common/business/sms/send_verification_code.dart';
+import 'package:flutter_framework/common/protocol/account/login.dart';
+import 'package:flutter_framework/common/business/account/login.dart';
+import 'package:flutter_framework/common/protocol/account/register.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -43,7 +47,7 @@ class _State extends State<Register> {
     try {
       if (major == Major.sms && minor == SMS.sendVerificationCodeRsp) {
         smsHandler(body);
-      } else if (major == Major.account && minor == Minor.account.registerRsp) {
+      } else if (major == Major.account && minor == Account.registerRsp) {
         registerhandler(body);
       } else {
         print("Register.observe warning: $major-$minor doesn't matched");

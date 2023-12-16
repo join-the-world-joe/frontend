@@ -153,12 +153,12 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
                 );
                 return;
               }
-              if (!Runtime.allow(
-                major: int.parse(Major.admin),
-                minor: int.parse(Admin.insertRecordOfGoodReq),
-              )) {
-                return;
-              }
+              // if (!Runtime.allow(
+              //   major: int.parse(Major.admin),
+              //   minor: int.parse(Admin.insertRecordOfGoodReq),
+              // )) {
+              //   return;
+              // }
               insertRecordOfGood(
                 from: from,
                 caller: '$caller.insertRecordOfGood',

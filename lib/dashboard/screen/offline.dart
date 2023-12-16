@@ -290,7 +290,7 @@ class _State extends State<Offline> {
                         if (Runtime.allow(major: int.parse(Major.backendGateway), minor: int.parse(BackendGateway.pingReq))) {
                           echo(
                             from: Screen.offline,
-                            caller: caller+'.reconnect',
+                            caller: '$caller.reconnect',
                             message: message,
                           );
                         }

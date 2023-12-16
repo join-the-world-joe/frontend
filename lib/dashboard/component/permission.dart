@@ -215,12 +215,12 @@ class _State extends State<Permission> {
                       width: 100,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (!Runtime.allow(
-                            major: int.parse(Major.admin),
-                            minor: int.parse(Admin.fetchTrackListOfConditionReq),
-                          )) {
-                            return;
-                          }
+                          // if (!Runtime.allow(
+                          //   major: int.parse(Major.admin),
+                          //   minor: int.parse(Admin.fetchTrackListOfConditionReq),
+                          // )) {
+                          //   return;
+                          // }
                           fetchPermissionListOfCondition(
                             from: Permission.content,
                             caller: '$caller.fetchPermissionListOfCondition',

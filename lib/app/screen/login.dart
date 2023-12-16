@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/protocol/sms/send_verification_code.dart';
+import 'package:flutter_framework/common/route/account.dart';
 import 'package:flutter_framework/common/route/sms.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/utils/navigate.dart';
@@ -14,8 +15,9 @@ import 'package:flutter_framework/validator/mobile.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
-import 'package:flutter_framework/common/business/account/login.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
+import 'package:flutter_framework/common/protocol/account/login.dart';
+import 'package:flutter_framework/common/business/account/login.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -44,7 +46,7 @@ class _State extends State<Login> {
     try {
       if (major == Major.sms && minor == SMS.sendVerificationCodeRsp) {
         smsHandler(body);
-      } else if (major == Major.account && minor == Minor.account.loginRsp) {
+      } else if (major == Major.account && minor == Account.loginRsp) {
         loginHandler(body);
       } else {
         print("Login.observe warning: $major-$minor doesn't matched");
@@ -145,6 +147,7 @@ class _State extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    var caller = 'build';
     return Builder(
       builder: (context) {
         var caller = 'builder';
@@ -184,8 +187,7 @@ class _State extends State<Login> {
                           child: TextField(
                             controller: countryCodeControl..text = '86',
                             inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp('[0-9]')),
+                              FilteringTextInputFormatter.allow(RegExp('[0-9]')),
                               LengthLimitingTextInputFormatter(2),
                             ],
                             style: const TextStyle(
@@ -233,19 +235,14 @@ class _State extends State<Login> {
                             fontSize: 25.0,
                           ),
                         ),
-                        prefixIconConstraints:
-                            const BoxConstraints(minWidth: 0, minHeight: 0),
+                        prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
                         suffixIcon: Container(
                           margin: const EdgeInsets.all(8),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               fixedSize: const Size(85, 35),
-                              foregroundColor: hasSentSMS
-                                  ? Colors.grey
-                                  : Colors.lightBlueAccent,
-                              backgroundColor: hasSentSMS
-                                  ? Colors.grey
-                                  : Colors.lightBlueAccent,
+                              foregroundColor: hasSentSMS ? Colors.grey : Colors.lightBlueAccent,
+                              backgroundColor: hasSentSMS ? Colors.grey : Colors.lightBlueAccent,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
                               ),
@@ -261,10 +258,8 @@ class _State extends State<Login> {
                               print('onPressed');
                               var countryCode = countryCodeControl.text;
                               var phoneNumber = phoneNumberControl.text;
-                              if (isMobileValid(countryCode, phoneNumber) !=
-                                  Code.oK) {
-                                showMessageDialog(
-                                    context, '温馨提示：', '请输入正确的移动电话号码');
+                              if (isMobileValid(countryCode, phoneNumber) != Code.oK) {
+                                showMessageDialog(context, '温馨提示：', '请输入正确的移动电话号码');
                                 return;
                               }
                               if (hasSentSMS) {
@@ -294,6 +289,8 @@ class _State extends State<Login> {
                         // navigate(Screen.home);
                         // Navigate.to(context, Screen.build(Screen.home));
                         login(
+                          from: Screen.login,
+                          caller: caller,
                           verificationCode: verificationCodeControl.text,
                           countryCode: countryCodeControl.text,
                           phoneNumber: phoneNumberControl.text,

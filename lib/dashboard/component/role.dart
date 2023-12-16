@@ -188,13 +188,12 @@ class _State extends State<Role> {
                       width: 100,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (!Runtime.allow(
-                            major: int.parse(Major.admin),
-                            minor: int.parse(Admin.fetchRoleListOfConditionReq),
-                          )) {
-                            return;
-                          }
-
+                          // if (!Runtime.allow(
+                          //   major: int.parse(Major.admin),
+                          //   minor: int.parse(Admin.fetchRoleListOfConditionReq),
+                          // )) {
+                          //   return;
+                          // }
                           var inputName = roleController.text.trim();
                           if (inputName.isNotEmpty) {
                             List<String> roleList = [];

@@ -435,12 +435,12 @@ class _State extends State<SMSSignIn> {
                       width: 350,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (!Runtime.allow(
-                            major: int.parse(Major.admin),
-                            minor: int.parse(Admin.signInReq),
-                          )) {
-                            return;
-                          }
+                          // if (!Runtime.allow(
+                          //   major: int.parse(Major.admin),
+                          //   minor: int.parse(Admin.signInReq),
+                          // )) {
+                          //   return;
+                          // }
                           signIn(
                             from: Screen.smsSignIn,
                             caller:  '$caller.signIn',

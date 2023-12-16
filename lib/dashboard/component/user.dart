@@ -287,12 +287,12 @@ class _State extends State<User> {
                           onPressed: () {
                             Cache.setUserList(UserList.construct(userList: []));
                             // print('name: ${nameControl.text}');
-                            if (!Runtime.allow(
-                              major: int.parse(Major.admin),
-                              minor: int.parse(Admin.fetchUserListOfConditionReq),
-                            )) {
-                              return;
-                            }
+                            // if (!Runtime.allow(
+                            //   major: int.parse(Major.admin),
+                            //   minor: int.parse(Admin.fetchUserListOfConditionReq),
+                            // )) {
+                            //   return;
+                            // }
                             if (nameControl.text.isEmpty && phoneNumberControl.text.isEmpty) {
                               fetchUserListOfCondition(
                                 from: User.content,
