@@ -12,7 +12,6 @@ class UpdateRecordOfAdvertisementReq {
   String _image = '';
   int _stock = 0;
   int _status = 0;
-  String _thumbnail = '';
 
   UpdateRecordOfAdvertisementReq.construct({
     required int id,
@@ -23,7 +22,6 @@ class UpdateRecordOfAdvertisementReq {
     required String placeOfOrigin,
     required List<String> sellingPoints,
     required String image,
-    required String thumbnail,
     required int stock,
     required int status,
   }) {
@@ -37,7 +35,6 @@ class UpdateRecordOfAdvertisementReq {
     _image = image;
     _stock = stock;
     _status = status;
-    _thumbnail = thumbnail;
   }
 
   Map<String, dynamic> toJson() {
@@ -52,7 +49,6 @@ class UpdateRecordOfAdvertisementReq {
       'selling_price': _sellingPrice,
       'image': utf8.encode(_image),
       'place_of_origin': utf8.encode(_placeOfOrigin),
-      'thumbnail': utf8.encode(_thumbnail),
     };
   }
 }

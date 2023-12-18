@@ -13,7 +13,6 @@ class Advertisement {
   int _stock = 0;
   int _status = 0;
   int _productId = 0;
-  String _thumbnail = '';
 
   int getId() {
     return _id;
@@ -21,10 +20,6 @@ class Advertisement {
 
   String getName() {
     return _name;
-  }
-
-  String getThumbnail() {
-    return _thumbnail;
   }
 
   List<String> getSellingPoints() {
@@ -70,7 +65,6 @@ class Advertisement {
     required int stock,
     required int status,
     required int productId,
-    required String thumbnail,
   }) {
     _id = id;
     _name = name;
@@ -81,7 +75,6 @@ class Advertisement {
     _sellingPrice = sellingPrice;
     _stock = stock;
     _status = status;
-    _thumbnail = thumbnail;
     _productId = productId;
   }
 }

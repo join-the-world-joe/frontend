@@ -598,7 +598,8 @@ class Source extends DataTableSource {
             tooltip: Translator.translate(Language.clickToView),
             icon: const Icon(Icons.search),
             onPressed: () {
-              // show image
+              // show thumbnail
+              print('view thumbnail');
             },
           ),
         ),
@@ -608,6 +609,7 @@ class Source extends DataTableSource {
             icon: const Icon(Icons.search),
             onPressed: () {
               // show image
+              print('view image');
             },
           ),
         ),

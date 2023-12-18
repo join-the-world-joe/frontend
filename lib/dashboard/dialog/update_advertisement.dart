@@ -33,7 +33,6 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
   var stockController = TextEditingController(text: advertisement.getStock().toString());
   var productIdController = TextEditingController(text: advertisement.getProductId().toString());
   var sellingPointController = TextEditingController();
-  var thumbnailController = TextEditingController(text: advertisement.getThumbnail());
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -157,7 +156,6 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                 sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
                 placeOfOrigin: placeOfOriginController.text,
                 sellingPoints: sellingPoints,
-                thumbnail: thumbnailController.text,
               );
             },
             child: Text(Translator.translate(Language.confirm)),
@@ -331,7 +329,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: thumbnailController,
+                        controller: imageController,
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.thumbnailOfAdvertisement),
                         ),

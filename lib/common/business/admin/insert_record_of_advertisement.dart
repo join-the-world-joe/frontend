@@ -15,7 +15,6 @@ void insertRecordOfAdvertisement({
   required String placeOfOrigin,
   required int stock,
   required int productId,
-  required String thumbnail,
 }) {
   Runtime.request(
     from: from,
@@ -31,7 +30,6 @@ void insertRecordOfAdvertisement({
       image: image,
       stock: stock,
       productId: productId,
-      thumbnail: thumbnail,
     ),
   );
 }

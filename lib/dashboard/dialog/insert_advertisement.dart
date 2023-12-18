@@ -37,7 +37,6 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
   var stockController = TextEditingController();
   var statusController = TextEditingController();
   var imageController = TextEditingController();
-  var thumbnailController = TextEditingController();
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -241,7 +240,6 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                 placeOfOrigin: placeOfOriginController.text,
                 stock: int.parse(stockController.text),
                 productId: int.parse(productIdController.text),
-                thumbnail: thumbnailController.text,
               );
             },
             child: Text(Translator.translate(Language.confirm)),
@@ -412,7 +410,7 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: thumbnailController,
+                        controller: imageController,
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.thumbnailOfAdvertisement),
                         ),

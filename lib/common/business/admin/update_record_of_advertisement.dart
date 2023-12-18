@@ -22,7 +22,6 @@ void updateRecordOfAdvertisement({
   required int sellingPrice,
   required List<String> sellingPoints,
   required String placeOfOrigin,
-  required String thumbnail,
 }) {
   Runtime.request(
     from: from,
@@ -40,7 +39,6 @@ void updateRecordOfAdvertisement({
       sellingPrice: sellingPrice,
       sellingPoints: sellingPoints,
       placeOfOrigin: placeOfOrigin,
-      thumbnail: thumbnail,
     ),
   );
 }

@@ -46,7 +46,6 @@ class FetchRecordsOfAdvertisementRsp {
               placeOfOrigin: value['place_of_origin'],
               sellingPoints: Convert.base64StringList2ListString(List<String>.from(value['selling_points'] as List)),
               image: value['image'],
-              thumbnail: value['thumbnail'],
               sellingPrice: value['selling_price'],
               stock: value['stock'],
               status: value['status'],

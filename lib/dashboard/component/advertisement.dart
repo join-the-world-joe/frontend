@@ -483,7 +483,6 @@ class Source extends DataTableSource {
     var stock = Translator.translate(Language.loading);
     Text status = Text(Translator.translate(Language.loading));
     var image = Translator.translate(Language.loading);
-    var thumbnail = Translator.translate(Language.loading);
     var key = idList[index];
 
     if (boolMap.containsKey(key)) {
@@ -510,7 +509,6 @@ class Source extends DataTableSource {
         idOfGood = dataMap[key]!.getProductId().toString();
         image = dataMap[key]!.getImage().toString();
         sellingPoints = dataMap[key]!.getSellingPoints();
-        thumbnail = dataMap[key]!.getThumbnail();
         sellingPriceOfAdvertisement = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
@@ -567,8 +565,26 @@ class Source extends DataTableSource {
         ),
         DataCell(Text(stock)),
         DataCell(status),
-        DataCell(Text(thumbnail)),
-        DataCell(Text(image)),
+        DataCell(
+          IconButton(
+            tooltip: Translator.translate(Language.clickToView),
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // show thumbnail
+              print('view thumbnail');
+            },
+          ),
+        ),
+        DataCell(
+          IconButton(
+            tooltip: Translator.translate(Language.clickToView),
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // show image
+              print('view image');
+            },
+          ),
+        ),
         DataCell(
           Row(
             children: [
