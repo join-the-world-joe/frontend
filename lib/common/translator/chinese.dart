@@ -234,6 +234,9 @@ class Chinese {
     Language.peekInfoFromProductId: "查看商品信息",
     Language.peekInfoFromAdvertisementId: '查看广告信息',
     Language.illegalPhoneNumber:'非法的手机号码',
+    Language.pressToAddThumbnail : '添加缩略图',
+    Language.pressToModifyThumbnail : '更换缩略图',
+    Language.pressRightButtonToAddThumbnail: '点击右则按钮添加缩略图',
   };
 
   static String getName() {

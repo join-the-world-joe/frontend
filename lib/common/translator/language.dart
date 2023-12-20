@@ -231,4 +231,7 @@ class Language {
   static String peekInfoFromProductId = "to peek the information from product id";
   static String peekInfoFromAdvertisementId = 'to peek the information from advertisement id';
   static String illegalPhoneNumber = 'the phone number is illegal';
+  static String pressToAddThumbnail = 'press to add thumbnail';
+  static String pressToModifyThumbnail = 'press to modify thumbnail';
+  static String pressRightButtonToAddThumbnail = 'press the right button to add thumbnail';
 }

@@ -1,13 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart' as path;
 
 class AliYunOSS {
   String _id = '';
@@ -27,29 +23,29 @@ class AliYunOSS {
   Future<String> putImageObject({
     required String bucket,
     required String objectFile,
-    required File file,
+    required String mimeType,
+    required Uint8List bytes,
     required Duration connectTimeout,
     required Duration receiveTimeout,
     required Function onProgress,
   }) async {
-    String fileType = path.extension(file.path).toLowerCase();
-    MediaType mediaType = MediaType('image', fileType);
+    // String fileType = path.extension(file.path).toLowerCase();
+    MediaType mediaType = MediaType('image', mimeType);
+    var date = requestTime();
     var headers = sign(
       httpMethod: 'PUT',
       resourcePath: '/$bucket/$objectFile',
+      date: date,
       headers: {
         'content-type': mediaType.mimeType,
+        'x-oss-date': date
       },
     );
 
     try {
       final String url = 'https://$bucket.$_endpoint/$objectFile';
-      final Uint8List bytes = file.readAsBytesSync();
 
-      await Dio(BaseOptions(
-        connectTimeout: connectTimeout,
-        receiveTimeout: receiveTimeout,
-      )).put<void>(
+      await _http.put<void>(
         url,
         data: Stream.fromIterable(bytes.map((e) => [e])),
         options: Options(
@@ -73,10 +69,8 @@ class AliYunOSS {
   }
 
   String requestTime() {
-    initializeDateFormatting('en', null);
-    final DateTime now = DateTime.now();
-    final String string = DateFormat('EEE, dd MMM yyyy HH:mm:ss', 'en_ISO').format(now.toUtc());
-    return '$string GMT';
+    var f = DateFormat('EEE, dd MMM yyyy HH:mm:ss');
+    return "${f.format(DateTime.now().toUtc())} GMT";
   }
 
   String calcHMACSha1(String plaintext) {
@@ -102,7 +96,9 @@ class AliYunOSS {
     required String resourcePath,
     Map<String, String>? parameters,
     Map<String, String>? headers,
+    required String date,
   }) {
+
     final securityHeaders = {
       if (headers != null) ...headers,
     };
@@ -120,7 +116,6 @@ class AliYunOSS {
     };
     final canonicalizedResource = buildCanonicalizedResource(resourcePath, securityParameters);
 
-    final date = requestTime();
     final canonicalString = [
       httpMethod,
       '', // md5 of content
@@ -133,7 +128,27 @@ class AliYunOSS {
     final signature = calcHMACSha1(canonicalString);
     return {
       'Date': date,
+      'x-oss-date': date,
       'Authorization': 'OSS $_id:$signature',
     };
   }
+}
+
+var _http = _DioUtils.getInstance();
+
+class _DioUtils {
+  static Dio getInstance() {
+    if (_instance == null) {
+      _instance = Dio(BaseOptions(
+        connectTimeout: const Duration(milliseconds: 1000 * 30),
+        receiveTimeout: const Duration(milliseconds: 1000 * 30),
+      ));
+
+      _instance!.interceptors.add(LogInterceptor(responseBody: true));
+    }
+
+    return _instance!;
+  }
+
+  static Dio? _instance;
 }

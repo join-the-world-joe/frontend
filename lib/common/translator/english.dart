@@ -234,6 +234,9 @@ class English {
     Language.peekInfoFromProductId: "Peek",
     Language.peekInfoFromAdvertisementId: 'Peek',
     Language.illegalPhoneNumber:'illegal phone number',
+    Language.pressToAddThumbnail : 'Add Thumbnail',
+    Language.pressToModifyThumbnail : 'Modify Thumbnail',
+    Language.pressRightButtonToAddThumbnail : 'press right button to add thumbnail',
   };
 
   static String getName() {
