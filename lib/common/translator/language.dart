@@ -75,7 +75,7 @@ class Language {
   static String menuOfGood = "Good";
   static String menuOfWechat = "Wechat";
   static String menuOfDeals = "Deals";
-  static String menuOfHot = "Hot";
+  static String menuOfCamping = "Camping";
   static String menuOfCarousel = "Carousel";
   static String menuOfSnack = "Snack";
   static String menuOfBarbecue = "Barbecue";

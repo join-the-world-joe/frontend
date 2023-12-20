@@ -213,12 +213,6 @@ class _State extends State<Field> {
                       width: 100,
                       child: ElevatedButton(
                         onPressed: () {
-                          // if (!Runtime.allow(
-                          //   major: int.parse(Major.admin),
-                          //   minor: int.parse(Admin.fetchFieldListOfConditionReq),
-                          // )) {
-                          //   return;
-                          // }
                           if (nameController.text.isEmpty && tableController.text.isEmpty && roleController.text.isEmpty) {
                             fetchFieldListOfCondition(
                               from: Field.content,

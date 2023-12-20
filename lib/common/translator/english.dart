@@ -79,7 +79,7 @@ class English {
     Language.menuOfGood: 'Good',
     Language.menuOfWechat: 'WeChat',
     Language.menuOfDeals: 'Deals',
-    Language.menuOfHot: 'Hot',
+    Language.menuOfCamping: 'Camping',
     Language.menuOfCarousel: 'Carousel',
     Language.menuOfSnack: 'Snack',
     Language.menuOfBarbecue: 'Barbecue',

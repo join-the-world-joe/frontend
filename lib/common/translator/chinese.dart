@@ -79,7 +79,7 @@ class Chinese {
     Language.menuOfGood: '商品',
     Language.menuOfWechat: '微信广告',
     Language.menuOfDeals: '今日特价',
-    Language.menuOfHot: '人气热销',
+    Language.menuOfCamping: '露营专享',
     Language.menuOfCarousel: '首页轮播',
     Language.menuOfSnack: '畅销零食',
     Language.menuOfBarbecue: '烧烤必备',

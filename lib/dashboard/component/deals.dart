@@ -524,7 +524,6 @@ class Source extends DataTableSource {
         titleOfAdvertisement = dataMap[key]!.getTitle();
         placeOfOrigin = dataMap[key]!.getPlaceOfOrigin();
         stockOfAdvertisement = dataMap[key]!.getStock().toString();
-        // statusOfAdvertisement = dataMap[key]!.getStatus() == 1 ? Translator.translate(Language.enable) : Translator.translate(Language.disable);
         status = dataMap[key]!.getStatus() == 1
             ? Text(
                 Translator.translate(Language.enable),

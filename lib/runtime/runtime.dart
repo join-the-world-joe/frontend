@@ -21,6 +21,8 @@ class Runtime {
   static String token = '';
   static Function? _observe;
   static Function? _observer; // common observe for all pages
+  static Duration period = Config.periodOfScreenNormal;
+  static Function? _periodic;
   static Map<String, RateLimiter> _rateLimiter = {};
   static int defaultRateLimitDuration = 1000; // default, one seconds
 
@@ -70,6 +72,14 @@ class Runtime {
     return _observe;
   }
 
+  static setPeriodic(Function? periodic) {
+    _periodic = periodic;
+  }
+
+  static getPeriodic() {
+    return _periodic;
+  }
+
   static setObserver(Function? callback) {
     _observer = callback;
   }
@@ -112,6 +122,18 @@ class Runtime {
       }
     },
   );
+
+  static periodic() {
+    try {
+      if (_periodic != null) {
+        _periodic!.call();
+      }
+    } catch(e) {
+      print('Runtime.periodic failure, err: $e');
+    } finally {
+      Timer(Runtime.period, periodic);
+    }
+  }
 
   static void request({
     required String from,

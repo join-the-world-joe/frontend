@@ -313,12 +313,6 @@ class _State extends State<Advertisement> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (idController.text.isEmpty && nameController.text.isEmpty) {
-                              // if (!Runtime.allow(
-                              //   major: int.parse(Major.admin),
-                              //   minor: int.parse(Admin.fetchIdListOfGoodReq),
-                              // )) {
-                              //   return;
-                              // }
                               resetSource();
                               fetchIdListOfAdvertisement(
                                 from: Advertisement.content,
@@ -329,12 +323,6 @@ class _State extends State<Advertisement> {
                               return;
                             }
                             if (idController.text.isNotEmpty) {
-                              // if (!Runtime.allow(
-                              //   major: int.parse(Major.admin),
-                              //   minor: int.parse(Admin.fetchRecordsOfGoodReq),
-                              // )) {
-                              //   return;
-                              // }
                               resetSource();
                               fetchRecordsOfAdvertisement(
                                 from: Advertisement.content,
@@ -344,12 +332,6 @@ class _State extends State<Advertisement> {
                               return;
                             }
                             if (nameController.text.isNotEmpty) {
-                              // if (!Runtime.allow(
-                              //   major: int.parse(Major.admin),
-                              //   minor: int.parse(Admin.fetchIdListOfAdvertisementReq),
-                              // )) {
-                              //   return;
-                              // }
                               resetSource();
                               fetchIdListOfAdvertisement(
                                 from: Advertisement.content,
