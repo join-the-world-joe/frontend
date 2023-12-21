@@ -24,10 +24,6 @@ class FetchRoleListOfConditionReq {
       'role_list': _roleNameList.map((e) => utf8.encode(e)).toList(),
     };
   }
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
-  }
 }
 
 class FetchRoleListOfConditionRsp {

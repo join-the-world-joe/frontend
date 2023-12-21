@@ -19,21 +19,25 @@ class Behavior {
 }
 
 class SendVerificationCodeReq {
-  late String behavior;
-  late String countryCode;
-  late String phoneNumber;
+  String _behavior = '';
+  String _countryCode = '';
+  String _phoneNumber = '';
 
-  SendVerificationCodeReq(this.behavior, this.countryCode, this.phoneNumber);
+  SendVerificationCodeReq({
+    required String behavior,
+    required String countryCode,
+    required String phoneNumber,
+  }) {
+    _behavior = behavior;
+    _countryCode = countryCode;
+    _phoneNumber = phoneNumber;
+  }
 
   Map<String, dynamic> toJson() => {
-    'behavior': behavior,
-    'country_code': countryCode,
-    'phone_number': phoneNumber,
-  };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
-  }
+        'behavior': _behavior,
+        'country_code': _countryCode,
+        'phone_number': _phoneNumber,
+      };
 }
 
 class SendVerificationCodeRsp {
@@ -53,11 +57,11 @@ class SendVerificationCodeRsp {
   }
 
   Map<String, dynamic> toJson() => {
-    "code": _code,
-  };
+        "code": _code,
+      };
 
   SendVerificationCodeRsp.fromJson(Map<String, dynamic> json) {
-    if(json.containsKey('code')){
+    if (json.containsKey('code')) {
       _code = json['code'];
     }
   }

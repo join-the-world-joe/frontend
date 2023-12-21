@@ -22,16 +22,9 @@ void sendVerificationCode({
     major: Major.sms,
     minor: SMS.sendVerificationCodeReq,
     body: SendVerificationCodeReq(
-      behavior,
-      countryCode,
-      phoneNumber,
+      behavior: behavior,
+      countryCode: countryCode,
+      phoneNumber: phoneNumber,
     ),
   );
-  //
-  // PacketClient packet = PacketClient.create();
-  // SendVerificationCodeReq req = SendVerificationCodeReq(behavior, countryCode, phoneNumber);
-  // packet.getHeader().setMajor(Major.sms);
-  // packet.getHeader().setMinor(SMS.sendVerificationCodeReq);
-  // packet.setBody(req.toJson());
-  // Runtime.wsClient.sendPacket(packet);
 }

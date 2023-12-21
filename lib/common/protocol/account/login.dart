@@ -30,10 +30,6 @@ class LoginReq {
         'phone_number': _phoneNumber,
         'token': _token,
       };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
-  }
 }
 
 class LoginRsp {

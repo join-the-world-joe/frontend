@@ -18,10 +18,6 @@ class RegisterReq {
     'country_code': countryCode,
     'phone_number': phoneNumber,
   };
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
-  }
 }
 
 class RegisterRsp {

@@ -47,10 +47,6 @@ class SignInReq {
       'user_id': _userId,
     };
   }
-
-  Uint8List toBytes() {
-    return Convert.toBytes(this);
-  }
 }
 
 class SignInRsp {
