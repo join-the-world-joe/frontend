@@ -119,6 +119,8 @@ Future<bool> showViewNetworkImageGroupDialog(BuildContext context, List<String> 
                 child: Column(
                   children: [
                     if (urls.isNotEmpty)
+                      Center(child: Text('${currentImage+1}/${urls.length}')),
+                    if (urls.isNotEmpty)
                       Center(
                         child: SizedBox(
                           width: 500,

@@ -322,7 +322,7 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                               List<Widget> widgetList = [];
                               for (var element in sellingPoints) {
                                 widgetList.add(Padding(
-                                  padding: const EdgeInsets.all(2.0),
+                                  padding: const EdgeInsets.all(5.0),
                                   child: InputChip(
                                     label: Text(
                                       element,
@@ -402,7 +402,7 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                                 return Translator.translate(Language.pressToModifyThumbnail);
                               }
                             }(),
-                            icon: const Icon(Icons.add_circle_outlined),
+                            icon: imageMap[thumbnailKey] == null ? const Icon(Icons.add_circle_outlined) : const Icon(Icons.edit),
                             onPressed: () async {
                               var mediaData = await ImagePickerWeb.getImageInfo;
                               if (mediaData != null) {
@@ -420,7 +420,7 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                               List<Widget> widgetList = [];
                               if (imageMap[thumbnailKey] != null) {
                                 widgetList.add(Padding(
-                                  padding: const EdgeInsets.all(2.0),
+                                  padding: const EdgeInsets.all(5.0),
                                   child: InputChip(
                                     label: Text(
                                       imageMap[thumbnailKey]!.fileName!,
@@ -481,7 +481,7 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                               List<Widget> widgetList = [];
                               for (var element in imageList) {
                                 widgetList.add(Padding(
-                                  padding: const EdgeInsets.all(2.0),
+                                  padding: const EdgeInsets.all(8.0),
                                   child: InputChip(
                                     label: Text(
                                       element,

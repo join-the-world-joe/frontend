@@ -13,6 +13,7 @@ import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisemen
 import 'package:flutter_framework/dashboard/dialog/update_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
+import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -590,6 +591,12 @@ class Source extends DataTableSource {
             onPressed: () {
               // show thumbnail
               print('view thumbnail');
+              var ret = Uri.parse(thumbnailUrl).isAbsolute;
+              if (!ret) {
+                showWarningDialog(buildContext, Translator.translate(Language.urlIllegal));
+                print('url: $thumbnailUrl, image: $image');
+                return;
+              }
               showViewNetworkImageDialog(buildContext, thumbnailUrl);
             },
           ),

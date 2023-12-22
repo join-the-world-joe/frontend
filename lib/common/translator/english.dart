@@ -243,6 +243,7 @@ class English {
     Language.pressRightButtonToAddImage : 'press right button to add image',
     Language.addImageForAdvertisement : 'Add Advertisement Image',
     Language.titleOfInsertAdvertisementButton : 'Insert Advertisement',
+    Language.urlIllegal : 'URL is illegal',
   };
 
   static String getName() {

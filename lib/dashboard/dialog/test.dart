@@ -1,6 +1,6 @@
 
 void main() {
-  var str = '36/1.jpg';
+  var str = '40/0.png';
   var key = ((str.split('.')[0]).split('/'))[1];
   print(key);
 }

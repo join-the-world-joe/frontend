@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:convert';
+
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/dashboard/dialog/view_image.dart';
+import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -9,14 +15,75 @@ import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 import '../model/advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/common/protocol/admin/update_record_of_advertisement.dart';
 import 'package:flutter_framework/common/business/admin/update_record_of_advertisement.dart';
+import 'package:path/path.dart' as path;
+
+/*
+use cases
+1. delete image; modify original record
+2. add new image; need to upload image
+3. delete image & add new image; modify record & need to upload image
+
+optimization
+1. frontend provides the remove key list for backend
+2. frontend use the update interface to modify the specific record
+ */
+
+class ImageItem {
+  bool _native = false;
+  String _nativeFileName = ''; // for native file
+  Uint8List _data = Uint8List(0); // for native file
+  String _objectFile = ''; // oss object file name
+  String _url = ''; // uploaded; oss url
+  String _key = ''; // key of image in database
+
+  bool getNative() {
+    return _native;
+  }
+
+  String getKey() {
+    return _key;
+  }
+
+  String getUrl() {
+    return _url;
+  }
+
+  String getObjectFile() {
+    return _objectFile;
+  }
+
+  Uint8List getData() {
+    return _data;
+  }
+
+  String getNativeFileName() {
+    return _nativeFileName;
+  }
+
+  ImageItem.construct({
+    required bool native,
+    required Uint8List data,
+    required String objectFile,
+    required String url,
+    required String nativeFileName,
+    required String key,
+  }) {
+    _key = key;
+    _native = native;
+    _data = data;
+    _objectFile = objectFile;
+    _url = url;
+    _nativeFileName = nativeFileName;
+  }
+}
 
 Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement advertisement) async {
   int status = advertisement.getStatus();
@@ -29,16 +96,33 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
   var titleController = TextEditingController(text: advertisement.getTitle());
   var sellingPriceController = TextEditingController(text: Convert.intDivide10toDoubleString(advertisement.getSellingPrice()));
   var placeOfOriginController = TextEditingController(text: advertisement.getPlaceOfOrigin());
-  var imageController = TextEditingController(text: advertisement.getImage());
+  var imageController = TextEditingController(text: '');
+  var thumbnailController = TextEditingController(text: '');
   var stockController = TextEditingController(text: advertisement.getStock().toString());
   var productIdController = TextEditingController(text: advertisement.getProductId().toString());
   var sellingPointController = TextEditingController();
+  Map<String, ImageItem> imageMap = {};
+
+  try {
+    Map<String, dynamic> image = jsonDecode(advertisement.getImage());
+    image.forEach((key, value) {
+      imageMap[key] = ImageItem.construct(
+        native: false,
+        data: Uint8List(0),
+        objectFile: '',
+        url: value,
+        nativeFileName: '',
+        key: key,
+      );
+    });
+  } catch (e) {
+    print('showUpdateAdvertisementDialog failure, err: $e');
+  }
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      // print('showUpdateAdvertisementDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -63,7 +147,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
           Translator.translate(Language.titleOfNotification),
           Translator.translate(Language.updateRecordSuccessfully),
         ).then(
-              (value) {
+          (value) {
             Navigator.pop(context, true);
           },
         );
@@ -150,7 +234,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                 image: imageController.text,
                 name: nameController.text,
                 stock: int.parse(stockController.text),
-                status : status,
+                status: status,
                 title: titleController.text,
                 productId: int.parse(productIdController.text),
                 sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
@@ -260,7 +344,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                               List<Widget> widgetList = [];
                               for (var element in sellingPoints) {
                                 widgetList.add(Padding(
-                                  padding: const EdgeInsets.all(2.0),
+                                  padding: const EdgeInsets.all(5.0),
                                   child: InputChip(
                                     label: Text(
                                       element,
@@ -329,9 +413,82 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: imageController,
+                        readOnly: true,
+                        controller: thumbnailController,
+                        // decoration: InputDecoration(
+                        //   labelText: Translator.translate(Language.thumbnailOfAdvertisement),
+                        // ),
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.thumbnailOfAdvertisement),
+                          suffixIcon: IconButton(
+                            tooltip: Translator.translate(Language.pressToModifyThumbnail),
+                            icon: const Icon(Icons.edit),
+                            onPressed: () async {
+                              var mediaData = await ImagePickerWeb.getImageInfo;
+                              if (mediaData != null) {
+                                //   imageMap[thumbnailKey] = mediaData;
+                                String extension = path.extension(mediaData.fileName!).toLowerCase();
+                                imageMap['0'] = ImageItem.construct(
+                                  native: true,
+                                  data: mediaData.data!,
+                                  objectFile: '${advertisement.getId()}/0$extension',
+                                  url: '',
+                                  nativeFileName: mediaData.fileName!,
+                                  key: '',
+                                );
+
+                                print('file name: ${mediaData.fileName!}');
+                                print('extension: $extension');
+                                print('size: ${mediaData.data!.length}');
+                                print('object file: ${imageMap['0']!.getObjectFile()}');
+                                curStage++;
+                              }
+                            },
+                          ),
+                          prefixIcon: Wrap(
+                            children: () {
+                              List<Widget> widgetList = [];
+                              if (imageMap['0'] != null) {
+                                var title = '';
+                                if (!imageMap['0']!.getNative()) {
+                                  title = imageMap['0']!.getKey();
+                                } else {
+                                  title = imageMap['0']!.getNativeFileName();
+                                }
+                                widgetList.add(Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: InputChip(
+                                    label: Text(
+                                      title,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      if (!imageMap['0']!.getNative()) {
+                                        showViewNetworkImageDialog(context, imageMap['0']!.getUrl());
+                                      } else {
+                                        // native
+                                        showViewImageDialog(context, imageMap['0']!.getData());
+                                      }
+                                      // if (imageMap[thumbnailKey] != null) {
+                                      //   showViewImageDialog(context, imageMap[thumbnailKey]!.data!);
+                                      // }
+                                    },
+                                    // onDeleted: () {
+                                    //   sellingPoints.remove(element);
+                                    //   curStage++;
+                                    // },
+                                    backgroundColor: Colors.green,
+                                    // selectedColor: Colors.green,
+                                    elevation: 6.0,
+                                    shadowColor: Colors.grey[60],
+                                    padding: const EdgeInsets.all(8.0),
+                                  ),
+                                ));
+                              }
+                              return widgetList;
+                            }(),
+                          ),
                         ),
                       ),
                     ),
@@ -355,7 +512,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
       );
     },
   ).then(
-        (value) {
+    (value) {
       closed = true;
       Runtime.setObserve(oriObserve);
       return value;

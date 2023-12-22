@@ -240,4 +240,5 @@ class Language {
   static String pressRightButtonToAddImage = 'press the right button to add image';
   static String addImageForAdvertisement = 'add image for the advertisement';
   static String titleOfInsertAdvertisementButton = 'title of insert advertisement button';
+  static String urlIllegal = 'url is illegal ';
 }

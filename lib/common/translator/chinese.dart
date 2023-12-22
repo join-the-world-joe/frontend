@@ -243,6 +243,7 @@ class Chinese {
     Language.pressRightButtonToAddImage : '点击右则按钮添加图片',
     Language.addImageForAdvertisement : '增加广告图片',
     Language.titleOfInsertAdvertisementButton: "新增",
+    Language.urlIllegal : '非法的URL',
   };
 
   static String getName() {
