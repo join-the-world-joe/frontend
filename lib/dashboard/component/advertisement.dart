@@ -7,11 +7,12 @@ import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
-import 'package:flutter_framework/dashboard/dialog/insert_advertisement.dart';
-import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
+import 'package:flutter_framework/dashboard/dialog/edit_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/update_advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
+import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -19,7 +20,6 @@ import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
@@ -377,13 +377,14 @@ class _State extends State<Advertisement> {
                     child: PaginatedDataTable(
                       controller: scrollController,
                       onPageChanged: (int? n) {
+                        print('onPageChanged: $n');
                         curStage++;
                       },
                       actions: [
                         ElevatedButton.icon(
                           icon: const Icon(Icons.add),
                           onPressed: () async {
-                            showInsertAdvertisementDialog(context);
+                            showEditAdvertisementDialog(context);
                           },
                           label: Text(
                             Translator.translate(Language.newAdvertisement),
@@ -451,6 +452,34 @@ class Source extends DataTableSource {
   @override
   int get selectedRowCount => 0;
 
+  String getThumbnail(String image) {
+    String output = '';
+    try {
+      Map<String, dynamic> temp = jsonDecode(image);
+      if (temp.containsKey('0')) {
+        output =  temp['0'];
+      }
+    } catch(e) {
+      print('Advertisement.Source.getThumbnail failure, err: $e');
+    }
+    return output;
+  }
+
+  List<String> getImageUrlList(String image) {
+    List<String> output = [];
+    try {
+      Map<String, dynamic> temp = jsonDecode(image);
+      temp.forEach((key, value) {
+        if (key != '0') {
+          output.add(value);
+        }
+      });
+    } catch(e) {
+      print('Advertisement.Source.getImageUrlList failure, err: $e');
+    }
+    return output;
+  }
+
   @override
   DataRow getRow(int index) {
     // print("getRow: $index");
@@ -466,6 +495,8 @@ class Source extends DataTableSource {
     Text status = Text(Translator.translate(Language.loading));
     var image = Translator.translate(Language.loading);
     var key = idList[index];
+    var thumbnailUrl = '';
+    List<String> imageUrlList = [];
 
     if (boolMap.containsKey(key)) {
       // fetch row finished
@@ -492,12 +523,17 @@ class Source extends DataTableSource {
         image = dataMap[key]!.getImage().toString();
         sellingPoints = dataMap[key]!.getSellingPoints();
         sellingPriceOfAdvertisement = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
+        if (image.isNotEmpty) {
+          thumbnailUrl = getThumbnail(image);
+          imageUrlList = getImageUrlList(image);
+        }
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
     } else {
       if (datetimeMap.containsKey(key)) {
         // item requested
+        datetimeMap.remove(key);
       } else {
         // item not requested
         List<int> requestIdList = [];
@@ -512,7 +548,7 @@ class Source extends DataTableSource {
             datetimeMap[idList[i]] = DateTime.now();
           }
         }
-        // print("requestIdList: $requestIdList");
+        print("requestIdList: $requestIdList");
         fetchRecordsOfAdvertisement(
           from: Advertisement.content,
           caller: '$caller.fetchRecordsOfAdvertisement',
@@ -554,6 +590,7 @@ class Source extends DataTableSource {
             onPressed: () {
               // show thumbnail
               print('view thumbnail');
+              showViewNetworkImageDialog(buildContext, thumbnailUrl);
             },
           ),
         ),
@@ -564,6 +601,7 @@ class Source extends DataTableSource {
             onPressed: () {
               // show image
               print('view image');
+              showViewNetworkImageGroupDialog(buildContext, imageUrlList);
             },
           ),
         ),

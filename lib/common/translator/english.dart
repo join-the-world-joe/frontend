@@ -15,6 +15,8 @@ class English {
     Language.menuList: 'Menu List',
     Language.operation: 'Operation',
     Language.cancel: 'Cancel',
+    Language.next: 'Next',
+    Language.back: 'Back',
     Language.confirm: "Confirm",
     Language.enable: 'Enable',
     Language.disable: 'Disable',
@@ -202,6 +204,7 @@ class English {
     Language.imageOfAdvertisement: "Image",
     Language.thumbnailOfAdvertisement: 'Thumbnail',
     Language.newAdvertisement: "New Advertisement",
+    Language.editAdvertisement: "Edit Advertisement",
     Language.modifyGood: "Modify Product",
     Language.productIdIsEmpty: "Product ID is empty!",
     Language.withoutProductInfoInResponse: "Product not found",
@@ -237,6 +240,9 @@ class English {
     Language.pressToAddThumbnail : 'Add Thumbnail',
     Language.pressToModifyThumbnail : 'Modify Thumbnail',
     Language.pressRightButtonToAddThumbnail : 'press right button to add thumbnail',
+    Language.pressRightButtonToAddImage : 'press right button to add image',
+    Language.addImageForAdvertisement : 'Add Advertisement Image',
+    Language.titleOfInsertAdvertisementButton : 'Insert Advertisement',
   };
 
   static String getName() {

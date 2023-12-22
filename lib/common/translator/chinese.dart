@@ -15,6 +15,8 @@ class Chinese {
     Language.menuList: '菜单列表',
     Language.operation: '操作',
     Language.cancel: '取消',
+    Language.next: '下一个',
+    Language.back: '上一个',
     Language.confirm: "确定",
     Language.enable: '启用',
     Language.disable: '停用',
@@ -202,6 +204,7 @@ class Chinese {
     Language.imageOfAdvertisement: "图片",
     Language.thumbnailOfAdvertisement: '缩略图',
     Language.newAdvertisement: "新增广告",
+    Language.editAdvertisement: "编辑广告",
     Language.modifyGood: "更新商品信息",
     Language.productIdIsEmpty: "商品ID为空",
     Language.withoutProductInfoInResponse: "未找到商品信息",
@@ -237,6 +240,9 @@ class Chinese {
     Language.pressToAddThumbnail : '添加缩略图',
     Language.pressToModifyThumbnail : '更换缩略图',
     Language.pressRightButtonToAddThumbnail: '点击右则按钮添加缩略图',
+    Language.pressRightButtonToAddImage : '点击右则按钮添加图片',
+    Language.addImageForAdvertisement : '增加广告图片',
+    Language.titleOfInsertAdvertisementButton: "新增",
   };
 
   static String getName() {

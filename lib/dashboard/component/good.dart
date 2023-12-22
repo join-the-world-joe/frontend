@@ -476,6 +476,7 @@ class Source extends DataTableSource {
     } else {
       if (datetimeMap.containsKey(key)) {
         // item requested
+        datetimeMap.remove(key);
       } else {
         // item not requested
         List<int> requestIdList = [];

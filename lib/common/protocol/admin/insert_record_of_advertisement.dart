@@ -47,14 +47,25 @@ class InsertRecordOfAdvertisementReq {
 
 class InsertRecordOfAdvertisementRsp {
   int _code = -1;
+  int _advertisementId = -1;
 
   int getCode() {
     return _code;
   }
 
+  int getAdvertisementId() {
+    return _advertisementId;
+  }
+
   InsertRecordOfAdvertisementRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
       _code = json['code'];
+    }
+    if (json.containsKey('body')) {
+      Map<String, dynamic> body = json['body'];
+      if (body.containsKey('advertisement_id')) {
+        _advertisementId = body['advertisement_id'];
+      }
     }
   }
 }

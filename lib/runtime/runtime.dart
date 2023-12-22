@@ -128,11 +128,19 @@ class Runtime {
       if (_periodic != null) {
         _periodic!.call();
       }
-    } catch(e) {
+    } catch (e) {
       print('Runtime.periodic failure, err: $e');
     } finally {
       Timer(Runtime.period, periodic);
     }
+  }
+
+  static void setPeriod(Duration period) {
+    Runtime.period = period;
+  }
+
+  static Duration getPeriod() {
+    return Runtime.period;
   }
 
   static void request({

@@ -35,15 +35,18 @@ class ObjectFileRequestHeader {
   String _authorization = '';
   String _contentType = '';
   String _date = '';
+  String _xOssDate = '';
 
   ObjectFileRequestHeader.construct({
     required String authorization,
     required String contentType,
     required String date,
+    required String xOssDate,
   }) {
     _authorization = authorization;
     _contentType = contentType;
     _date = date;
+    _xOssDate = xOssDate;
   }
 
   String getAuthorization() {
@@ -56,6 +59,15 @@ class ObjectFileRequestHeader {
 
   String getDate() {
     return _date;
+  }
+
+  String getXOssDate() {
+    return _xOssDate;
+  }
+
+  @override
+  String toString() {
+    return 'Authorization:$_authorization Content-Type:$_contentType Date:$_date x-oss-date:$_xOssDate';
   }
 }
 
@@ -109,6 +121,7 @@ class FetchHeaderListOfObjectFileListOfAdvertisementRsp {
               authorization: value['authorization'],
               contentType: value['content_type'],
               date: value['date'],
+              xOssDate: value['x_oss_date']
             );
           }();
         });

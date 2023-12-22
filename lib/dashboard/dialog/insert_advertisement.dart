@@ -1,54 +1,104 @@
 import 'dart:convert';
-import 'dart:html' as html;
-import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/business/admin/insert_record_of_advertisement.dart';
+import 'package:flutter_framework/common/business/admin/update_record_of_advertisement.dart';
+import 'package:flutter_framework/common/business/oss/fetch_header_list_of_object_file_list_of_advertisement.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/protocol/admin/insert_record_of_advertisement.dart';
+import 'package:flutter_framework/common/protocol/admin/update_record_of_advertisement.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
-import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
+import 'package:flutter_framework/common/route/oss.dart';
+import 'package:flutter_framework/dashboard/model/advertisement.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
-import 'package:flutter_framework/plugin/oss/aliyun/aliyun.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
-import 'package:flutter_framework/utils/convert.dart';
+import 'package:flutter_framework/utils/api.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_records_of_good.dart';
-import 'package:flutter_framework/common/business/admin/fetch_records_of_good.dart';
-import 'package:flutter_framework/common/business/admin/insert_record_of_advertisement.dart';
-import 'package:flutter_framework/common/protocol/admin/insert_record_of_good.dart';
 import 'package:image_picker_web/image_picker_web.dart';
+import '../config/config.dart';
+import 'package:flutter_framework/common/protocol/oss/fetch_header_list_of_object_file_list_of_advertisement.dart';
 import 'package:path/path.dart' as path;
 
-Future<void> showInsertAdvertisementDialog(BuildContext context) async {
+/*
+work flow
+insert advertisement ------->  backend
+advertisement id     <-------  backend
+fetch oss headers    ------->  backend
+oss request headers  <-------  backend
+upload images        ------->  oss server
+http status code     <-------  oss server
+upgrade image field  ------->  backend
+result               <-------  backend
+verify oss objects   ------->  backend
+result               <-------  backend
+four possible stage; requested, timeout(after interval), responded, failure(successfully)
+ */
+
+Future<int> showInsertAdvertisementDialog(
+  BuildContext context, {
+  required String name,
+  required String title,
+  required int sellingPrice,
+  required List<String> sellingPoints,
+  required String placeOfOrigin,
+  required int stock,
+  required int productId,
+  required Map<String, MediaInfo> imageMap,
+  required List<String> imageList,
+  required String thumbnailKey,
+}) async {
+  var result = Code.internalError;
+  int? advertisementId;
   bool closed = false;
   int curStage = 0;
-  String from = 'showInsertAdvertisementDialog';
-  List<String> sellingPoints = [];
-  html.File? thumbnail;
-  List<String> urlsOfImage = [];
-
+  var ossHost = '';
+  var commonOSSPath = '';
+  var from = 'showInsertAdvertisementDialog';
+  List<String> nameListOfFile = [];
   var oriObserve = Runtime.getObserve();
-  var productIdController = TextEditingController();
-  var nameController = TextEditingController();
-  var titleController = TextEditingController();
-  var sellingPriceController = TextEditingController();
-  var placeOfOriginController = TextEditingController();
-  var sellingPointController = TextEditingController();
-  var stockController = TextEditingController();
-  var statusController = TextEditingController();
-  var imageController = TextEditingController();
+  Map<String, ObjectFileRequestHeader> requestHeader = {}; // key: object file name
+  // insert advertisement
+  bool insertAdvertisementRequested = false;
+  bool insertAdvertisementResponded = false;
+  DateTime? insertAdvertisementRequestTime;
+  bool insertAdvertisementSuccessfully = false;
+  // fetch header
+  bool fetchHeaderRequested = false;
+  bool fetchHeaderResponded = false;
+  DateTime? fetchHeaderRequestTime;
+  bool fetchHeaderSuccessfully = false;
+  // upload image list
+  int uploadedImageCount = 0;
+  int totalImageCount = imageMap.length;
+  bool uploadImageListRequested = false;
+  bool uploadImageListResponded = false;
+  DateTime? uploadImageListRequestTime;
+  bool uploadImageListSuccessfully = false;
+  // upgrade image field
+  bool upgradeImageFieldRequested = false;
+  bool upgradeImageFieldResponded = false;
+  DateTime? upgradeImageFieldRequestTime;
+  bool upgradeImageFieldSuccessfully = false;
+
+  String defaultImage = '';
+  String information = '';
+  double height = 400;
+  double width = 400;
+  Map<String, Uint8List> objectDataMapping = {}; // key: object file name, value: native file name
+  bool finished = false;
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      // print('showInsertAdvertisementDialog, last: $lastStage, cur: $curStage');
+      // print('showFillSellingPointDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -59,31 +109,19 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
   void insertRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'insertRecordOfAdvertisementHandler';
     try {
-      InsertRecordOfGoodRsp rsp = InsertRecordOfGoodRsp.fromJson(body);
+      InsertRecordOfAdvertisementRsp rsp = InsertRecordOfAdvertisementRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
         from: from,
         caller: caller,
-        message: 'code: ${rsp.getCode()}',
+        message: 'code: ${rsp.getCode()}, advertisementId: ${rsp.getAdvertisementId()}',
       );
       if (rsp.getCode() == Code.oK) {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.insertRecordSuccessfully),
-        ).then(
-          (value) {
-            Navigator.pop(context, null);
-          },
-        );
+        advertisementId = rsp.getAdvertisementId();
+        insertAdvertisementSuccessfully = true;
         return;
       } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
         return;
       }
     } catch (e) {
@@ -95,13 +133,15 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
         message: 'failure, err: $e',
       );
       return;
+    } finally {
+      insertAdvertisementResponded = true;
     }
   }
 
-  void fetchRecordsOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'fetchRecordsOfGoodHandler';
+  fetchHeaderListOfObjectFileListOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchHeaderListOfObjectFileListOfAdvertisementHandler';
     try {
-      FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
+      FetchHeaderListOfObjectFileListOfAdvertisementRsp rsp = FetchHeaderListOfObjectFileListOfAdvertisementRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -110,28 +150,52 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
         message: '',
       );
       if (rsp.getCode() == Code.oK) {
-        var key = int.parse(productIdController.text);
-        if (rsp.getDataMap().containsKey(key)) {
-          showMessageDialog(
-            context,
-            Translator.translate(Language.nameOfGood),
-            rsp.getDataMap()[key]!.getName(),
-          );
-          curStage++;
-        } else {
-          showMessageDialog(
-            context,
-            Translator.translate(Language.titleOfNotification),
-            Translator.translate(Language.withoutProductInfoInResponse),
-          );
-        }
+        rsp.getRequestHeader().forEach((key, value) {
+          requestHeader[key] = value;
+        });
+        ossHost = rsp.getHost();
+        print('ossHost: $ossHost');
+        requestHeader.forEach((key, value) {
+          print('file: $key, value: ${value.toString()}');
+          if (objectDataMapping.containsKey(key)) {
+            print('size: ${objectDataMapping[key]!.length}');
+          }
+        });
+        commonOSSPath = rsp.getCommonPath();
+        fetchHeaderSuccessfully = true;
+      } else {
+        // error occurs
+      }
+    } catch (e) {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
+      return;
+    } finally {
+      fetchHeaderResponded = true;
+    }
+  }
+
+  void updateRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'updateRecordOfAdvertisementHandler';
+    try {
+      UpdateRecordOfAdvertisementRsp rsp = UpdateRecordOfAdvertisementRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (rsp.getCode() == Code.oK) {
+        upgradeImageFieldSuccessfully = true;
         return;
       } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
+        // error occurs
         return;
       }
     } catch (e) {
@@ -143,14 +207,265 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
         message: 'failure, err: $e',
       );
       return;
-    } finally {}
+    } finally {
+      upgradeImageFieldResponded = true;
+    }
+  }
+
+  void figureOutNameListOfFile() {
+    String extension = path.extension(imageMap[thumbnailKey]!.fileName!).toLowerCase();
+    nameListOfFile.add('$advertisementId/0$extension');
+    objectDataMapping['$advertisementId/0$extension'] = imageMap[thumbnailKey]!.data!;
+    for (var index = 0; index < imageList.length; index++) {
+      extension = path.extension(imageMap[imageList[index]]!.fileName!).toLowerCase();
+      nameListOfFile.add('$advertisementId/${index + 1}$extension');
+      objectDataMapping['$advertisementId/${index + 1}$extension'] = imageMap[imageList[index]]!.data!;
+    }
+    print('nameList: $nameListOfFile');
+  }
+
+  int insertAdvertisementProcess() {
+    var caller = 'insertAdvertisementProcess';
+    if (insertAdvertisementResponded && insertAdvertisementSuccessfully) {
+      // print('insertAdvertisementProcess finished');
+      return 0;
+    }
+    // check state of request
+    if (!insertAdvertisementRequested) {
+      insertRecordOfAdvertisement(
+        from: from,
+        caller: caller,
+        name: name,
+        title: title,
+        sellingPrice: sellingPrice,
+        sellingPoints: sellingPoints,
+        image: defaultImage,
+        placeOfOrigin: placeOfOrigin,
+        stock: stock,
+        productId: productId,
+      );
+      insertAdvertisementRequested = true;
+      insertAdvertisementRequestTime = DateTime.now();
+    }
+    // check state of timeout
+    if (insertAdvertisementRequested && !insertAdvertisementResponded && DateTime.now().isAfter(insertAdvertisementRequestTime!.add(Config.httpDefaultTimeout))) {
+      return -1;
+    }
+    // check state of failure
+    if (insertAdvertisementResponded && !insertAdvertisementSuccessfully) {
+      return -1;
+    }
+    return 0; // middle state; requested --state-- responded
+  }
+
+  int uploadImageListProgress() {
+    var caller = 'uploadImageListProgress';
+    if (uploadImageListResponded && uploadImageListSuccessfully) {
+      // print('uploadImageListProgress finished');
+      return 0;
+    }
+    // check state of request
+    if (!uploadImageListRequested && fetchHeaderSuccessfully) {
+      if (nameListOfFile.isNotEmpty) {
+        for (var object in nameListOfFile) {
+          print('object: $object');
+          if (objectDataMapping.containsKey(object)) {
+            print('length: ${objectDataMapping[object]!.length}');
+            API
+                .put(
+              scheme: 'https://',
+              host: ossHost,
+              port: '',
+              endpoint: object,
+              timeout: Config.httpDefaultTimeout,
+              header: {
+                "Authorization": requestHeader[object]!.getAuthorization(),
+                "Content-Type": requestHeader[object]!.getContentType(),
+                "Date": requestHeader[object]!.getDate(),
+                "x-oss-date": requestHeader[object]!.getXOssDate(),
+              },
+              body: objectDataMapping[object]!,
+            )
+                .then((value) {
+              if (value.getCode() == Code.oK) {
+                uploadedImageCount++;
+              }
+              uploadImageListResponded = true;
+            });
+          }
+        }
+      } else {
+        print('nameListOfFile is empty');
+      }
+      uploadImageListRequested = true;
+      uploadImageListRequestTime = DateTime.now();
+    }
+    // check state of timeout
+    if (uploadImageListRequested && !uploadImageListResponded && DateTime.now().isAfter(uploadImageListRequestTime!.add(Duration(seconds: Config.httpDefaultTimeoutInSecond * totalImageCount)))) {
+      return -3;
+    }
+    // update progress
+    if (uploadImageListRequested && uploadImageListResponded && !uploadImageListSuccessfully) {
+      if (uploadedImageCount == totalImageCount) {
+        uploadImageListSuccessfully = true;
+      }
+    }
+    // check state of failure
+    // if (uploadImageListResponded && !uploadImageListSuccessfully) {
+    //   return -3;
+    // }
+    return 0; // middle state; requested --state-- responded
+  }
+
+  int fetchHeaderProgress() {
+    var caller = 'fetchHeaderProgress';
+    if (fetchHeaderResponded && fetchHeaderSuccessfully) {
+      // print('fetchHeaderProgress finished');
+      return 0;
+    }
+    // check state of request
+    if (!fetchHeaderRequested && insertAdvertisementSuccessfully) {
+      figureOutNameListOfFile();
+      fetchHeaderListOfObjectFileListOfAdvertisement(
+        from: from,
+        caller: caller,
+        advertisementId: advertisementId!,
+        nameListOfFile: nameListOfFile,
+      );
+      fetchHeaderRequested = true;
+      fetchHeaderRequestTime = DateTime.now();
+    }
+    // check state of timeout
+    if (fetchHeaderRequested && !fetchHeaderResponded && DateTime.now().isAfter(fetchHeaderRequestTime!.add(Config.httpDefaultTimeout))) {
+      return -2;
+    }
+    // check state of failure
+    if (fetchHeaderResponded && !fetchHeaderSuccessfully) {
+      return -2;
+    }
+    return 0; // middle state; requested --state-- responded
+  }
+
+  int upgradeImageFieldProgress() {
+    var caller = 'upgradeImageFieldProgress';
+    if (upgradeImageFieldResponded && upgradeImageFieldSuccessfully) {
+      print('upgradeImageFieldProgress finished');
+      return 0;
+    }
+    // check state of request
+    if (!upgradeImageFieldRequested && uploadImageListSuccessfully) {
+      var image = () {
+        String output = '';
+        try {
+          Map<String, String> temp = {};
+          for (var e in nameListOfFile) {
+            var key = ((e.split('.')[0]).split('/'))[1];
+            temp[key] = commonOSSPath + e;
+          }
+          output = jsonEncode(temp);
+          print('output: $output');
+        } catch (e) {
+          print('upgradeImageFieldProgress failure, err: $e');
+        }
+        return output;
+      }();
+      updateRecordOfAdvertisement(
+        from: from,
+        caller: caller,
+        id: advertisementId!,
+        image: image,
+        name: name,
+        title: title,
+        stock: stock,
+        status: 1,
+        productId: productId,
+        sellingPrice: sellingPrice,
+        sellingPoints: sellingPoints,
+        placeOfOrigin: placeOfOrigin,
+      );
+      upgradeImageFieldRequested = true;
+      upgradeImageFieldRequestTime = DateTime.now();
+    }
+    // check state of timeout
+    if (upgradeImageFieldRequested && !upgradeImageFieldResponded && DateTime.now().isAfter(upgradeImageFieldRequestTime!.add(Config.httpDefaultTimeout))) {
+      return -4;
+    }
+    // check state of failure
+    if (upgradeImageFieldResponded && !upgradeImageFieldSuccessfully) {
+      return -4;
+    }
+    return 0; // middle state; requested --state-- responded
+  }
+
+  void progress() {
+    var caller = 'progress';
+    if (upgradeImageFieldSuccessfully) {
+      result = 0; // success
+      Navigator.pop(context);
+      return;
+    }
+    result = insertAdvertisementProcess(); // step 1
+    if (result != Code.oK) {
+      Navigator.pop(context);
+      return;
+    }
+    result = fetchHeaderProgress(); // step 2
+    if (result != Code.oK) {
+      Navigator.pop(context);
+      return;
+    }
+    result = uploadImageListProgress(); // step 3
+    if (result != Code.oK) {
+      Navigator.pop(context);
+      return;
+    }
+    result = upgradeImageFieldProgress(); // step 4
+    if (result != Code.oK) {
+      Navigator.pop(context);
+      return;
+    }
+    // if (uploadThumbnailCompleted) {
+    //   print('upload thumbnail success');
+    //   Runtime.setPeriod(Config.periodOfScreenNormal);
+    //   Runtime.setPeriodic(null);
+    //   Navigator.pop(context);
+    //   finished = true;
+    //   return;
+    // }
+
+    // if (!uploadImageRequested && insertAdvertisementRequestCompleted && fetchHeaderRequestCompleted) {
+    //   if (imageMap[thumbnailKey] != null) {
+    //     API
+    //         .put(
+    //       scheme: 'https://',
+    //       host: ossHost,
+    //       port: '',
+    //       endpoint: nameListOfFile[0],
+    //       timeout: Duration(minutes: 1),
+    //       header: {
+    //         "Authorization": requestHeader[nameListOfFile[0]]!.getAuthorization(),
+    //         "Content-Type": requestHeader[nameListOfFile[0]]!.getContentType(),
+    //         "Date": requestHeader[nameListOfFile[0]]!.getDate(),
+    //         "x-oss-date": requestHeader[nameListOfFile[0]]!.getXOssDate(),
+    //       },
+    //       body: imageMap[thumbnailKey]!.data!,
+    //     )
+    //         .then((value) {
+    //       if (value.getCode() == Code.oK) {
+    //         uploadThumbnailCompleted = true;
+    //       }
+    //     });
+    //     uploadImageRequested = true;
+    //   }
+    // }
   }
 
   void observe(PacketClient packet) {
+    var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
-    var caller = 'observe';
+
     try {
       Log.debug(
         major: major,
@@ -159,10 +474,12 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
         caller: caller,
         message: 'responded',
       );
-      if (major == Major.admin && minor == Admin.insertRecordOfAdvertisementRsp) {
+      if (major == Major.oss && minor == OSS.fetchHeaderListOfObjectFileListOfAdvertisementRsp) {
+        fetchHeaderListOfObjectFileListOfAdvertisementHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.admin && minor == Admin.insertRecordOfAdvertisementRsp) {
         insertRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
-      } else if (major == Major.admin && minor == Admin.fetchRecordsOfGoodRsp) {
-        fetchRecordsOfGoodHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.admin && minor == Admin.updateRecordOfAdvertisementRsp) {
+        updateRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
           major: major,
@@ -185,302 +502,35 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
     } finally {}
   }
 
-  Runtime.setObserve(observe);
+  void setup() {
+    Runtime.setObserve(observe);
+    Runtime.setPeriod(Config.periodOfScreenInitialisation);
+    Runtime.setPeriodic(progress);
+  }
+
+  setup();
 
   return await showDialog(
     barrierDismissible: false,
     context: context,
     builder: (context) {
-      var caller = 'builder';
       return AlertDialog(
-        title: Text(Translator.translate(Language.newAdvertisement)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, null),
-            child: Text(Translator.translate(Language.cancel)),
-          ),
-          TextButton(
-            onPressed: () async {
-              if (productIdController.text.isEmpty) {
-                showMessageDialog(
-                  context,
-                  Translator.translate(Language.titleOfNotification),
-                  Translator.translate(Language.productIdIsEmpty),
-                );
-                return;
-              }
-              if (nameController.text.isEmpty) {
-                showMessageDialog(
-                  context,
-                  Translator.translate(Language.titleOfNotification),
-                  Translator.translate(Language.nameOfAdvertisementIsEmpty),
-                );
-                return;
-              }
-              if (stockController.text.isEmpty) {
-                showMessageDialog(
-                  context,
-                  Translator.translate(Language.titleOfNotification),
-                  Translator.translate(Language.incorrectStockValueInController),
-                );
-                return;
-              }
-
-              if (sellingPriceController.text.isEmpty) {
-                showMessageDialog(
-                  context,
-                  Translator.translate(Language.titleOfNotification),
-                  Translator.translate(Language.incorrectSellingPriceInController),
-                );
-                return;
-              }
-
-              insertRecordOfAdvertisement(
-                from: from,
-                caller: '$caller.insertRecordOfAdvertisement',
-                name: nameController.text,
-                title: titleController.text,
-                sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
-                sellingPoints: sellingPoints,
-                image: imageController.text,
-                placeOfOrigin: placeOfOriginController.text,
-                stock: int.parse(stockController.text),
-                productId: int.parse(productIdController.text),
-              );
-            },
-            child: Text(Translator.translate(Language.confirm)),
-          ),
-          // Spacing.AddVerticalSpace(50),
-        ],
+        title: Text(Translator.translate(Language.fillSellingPoint)),
+        actions: [],
         content: StreamBuilder(
           stream: yeildData(),
           builder: (context, snap) {
             return SizedBox(
-              width: 450,
-              height: 435,
+              width: width,
+              height: height,
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: productIdController,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                          LengthLimitingTextInputFormatter(11),
-                        ],
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.idOfGood),
-                          labelStyle: const TextStyle(
-                            color: Colors.redAccent,
-                          ),
-                          suffixIcon: IconButton(
-                            tooltip: Translator.translate(Language.peekInfoFromProductId),
-                            icon: const Icon(Icons.search),
-                            onPressed: () {
-                              if (productIdController.text.isEmpty) {
-                                showMessageDialog(
-                                  context,
-                                  Translator.translate(Language.titleOfNotification),
-                                  Translator.translate(Language.productIdIsEmpty),
-                                );
-                                return;
-                              } else {
-                                fetchRecordsOfGood(
-                                  from: from,
-                                  caller: '$caller.fetchRecordsOfGood',
-                                  productIdList: [int.parse(productIdController.text)],
-                                );
-                                return;
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: nameController,
-                        decoration: InputDecoration(
-                          labelStyle: const TextStyle(
-                            color: Colors.redAccent,
-                          ),
-                          labelText: Translator.translate(Language.nameOfAdvertisement),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: titleController,
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.titleOfAdvertisement),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        readOnly: true,
-                        controller: sellingPointController,
-                        decoration: InputDecoration(
-                          labelText: sellingPoints.isEmpty ? Translator.translate(Language.pressRightButtonToAddSellingPoint) : "",
-                          suffixIcon: IconButton(
-                            tooltip: Translator.translate(Language.addSellingPointToAdvertisement),
-                            icon: const Icon(Icons.add_circle_outlined),
-                            onPressed: () {
-                              showFillSellingPointDialog(context).then((value) {
-                                if (value.isNotEmpty) {
-                                  sellingPoints.add(value);
-                                  curStage++;
-                                }
-                              });
-                            },
-                          ),
-                          prefixIcon: Wrap(
-                            children: () {
-                              List<Widget> widgetList = [];
-                              for (var element in sellingPoints) {
-                                widgetList.add(Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: InputChip(
-                                    label: Text(
-                                      element,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    onDeleted: () {
-                                      sellingPoints.remove(element);
-                                      curStage++;
-                                    },
-                                    backgroundColor: Colors.green,
-                                    // selectedColor: Colors.green,
-                                    elevation: 6.0,
-                                    shadowColor: Colors.grey[60],
-                                    padding: const EdgeInsets.all(8.0),
-                                  ),
-                                ));
-                              }
-                              return widgetList;
-                            }(),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: sellingPriceController,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(Config.doubleRegExp),
-                          LengthLimitingTextInputFormatter(Config.lengthOfSellingPrice),
-                        ],
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.sellingPriceOfAdvertisement),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: stockController,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(Config.lengthOfBuyingPrice),
-                        ],
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.stockOfAdvertisement),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: placeOfOriginController,
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.placeOfOriginOfAdvertisement),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        readOnly: true,
-                        controller: imageController,
-                        decoration: InputDecoration(
-                          labelText: thumbnail == null ? Translator.translate(Language.pressRightButtonToAddThumbnail) : '',
-                          suffixIcon: IconButton(
-                            tooltip: () {
-                              if (thumbnail == null) {
-                                return Translator.translate(Language.pressToAddThumbnail);
-                              } else {
-                                return Translator.translate(Language.pressToModifyThumbnail);
-                              }
-                            }(),
-                            icon: const Icon(Icons.add_circle_outlined),
-                            onPressed: () async {
-                              var mediaData = await ImagePickerWeb.getImageInfo;
-                              String mimeType = path.extension(mediaData!.fileName!).toLowerCase();
-                              print('mimeType: $mimeType');
-                              print('size: ${mediaData.data!.length}');
-
-                            },
-                          ),
-                          prefixIcon: Wrap(
-                            children: () {
-                              List<Widget> widgetList = [];
-                              if (thumbnail != null) {
-                                widgetList.add(Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: InputChip(
-                                    label: Text(
-                                      thumbnail!.name,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      print('path: ${thumbnail!.relativePath}');
-                                      print('size: ${thumbnail!.size}');
-                                    },
-                                    // onDeleted: () {
-                                    //   sellingPoints.remove(element);
-                                    //   curStage++;
-                                    // },
-                                    backgroundColor: Colors.green,
-                                    // selectedColor: Colors.green,
-                                    elevation: 6.0,
-                                    shadowColor: Colors.grey[60],
-                                    padding: const EdgeInsets.all(8.0),
-                                  ),
-                                ));
-                              }
-                              return widgetList;
-                            }(),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: imageController,
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.imageOfAdvertisement),
-                        ),
-                      ),
+                    Text(information),
+                    const SizedBox(
+                      width: 100,
+                      height: 200,
+                      child: CircularProgressIndicator(),
                     ),
                     Spacing.addVerticalSpace(10),
                   ],
@@ -495,6 +545,9 @@ Future<void> showInsertAdvertisementDialog(BuildContext context) async {
     (value) {
       closed = true;
       Runtime.setObserve(oriObserve);
+      Runtime.setPeriod(Config.periodOfScreenNormal);
+      Runtime.setPeriodic(null);
+      return result;
     },
   );
 }

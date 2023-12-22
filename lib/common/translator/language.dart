@@ -11,6 +11,8 @@ class Language {
   static String menuList = 'Menu List';
   static String operation = 'Operation';
   static String cancel = 'Cancel';
+  static String next = 'Next';
+  static String back = 'Back';
   static String confirm = 'Confirm';
   static String enable = 'Enable';
   static String disable = 'Disable';
@@ -199,6 +201,7 @@ class Language {
   static String imageOfAdvertisement = "the image of an advertisement";
   static String thumbnailOfAdvertisement = 'the thumbnail of an advertisement';
   static String newAdvertisement = "to new an advertisement";
+  static String editAdvertisement = "to edit an advertisement";
   static String modifyGood = "to modify the information of good";
   static String productIdIsEmpty = "the product id is empty";
   static String withoutProductInfoInResponse = "there is no product info in response";
@@ -234,4 +237,7 @@ class Language {
   static String pressToAddThumbnail = 'press to add thumbnail';
   static String pressToModifyThumbnail = 'press to modify thumbnail';
   static String pressRightButtonToAddThumbnail = 'press the right button to add thumbnail';
+  static String pressRightButtonToAddImage = 'press the right button to add image';
+  static String addImageForAdvertisement = 'add image for the advertisement';
+  static String titleOfInsertAdvertisementButton = 'title of insert advertisement button';
 }

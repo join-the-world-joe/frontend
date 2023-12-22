@@ -20,9 +20,10 @@ class RateLimiter {
   RateLimiter(this._major, this._minor, this._period);
 
   bool allow() {
-    // print('major: $_major minor:$_minor last: ${_last.toString()}');
+    print('major: $_major minor:$_minor last: ${_last.toString()} period: ${_period.toString()}');
     if (DateTime.now().isAfter(_last.add(Duration(milliseconds: _period)))) {
       _last = DateTime.now();
+      print('update last to ${_last.toString()}');
       return true;
     }
     return false;

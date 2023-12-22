@@ -174,12 +174,13 @@ void main() async {
     "Authorization": "",
     "Content-Type": "",
     "Date":"",
+    "x-oss-date":"",
   };
   var result = await API.put(
     scheme: 'https',
     host: 'advertisement-image.oss-cn-shenzhen.aliyuncs.com',
     port: '',
-    endpoint: '1.jpg', // name has to be the same as the name in sign operation
+    endpoint: '15/0.jpg', // name has to be the same as the name in sign operation
     timeout: Duration(seconds: 30),
     header: header,
     body: file.readAsBytesSync(),
