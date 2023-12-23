@@ -244,6 +244,8 @@ class Chinese {
     Language.addImageForAdvertisement : '增加广告图片',
     Language.titleOfInsertAdvertisementButton: "新增",
     Language.urlIllegal : '非法的URL',
+    Language.thumbnailOfAdvertisementNotProvided: '未指定缩略图',
+    Language.imageOfAdvertisementNotProvided: '未指定商品图片',
   };
 
   static String getName() {

@@ -8,7 +8,7 @@ import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
-import 'package:flutter_framework/dashboard/dialog/insert_advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/insert_advertisement_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -189,7 +189,23 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                 return;
               }
 
-              showInsertAdvertisementDialog(
+              if (!imageMap.containsKey(thumbnailKey)) {
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.thumbnailOfAdvertisementNotProvided),
+                );
+                return;
+              }
+              if (imageMap.length < 2) {
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.imageOfAdvertisementNotProvided),
+                );
+                return;
+              }
+              showInsertAdvertisementProgressDialog(
                 context,
                 name: nameController.text,
                 title: titleController.text,
@@ -458,7 +474,6 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                         readOnly: true,
                         controller: imageController,
                         decoration: InputDecoration(
-                          // labelText: Translator.translate(Language.imageOfAdvertisement),
                           labelText: imageList.isEmpty ? Translator.translate(Language.pressRightButtonToAddImage) : "",
                           suffixIcon: IconButton(
                             tooltip: Translator.translate(Language.addImageForAdvertisement),

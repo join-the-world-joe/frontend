@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/dashboard/dialog/update_advertisement_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/utils/convert.dart';
@@ -102,6 +103,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
   var productIdController = TextEditingController(text: advertisement.getProductId().toString());
   var sellingPointController = TextEditingController();
   Map<String, ImageItem> imageMap = {};
+  var thumbnailKey = 'thumbnail';
 
   try {
     Map<String, dynamic> image = jsonDecode(advertisement.getImage());
@@ -115,6 +117,10 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
         key: key,
       );
     });
+    if (imageMap.containsKey('0')) {
+      imageMap[thumbnailKey] = imageMap['0']!;
+      imageMap.remove('0');
+    }
   } catch (e) {
     print('showUpdateAdvertisementDialog failure, err: $e');
   }
@@ -226,21 +232,71 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
           ),
           TextButton(
             onPressed: () async {
+              if (productIdController.text.isEmpty) {
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.productIdIsEmpty),
+                );
+                return;
+              }
+              if (nameController.text.isEmpty) {
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.nameOfAdvertisementIsEmpty),
+                );
+                return;
+              }
+              if (stockController.text.isEmpty) {
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.incorrectStockValueInController),
+                );
+                return;
+              }
+
+              if (sellingPriceController.text.isEmpty) {
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.incorrectSellingPriceInController),
+                );
+                return;
+              }
+              if (!imageMap.containsKey(thumbnailKey)) {
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.thumbnailOfAdvertisementNotProvided),
+                );
+                return;
+              }
+              if (imageMap.length < 2) {
+                showMessageDialog(
+                  context,
+                  Translator.translate(Language.titleOfNotification),
+                  Translator.translate(Language.imageOfAdvertisementNotProvided),
+                );
+                return;
+              }
+              showUpdateAdvertisementProgressDialog(context);
               // print('advertisement.getId: ${advertisement.getId()}');
-              updateRecordOfAdvertisement(
-                from: from,
-                caller: '$caller.updateRecordOfAdvertisement',
-                id: advertisement.getId(),
-                image: imageController.text,
-                name: nameController.text,
-                stock: int.parse(stockController.text),
-                status: status,
-                title: titleController.text,
-                productId: int.parse(productIdController.text),
-                sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
-                placeOfOrigin: placeOfOriginController.text,
-                sellingPoints: sellingPoints,
-              );
+              // updateRecordOfAdvertisement(
+              //   from: from,
+              //   caller: '$caller.updateRecordOfAdvertisement',
+              //   id: advertisement.getId(),
+              //   image: imageController.text,
+              //   name: nameController.text,
+              //   stock: int.parse(stockController.text),
+              //   status: status,
+              //   title: titleController.text,
+              //   productId: int.parse(productIdController.text),
+              //   sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
+              //   placeOfOrigin: placeOfOriginController.text,
+              //   sellingPoints: sellingPoints,
+              // );
             },
             child: Text(Translator.translate(Language.confirm)),
           ),
@@ -427,7 +483,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                               if (mediaData != null) {
                                 //   imageMap[thumbnailKey] = mediaData;
                                 String extension = path.extension(mediaData.fileName!).toLowerCase();
-                                imageMap['0'] = ImageItem.construct(
+                                imageMap[thumbnailKey] = ImageItem.construct(
                                   native: true,
                                   data: mediaData.data!,
                                   objectFile: '${advertisement.getId()}/0$extension',
@@ -436,10 +492,10 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                                   key: '',
                                 );
 
-                                print('file name: ${mediaData.fileName!}');
-                                print('extension: $extension');
-                                print('size: ${mediaData.data!.length}');
-                                print('object file: ${imageMap['0']!.getObjectFile()}');
+                                print('thumbnail file name: ${mediaData.fileName!}');
+                                print('thumbnail extension: $extension');
+                                print('thumbnail size: ${mediaData.data!.length}');
+                                print('thumbnail object file: ${imageMap[thumbnailKey]!.getObjectFile()}');
                                 curStage++;
                               }
                             },
@@ -447,12 +503,12 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                           prefixIcon: Wrap(
                             children: () {
                               List<Widget> widgetList = [];
-                              if (imageMap['0'] != null) {
+                              if (imageMap[thumbnailKey] != null) {
                                 var title = '';
-                                if (!imageMap['0']!.getNative()) {
-                                  title = imageMap['0']!.getKey();
+                                if (!imageMap[thumbnailKey]!.getNative()) {
+                                  title = imageMap[thumbnailKey]!.getKey();
                                 } else {
-                                  title = imageMap['0']!.getNativeFileName();
+                                  title = imageMap[thumbnailKey]!.getNativeFileName();
                                 }
                                 widgetList.add(Padding(
                                   padding: const EdgeInsets.all(5.0),
@@ -464,11 +520,11 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                                       ),
                                     ),
                                     onPressed: () {
-                                      if (!imageMap['0']!.getNative()) {
-                                        showViewNetworkImageDialog(context, imageMap['0']!.getUrl());
+                                      if (!imageMap[thumbnailKey]!.getNative()) {
+                                        showViewNetworkImageDialog(context, imageMap[thumbnailKey]!.getUrl());
                                       } else {
                                         // native
-                                        showViewImageDialog(context, imageMap['0']!.getData());
+                                        showViewImageDialog(context, imageMap[thumbnailKey]!.getData());
                                       }
                                       // if (imageMap[thumbnailKey] != null) {
                                       //   showViewImageDialog(context, imageMap[thumbnailKey]!.data!);
@@ -496,9 +552,80 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                     SizedBox(
                       width: 350,
                       child: TextFormField(
+                        readOnly: true,
                         controller: imageController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.imageOfAdvertisement),
+                          labelText: '',
+                          suffixIcon: IconButton(
+                            tooltip: Translator.translate(Language.addImageForAdvertisement),
+                            icon: const Icon(Icons.add_circle_outlined),
+                            onPressed: () async {
+                              var mediaData = await ImagePickerWeb.getImageInfo;
+                              if (mediaData != null) {
+                                String extension = path.extension(mediaData.fileName!).toLowerCase();
+                                print('file name: ${mediaData.fileName!}');
+                                print('extension: $extension');
+                                print('size: ${mediaData.data!.length}');
+                                // imageMap[mediaData.fileName!] = mediaData;
+                                // imageList.add(mediaData.fileName!);
+                                imageMap[mediaData.fileName!] = ImageItem.construct(
+                                  native: true,
+                                  data: mediaData.data!,
+                                  objectFile: '${advertisement.getId()}/0$extension',
+                                  url: '',
+                                  nativeFileName: mediaData.fileName!,
+                                  key: '',
+                                );
+                                curStage++;
+                              }
+                            },
+                          ),
+                          prefixIcon: Wrap(
+                            runSpacing: 8,
+                            spacing: 8,
+                            children: () {
+                              List<Widget> widgetList = [];
+                              imageMap.forEach((key, value) {
+                                if (key.compareTo(thumbnailKey) == 0) {
+                                  return;
+                                }
+                                widgetList.add(Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: InputChip(
+                                    label: Text(
+                                      key,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      if (imageMap.containsKey(key)) {
+                                        if (imageMap[key]!.getNative()) {
+                                          showViewImageDialog(context, imageMap[key]!.getData());
+                                        } else {
+                                          showViewNetworkImageDialog(context, imageMap[key]!.getUrl());
+                                        }
+                                      }
+                                    },
+                                    onDeleted: () {
+                                      imageMap.remove(key);
+                                      if (imageMap.containsKey(key)) {
+                                        imageMap.remove(key);
+                                      }
+                                      curStage++;
+                                    },
+                                    backgroundColor: Colors.green,
+                                    // selectedColor: Colors.green,
+                                    elevation: 6.0,
+                                    shadowColor: Colors.grey[60],
+                                    padding: const EdgeInsets.all(8.0),
+                                  ),
+                                ));
+                              });
+
+                              return widgetList;
+                            }(),
+                          ),
                         ),
                       ),
                     ),

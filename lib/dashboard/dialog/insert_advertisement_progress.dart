@@ -41,7 +41,7 @@ result               <-------  backend
 four possible stage; requested, timeout(after interval), responded, failure(successfully)
  */
 
-Future<int> showInsertAdvertisementDialog(
+Future<int> showInsertAdvertisementProgressDialog(
   BuildContext context, {
   required String name,
   required String title,
@@ -89,10 +89,9 @@ Future<int> showInsertAdvertisementDialog(
 
   String defaultImage = '';
   String information = '';
-  double height = 400;
-  double width = 400;
+  double height = 100;
+  double width = 200;
   Map<String, Uint8List> objectDataMapping = {}; // key: object file name, value: native file name
-  bool finished = false;
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
@@ -424,40 +423,6 @@ Future<int> showInsertAdvertisementDialog(
       Navigator.pop(context);
       return;
     }
-    // if (uploadThumbnailCompleted) {
-    //   print('upload thumbnail success');
-    //   Runtime.setPeriod(Config.periodOfScreenNormal);
-    //   Runtime.setPeriodic(null);
-    //   Navigator.pop(context);
-    //   finished = true;
-    //   return;
-    // }
-
-    // if (!uploadImageRequested && insertAdvertisementRequestCompleted && fetchHeaderRequestCompleted) {
-    //   if (imageMap[thumbnailKey] != null) {
-    //     API
-    //         .put(
-    //       scheme: 'https://',
-    //       host: ossHost,
-    //       port: '',
-    //       endpoint: nameListOfFile[0],
-    //       timeout: Duration(minutes: 1),
-    //       header: {
-    //         "Authorization": requestHeader[nameListOfFile[0]]!.getAuthorization(),
-    //         "Content-Type": requestHeader[nameListOfFile[0]]!.getContentType(),
-    //         "Date": requestHeader[nameListOfFile[0]]!.getDate(),
-    //         "x-oss-date": requestHeader[nameListOfFile[0]]!.getXOssDate(),
-    //       },
-    //       body: imageMap[thumbnailKey]!.data!,
-    //     )
-    //         .then((value) {
-    //       if (value.getCode() == Code.oK) {
-    //         uploadThumbnailCompleted = true;
-    //       }
-    //     });
-    //     uploadImageRequested = true;
-    //   }
-    // }
   }
 
   void observe(PacketClient packet) {
@@ -528,9 +493,11 @@ Future<int> showInsertAdvertisementDialog(
                   children: [
                     Text(information),
                     const SizedBox(
-                      width: 100,
-                      height: 200,
-                      child: CircularProgressIndicator(),
+                      width: 50,
+                      height: 50,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
                     ),
                     Spacing.addVerticalSpace(10),
                   ],

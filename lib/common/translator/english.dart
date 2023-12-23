@@ -244,6 +244,8 @@ class English {
     Language.addImageForAdvertisement : 'Add Advertisement Image',
     Language.titleOfInsertAdvertisementButton : 'Insert Advertisement',
     Language.urlIllegal : 'URL is illegal',
+    Language.thumbnailOfAdvertisementNotProvided: 'Thumbnail Not Provided',
+    Language.imageOfAdvertisementNotProvided : 'Image Not Provided',
   };
 
   static String getName() {
