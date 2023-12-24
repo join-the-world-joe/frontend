@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/business/admin/insert_record_of_ad_of_deals.dart';
@@ -17,6 +19,8 @@ import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/dialog/approve_advertisement_of_ad_of_deals.dart';
 import 'package:flutter_framework/dashboard/dialog/reject_advertisement_of_ad_of_deals.dart';
 import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
+import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
 import 'package:flutter_framework/dashboard/model/ad_of_deals.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -28,6 +32,7 @@ import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/common/protocol/advertisement/fetch_version_of_ad_of_deals.dart';
+import 'package:flutter_framework/dashboard/local/image_item.dart';
 
 class Deals extends StatefulWidget {
   const Deals({Key? key}) : super(key: key);
@@ -511,6 +516,7 @@ class Source extends DataTableSource {
     // var statusOfAdvertisement = Translator.translate(Language.loading);
     Text status = Text(Translator.translate(Language.loading));
     List<String> sellingPoints = [];
+    Map<String, ImageItem> imageMap = {};
 
     var key = idList[index];
 
@@ -539,6 +545,21 @@ class Source extends DataTableSource {
                 ));
         sellingPoints = dataMap[key]!.getSellingPoints();
         sellingPrice = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
+        try {
+          Map<String, dynamic> image = jsonDecode(dataMap[key]!.getImage());
+          image.forEach((key, value) {
+            imageMap[key] = ImageItem.construct(
+              native: false,
+              data: Uint8List(0),
+              objectFile: '',
+              url: value,
+              nativeFileName: '',
+              dbKey: key,
+            );
+          });
+        } catch (e) {
+          print('showUpdateAdvertisementDialog failure, err: $e');
+        }
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
@@ -599,7 +620,8 @@ class Source extends DataTableSource {
             icon: const Icon(Icons.search),
             onPressed: () {
               // show thumbnail
-              print('view thumbnail');
+              // print('view thumbnail');
+              showViewNetworkImageDialog(buildContext, imageMap['0']!.getUrl());
             },
           ),
         ),
@@ -609,7 +631,16 @@ class Source extends DataTableSource {
             icon: const Icon(Icons.search),
             onPressed: () {
               // show image
-              print('view image');
+              // print('view image');
+              showViewNetworkImageGroupDialog(buildContext, () {
+                List<String> output = [];
+                imageMap.forEach((key, value) {
+                  if (key != '0') {
+                    output.add(value.getUrl());
+                  }
+                });
+                return output;
+              }());
             },
           ),
         ),

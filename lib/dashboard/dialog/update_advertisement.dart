@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/business/admin/fetch_records_of_advertisement.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/dashboard/dialog/update_advertisement_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
@@ -25,6 +26,7 @@ import '../config/config.dart';
 import 'package:flutter_framework/common/protocol/admin/update_record_of_advertisement.dart';
 import 'package:flutter_framework/common/business/admin/update_record_of_advertisement.dart';
 import 'package:path/path.dart' as path;
+import 'package:flutter_framework/dashboard/local/image_item.dart';
 
 /*
 use cases
@@ -36,55 +38,6 @@ optimization
 1. frontend provides the remove key list for backend
 2. frontend use the update interface to modify the specific record
  */
-
-class ImageItem {
-  bool _native = false;
-  String _nativeFileName = ''; // for native file
-  Uint8List _data = Uint8List(0); // for native file
-  String _objectFile = ''; // oss object file name
-  String _url = ''; // uploaded; oss url
-  String _key = ''; // key of image in database
-
-  bool getNative() {
-    return _native;
-  }
-
-  String getKey() {
-    return _key;
-  }
-
-  String getUrl() {
-    return _url;
-  }
-
-  String getObjectFile() {
-    return _objectFile;
-  }
-
-  Uint8List getData() {
-    return _data;
-  }
-
-  String getNativeFileName() {
-    return _nativeFileName;
-  }
-
-  ImageItem.construct({
-    required bool native,
-    required Uint8List data,
-    required String objectFile,
-    required String url,
-    required String nativeFileName,
-    required String key,
-  }) {
-    _key = key;
-    _native = native;
-    _data = data;
-    _objectFile = objectFile;
-    _url = url;
-    _nativeFileName = nativeFileName;
-  }
-}
 
 Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement advertisement) async {
   int status = advertisement.getStatus();
@@ -102,27 +55,49 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
   var stockController = TextEditingController(text: advertisement.getStock().toString());
   var productIdController = TextEditingController(text: advertisement.getProductId().toString());
   var sellingPointController = TextEditingController();
-  Map<String, ImageItem> imageMap = {};
+  Map<String, ImageItem> imageMap = {}; // key: key of advertisement in database or native file name
+  Map<String, ImageItem> oriImageMap = {}; // key: key of advertisement in database
   var thumbnailKey = 'thumbnail';
+  var commonPath = '';
 
   try {
+    String extension = '';
+    var oriObjectFileName = '';
     Map<String, dynamic> image = jsonDecode(advertisement.getImage());
     image.forEach((key, value) {
+      extension = path.extension(value).toLowerCase();
+      oriObjectFileName = '${advertisement.getId()}/$key$extension';
       imageMap[key] = ImageItem.construct(
         native: false,
         data: Uint8List(0),
-        objectFile: '',
+        objectFile: oriObjectFileName,
         url: value,
         nativeFileName: '',
-        key: key,
+        dbKey: key,
       );
+      oriImageMap[key] = imageMap[key]!;
     });
     if (imageMap.containsKey('0')) {
+      extension = path.extension(imageMap['0']!.getUrl()).toLowerCase();
+      commonPath = imageMap['0']!.getUrl().split('${advertisement.getId()}/0$extension')[0];
       imageMap[thumbnailKey] = imageMap['0']!;
       imageMap.remove('0');
     }
   } catch (e) {
     print('showUpdateAdvertisementDialog failure, err: $e');
+  } finally {
+    // print('Original Image map: ');
+    // oriImageMap.forEach(
+    //   (key, value) {
+    //     print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+    //   },
+    // );
+    // print('Image map: ');
+    // imageMap.forEach(
+    //   (key, value) {
+    //     print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+    //   },
+    // );
   }
 
   Stream<int>? yeildData() async* {
@@ -134,48 +109,6 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
         yield lastStage;
       }
     }
-  }
-
-  void updateRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'updateRecordOfAdvertisementHandler';
-    try {
-      UpdateRecordOfAdvertisementRsp rsp = UpdateRecordOfAdvertisementRsp.fromJson(body);
-      Log.debug(
-        major: major,
-        minor: minor,
-        from: from,
-        caller: caller,
-        message: '${rsp.getCode()}',
-      );
-      if (rsp.getCode() == Code.oK) {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.updateRecordSuccessfully),
-        ).then(
-          (value) {
-            Navigator.pop(context, true);
-          },
-        );
-        return;
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
-        return;
-      }
-    } catch (e) {
-      Log.debug(
-        major: major,
-        minor: minor,
-        from: from,
-        caller: caller,
-        message: 'failure, err: $e',
-      );
-      return;
-    } finally {}
   }
 
   void observe(PacketClient packet) {
@@ -192,17 +125,15 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
         caller: caller,
         message: '',
       );
-      if (major == Major.admin && minor == Admin.updateRecordOfAdvertisementRsp) {
-        updateRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
-      } else {
-        Log.debug(
-          major: major,
-          minor: minor,
-          from: from,
-          caller: caller,
-          message: 'not matched',
-        );
-      }
+
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'not matched',
+      );
+
       return;
     } catch (e) {
       Log.debug(
@@ -281,22 +212,60 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                 );
                 return;
               }
-              showUpdateAdvertisementProgressDialog(context);
-              // print('advertisement.getId: ${advertisement.getId()}');
-              // updateRecordOfAdvertisement(
-              //   from: from,
-              //   caller: '$caller.updateRecordOfAdvertisement',
-              //   id: advertisement.getId(),
-              //   image: imageController.text,
-              //   name: nameController.text,
-              //   stock: int.parse(stockController.text),
-              //   status: status,
-              //   title: titleController.text,
-              //   productId: int.parse(productIdController.text),
-              //   sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
-              //   placeOfOrigin: placeOfOriginController.text,
-              //   sellingPoints: sellingPoints,
-              // );
+
+              // imageMap['0'] = imageMap[thumbnailKey]!;
+              // imageMap.remove(thumbnailKey);
+
+              var tempImageMap = () {
+                Map<String, ImageItem> output = {};
+                imageMap.forEach(
+                  (key, value) {
+                    output[key] = value;
+                  },
+                );
+                output['0'] = output[thumbnailKey]!;
+                output.remove(thumbnailKey);
+                return output;
+              }();
+
+              showUpdateAdvertisementProgressDialog(
+                context,
+                advertisementId: advertisement.getId(),
+                name: nameController.text,
+                stock: int.parse(stockController.text),
+                status: status,
+                productId: advertisement.getProductId(),
+                title: titleController.text,
+                sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
+                sellingPoints: sellingPoints,
+                thumbnailKey: thumbnailKey,
+                image: advertisement.getImage(),
+                imageMap: tempImageMap,
+                placeOfOrigin: placeOfOriginController.text,
+                oriImageMap: oriImageMap,
+                commonPath: commonPath,
+              ).then(
+                (value) {
+                  if (value == Code.oK) {
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      Translator.translate(Language.insertRecordSuccessfully),
+                    ).then(
+                      (value) {
+                        Navigator.pop(context, true);
+                      },
+                    );
+                  } else {
+                    // error occurs
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      '${Translator.translate(Language.failureWithErrorCode)}  $value',
+                    );
+                  }
+                },
+              );
             },
             child: Text(Translator.translate(Language.confirm)),
           ),
@@ -489,13 +458,13 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                                   objectFile: '${advertisement.getId()}/0$extension',
                                   url: '',
                                   nativeFileName: mediaData.fileName!,
-                                  key: '',
+                                  dbKey: '0',
                                 );
 
-                                print('thumbnail file name: ${mediaData.fileName!}');
-                                print('thumbnail extension: $extension');
-                                print('thumbnail size: ${mediaData.data!.length}');
-                                print('thumbnail object file: ${imageMap[thumbnailKey]!.getObjectFile()}');
+                                // print('thumbnail file name: ${mediaData.fileName!}');
+                                // print('thumbnail extension: $extension');
+                                // print('thumbnail size: ${mediaData.data!.length}');
+                                // print('thumbnail object file: ${imageMap[thumbnailKey]!.getObjectFile()}');
                                 curStage++;
                               }
                             },
@@ -506,7 +475,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                               if (imageMap[thumbnailKey] != null) {
                                 var title = '';
                                 if (!imageMap[thumbnailKey]!.getNative()) {
-                                  title = imageMap[thumbnailKey]!.getKey();
+                                  title = imageMap[thumbnailKey]!.getDBKey();
                                 } else {
                                   title = imageMap[thumbnailKey]!.getNativeFileName();
                                 }
@@ -562,19 +531,23 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                             onPressed: () async {
                               var mediaData = await ImagePickerWeb.getImageInfo;
                               if (mediaData != null) {
+                                var timestamp = (DateTime.now().millisecondsSinceEpoch) ~/ 1000;
                                 String extension = path.extension(mediaData.fileName!).toLowerCase();
-                                print('file name: ${mediaData.fileName!}');
-                                print('extension: $extension');
-                                print('size: ${mediaData.data!.length}');
+                                var objectFileName = '${advertisement.getId()}/$timestamp$extension';
+                                // print('key: $timestamp');
+                                // print('file name: ${mediaData.fileName!}');
+                                // print('object file name: $objectFileName');
+                                // print('extension: $extension');
+                                // print('size: ${mediaData.data!.length}');
                                 // imageMap[mediaData.fileName!] = mediaData;
                                 // imageList.add(mediaData.fileName!);
                                 imageMap[mediaData.fileName!] = ImageItem.construct(
                                   native: true,
                                   data: mediaData.data!,
-                                  objectFile: '${advertisement.getId()}/0$extension',
+                                  objectFile: objectFileName,
                                   url: '',
                                   nativeFileName: mediaData.fileName!,
-                                  key: '',
+                                  dbKey: '$timestamp',
                                 );
                                 curStage++;
                               }
@@ -622,7 +595,6 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
                                   ),
                                 ));
                               });
-
                               return widgetList;
                             }(),
                           ),

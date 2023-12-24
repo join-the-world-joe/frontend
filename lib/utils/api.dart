@@ -156,7 +156,10 @@ class API {
         );
       }
     }
-    print('rsp: ${rsp.body}');
+
+    if (rsp.body.isNotEmpty) {
+      print('rsp: ${rsp.body}');
+    }
     if (rsp.statusCode == HttpStatus.ok) {
       return Result.construct(code: Code.oK, body: rsp.body);
     }
@@ -165,26 +168,4 @@ class API {
       body: '',
     );
   }
-}
-
-void main() async {
-
-  File file = File("D:\\Projects\\github\\mini_program\\asset\\image\\1.jpg");
-  Map<String, String> header = {
-    "Authorization": "",
-    "Content-Type": "",
-    "Date":"",
-    "x-oss-date":"",
-  };
-  var result = await API.put(
-    scheme: 'https',
-    host: 'advertisement-image.oss-cn-shenzhen.aliyuncs.com',
-    port: '',
-    endpoint: '15/0.jpg', // name has to be the same as the name in sign operation
-    timeout: Duration(seconds: 30),
-    header: header,
-    body: file.readAsBytesSync(),
-  );
-
-  print('code: ${result.getCode()}');
 }

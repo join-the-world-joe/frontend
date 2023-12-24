@@ -218,6 +218,7 @@ class English {
     Language.modifyAdvertisement: "Modify Advertisement",
     Language.noRecordOfGoodInDatabase: "No Good Records",
     Language.noRecordsMatchedTheSearchCondition: "No Matched Records",
+    Language.noRecordOfAdvertisementInDatabase : 'No Advertisement Records',
 
     // Good
     Language.productNameNotProvided: "Product Name Not Provided",

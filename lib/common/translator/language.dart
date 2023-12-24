@@ -215,6 +215,7 @@ class Language {
   static String modifyAdvertisement = "to modify the information of advertisement";
   static String noRecordOfGoodInDatabase = "there is no record of good in database";
   static String noRecordsMatchedTheSearchCondition = "no records matched the search conditions";
+  static String noRecordOfAdvertisementInDatabase = "there is no record of advertisement in database";
 
   // Good
   static String nameOfProductNotProvided = "the name of product not provided";

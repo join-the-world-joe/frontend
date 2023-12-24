@@ -150,7 +150,7 @@ class _State extends State<Advertisement> {
             showMessageDialog(
               context,
               Translator.translate(Language.titleOfNotification),
-              Translator.translate(Language.noRecordOfGoodInDatabase),
+              Translator.translate(Language.noRecordOfAdvertisementInDatabase),
             );
             return;
           } else if (rsp.getBehavior() == 2) {
@@ -549,7 +549,7 @@ class Source extends DataTableSource {
             datetimeMap[idList[i]] = DateTime.now();
           }
         }
-        print("requestIdList: $requestIdList");
+        // print("requestIdList: $requestIdList");
         fetchRecordsOfAdvertisement(
           from: Advertisement.content,
           caller: '$caller.fetchRecordsOfAdvertisement',
@@ -590,11 +590,11 @@ class Source extends DataTableSource {
             icon: const Icon(Icons.search),
             onPressed: () {
               // show thumbnail
-              print('view thumbnail');
+              // print('view thumbnail');
               var ret = Uri.parse(thumbnailUrl).isAbsolute;
               if (!ret) {
                 showWarningDialog(buildContext, Translator.translate(Language.urlIllegal));
-                print('url: $thumbnailUrl, image: $image');
+                // print('url: $thumbnailUrl, image: $image');
                 return;
               }
               showViewNetworkImageDialog(buildContext, thumbnailUrl);
@@ -607,7 +607,7 @@ class Source extends DataTableSource {
             icon: const Icon(Icons.search),
             onPressed: () {
               // show image
-              print('view image');
+              // print('view image');
               showViewNetworkImageGroupDialog(buildContext, imageUrlList);
             },
           ),

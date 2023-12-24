@@ -9,6 +9,7 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/protocol/admin/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/common/protocol/admin/update_record_of_advertisement.dart';
+import 'package:flutter_framework/common/protocol/oss/remove_list_of_object_file.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
@@ -25,6 +26,8 @@ import 'package:image_picker_web/image_picker_web.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/common/protocol/oss/fetch_header_list_of_object_file_list_of_advertisement.dart';
 import 'package:path/path.dart' as path;
+import 'package:flutter_framework/dashboard/local/image_item.dart';
+import 'package:flutter_framework/common/business/oss/remove_list_of_object_file.dart';
 
 /*
 work flow
@@ -34,38 +37,40 @@ upload images        ------->  oss server
 http status code     <-------  oss server
 upgrade image field  ------->  backend
 result               <-------  backend
+remove object file   ------->  backend
+result               <-------  backend
 verify oss objects   ------->  backend
 result               <-------  backend
 four possible stage; requested, timeout(after interval), responded, failure(successfully)
  */
 
-/*
-required String name,
-      required String title,
-      required int sellingPrice,
-      required List<String> sellingPoints,
-      required String placeOfOrigin,
-      required int stock,
-      required int productId,
-      required Map<String, MediaInfo> imageMap,
-      required List<String> imageList,
-      required String thumbnailKey,
- */
-Future<int> showUpdateAdvertisementProgressDialog(BuildContext context) async {
+Future<int> showUpdateAdvertisementProgressDialog(
+  BuildContext context, {
+  required int advertisementId,
+  required String name,
+  required String title,
+  required int sellingPrice,
+  required int status,
+  required List<String> sellingPoints,
+  required String placeOfOrigin,
+  required int stock,
+  required int productId,
+  required Map<String, ImageItem> imageMap,
+  required Map<String, ImageItem> oriImageMap,
+  required String thumbnailKey,
+  required String image,
+  required String commonPath,
+}) async {
   var result = Code.internalError;
   bool closed = false;
   int curStage = 0;
   var ossHost = '';
-  var commonOSSPath = '';
-  var from = 'showInsertAdvertisementDialog';
-  List<String> nameListOfFile = [];
+  var from = 'showUpdateAdvertisementProgressDialog';
+  List<String> nameListOfFile = []; // object file to be uploaded
   var oriObserve = Runtime.getObserve();
   Map<String, ObjectFileRequestHeader> requestHeader = {}; // key: object file name
-  // insert advertisement
-  bool insertAdvertisementRequested = false;
-  bool insertAdvertisementResponded = false;
-  DateTime? insertAdvertisementRequestTime;
-  bool insertAdvertisementSuccessfully = false;
+  List<String> objectFileTobeRemoved = [];
+
   // fetch header
   bool fetchHeaderRequested = false;
   bool fetchHeaderResponded = false;
@@ -78,23 +83,23 @@ Future<int> showUpdateAdvertisementProgressDialog(BuildContext context) async {
   bool uploadImageListResponded = false;
   DateTime? uploadImageListRequestTime;
   bool uploadImageListSuccessfully = false;
-  // upgrade image field
-  bool upgradeImageFieldRequested = false;
-  bool upgradeImageFieldResponded = false;
-  DateTime? upgradeImageFieldRequestTime;
-  bool upgradeImageFieldSuccessfully = false;
+  // upgrade fields field
+  bool upgradeFieldsOfAdvertisementRequested = false;
+  bool upgradeFieldsOfAdvertisementResponded = false;
+  DateTime? upgradeFieldsOfAdvertisementRequestTime;
+  bool upgradeFieldsOfAdvertisementSuccessfully = false;
+  // remove list of object file
+  bool removeListOfObjectFileRequested = false;
 
-  String defaultImage = '';
   String information = '';
   double height = 100;
   double width = 200;
-  Map<String, Uint8List> objectDataMapping = {}; // key: object file name, value: native file name
+  Map<String, Uint8List> objectDataMapping = {}; // key: object file name, value: native file data
 
   Stream<int>? yeildData() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      // print('showFillSellingPointDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -118,14 +123,14 @@ Future<int> showUpdateAdvertisementProgressDialog(BuildContext context) async {
           requestHeader[key] = value;
         });
         ossHost = rsp.getHost();
-        print('ossHost: $ossHost');
-        requestHeader.forEach((key, value) {
-          print('file: $key, value: ${value.toString()}');
-          if (objectDataMapping.containsKey(key)) {
-            print('size: ${objectDataMapping[key]!.length}');
-          }
-        });
-        commonOSSPath = rsp.getCommonPath();
+        // print('ossHost: $ossHost');
+        // requestHeader.forEach((key, value) {
+        //   print('file: $key, value: ${value.toString()}');
+        //   if (objectDataMapping.containsKey(key)) {
+        //     print('size: ${objectDataMapping[key]!.length}');
+        //   }
+        // });
+        commonPath = rsp.getCommonPath();
         fetchHeaderSuccessfully = true;
       } else {
         // error occurs
@@ -156,7 +161,7 @@ Future<int> showUpdateAdvertisementProgressDialog(BuildContext context) async {
         message: 'code: ${rsp.getCode()}',
       );
       if (rsp.getCode() == Code.oK) {
-        upgradeImageFieldSuccessfully = true;
+        upgradeFieldsOfAdvertisementSuccessfully = true;
         return;
       } else {
         // error occurs
@@ -172,25 +177,112 @@ Future<int> showUpdateAdvertisementProgressDialog(BuildContext context) async {
       );
       return;
     } finally {
-      upgradeImageFieldResponded = true;
+      upgradeFieldsOfAdvertisementResponded = true;
     }
   }
 
+  void removeListOfObjectFileHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'removeListOfObjectFileHandler';
+    try {
+      RemoveListOfObjectFileRsp rsp = RemoveListOfObjectFileRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (rsp.getCode() == Code.oK) {
+        return;
+      } else {
+        // error occurs
+        return;
+      }
+    } catch (e) {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
+      return;
+    } finally {}
+  }
+
   void figureOutNameListOfFile() {
-    // String extension = path.extension(imageMap[thumbnailKey]!.fileName!).toLowerCase();
-    // nameListOfFile.add('$advertisementId/0$extension');
-    // objectDataMapping['$advertisementId/0$extension'] = imageMap[thumbnailKey]!.data!;
-    // for (var index = 0; index < imageList.length; index++) {
-    //   extension = path.extension(imageMap[imageList[index]]!.fileName!).toLowerCase();
-    //   nameListOfFile.add('$advertisementId/${index + 1}$extension');
-    //   objectDataMapping['$advertisementId/${index + 1}$extension'] = imageMap[imageList[index]]!.data!;
-    // }
-    // print('nameList: $nameListOfFile');
+    try {
+      imageMap.forEach(
+        (key, value) {
+          if (imageMap[key]!.getNative()) {
+            // to be uploaded condition
+            nameListOfFile.add(imageMap[key]!.getObjectFile());
+            objectDataMapping[imageMap[key]!.getObjectFile()] = value.getData();
+
+            // to be removed condition
+            if (oriImageMap.containsKey(key)) {
+              if (oriImageMap[key]!.getObjectFile().compareTo(imageMap[key]!.getObjectFile()) != 0) {
+                objectFileTobeRemoved.add(oriImageMap[key]!.getObjectFile());
+              }
+            }
+          }
+        },
+      );
+      oriImageMap.forEach(
+        (key, value) {
+          if (!imageMap.containsKey(key)) {
+            // to be removed condition
+            objectFileTobeRemoved.add(oriImageMap[key]!.getObjectFile());
+          }
+        },
+      );
+      totalImageCount = nameListOfFile.length;
+    } catch (e) {
+      print('$from failure: $e');
+    } finally {
+      // thumbnail
+      print('$objectFileTobeRemoved to be removed');
+      print('$nameListOfFile to be uploaded');
+      objectDataMapping.forEach((key, value) {
+        print("object file: $key, length: ${value.length}");
+      });
+
+      if (nameListOfFile.isEmpty && objectFileTobeRemoved.isEmpty) {
+        uploadImageListSuccessfully = true;
+        uploadImageListResponded = true;
+      }
+    }
+  }
+
+  void figureOutProgress() {
+    if (nameListOfFile.isEmpty) {
+      // skip fetch header and upload image progress
+      fetchHeaderResponded = true;
+      fetchHeaderSuccessfully = true;
+      uploadImageListResponded = true;
+      uploadImageListSuccessfully = true;
+    }
+    if (objectFileTobeRemoved.isEmpty) {
+      // skip remove object file progress
+      removeListOfObjectFileRequested = true;
+    }
+  }
+
+  void removeListOfObjectFileProgress() {
+    var caller = 'removeListOfObjectFile';
+    if (!removeListOfObjectFileRequested) {
+      removeListOfObjectFile(
+        from: from,
+        caller: caller,
+        listOfObjectFile: objectFileTobeRemoved,
+      );
+    }
+    removeListOfObjectFileRequested = true;
   }
 
   int uploadImageListProgress() {
     var caller = 'uploadImageListProgress';
-    if (uploadImageListResponded && uploadImageListSuccessfully) {
+    if (uploadImageListSuccessfully) {
       // print('uploadImageListProgress finished');
       return 0;
     }
@@ -198,9 +290,9 @@ Future<int> showUpdateAdvertisementProgressDialog(BuildContext context) async {
     if (!uploadImageListRequested && fetchHeaderSuccessfully) {
       if (nameListOfFile.isNotEmpty) {
         for (var object in nameListOfFile) {
-          print('object: $object');
+          // print('object: $object');
           if (objectDataMapping.containsKey(object)) {
-            print('length: ${objectDataMapping[object]!.length}');
+            // print('length: ${objectDataMapping[object]!.length}');
             API
                 .put(
               scheme: 'https://',
@@ -232,7 +324,7 @@ Future<int> showUpdateAdvertisementProgressDialog(BuildContext context) async {
     }
     // check state of timeout
     if (uploadImageListRequested && !uploadImageListResponded && DateTime.now().isAfter(uploadImageListRequestTime!.add(Duration(seconds: Config.httpDefaultTimeoutInSecond * totalImageCount)))) {
-      return -3;
+      return -2;
     }
     // update progress
     if (uploadImageListRequested && uploadImageListResponded && !uploadImageListSuccessfully) {
@@ -242,20 +334,19 @@ Future<int> showUpdateAdvertisementProgressDialog(BuildContext context) async {
     }
     // check state of failure
     // if (uploadImageListResponded && !uploadImageListSuccessfully) {
-    //   return -3;
+    //   return -2;
     // }
     return 0; // middle state; requested --state-- responded
   }
 
   int fetchHeaderProgress() {
     var caller = 'fetchHeaderProgress';
-    if (fetchHeaderResponded && fetchHeaderSuccessfully) {
+    if (fetchHeaderSuccessfully) {
       // print('fetchHeaderProgress finished');
       return 0;
     }
     // check state of request
-    if (!fetchHeaderRequested && insertAdvertisementSuccessfully) {
-      figureOutNameListOfFile();
+    if (!fetchHeaderRequested) {
       fetchHeaderListOfObjectFileListOfAdvertisement(
         from: from,
         caller: caller,
@@ -267,88 +358,88 @@ Future<int> showUpdateAdvertisementProgressDialog(BuildContext context) async {
     }
     // check state of timeout
     if (fetchHeaderRequested && !fetchHeaderResponded && DateTime.now().isAfter(fetchHeaderRequestTime!.add(Config.httpDefaultTimeout))) {
-      return -2;
+      return -1;
     }
     // check state of failure
     if (fetchHeaderResponded && !fetchHeaderSuccessfully) {
-      return -2;
+      return -1;
     }
     return 0; // middle state; requested --state-- responded
   }
 
-  int upgradeImageFieldProgress() {
-    var caller = 'upgradeImageFieldProgress';
-    if (upgradeImageFieldResponded && upgradeImageFieldSuccessfully) {
-      print('upgradeImageFieldProgress finished');
+  int upgradeFieldsOfAdvertisementProgress() {
+    var caller = 'upgradeFieldsOfAdvertisementProgress';
+    if (upgradeFieldsOfAdvertisementSuccessfully) {
+      print('upgradeFieldsOfAdvertisementProgress finished');
       return 0;
     }
     // check state of request
-    if (!upgradeImageFieldRequested && uploadImageListSuccessfully) {
-      var image = () {
+    if (!upgradeFieldsOfAdvertisementRequested && uploadImageListSuccessfully) {
+      var imageOfAdvertisement = () {
         String output = '';
-        try {
-          Map<String, String> temp = {};
-          for (var e in nameListOfFile) {
-            var key = ((e.split('.')[0]).split('/'))[1];
-            temp[key] = commonOSSPath + e;
-          }
-          output = jsonEncode(temp);
-          print('output: $output');
-        } catch (e) {
-          print('upgradeImageFieldProgress failure, err: $e');
-        }
+        Map<String, String> temp = {};
+        imageMap.forEach(
+          (key, value) {
+            temp[value.getDBKey()] = commonPath + value.getObjectFile();
+          },
+        );
+        output = jsonEncode(temp);
         return output;
       }();
-      // updateRecordOfAdvertisement(
-      //   from: from,
-      //   caller: caller,
-      //   id: advertisementId!,
-      //   image: image,
-      //   name: name,
-      //   title: title,
-      //   stock: stock,
-      //   status: 1,
-      //   productId: productId,
-      //   sellingPrice: sellingPrice,
-      //   sellingPoints: sellingPoints,
-      //   placeOfOrigin: placeOfOrigin,
-      // );
-      upgradeImageFieldRequested = true;
-      upgradeImageFieldRequestTime = DateTime.now();
+      print('imageOfAdvertisement: $imageOfAdvertisement');
+      updateRecordOfAdvertisement(
+        from: from,
+        caller: caller,
+        id: advertisementId,
+        image: imageOfAdvertisement,
+        name: name,
+        title: title,
+        stock: stock,
+        status: status,
+        productId: productId,
+        sellingPrice: sellingPrice,
+        sellingPoints: sellingPoints,
+        placeOfOrigin: placeOfOrigin,
+      );
+      upgradeFieldsOfAdvertisementRequested = true;
+      upgradeFieldsOfAdvertisementRequestTime = DateTime.now();
     }
     // check state of timeout
-    if (upgradeImageFieldRequested && !upgradeImageFieldResponded && DateTime.now().isAfter(upgradeImageFieldRequestTime!.add(Config.httpDefaultTimeout))) {
-      return -4;
+    if (upgradeFieldsOfAdvertisementRequested && !upgradeFieldsOfAdvertisementResponded && DateTime.now().isAfter(upgradeFieldsOfAdvertisementRequestTime!.add(Config.httpDefaultTimeout))) {
+      return -3;
     }
     // check state of failure
-    if (upgradeImageFieldResponded && !upgradeImageFieldSuccessfully) {
-      return -4;
+    if (upgradeFieldsOfAdvertisementResponded && !upgradeFieldsOfAdvertisementSuccessfully) {
+      return -3;
     }
     return 0; // middle state; requested --state-- responded
   }
 
   void progress() {
     var caller = 'progress';
-    if (upgradeImageFieldSuccessfully) {
+    if (upgradeFieldsOfAdvertisementSuccessfully) {
       result = 0; // success
       Navigator.pop(context);
       return;
     }
-    result = fetchHeaderProgress(); // step 2
+
+    result = fetchHeaderProgress(); // step 1
     if (result != Code.oK) {
       Navigator.pop(context);
       return;
     }
-    result = uploadImageListProgress(); // step 3
+    result = uploadImageListProgress(); // step 2
     if (result != Code.oK) {
       Navigator.pop(context);
       return;
     }
-    result = upgradeImageFieldProgress(); // step 4
+    result = upgradeFieldsOfAdvertisementProgress(); // step 3
     if (result != Code.oK) {
       Navigator.pop(context);
       return;
     }
+
+    removeListOfObjectFileProgress(); // step 4
   }
 
   void observe(PacketClient packet) {
@@ -369,6 +460,8 @@ Future<int> showUpdateAdvertisementProgressDialog(BuildContext context) async {
         fetchHeaderListOfObjectFileListOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.updateRecordOfAdvertisementRsp) {
         updateRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.oss && minor == OSS.removeListOfObjectFileRsp) {
+        removeListOfObjectFileHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
           major: major,
@@ -392,9 +485,23 @@ Future<int> showUpdateAdvertisementProgressDialog(BuildContext context) async {
   }
 
   void setup() {
+    print('Original Image map: ');
+    oriImageMap.forEach(
+      (key, value) {
+        print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+      },
+    );
+    print('Image map: ');
+    imageMap.forEach(
+      (key, value) {
+        print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+      },
+    );
+    figureOutNameListOfFile();
+    figureOutProgress();
     Runtime.setObserve(observe);
-    // Runtime.setPeriod(Config.periodOfScreenInitialisation);
-    // Runtime.setPeriodic(progress);
+    Runtime.setPeriod(Config.periodOfScreenInitialisation);
+    Runtime.setPeriodic(progress);
   }
 
   setup();

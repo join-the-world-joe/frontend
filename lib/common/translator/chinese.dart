@@ -218,6 +218,7 @@ class Chinese {
     Language.modifyAdvertisement: "更新广告",
     Language.noRecordOfGoodInDatabase: "数据库没有任何商品记录",
     Language.noRecordsMatchedTheSearchCondition: "未找到匹配记录",
+    Language.noRecordOfAdvertisementInDatabase : '数据库没有任何广告记录',
 
     // Good
     Language.productNameNotProvided: "未提供商品名称",
