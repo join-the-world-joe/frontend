@@ -42,6 +42,18 @@ class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
     return _result;
   }
 
+  void skip() {
+    print('skip FetchHeaderListOfObjectFileListOfAdvertisementProgress');
+    _result = 0;
+    _requested = true;
+    _responded = true;
+    _finished = true;
+  }
+
+  void setNameListOfFile(List<String> nameListOfFile) {
+    _nameListOfFile = nameListOfFile;
+  }
+
   void respond(FetchHeaderListOfObjectFileListOfAdvertisementRsp? rsp) {
     _rsp = rsp;
     _responded = true;
@@ -65,7 +77,7 @@ class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
       _requested = true;
     }
     if (_requested) {
-      if (DateTime.now().isAfter(_requestTime.add(_defaultTimeout))) {
+      if ( !_responded && DateTime.now().isAfter(_requestTime.add(_defaultTimeout))) {
         _finished = true;
         return _result;
       }

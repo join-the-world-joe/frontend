@@ -8,7 +8,7 @@ import 'package:flutter_framework/utils/api.dart';
 three possible stage; requested, timeout, responded()
  */
 class UploadImageListProgress {
-  String from = 'InsertRecordOfAdvertisementProgress';
+  String from = 'UploadImageListProgress';
   int _result = -1;
   DateTime _requestTime = DateTime.now();
   bool _requested = false;
@@ -37,6 +37,16 @@ class UploadImageListProgress {
 
   int result() {
     return _result;
+  }
+
+  void skip() {
+    print('skip UploadImageListProgress');
+    _result = 0;
+    _requested = true;
+    _finished = true;
+    _imageCount = 0;
+    _failureCount = 0;
+    _totalImageCount = 0;
   }
 
   bool finished() {

@@ -9,7 +9,7 @@ import 'package:flutter_framework/dashboard/config/config.dart';
 three possible stage; requested, timeout, responded()
  */
 class UpgradeFieldsOfAdvertisementProgress {
-  String from = 'UpgradeImageFieldOfAdvertisementProgress';
+  String from = 'UpgradeFieldsOfAdvertisementProgress';
   int _result = Code.internalError;
   DateTime _requestTime = DateTime.now();
   bool _requested = false;
@@ -100,7 +100,7 @@ class UpgradeFieldsOfAdvertisementProgress {
       _requested = true;
     }
     if (_requested) {
-      if (DateTime.now().isAfter(_requestTime.add(_defaultTimeout))) {
+      if (!_responded && DateTime.now().isAfter(_requestTime.add(_defaultTimeout))) {
         _finished = true;
         return _result;
       }
