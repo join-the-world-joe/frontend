@@ -85,7 +85,6 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
-    var routingKey = '$major-$minor';
     var body = packet.getBody();
     var caller = 'observe';
 
