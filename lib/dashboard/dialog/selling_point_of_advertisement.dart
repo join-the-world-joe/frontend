@@ -20,7 +20,7 @@ Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, Strin
   var oriObserve = Runtime.getObserve();
   var sellingPointController = TextEditingController();
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -90,7 +90,7 @@ Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, Strin
           // Spacing.AddVerticalSpace(50),
         ],
         content: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
             return SizedBox(
               width: 450,

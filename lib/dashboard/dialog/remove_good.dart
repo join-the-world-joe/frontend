@@ -21,7 +21,7 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
   int curStage = 0;
   String from = 'showRemoveGoodDialog';
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -176,7 +176,7 @@ Future<bool> showRemoveGoodDialog(BuildContext context, Product product) async {
               ),
             );
           },
-          stream: yeildData(),
+          stream: stream(),
         ),
       );
     },

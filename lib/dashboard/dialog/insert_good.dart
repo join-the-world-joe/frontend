@@ -28,7 +28,7 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
   var vendorController = TextEditingController();
   var contactController = TextEditingController();
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -153,12 +153,6 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
                 );
                 return;
               }
-              // if (!Runtime.allow(
-              //   major: int.parse(Major.admin),
-              //   minor: int.parse(Admin.insertRecordOfGoodReq),
-              // )) {
-              //   return;
-              // }
               insertRecordOfGood(
                 from: from,
                 caller: '$caller.insertRecordOfGood',
@@ -173,7 +167,7 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
           // Spacing.AddVerticalSpace(50),
         ],
         content: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
             return SizedBox(
               width: 450,

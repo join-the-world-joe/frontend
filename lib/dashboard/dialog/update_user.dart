@@ -35,7 +35,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
   var phoneNumberController = TextEditingController(text: user.getPhoneNumber());
   var verifiedPasswordController = TextEditingController(text: '');
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalSmooth);
@@ -276,7 +276,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
           Spacing.addVerticalSpace(50),
         ],
         content: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
             return SizedBox(
               width: 450,

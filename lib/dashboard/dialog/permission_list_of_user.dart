@@ -26,7 +26,7 @@ Future<int> showPermissionListOfUserDialog(BuildContext context, User user) asyn
   List<Widget> widgetList = [];
   var oriObserve = Runtime.getObserve();
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -166,7 +166,7 @@ Future<int> showPermissionListOfUserDialog(BuildContext context, User user) asyn
               child: Center(child: CircularProgressIndicator()),
             );
           },
-          stream: yeildData(),
+          stream: stream(),
         ),
       );
     },

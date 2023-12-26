@@ -120,7 +120,7 @@ Future<int> showInsertAdvertisementProgressDialog(
     placeOfOrigin: placeOfOrigin,
   );
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -385,7 +385,7 @@ Future<int> showInsertAdvertisementProgressDialog(
         title: Text(Translator.translate(Language.fillSellingPoint)),
         actions: [],
         content: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
             return SizedBox(
               width: width,

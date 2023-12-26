@@ -21,7 +21,7 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
   int curStage = 0;
   String from = 'showRemoveUserDialog';
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -188,7 +188,7 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
             //   child: Center(child: CircularProgressIndicator()),
             // );
           },
-          stream: yeildData(),
+          stream: stream(),
         ),
       );
     },

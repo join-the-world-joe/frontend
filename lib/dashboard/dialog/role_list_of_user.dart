@@ -23,7 +23,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
   var oriObserve = Runtime.getObserve();
   String from = 'showRoleListOfUserDialog';
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -168,7 +168,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
               child: Center(child: CircularProgressIndicator()),
             );
           },
-          stream: yeildData(),
+          stream: stream(),
         ),
       );
     },

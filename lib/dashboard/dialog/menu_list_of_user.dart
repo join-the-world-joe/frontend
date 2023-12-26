@@ -23,7 +23,7 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
   List<Widget> widgetList = [];
   var oriObserve = Runtime.getObserve();
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -153,7 +153,7 @@ Future<int> showMenuListOfUserDialog(BuildContext context, User user) async {
               child: Center(child: CircularProgressIndicator()),
             );
           },
-          stream: yeildData(),
+          stream: stream(),
         ),
       );
     },

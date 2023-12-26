@@ -100,7 +100,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
     // );
   }
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -272,7 +272,7 @@ Future<bool> showUpdateAdvertisementDialog(BuildContext context, Advertisement a
           Spacing.addVerticalSpace(50),
         ],
         content: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
             return SizedBox(
               width: 450,

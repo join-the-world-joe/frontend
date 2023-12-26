@@ -26,7 +26,7 @@ Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) asyn
   var productIdController = TextEditingController();
   var stockController = TextEditingController();
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -161,7 +161,7 @@ Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) asyn
           // Spacing.AddVerticalSpace(50),
         ],
         content: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
             var caller = 'builder';
             return SizedBox(

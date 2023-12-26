@@ -29,7 +29,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
   var buyingPriceController = TextEditingController(text: Convert.intDivide10toDoubleString(product.getBuyingPrice()));
   var idController = TextEditingController(text: product.getId().toString());
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -169,7 +169,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
           Spacing.addVerticalSpace(50),
         ],
         content: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
             return SizedBox(
               width: 450,

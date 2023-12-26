@@ -18,7 +18,7 @@ Future<bool> showRejectAdvertisementOfADOfDealsDialog(BuildContext context, Stri
   bool closed = false;
   int curStage = 0;
   var from = 'showRejectAdvertisementOfADOfDealsDialog';
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -114,7 +114,7 @@ Future<bool> showRejectAdvertisementOfADOfDealsDialog(BuildContext context, Stri
               ),
             );
           },
-          stream: yeildData(),
+          stream: stream(),
         ),
       );
     },

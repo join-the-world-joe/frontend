@@ -22,7 +22,7 @@ Future<bool> showViewNetworkImageGroupDialog(BuildContext context, List<String> 
   String from = 'showViewNetworkImageGroupDialog';
   int currentImage = 0;
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -133,7 +133,7 @@ Future<bool> showViewNetworkImageGroupDialog(BuildContext context, List<String> 
               )),
             );
           },
-          stream: yeildData(),
+          stream: stream(),
         ),
       );
     },

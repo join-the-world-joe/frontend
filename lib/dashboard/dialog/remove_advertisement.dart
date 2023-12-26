@@ -20,7 +20,7 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
   int curStage = 0;
   String from = 'showRemoveAdvertisementDialog';
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -176,7 +176,7 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
               ),
             );
           },
-          stream: yeildData(),
+          stream: stream(),
         ),
       );
     },

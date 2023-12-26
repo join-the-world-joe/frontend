@@ -120,7 +120,7 @@ Future<int> showUpdateAdvertisementProgressDialog(
     objectFileToBeRemoved: [], // later
   );
 
-  Stream<int>? yeildData() async* {
+  Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
@@ -469,7 +469,7 @@ Future<int> showUpdateAdvertisementProgressDialog(
           ),
         ],
         content: StreamBuilder(
-          stream: yeildData(),
+          stream: stream(),
           builder: (context, snap) {
             return SizedBox(
               width: width,
