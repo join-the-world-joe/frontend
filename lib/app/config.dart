@@ -5,7 +5,7 @@ class Config {
   static String url = 'ws://$host:$port/ws';
   // static String url = 'www.baidu.com';
   static const bool encryption = true;
-  static Duration httpDefaultTimeout = const Duration(seconds: 5);
+  static Duration httpDefaultTimeout = const Duration(seconds: 10);
   static String aesKey = '3dd19414e91ac01b';
   static String aesIV = '2624b9a9c447e587';
   static const rsaPrivateKey = '';
