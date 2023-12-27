@@ -1,11 +1,18 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/protocol/admin/soft_delete_records_of_advertisement.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
+import 'package:flutter_framework/dashboard/dialog/soft_delete_records_of_advertisement_progress.dart';
+import 'package:flutter_framework/dashboard/dialog/warning.dart';
+import 'package:flutter_framework/dashboard/local/image_item.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/log.dart';
@@ -13,12 +20,19 @@ import 'package:flutter_framework/utils/spacing.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/common/business/admin/soft_delete_records_of_advertisement.dart';
 import 'package:flutter_framework/common/protocol/admin/soft_delete_user_record.dart';
+import 'package:path/path.dart' as path;
 
-Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String name) async {
+Map<String, ImageItem> imageMap = {}; // key: key of advertisement in database or native file name
+
+Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id, String name, String image) async {
   var oriObserve = Runtime.getObserve();
+  double width = 220;
+  double height = 150;
   bool closed = false;
   int curStage = 0;
-  String from = 'showRemoveAdvertisementDialog';
+  String from = 'showRemoveRecordOfAdvertisementDialog';
+  var commonPath = '';
+  SoftDeleteRecordsOfAdvertisementProgressDialog? softDeleteRecordProgress;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -32,10 +46,37 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
     }
   }
 
+  try {
+    String extension = '';
+    var oriObjectFileName = '';
+    Map<String, dynamic> imageOfAdvertisement = jsonDecode(image);
+    imageOfAdvertisement.forEach((key, value) {
+      extension = path.extension(value).toLowerCase();
+      oriObjectFileName = '$id/$key$extension';
+      imageMap[key] = ImageItem.construct(
+        native: false,
+        data: Uint8List(0),
+        objectFile: oriObjectFileName,
+        url: value,
+        nativeFileName: '',
+        dbKey: key,
+      );
+    });
+  } catch (e) {
+    print('showRemoveAdvertisementDialog failure, err: $e');
+  } finally {
+    print('Image map: ');
+    imageMap.forEach(
+      (key, value) {
+        print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+      },
+    );
+  }
+
   void softDeleteRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'softDeleteRecordOfAdvertisementHandler';
     try {
-      SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
+      var rsp = SoftDeleteRecordsOfAdvertisementRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -43,28 +84,8 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
-      if (rsp.getCode() == Code.oK) {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.removeRecordSuccessfully),
-        ).then(
-          (value) {
-            Navigator.pop(context);
-            curStage++;
-          },
-        );
-        return;
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        ).then((value) {
-          Navigator.pop(context);
-          curStage = -1;
-        });
-        return;
+      if (softDeleteRecordProgress != null) {
+        softDeleteRecordProgress!.respond(rsp);
       }
     } catch (e) {
       Log.debug(
@@ -74,10 +95,6 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
         caller: caller,
         message: 'failure, err: $e',
       );
-      showMessageDialog(context, '温馨提示：', '删除失败').then((value) {
-        Navigator.pop(context);
-        curStage = -1;
-      });
       return;
     }
   }
@@ -131,11 +148,11 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
         // ],
         content: StreamBuilder(
           builder: (context, snap) {
-            print('data: ${snap.data}');
+            // print('data: ${snap.data}');
             // if (snap.data != null) {
             return SizedBox(
-              width: 220,
-              height: 150,
+              width: width,
+              height: height,
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -160,11 +177,29 @@ Future<bool> showRemoveAdvertisementDialog(BuildContext context, int id, String 
                         ),
                         TextButton(
                           onPressed: () {
-                            softDeleteRecordsOfAdvertisement(
-                              from: from,
-                              caller: '$caller.softDeleteRecordsOfAdvertisement',
-                              advertisementIdList: [id],
-                            );
+                            if (softDeleteRecordProgress == null) {
+                              softDeleteRecordProgress = SoftDeleteRecordsOfAdvertisementProgressDialog.construct(
+                                result: Code.internalError,
+                              );
+                              softDeleteRecordProgress!.setAdvertisementIdList([id]);
+                              softDeleteRecordProgress!.show(context: context).then((value) {
+                                if (value == Code.oK) {
+                                  showMessageDialog(
+                                    context,
+                                    Translator.translate(Language.titleOfNotification),
+                                    Translator.translate(Language.removeRecordSuccessfully),
+                                  ).then(
+                                    (value) {
+                                      Navigator.pop(context);
+                                      curStage++;
+                                    },
+                                  );
+                                } else {
+                                  showWarningDialog(context, Translator.translate(Language.operationTimeout));
+                                }
+                                softDeleteRecordProgress = null;
+                              });
+                            }
                           },
                           child: Text(Translator.translate(Language.confirm)),
                         ),

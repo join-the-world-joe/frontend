@@ -27,6 +27,7 @@ class Language {
   static String viewRoleList = 'View Role List';
   static String update = 'Update';
   static String remove = 'Remove';
+  static String removing = 'Removing';
   static String confirmYourDeletion = 'Confirm Your Deletion';
   static String titleOfPermission = 'the title of Permission';
   static String major = 'Major';
@@ -175,6 +176,7 @@ class Language {
   static String updateRecordSuccessfully = "the operation of update is success";
   static String insertRecordSuccessfully = 'the operation of inert is success';
   static String removeOperationFailure = 'the operation of removal is fail';
+  static String operationTimeout = 'the operation is timeout';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';
@@ -244,4 +246,5 @@ class Language {
   static String urlIllegal = 'url is illegal ';
   static String thumbnailOfAdvertisementNotProvided = 'thumbnail of advertisement not provided';
   static String imageOfAdvertisementNotProvided = 'image of advertisement not provided';
+  static String operationToInsertAdvertisement = 'the operation of insertion of advertisement';
 }

@@ -6,6 +6,8 @@ import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
+import 'package:flutter_framework/dashboard/dialog/sign_in_progress.dart';
+import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -37,6 +39,7 @@ class _State extends State<PasswordSignIn> {
   final passwordControl = TextEditingController(text: '123456');
   double widgetWidth = 450;
   Duration loginBusyDuration = const Duration(seconds: 10);
+  SignInProgressDialog? signInProgress;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -121,13 +124,23 @@ class _State extends State<PasswordSignIn> {
         Cache.setUserId(rsp.getUserId());
         Cache.setMemberId(rsp.getMemberId());
         Cache.setSecret(rsp.getSecret());
-        navigate(Screen.home);
+      }
+      if (signInProgress != null) {
+        signInProgress!.respond(rsp);
       } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
+        navigate(Screen.home);
+      }
+      if (rsp.getCode() == Code.oK) {
+        // Cache.setUserId(rsp.getUserId());
+        // Cache.setMemberId(rsp.getMemberId());
+        // Cache.setSecret(rsp.getSecret());
+        // navigate(Screen.home);
+      } else {
+        // showMessageDialog(
+        //   context,
+        //   Translator.translate(Language.titleOfNotification),
+        //   '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+        // );
         return;
       }
       return;
@@ -303,45 +316,39 @@ class _State extends State<PasswordSignIn> {
                       width: widgetWidth,
                       child: ElevatedButton(
                         onPressed: () {
-                          // if (!Runtime.allow(
-                          //   major: int.parse(Major.admin),
-                          //   minor: int.parse(Admin.signInReq),
-                          // )) {
-                          //   return;
-                          // }
                           var behavior = 1; // email, by default
                           if (!isEmailValid(idControl.text)) {
                             behavior = 4;
-                            signIn(
-                              from: Screen.passwordSignIn,
-                              caller: caller + 'signIn',
-                              behavior: behavior,
-                              verificationCode: 0,
-                              countryCode: '',
-                              phoneNumber: '',
-                              email: '',
-                              account: idControl.text,
-                              memberId: '',
-                              password: Runtime.rsa.encrypt(passwordControl.text),
-                              userId: 0,
-                            );
-                            refresh();
+                            if (signInProgress == null) {
+                              signInProgress = SignInProgressDialog.construct(result: Code.internalError);
+                              signInProgress!.setBehavior(behavior);
+                              signInProgress!.setAccount(idControl.text);
+                              signInProgress!.setPassword(Runtime.rsa.encrypt(passwordControl.text));
+                              signInProgress!.show(context: context).then((value) {
+                                if (value == Code.oK) {
+                                  navigate(Screen.home);
+                                } else {
+                                  showWarningDialog(context, Translator.translate(Language.operationTimeout));
+                                }
+                                signInProgress = null;
+                              });
+                            }
                             return;
                           }
-                          signIn(
-                            from: Screen.passwordSignIn,
-                            caller: caller + 'signIn',
-                            behavior: behavior,
-                            verificationCode: 0,
-                            countryCode: '',
-                            phoneNumber: '',
-                            email: idControl.text,
-                            account: '',
-                            memberId: '',
-                            password: Runtime.rsa.encrypt(passwordControl.text),
-                            userId: 0,
-                          );
-                          refresh();
+                          if (signInProgress == null) {
+                            signInProgress = SignInProgressDialog.construct(result: Code.internalError);
+                            signInProgress!.setBehavior(behavior);
+                            signInProgress!.setEmail(idControl.text);
+                            signInProgress!.setPassword(Runtime.rsa.encrypt(passwordControl.text));
+                            signInProgress!.show(context: context).then((value) {
+                              if (value == Code.oK) {
+                                navigate(Screen.home);
+                              } else {
+                                showWarningDialog(context, Translator.translate(Language.operationTimeout));
+                              }
+                              signInProgress = null;
+                            });
+                          }
                           return;
                         },
                         style: ElevatedButton.styleFrom(

@@ -2,129 +2,118 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_framework/common/business/admin/insert_record_of_advertisement.dart';
-import 'package:flutter_framework/common/business/admin/update_record_of_advertisement.dart';
-import 'package:flutter_framework/common/business/oss/fetch_header_list_of_object_file_list_of_advertisement.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/progress/fetch_header_list_of_object_file_list_of_advertisement_progress.dart';
-import 'package:flutter_framework/common/progress/insert_record_of_advertisement_progress.dart';
+import 'package:flutter_framework/common/progress/remove_list_of_object_file_progress.dart';
 import 'package:flutter_framework/common/progress/upgrade_fields_of_advertisement_progress.dart';
 import 'package:flutter_framework/common/progress/upload_image_list_progress.dart';
-import 'package:flutter_framework/common/protocol/admin/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/common/protocol/admin/update_record_of_advertisement.dart';
+import 'package:flutter_framework/common/protocol/oss/remove_list_of_object_file.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/route/oss.dart';
-import 'package:flutter_framework/dashboard/model/advertisement.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
-import 'package:flutter_framework/utils/api.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:image_picker_web/image_picker_web.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/common/protocol/oss/fetch_header_list_of_object_file_list_of_advertisement.dart';
 import 'package:path/path.dart' as path;
+import 'package:flutter_framework/dashboard/local/image_item.dart';
 
 /*
 work flow
-insert advertisement ------->  backend
-advertisement id     <-------  backend
 fetch oss headers    ------->  backend
 oss request headers  <-------  backend
 upload images        ------->  oss server
 http status code     <-------  oss server
 upgrade image field  ------->  backend
 result               <-------  backend
+remove object file   ------->  backend
+result               <-------  backend
 verify oss objects   ------->  backend
 result               <-------  backend
+four possible stage; requested, timeout(after interval), responded, failure(successfully)
  */
 
-Future<int> showInsertAdvertisementProgressDialog(
+Future<int> showUpdateRecordOfAdvertisementProgressDialog(
   BuildContext context, {
+  required int advertisementId,
   required String name,
   required String title,
   required int sellingPrice,
+  required int status,
   required List<String> sellingPoints,
   required String placeOfOrigin,
   required int stock,
   required int productId,
-  required Map<String, MediaInfo> imageMap,
-  required List<String> imageList,
+  required Map<String, ImageItem> imageMap,
+  required Map<String, ImageItem> oriImageMap,
   required String thumbnailKey,
+  required String image,
+  required String commonPath,
 }) async {
   var result = Code.internalError;
-  int? advertisementId;
   bool closed = false;
   int curStage = 0;
   var ossHost = '';
-  var commonOSSPath = '';
-  var from = 'showInsertAdvertisementDialog';
-  List<String> nameListOfFile = [];
+  var from = 'showUpdateRecordOfAdvertisementProgressDialog';
+  List<String> nameListOfFile = []; // object file to be uploaded
   var oriObserve = Runtime.getObserve();
   Map<String, ObjectFileRequestHeader> requestHeader = {}; // key: object file name
+  List<String> objectFileToBeRemoved = [];
 
-  String defaultImage = '';
+  // remove list of object file
+  bool removeListOfObjectFileRequested = false;
+
   String information = '';
   double height = 100;
   double width = 200;
-  Map<String, Uint8List> objectDataMapping = {}; // key: object file name, value: native file name
-  bool hasFigureOutNameListOfFile = false;
+  Map<String, Uint8List> objectDataMapping = {}; // key: object file name, value: native file data
+
+  bool hasFigureOutStep1Argument = false;
+  bool hasFigureOutStep2Argument = false;
   bool hasFigureOutStep3Argument = false;
   bool hasFigureOutStep4Argument = false;
 
-  var step1 = InsertRecordOfAdvertisementProgress.construct(
+  var step1 = FetchHeaderListOfObjectFileListOfAdvertisementProgress.construct(
     result: -1,
-    record: Advertisement.construct(
-      id: 0,
-      name: name,
-      title: title,
-      placeOfOrigin: placeOfOrigin,
-      sellingPoints: sellingPoints,
-      image: defaultImage,
-      sellingPrice: sellingPrice,
-      stock: stock,
-      status: 0,
-      productId: productId,
-    ),
+    advertisementId: 0, // later
+    nameListOfFile: nameListOfFile, // later
   );
 
-  var step2 = FetchHeaderListOfObjectFileListOfAdvertisementProgress.construct(
+  var step2 = UploadImageListProgress.construct(
     result: -2,
-    advertisementId: 0,
-    nameListOfFile: nameListOfFile,
+    ossHost: '', // later
+    requestHeader: {}, // later
+    objectDataMapping: {}, // later
   );
 
-  var step3 = UploadImageListProgress.construct(
+  var step3 = UpgradeFieldsOfAdvertisementProgress.construct(
     result: -3,
-    ossHost: '',
-    requestHeader: {},
-    objectDataMapping: {},
-  );
-
-  var step4 = UpgradeFieldsOfAdvertisementProgress.construct(
-    result: -4,
-    id: -1,
-    image: '',
+    id: advertisementId,
+    image: '', // later
     name: name,
     title: title,
     stock: stock,
-    status: 1,
+    status: status,
     productId: productId,
     sellingPrice: sellingPrice,
     sellingPoints: sellingPoints,
     placeOfOrigin: placeOfOrigin,
   );
 
+  var step4 = RemoveListOfObjectFileProgress.construct(
+    result: -4,
+    objectFileToBeRemoved: [], // later
+  );
+
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      // print('showFillSellingPointDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -132,35 +121,10 @@ Future<int> showInsertAdvertisementProgressDialog(
     }
   }
 
-  void insertRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'insertRecordOfAdvertisementHandler';
-    try {
-      var rsp = InsertRecordOfAdvertisementRsp.fromJson(body);
-      Log.debug(
-        major: major,
-        minor: minor,
-        from: from,
-        caller: caller,
-        message: 'code: ${rsp.getCode()}, advertisementId: ${rsp.getAdvertisementId()}',
-      );
-      advertisementId = rsp.getAdvertisementId();
-      step1.respond(rsp);
-    } catch (e) {
-      Log.debug(
-        major: major,
-        minor: minor,
-        from: from,
-        caller: caller,
-        message: 'failure, err: $e',
-      );
-      return;
-    }
-  }
-
   fetchHeaderListOfObjectFileListOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'fetchHeaderListOfObjectFileListOfAdvertisementHandler';
     try {
-      FetchHeaderListOfObjectFileListOfAdvertisementRsp rsp = FetchHeaderListOfObjectFileListOfAdvertisementRsp.fromJson(body);
+      var rsp = FetchHeaderListOfObjectFileListOfAdvertisementRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -174,16 +138,14 @@ Future<int> showInsertAdvertisementProgressDialog(
         });
         ossHost = rsp.getHost();
         print('ossHost: $ossHost');
-        requestHeader.forEach(
-          (key, value) {
-            print('file: $key, value: ${value.toString()}');
-            if (objectDataMapping.containsKey(key)) {
-              print('size: ${objectDataMapping[key]!.length}');
-            }
-          },
-        );
-        commonOSSPath = rsp.getCommonPath();
-        step2.respond(rsp);
+        requestHeader.forEach((key, value) {
+          print('file: $key, value: ${value.toString()}');
+          if (objectDataMapping.containsKey(key)) {
+            print('size: ${objectDataMapping[key]!.length}');
+          }
+        });
+        commonPath = rsp.getCommonPath();
+        step1.respond(rsp);
       } else {
         // error occurs
       }
@@ -203,6 +165,36 @@ Future<int> showInsertAdvertisementProgressDialog(
     var caller = 'updateRecordOfAdvertisementHandler';
     try {
       var rsp = UpdateRecordOfAdvertisementRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      step3.respond(rsp);
+      if (rsp.getCode() == Code.oK) {
+        return;
+      } else {
+        // error occurs
+        return;
+      }
+    } catch (e) {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
+      return;
+    } finally {}
+  }
+
+  void removeListOfObjectFileHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'removeListOfObjectFileHandler';
+    try {
+      var rsp = RemoveListOfObjectFileRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -230,19 +222,63 @@ Future<int> showInsertAdvertisementProgressDialog(
   }
 
   void figureOutNameListOfFile() {
-    String extension = path.extension(imageMap[thumbnailKey]!.fileName!).toLowerCase();
-    nameListOfFile.add('$advertisementId/0$extension');
-    objectDataMapping['$advertisementId/0$extension'] = imageMap[thumbnailKey]!.data!;
-    for (var index = 0; index < imageList.length; index++) {
-      extension = path.extension(imageMap[imageList[index]]!.fileName!).toLowerCase();
-      nameListOfFile.add('$advertisementId/${index + 1}$extension');
-      objectDataMapping['$advertisementId/${index + 1}$extension'] = imageMap[imageList[index]]!.data!;
+    try {
+      imageMap.forEach(
+        (key, value) {
+          if (imageMap[key]!.getNative()) {
+            // to be uploaded condition
+            nameListOfFile.add(imageMap[key]!.getObjectFile());
+            objectDataMapping[imageMap[key]!.getObjectFile()] = value.getData();
+
+            // to be removed condition
+            if (oriImageMap.containsKey(key)) {
+              if (oriImageMap[key]!.getObjectFile().compareTo(imageMap[key]!.getObjectFile()) != 0) {
+                objectFileToBeRemoved.add(oriImageMap[key]!.getObjectFile());
+              }
+            }
+          }
+        },
+      );
+      oriImageMap.forEach(
+        (key, value) {
+          if (!imageMap.containsKey(key)) {
+            // to be removed condition
+            objectFileToBeRemoved.add(oriImageMap[key]!.getObjectFile());
+          }
+        },
+      );
+    } catch (e) {
+      print('$from failure: $e');
+    } finally {
+      // thumbnail
+      print('$objectFileToBeRemoved to be removed');
+      print('$nameListOfFile to be uploaded');
+      objectDataMapping.forEach((key, value) {
+        print("object file: $key, length: ${value.length}");
+      });
     }
-    print('nameList: $nameListOfFile');
+  }
+
+  void figureOutProgress() {
+    if (nameListOfFile.isEmpty) {
+      // skip fetch header and upload image progress
+      step1.skip();
+      step2.skip();
+    }
+    if (objectFileToBeRemoved.isEmpty) {
+      // skip remove object file progress
+      removeListOfObjectFileRequested = true;
+    }
   }
 
   void progress() {
     var caller = 'progress';
+
+    if (!hasFigureOutStep1Argument) {
+      step1.setAdvertisementId(advertisementId);
+      step1.setNameListOfFile(nameListOfFile);
+      hasFigureOutStep1Argument = true;
+    }
 
     step1.progress();
     if (!step1.finished()) {
@@ -255,10 +291,11 @@ Future<int> showInsertAdvertisementProgressDialog(
       return;
     }
 
-    if (!hasFigureOutNameListOfFile && step1.result() == 0) {
-      figureOutNameListOfFile();
-      step2.setAdvertisementId(advertisementId!);
-      hasFigureOutNameListOfFile = true;
+    if (!hasFigureOutStep2Argument) {
+      step2.setOSSHost(ossHost);
+      step2.setObjectDataMapping(objectDataMapping);
+      step2.setRequestHeader(requestHeader);
+      hasFigureOutStep2Argument = true;
     }
 
     step2.progress();
@@ -273,9 +310,18 @@ Future<int> showInsertAdvertisementProgressDialog(
     }
 
     if (!hasFigureOutStep3Argument) {
-      step3.setObjectDataMapping(objectDataMapping);
-      step3.setOSSHost(ossHost);
-      step3.setRequestHeader(requestHeader);
+      var imageOfAdvertisement = () {
+        String output = '';
+        Map<String, String> temp = {};
+        imageMap.forEach(
+          (key, value) {
+            temp[value.getDBKey()] = commonPath + value.getObjectFile();
+          },
+        );
+        output = jsonEncode(temp);
+        return output;
+      }();
+      step3.setImage(imageOfAdvertisement);
       hasFigureOutStep3Argument = true;
     }
 
@@ -290,24 +336,8 @@ Future<int> showInsertAdvertisementProgressDialog(
       return;
     }
 
-    if (!hasFigureOutStep4Argument) {
-      var image = () {
-        String output = '';
-        try {
-          Map<String, String> temp = {};
-          for (var e in nameListOfFile) {
-            var key = ((e.split('.')[0]).split('/'))[1];
-            temp[key] = commonOSSPath + e;
-          }
-          output = jsonEncode(temp);
-          print('output: $output');
-        } catch (e) {
-          print('upgradeImageFieldProgress failure, err: $e');
-        }
-        return output;
-      }();
-      step4.setAdvertisementId(advertisementId!);
-      step4.setImage(image);
+    if(!hasFigureOutStep4Argument) {
+      step4.setObjectFileToBeRemoved(objectFileToBeRemoved);
       hasFigureOutStep4Argument = true;
     }
 
@@ -343,10 +373,10 @@ Future<int> showInsertAdvertisementProgressDialog(
       );
       if (major == Major.oss && minor == OSS.fetchHeaderListOfObjectFileListOfAdvertisementRsp) {
         fetchHeaderListOfObjectFileListOfAdvertisementHandler(major: major, minor: minor, body: body);
-      } else if (major == Major.admin && minor == Admin.insertRecordOfAdvertisementRsp) {
-        insertRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.updateRecordOfAdvertisementRsp) {
         updateRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.oss && minor == OSS.removeListOfObjectFileRsp) {
+        removeListOfObjectFileHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
           major: major,
@@ -370,6 +400,20 @@ Future<int> showInsertAdvertisementProgressDialog(
   }
 
   void setup() {
+    print('Original Image map: ');
+    oriImageMap.forEach(
+      (key, value) {
+        print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+      },
+    );
+    print('Image map: ');
+    imageMap.forEach(
+      (key, value) {
+        print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+      },
+    );
+    figureOutNameListOfFile();
+    figureOutProgress();
     Runtime.setObserve(observe);
     Runtime.setPeriod(Config.periodOfScreenInitialisation);
     Runtime.setPeriodic(progress);
@@ -382,8 +426,13 @@ Future<int> showInsertAdvertisementProgressDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(Translator.translate(Language.fillSellingPoint)),
-        actions: [],
+        title: Text(Translator.translate(Language.modifyAdvertisement)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(Translator.translate(Language.cancel)),
+          ),
+        ],
         content: StreamBuilder(
           stream: stream(),
           builder: (context, snap) {

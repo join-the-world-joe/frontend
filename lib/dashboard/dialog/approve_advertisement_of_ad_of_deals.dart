@@ -199,13 +199,11 @@ Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) asyn
                                 );
                                 return;
                               }
-
                               fetchRecordsOfAdvertisement(
                                 from: from,
                                 caller: '$caller.fetchRecordsOfAdvertisement',
                                 advertisementIdList: [int.parse(advertisementIdController.text)],
                               );
-
                               resetController();
                             },
                           ),

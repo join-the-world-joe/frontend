@@ -5,6 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/framework/rate_limiter.dart';
 import 'package:flutter_framework/utils/convert.dart';
 
+void showBarrier(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return const Center(
+        child: ModalBarrier(
+          dismissible: false,
+        ),
+      );
+    }
+  );
+}
+
 class LogicTest extends StatefulWidget {
   const LogicTest({Key? key}) : super(key: key);
 
@@ -17,11 +30,35 @@ class _State extends State<LogicTest> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(onPressed: () {
-      var d = DateTime.parse('2023-11-8');
-      print("d: ${d.millisecondsSinceEpoch/1000}");
+      showBarrier(context);
     });
   }
 }
+
+// class _State extends State<LogicTest> {
+//   var last = DateTime.now();
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Container(
+//         child: ModalBarrier(
+//           color: Colors.black.withOpacity(0.4),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class _State extends State<LogicTest> {
+//   var last = DateTime.now();
+//   @override
+//   Widget build(BuildContext context) {
+//     return FloatingActionButton(onPressed: () {
+//       var d = DateTime.parse('2023-11-8');
+//       print("d: ${d.millisecondsSinceEpoch/1000}");
+//     });
+//   }
+// }
 
 // class LogicTest extends StatelessWidget {
 //   LogicTest({Key? key}) : super(key: key);

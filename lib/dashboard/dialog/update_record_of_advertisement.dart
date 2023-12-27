@@ -1,52 +1,65 @@
 import 'dart:convert';
-import 'dart:html' as html;
-import 'dart:io';
+import 'dart:convert';
+
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/dialog/message.dart';
-import 'package:flutter_framework/common/route/admin.dart';
-import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
-import 'package:flutter_framework/dashboard/dialog/insert_advertisement_progress.dart';
+import 'package:flutter_framework/dashboard/dialog/update_record_of_advertisement_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
-import 'package:flutter_framework/framework/packet_client.dart';
-import 'package:flutter_framework/runtime/runtime.dart';
+import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_records_of_good.dart';
-import 'package:flutter_framework/common/business/admin/fetch_records_of_good.dart';
+import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/framework/packet_client.dart';
+import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:image_picker_web/image_picker_web.dart';
+import '../model/advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
+import '../config/config.dart';
 import 'package:path/path.dart' as path;
+import 'package:flutter_framework/dashboard/local/image_item.dart';
 
-Future<void> showEditAdvertisementDialog(BuildContext context) async {
-  bool closed = false;
-  int curStage = 0;
-  String from = 'showEditAdvertisementDialog';
-  List<String> sellingPoints = [];
-  List<String> imageList = []; // native file name
-  Map<String, MediaInfo> imageMap = {}; // key: native file name
-  var thumbnailKey = 'thumbnail';
+/*
+use cases
+1. delete image; modify original record
+2. add new image; need to upload image
+3. delete image & add new image; modify record & need to upload image
+
+optimization
+1. frontend provides the remove key list for backend
+2. frontend use the update interface to modify the specific record
+ */
+
+Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Advertisement advertisement) async {
   var oriObserve = Runtime.getObserve();
-  var productIdController = TextEditingController();
-  var nameController = TextEditingController();
-  var titleController = TextEditingController();
-  var sellingPriceController = TextEditingController();
-  var placeOfOriginController = TextEditingController();
+  int status = advertisement.getStatus();
+  int curStage = 0;
+  bool closed = false;
+  String from = 'showUpdateRecordOfAdvertisementDialog';
+  List<String> sellingPoints = advertisement.getSellingPoints();
+
+  var nameController = TextEditingController(text: advertisement.getName());
+  var titleController = TextEditingController(text: advertisement.getTitle());
+  var sellingPriceController = TextEditingController(text: Convert.intDivide10toDoubleString(advertisement.getSellingPrice()));
+  var placeOfOriginController = TextEditingController(text: advertisement.getPlaceOfOrigin());
+  var imageController = TextEditingController(text: '');
+  var thumbnailController = TextEditingController(text: '');
+  var stockController = TextEditingController(text: advertisement.getStock().toString());
+  var productIdController = TextEditingController(text: advertisement.getProductId().toString());
   var sellingPointController = TextEditingController();
-  var stockController = TextEditingController();
-  var imageController = TextEditingController();
-  var thumbnailController = TextEditingController();
+  Map<String, ImageItem> imageMap = {}; // key: key of advertisement in database or native file name
+  Map<String, ImageItem> oriImageMap = {}; // key: key of advertisement in database
+  var thumbnailKey = 'thumbnail';
+  var commonPath = '';
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      // print('showInsertAdvertisementDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -54,10 +67,13 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
     }
   }
 
-  void fetchRecordsOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'fetchRecordsOfGoodHandler';
+  void observe(PacketClient packet) {
+    var caller = 'observe';
+    var major = packet.getHeader().getMajor();
+    var minor = packet.getHeader().getMinor();
+    var body = packet.getBody();
+
     try {
-      FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -65,31 +81,16 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
         caller: caller,
         message: '',
       );
-      if (rsp.getCode() == Code.oK) {
-        var key = int.parse(productIdController.text);
-        if (rsp.getDataMap().containsKey(key)) {
-          showMessageDialog(
-            context,
-            Translator.translate(Language.nameOfGood),
-            rsp.getDataMap()[key]!.getName(),
-          );
-          curStage++;
-        } else {
-          showMessageDialog(
-            context,
-            Translator.translate(Language.titleOfNotification),
-            Translator.translate(Language.withoutProductInfoInResponse),
-          );
-        }
-        return;
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
-        return;
-      }
+
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'not matched',
+      );
+
+      return;
     } catch (e) {
       Log.debug(
         major: major,
@@ -99,47 +100,53 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
         message: 'failure, err: $e',
       );
       return;
-    } finally {}
+    }
   }
 
-  void observe(PacketClient packet) {
-    var major = packet.getHeader().getMajor();
-    var minor = packet.getHeader().getMinor();
-    var body = packet.getBody();
-    var caller = 'observe';
+  void setup() {
     try {
-      Log.debug(
-        major: major,
-        minor: minor,
-        from: from,
-        caller: caller,
-        message: 'responded',
-      );
-      if (major == Major.admin && minor == Admin.fetchRecordsOfGoodRsp) {
-        fetchRecordsOfGoodHandler(major: major, minor: minor, body: body);
-      } else {
-        Log.debug(
-          major: major,
-          minor: minor,
-          from: from,
-          caller: caller,
-          message: 'not matched',
+      String extension = '';
+      var oriObjectFileName = '';
+      Map<String, dynamic> image = jsonDecode(advertisement.getImage());
+      image.forEach((key, value) {
+        extension = path.extension(value).toLowerCase();
+        oriObjectFileName = '${advertisement.getId()}/$key$extension';
+        imageMap[key] = ImageItem.construct(
+          native: false,
+          data: Uint8List(0),
+          objectFile: oriObjectFileName,
+          url: value,
+          nativeFileName: '',
+          dbKey: key,
         );
+        oriImageMap[key] = imageMap[key]!;
+      });
+      if (imageMap.containsKey('0')) {
+        extension = path.extension(imageMap['0']!.getUrl()).toLowerCase();
+        commonPath = imageMap['0']!.getUrl().split('${advertisement.getId()}/0$extension')[0];
+        imageMap[thumbnailKey] = imageMap['0']!;
+        imageMap.remove('0');
       }
-      return;
+      Runtime.setObserve(observe);
     } catch (e) {
-      Log.debug(
-        major: major,
-        minor: minor,
-        from: from,
-        caller: caller,
-        message: 'failure, err: $e',
-      );
-      return;
-    } finally {}
+      print('showUpdateAdvertisementDialog failure, err: $e');
+    } finally {
+      // print('Original Image map: ');
+      // oriImageMap.forEach(
+      //   (key, value) {
+      //     print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+      //   },
+      // );
+      // print('Image map: ');
+      // imageMap.forEach(
+      //   (key, value) {
+      //     print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+      //   },
+      // );
+    }
   }
 
-  Runtime.setObserve(observe);
+  setup();
 
   return await showDialog(
     barrierDismissible: false,
@@ -147,10 +154,10 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
     builder: (context) {
       var caller = 'builder';
       return AlertDialog(
-        title: Text(Translator.translate(Language.editAdvertisement)),
+        title: Text(Translator.translate(Language.modifyAdvertisement)),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, null),
+            onPressed: () => Navigator.pop(context, false),
             child: Text(Translator.translate(Language.cancel)),
           ),
           TextButton(
@@ -188,7 +195,6 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                 );
                 return;
               }
-
               if (!imageMap.containsKey(thumbnailKey)) {
                 showMessageDialog(
                   context,
@@ -205,42 +211,64 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                 );
                 return;
               }
-              showInsertAdvertisementProgressDialog(
+
+              // imageMap['0'] = imageMap[thumbnailKey]!;
+              // imageMap.remove(thumbnailKey);
+
+              var tempImageMap = () {
+                Map<String, ImageItem> output = {};
+                imageMap.forEach(
+                  (key, value) {
+                    output[key] = value;
+                  },
+                );
+                output['0'] = output[thumbnailKey]!;
+                output.remove(thumbnailKey);
+                return output;
+              }();
+
+              showUpdateRecordOfAdvertisementProgressDialog(
                 context,
+                advertisementId: advertisement.getId(),
                 name: nameController.text,
-                title: titleController.text,
                 stock: int.parse(stockController.text),
-                productId: int.parse(productIdController.text),
-                placeOfOrigin: placeOfOriginController.text,
-                sellingPoints: sellingPoints,
+                status: status,
+                productId: advertisement.getProductId(),
+                title: titleController.text,
                 sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
-                imageMap: imageMap,
-                imageList: imageList,
+                sellingPoints: sellingPoints,
                 thumbnailKey: thumbnailKey,
-              ).then((value) {
-                if (value == Code.oK) {
-                  showMessageDialog(
-                    context,
-                    Translator.translate(Language.titleOfNotification),
-                    Translator.translate(Language.insertRecordSuccessfully),
-                  ).then(
-                    (value) {
-                      Navigator.pop(context, null);
-                    },
-                  );
-                } else {
-                  // error occurs
-                  showMessageDialog(
-                    context,
-                    Translator.translate(Language.titleOfNotification),
-                    '${Translator.translate(Language.failureWithErrorCode)}  $value',
-                  );
-                }
-              });
+                image: advertisement.getImage(),
+                imageMap: tempImageMap,
+                placeOfOrigin: placeOfOriginController.text,
+                oriImageMap: oriImageMap,
+                commonPath: commonPath,
+              ).then(
+                (value) {
+                  if (value == Code.oK) {
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      Translator.translate(Language.updateRecordSuccessfully),
+                    ).then(
+                      (value) {
+                        Navigator.pop(context, true);
+                      },
+                    );
+                  } else {
+                    // error occurs
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      '${Translator.translate(Language.failureWithErrorCode)}  $value',
+                    );
+                  }
+                },
+              );
             },
-            child: Text(Translator.translate(Language.titleOfInsertAdvertisementButton)),
+            child: Text(Translator.translate(Language.confirm)),
           ),
-          // Spacing.AddVerticalSpace(50),
+          Spacing.addVerticalSpace(50),
         ],
         content: StreamBuilder(
           stream: stream(),
@@ -254,40 +282,29 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                     Spacing.addVerticalSpace(10),
                     SizedBox(
                       width: 350,
-                      child: TextFormField(
-                        controller: productIdController,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                          LengthLimitingTextInputFormatter(11),
-                        ],
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.idOfGood),
-                          labelStyle: const TextStyle(
-                            color: Colors.redAccent,
-                          ),
-                          suffixIcon: IconButton(
-                            tooltip: Translator.translate(Language.peekInfoFromProductId),
-                            icon: const Icon(Icons.search),
-                            onPressed: () {
-                              if (productIdController.text.isEmpty) {
-                                showMessageDialog(
-                                  context,
-                                  Translator.translate(Language.titleOfNotification),
-                                  Translator.translate(Language.productIdIsEmpty),
-                                );
-                                return;
-                              } else {
-                                fetchRecordsOfGood(
-                                  from: from,
-                                  caller: '$caller.fetchRecordsOfGood',
-                                  productIdList: [int.parse(productIdController.text)],
-                                );
-                                return;
-                              }
+                      child: Row(
+                        children: [
+                          Spacing.addHorizontalSpace(85),
+                          Text(Translator.translate(Language.enable)),
+                          Radio<int?>(
+                            value: 1,
+                            groupValue: status,
+                            onChanged: (b) {
+                              status = b!;
+                              curStage++;
                             },
                           ),
-                        ),
+                          Spacing.addHorizontalSpace(50),
+                          Text(Translator.translate(Language.disable)),
+                          Radio<int?>(
+                            value: 0,
+                            groupValue: status,
+                            onChanged: (b) {
+                              status = b!;
+                              curStage++;
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     Spacing.addVerticalSpace(10),
@@ -296,9 +313,6 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                       child: TextFormField(
                         controller: nameController,
                         decoration: InputDecoration(
-                          labelStyle: const TextStyle(
-                            color: Colors.redAccent,
-                          ),
                           labelText: Translator.translate(Language.nameOfAdvertisement),
                         ),
                       ),
@@ -310,6 +324,22 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                         controller: titleController,
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.titleOfAdvertisement),
+                        ),
+                      ),
+                    ),
+                    Spacing.addVerticalSpace(10),
+                    SizedBox(
+                      width: 350,
+                      child: TextFormField(
+                        readOnly: true,
+                        controller: productIdController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                          LengthLimitingTextInputFormatter(11),
+                        ],
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.idOfGood),
                         ),
                       ),
                     ),
@@ -371,24 +401,10 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                         controller: sellingPriceController,
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(Config.doubleRegExp),
-                          LengthLimitingTextInputFormatter(Config.lengthOfSellingPrice),
+                          LengthLimitingTextInputFormatter(11),
                         ],
                         decoration: InputDecoration(
                           labelText: Translator.translate(Language.sellingPriceOfAdvertisement),
-                        ),
-                      ),
-                    ),
-                    Spacing.addVerticalSpace(10),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: stockController,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(Config.lengthOfBuyingPrice),
-                        ],
-                        decoration: InputDecoration(
-                          labelText: Translator.translate(Language.stockOfAdvertisement),
                         ),
                       ),
                     ),
@@ -406,27 +422,48 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                     SizedBox(
                       width: 350,
                       child: TextFormField(
+                        controller: stockController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                          LengthLimitingTextInputFormatter(11),
+                        ],
+                        decoration: InputDecoration(
+                          labelText: Translator.translate(Language.stockOfAdvertisement),
+                        ),
+                      ),
+                    ),
+                    Spacing.addVerticalSpace(10),
+                    SizedBox(
+                      width: 350,
+                      child: TextFormField(
                         readOnly: true,
                         controller: thumbnailController,
+                        // decoration: InputDecoration(
+                        //   labelText: Translator.translate(Language.thumbnailOfAdvertisement),
+                        // ),
                         decoration: InputDecoration(
-                          labelText: imageMap[thumbnailKey] == null ? Translator.translate(Language.pressRightButtonToAddThumbnail) : '',
                           suffixIcon: IconButton(
-                            tooltip: () {
-                              if (imageMap[thumbnailKey] == null) {
-                                return Translator.translate(Language.pressToAddThumbnail);
-                              } else {
-                                return Translator.translate(Language.pressToModifyThumbnail);
-                              }
-                            }(),
-                            icon: imageMap[thumbnailKey] == null ? const Icon(Icons.add_circle_outlined) : const Icon(Icons.edit),
+                            tooltip: Translator.translate(Language.pressToModifyThumbnail),
+                            icon: const Icon(Icons.edit),
                             onPressed: () async {
                               var mediaData = await ImagePickerWeb.getImageInfo;
                               if (mediaData != null) {
-                                imageMap[thumbnailKey] = mediaData;
+                                //   imageMap[thumbnailKey] = mediaData;
                                 String extension = path.extension(mediaData.fileName!).toLowerCase();
-                                print('file name: ${mediaData.fileName!}');
-                                print('extension: $extension');
-                                print('size: ${mediaData.data!.length}');
+                                imageMap[thumbnailKey] = ImageItem.construct(
+                                  native: true,
+                                  data: mediaData.data!,
+                                  objectFile: '${advertisement.getId()}/0$extension',
+                                  url: '',
+                                  nativeFileName: mediaData.fileName!,
+                                  dbKey: '0',
+                                );
+
+                                // print('thumbnail file name: ${mediaData.fileName!}');
+                                // print('thumbnail extension: $extension');
+                                // print('thumbnail size: ${mediaData.data!.length}');
+                                // print('thumbnail object file: ${imageMap[thumbnailKey]!.getObjectFile()}');
                                 curStage++;
                               }
                             },
@@ -435,19 +472,31 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                             children: () {
                               List<Widget> widgetList = [];
                               if (imageMap[thumbnailKey] != null) {
+                                var title = '';
+                                if (!imageMap[thumbnailKey]!.getNative()) {
+                                  title = imageMap[thumbnailKey]!.getDBKey();
+                                } else {
+                                  title = imageMap[thumbnailKey]!.getNativeFileName();
+                                }
                                 widgetList.add(Padding(
                                   padding: const EdgeInsets.all(5.0),
                                   child: InputChip(
                                     label: Text(
-                                      imageMap[thumbnailKey]!.fileName!,
+                                      title,
                                       style: const TextStyle(
                                         color: Colors.white,
                                       ),
                                     ),
                                     onPressed: () {
-                                      if (imageMap[thumbnailKey] != null) {
-                                        showViewImageDialog(context, imageMap[thumbnailKey]!.data!);
+                                      if (!imageMap[thumbnailKey]!.getNative()) {
+                                        showViewNetworkImageDialog(context, imageMap[thumbnailKey]!.getUrl());
+                                      } else {
+                                        // native
+                                        showViewImageDialog(context, imageMap[thumbnailKey]!.getData());
                                       }
+                                      // if (imageMap[thumbnailKey] != null) {
+                                      //   showViewImageDialog(context, imageMap[thumbnailKey]!.data!);
+                                      // }
                                     },
                                     // onDeleted: () {
                                     //   sellingPoints.remove(element);
@@ -474,45 +523,66 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                         readOnly: true,
                         controller: imageController,
                         decoration: InputDecoration(
-                          labelText: imageList.isEmpty ? Translator.translate(Language.pressRightButtonToAddImage) : "",
+                          labelText: '',
                           suffixIcon: IconButton(
                             tooltip: Translator.translate(Language.addImageForAdvertisement),
                             icon: const Icon(Icons.add_circle_outlined),
                             onPressed: () async {
                               var mediaData = await ImagePickerWeb.getImageInfo;
                               if (mediaData != null) {
+                                var timestamp = (DateTime.now().millisecondsSinceEpoch) ~/ 1000;
                                 String extension = path.extension(mediaData.fileName!).toLowerCase();
-                                print('file name: ${mediaData.fileName!}');
-                                print('extension: $extension');
-                                print('size: ${mediaData.data!.length}');
-                                imageMap[mediaData.fileName!] = mediaData;
-                                imageList.add(mediaData.fileName!);
+                                var objectFileName = '${advertisement.getId()}/$timestamp$extension';
+                                // print('key: $timestamp');
+                                // print('file name: ${mediaData.fileName!}');
+                                // print('object file name: $objectFileName');
+                                // print('extension: $extension');
+                                // print('size: ${mediaData.data!.length}');
+                                // imageMap[mediaData.fileName!] = mediaData;
+                                // imageList.add(mediaData.fileName!);
+                                imageMap[mediaData.fileName!] = ImageItem.construct(
+                                  native: true,
+                                  data: mediaData.data!,
+                                  objectFile: objectFileName,
+                                  url: '',
+                                  nativeFileName: mediaData.fileName!,
+                                  dbKey: '$timestamp',
+                                );
                                 curStage++;
                               }
                             },
                           ),
                           prefixIcon: Wrap(
+                            runSpacing: 8,
+                            spacing: 8,
                             children: () {
                               List<Widget> widgetList = [];
-                              for (var element in imageList) {
+                              imageMap.forEach((key, value) {
+                                if (key.compareTo(thumbnailKey) == 0) {
+                                  return;
+                                }
                                 widgetList.add(Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: InputChip(
                                     label: Text(
-                                      element,
+                                      key,
                                       style: const TextStyle(
                                         color: Colors.white,
                                       ),
                                     ),
                                     onPressed: () {
-                                      if (imageMap.containsKey(element)) {
-                                        showViewImageDialog(context, imageMap[element]!.data!);
+                                      if (imageMap.containsKey(key)) {
+                                        if (imageMap[key]!.getNative()) {
+                                          showViewImageDialog(context, imageMap[key]!.getData());
+                                        } else {
+                                          showViewNetworkImageDialog(context, imageMap[key]!.getUrl());
+                                        }
                                       }
                                     },
                                     onDeleted: () {
-                                      imageList.remove(element);
-                                      if (imageMap.containsKey(element)) {
-                                        imageMap.remove(element);
+                                      imageMap.remove(key);
+                                      if (imageMap.containsKey(key)) {
+                                        imageMap.remove(key);
                                       }
                                       curStage++;
                                     },
@@ -523,7 +593,7 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                                     padding: const EdgeInsets.all(8.0),
                                   ),
                                 ));
-                              }
+                              });
                               return widgetList;
                             }(),
                           ),
@@ -531,20 +601,6 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
                       ),
                     ),
                     Spacing.addVerticalSpace(10),
-                    // SizedBox(
-                    //   width: 350,
-                    //   child: TextButton(
-                    //     onPressed: () {
-                    //       print('image: $imageList');
-                    //       imageMap.forEach((key, value) {
-                    //         print("file: $key");
-                    //         print("size: ${value.data!.length}");
-                    //       });
-                    //     },
-                    //     child: Text('打印选中图片'),
-                    //   ),
-                    // ),
-                    // Spacing.addVerticalSpace(10),
                   ],
                 ),
               ),
@@ -557,6 +613,7 @@ Future<void> showEditAdvertisementDialog(BuildContext context) async {
     (value) {
       closed = true;
       Runtime.setObserve(oriObserve);
+      return value;
     },
   );
 }

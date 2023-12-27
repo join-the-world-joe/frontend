@@ -31,6 +31,7 @@ class Chinese {
     Language.viewRoleList: '查看角色列表',
     Language.update: '更新',
     Language.remove: '删除',
+    Language.removing: '删除记录',
     Language.confirmYourDeletion: '确认删除?',
     Language.titleOfPermission: '权限',
     Language.major: '主业务号',
@@ -178,6 +179,7 @@ class Chinese {
     Language.updateRecordSuccessfully: '更新成功',
     Language.insertRecordSuccessfully: '插入成功',
     Language.removeOperationFailure: '删除失败',
+    Language.operationTimeout : '超时',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',
@@ -247,6 +249,7 @@ class Chinese {
     Language.urlIllegal : '非法的URL',
     Language.thumbnailOfAdvertisementNotProvided: '未指定缩略图',
     Language.imageOfAdvertisementNotProvided: '未指定商品图片',
+    Language.operationToInsertAdvertisement : '新增广告',
   };
 
   static String getName() {

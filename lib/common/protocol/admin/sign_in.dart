@@ -94,11 +94,6 @@ class SignInRsp {
     return Convert.toBytes(this);
   }
 
-  @override
-  String toString() {
-    return Convert.bytes2String(Convert.toBytes(this));
-  }
-
   SignInRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('body')) {
       Map<String, dynamic> body = json['body'];

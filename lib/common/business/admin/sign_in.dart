@@ -1,5 +1,6 @@
 import 'dart:html';
 import 'dart:typed_data';
+import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/minor.dart';
@@ -36,4 +37,17 @@ void signIn({
       userId: userId,
     ),
   );
+}
+
+void signInHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+  try {
+    var rsp = SignInRsp.fromJson(body);
+    if (rsp.getCode() == Code.oK) {
+    } else {
+      // error occurs
+      return;
+    }
+  } catch (e) {
+    return;
+  }
 }

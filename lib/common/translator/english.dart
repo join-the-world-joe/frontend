@@ -31,6 +31,7 @@ class English {
     Language.viewRoleList: 'View Role List',
     Language.update: 'Update',
     Language.remove: 'Remove',
+    Language.removing: 'Remove Record',
     Language.confirmYourDeletion: 'Confirm Your Deletion?',
     Language.titleOfPermission: 'Permission',
     Language.major: 'Major',
@@ -66,7 +67,7 @@ class English {
     Language.loading: "Loading",
     Language.clickToView: "Click to view",
     Language.titleOfRefreshOperation: 'Refresh',
-    Language.accessDenied : 'Access Denied',
+    Language.accessDenied: 'Access Denied',
 
     // menu
     Language.titleOfParentMenu: 'Parent',
@@ -178,6 +179,7 @@ class English {
     Language.updateRecordSuccessfully: 'Update Record Successfully',
     Language.insertRecordSuccessfully: 'Insert Record Successfully',
     Language.removeOperationFailure: 'Remove Operation Fail',
+    Language.operationTimeout: 'Timeout',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',
@@ -200,7 +202,7 @@ class English {
     Language.placeOfOriginOfAdvertisement: "Place Of Origin",
     Language.sellingPointsOfAdvertisement: "Selling Points",
     Language.stockOfAdvertisement: "Stock",
-    Language.statusOfAdvertisement : "Status",
+    Language.statusOfAdvertisement: "Status",
     Language.imageOfAdvertisement: "Image",
     Language.thumbnailOfAdvertisement: 'Thumbnail',
     Language.newAdvertisement: "New Advertisement",
@@ -218,7 +220,7 @@ class English {
     Language.modifyAdvertisement: "Modify Advertisement",
     Language.noRecordOfGoodInDatabase: "No Good Records",
     Language.noRecordsMatchedTheSearchCondition: "No Matched Records",
-    Language.noRecordOfAdvertisementInDatabase : 'No Advertisement Records',
+    Language.noRecordOfAdvertisementInDatabase: 'No Advertisement Records',
 
     // Good
     Language.productNameNotProvided: "Product Name Not Provided",
@@ -237,16 +239,17 @@ class English {
     Language.advertisementIdIsEmpty: 'Advertisement ID Not Provided',
     Language.peekInfoFromProductId: "Peek",
     Language.peekInfoFromAdvertisementId: 'Peek',
-    Language.illegalPhoneNumber:'illegal phone number',
-    Language.pressToAddThumbnail : 'Add Thumbnail',
-    Language.pressToModifyThumbnail : 'Modify Thumbnail',
-    Language.pressRightButtonToAddThumbnail : 'press right button to add thumbnail',
-    Language.pressRightButtonToAddImage : 'press right button to add image',
-    Language.addImageForAdvertisement : 'Add Advertisement Image',
-    Language.titleOfInsertAdvertisementButton : 'Insert Advertisement',
-    Language.urlIllegal : 'URL is illegal',
+    Language.illegalPhoneNumber: 'illegal phone number',
+    Language.pressToAddThumbnail: 'Add Thumbnail',
+    Language.pressToModifyThumbnail: 'Modify Thumbnail',
+    Language.pressRightButtonToAddThumbnail: 'press right button to add thumbnail',
+    Language.pressRightButtonToAddImage: 'press right button to add image',
+    Language.addImageForAdvertisement: 'Add Advertisement Image',
+    Language.titleOfInsertAdvertisementButton: 'Insert Advertisement',
+    Language.urlIllegal: 'URL is illegal',
     Language.thumbnailOfAdvertisementNotProvided: 'Thumbnail Not Provided',
-    Language.imageOfAdvertisementNotProvided : 'Image Not Provided',
+    Language.imageOfAdvertisementNotProvided: 'Image Not Provided',
+    Language.operationToInsertAdvertisement: 'Insert Advertisement',
   };
 
   static String getName() {

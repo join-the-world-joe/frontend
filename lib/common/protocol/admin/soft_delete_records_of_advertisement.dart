@@ -14,11 +14,15 @@ class SoftDeleteRecordsOfAdvertisementReq {
 }
 
 class SoftDeleteRecordsOfAdvertisementRsp {
-  int code = -1;
+  int _code = -1;
+
+  int getCode() {
+    return _code;
+  }
 
   SoftDeleteRecordsOfAdvertisementRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
-      code = json['code'];
+      _code = json['code'];
     }
   }
 }

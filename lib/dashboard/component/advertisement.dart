@@ -7,10 +7,10 @@ import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
-import 'package:flutter_framework/dashboard/dialog/edit_advertisement.dart';
-import 'package:flutter_framework/dashboard/dialog/remove_advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/insert_record_of_advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/remove_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
-import 'package:flutter_framework/dashboard/dialog/update_advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/update_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
@@ -385,7 +385,7 @@ class _State extends State<Advertisement> {
                         ElevatedButton.icon(
                           icon: const Icon(Icons.add),
                           onPressed: () async {
-                            showEditAdvertisementDialog(context);
+                            showInsertRecordOfAdvertisementDialog(context);
                           },
                           label: Text(
                             Translator.translate(Language.newAdvertisement),
@@ -622,7 +622,7 @@ class Source extends DataTableSource {
                   if (!boolMap.containsKey(key)) {
                     return;
                   }
-                  showUpdateAdvertisementDialog(buildContext, dataMap[key]!).then((value) {
+                  showUpdateRecordOfAdvertisementDialog(buildContext, dataMap[key]!).then((value) {
                     if (value) {
                       fetchRecordsOfAdvertisement(
                         from: Advertisement.content,
@@ -638,7 +638,7 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.delete),
                 tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
-                  await showRemoveAdvertisementDialog(buildContext, dataMap[key]!.getId(), dataMap[key]!.getName()).then(
+                  await showRemoveRecordOfAdvertisementDialog(buildContext, dataMap[key]!.getId(), dataMap[key]!.getName(), dataMap[key]!.getImage()).then(
                     (value) => () {
                       // print('value: $value');
                       if (value) {

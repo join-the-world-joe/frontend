@@ -7,7 +7,6 @@ Future<void> showWarningDialog(BuildContext context, String info) async {
     context: context,
     builder: (BuildContext context) => AlertDialog(
       icon: const Icon(Icons.warning),
-      // title: const Text('警告'),
       content: SizedBox(
         height: 25,
         child: Center(

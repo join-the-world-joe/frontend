@@ -8,6 +8,8 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
+import 'package:flutter_framework/dashboard/dialog/sign_in_progress.dart';
+import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'screen.dart';
 import 'package:flutter_framework/utils/navigate.dart';
@@ -40,6 +42,7 @@ class _State extends State<SMSSignIn> {
   final countryCodeControl = TextEditingController();
   final phoneNumberControl = TextEditingController(text: '18629309942');
   final verificationCodeControl = TextEditingController(text: '1111');
+  SignInProgressDialog? signInProgress;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -63,7 +66,7 @@ class _State extends State<SMSSignIn> {
       closed = true;
       Future.delayed(
         const Duration(milliseconds: 500),
-            () {
+        () {
           print('SMSSignIn.navigate to $page');
           if (countdownTimer != null) {
             if (countdownTimer!.isActive) {
@@ -112,13 +115,13 @@ class _State extends State<SMSSignIn> {
         caller: caller,
         message: 'failure, err: $e',
       );
-    } finally {}
+    }
   }
 
   void smsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'smsHandler';
     try {
-      SendVerificationCodeRsp rsp = SendVerificationCodeRsp.fromJson(body);
+      var rsp = SendVerificationCodeRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -131,7 +134,7 @@ class _State extends State<SMSSignIn> {
         countdown = 60;
         countdownTimer = Timer.periodic(
           const Duration(seconds: 1),
-              (timer) {
+          (timer) {
             countdown--;
             // print('countdown: $countdown');
             smsButtonLabel = '$countdown';
@@ -145,25 +148,27 @@ class _State extends State<SMSSignIn> {
           },
         );
         return;
-      } else if (rsp.getCode() == Code.invalidDataType) {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.illegalPhoneNumber),
-        );
-        fSent = false;
-        refresh();
-        return;
       } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
-        return;
+        // error occurs
+        if (rsp.getCode() == Code.invalidDataType) {
+          showMessageDialog(
+            context,
+            Translator.translate(Language.titleOfNotification),
+            Translator.translate(Language.illegalPhoneNumber),
+          );
+          fSent = false;
+          refresh();
+          return;
+        } else {
+          showMessageDialog(
+            context,
+            Translator.translate(Language.titleOfNotification),
+            '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
+          );
+          return;
+        }
       }
     } catch (e) {
-      SendVerificationCodeRsp rsp = SendVerificationCodeRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -177,7 +182,7 @@ class _State extends State<SMSSignIn> {
   void signInHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'signInHandler';
     try {
-      SignInRsp rsp = SignInRsp.fromJson(body);
+      var rsp = SignInRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -189,14 +194,11 @@ class _State extends State<SMSSignIn> {
         Cache.setUserId(rsp.getUserId());
         Cache.setMemberId(rsp.getMemberId());
         Cache.setSecret(rsp.getSecret());
-        navigate(Screen.home);
+      }
+      if (signInProgress != null) {
+        signInProgress!.respond(rsp);
       } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
-        return;
+        navigate(Screen.home);
       }
     } catch (e) {
       Log.debug(
@@ -207,7 +209,7 @@ class _State extends State<SMSSignIn> {
         message: 'failure, err: $e',
       );
       return;
-    } finally {}
+    }
   }
 
   void refresh() {
@@ -434,27 +436,22 @@ class _State extends State<SMSSignIn> {
                       height: 40,
                       width: 350,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // if (!Runtime.allow(
-                          //   major: int.parse(Major.admin),
-                          //   minor: int.parse(Admin.signInReq),
-                          // )) {
-                          //   return;
-                          // }
-                          signIn(
-                            from: Screen.smsSignIn,
-                            caller:  '$caller.signIn',
-                            behavior: 2,
-                            verificationCode: int.parse(verificationCodeControl.text),
-                            countryCode: countryCodeControl.text,
-                            phoneNumber: phoneNumberControl.text,
-                            email: '',
-                            account: '',
-                            memberId: '',
-                            password: Uint8List.fromList([]),
-                            userId: 0,
-                          );
-                          refresh();
+                        onPressed: () async {
+                          if (signInProgress == null) {
+                            signInProgress = SignInProgressDialog.construct(result: Code.internalError);
+                            signInProgress!.setBehavior(2);
+                            signInProgress!.setPhoneNumber(phoneNumberControl.text);
+                            signInProgress!.setCountryCode(countryCodeControl.text);
+                            signInProgress!.setVerificationCode(int.parse(verificationCodeControl.text));
+                            signInProgress!.show(context: context).then((value) {
+                              if (value == Code.oK) {
+                                navigate(Screen.home);
+                              } else {
+                                showWarningDialog(context, Translator.translate(Language.operationTimeout));
+                              }
+                              signInProgress = null;
+                            });
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           fixedSize: const Size(85, 35),

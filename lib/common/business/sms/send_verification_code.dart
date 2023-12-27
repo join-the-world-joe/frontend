@@ -1,5 +1,9 @@
 import 'dart:typed_data';
+import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/sms.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
+import 'package:flutter_framework/utils/log.dart';
 
 import '../../../../utils/convert.dart';
 import '../../route/major.dart';
@@ -28,3 +32,28 @@ void sendVerificationCode({
     ),
   );
 }
+
+void sendVerificationCodeHandler({
+  required String major,
+  required String minor,
+  required Map<String, dynamic> body,
+}) {
+  try {
+    var rsp = SendVerificationCodeRsp.fromJson(body);
+    if (rsp.getCode() == Code.oK) {
+      return;
+    } else{
+      if (rsp.getCode() == Code.invalidDataType) {
+        print(Translator.translate(Language.illegalPhoneNumber));
+        return;
+      } else {
+        print('${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}');
+        return;
+      }
+    }
+  } catch(e){
+    return;
+  }
+}
+
+
