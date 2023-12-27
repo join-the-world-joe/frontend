@@ -19,10 +19,8 @@ import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/business/sms/send_verification_code.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/common/protocol/admin/sign_in.dart';
-import 'package:flutter_framework/common/business//admin/sign_in.dart';
 
 class SMSSignIn extends StatefulWidget {
   const SMSSignIn({Key? key}) : super(key: key);

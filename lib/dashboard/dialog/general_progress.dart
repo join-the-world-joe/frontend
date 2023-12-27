@@ -1,15 +1,6 @@
-import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/progress/fetch_header_list_of_object_file_list_of_advertisement_progress.dart';
-import 'package:flutter_framework/common/progress/remove_list_of_object_file_progress.dart';
-import 'package:flutter_framework/common/progress/upgrade_fields_of_advertisement_progress.dart';
-import 'package:flutter_framework/common/progress/upload_image_list_progress.dart';
-import 'package:flutter_framework/common/protocol/admin/update_record_of_advertisement.dart';
-import 'package:flutter_framework/common/protocol/oss/remove_list_of_object_file.dart';
-import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/oss.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -19,24 +10,6 @@ import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/oss/fetch_header_list_of_object_file_list_of_advertisement.dart';
-import 'package:path/path.dart' as path;
-import 'package:flutter_framework/dashboard/local/image_item.dart';
-
-/*
-work flow
-fetch oss headers    ------->  backend
-oss request headers  <-------  backend
-upload images        ------->  oss server
-http status code     <-------  oss server
-upgrade image field  ------->  backend
-result               <-------  backend
-remove object file   ------->  backend
-result               <-------  backend
-verify oss objects   ------->  backend
-result               <-------  backend
-four possible stage; requested, timeout(after interval), responded, failure(successfully)
- */
 
 Future<int> showSignInProgressDialog(
   BuildContext context, {

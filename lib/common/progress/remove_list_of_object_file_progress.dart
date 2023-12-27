@@ -6,33 +6,22 @@ import 'package:flutter_framework/common/protocol/oss/remove_list_of_object_file
 import 'package:flutter_framework/dashboard/model/advertisement.dart';
 import 'package:flutter_framework/common/business/oss/remove_list_of_object_file.dart';
 
-/*
-three possible stage; requested, timeout, responded()
- */
 class RemoveListOfObjectFileProgress {
-  String from = 'InsertRecordOfAdvertisementProgress';
-  int _result = -1;
+  String from = 'RemoveListOfObjectFileProgress';
   DateTime _requestTime = DateTime.now();
   bool _requested = false;
   bool _responded = false;
-  bool _finished = false;
   final Duration _defaultTimeout = Config.httpDefaultTimeout;
   List<String> _objectFileToBeRemoved = [];
   RemoveListOfObjectFileRsp? _rsp;
 
-  RemoveListOfObjectFileProgress.construct({
-    required int result,
-    required List<String> objectFileToBeRemoved,
-  }) {
+  RemoveListOfObjectFileProgress.construct() {
     _requested = false;
     _responded = false;
-    _finished = false;
-    _result = result;
-    _objectFileToBeRemoved = objectFileToBeRemoved;
   }
 
-  int result() {
-    return _result;
+  setObjectFileToBeRemoved(List<String> objectFileToBeRemoved) {
+    _objectFileToBeRemoved = objectFileToBeRemoved;
   }
 
   void respond(RemoveListOfObjectFileRsp? rsp) {
@@ -42,18 +31,16 @@ class RemoveListOfObjectFileProgress {
 
   void skip() {
     print('skip RemoveListOfObjectFileProgress');
-    _result = 0;
     _requested = true;
-    _finished = true;
     _responded = true;
+    _rsp = RemoveListOfObjectFileRsp.fromJson({"code":Code.oK});
   }
 
-  void setObjectFileToBeRemoved(List<String> objectFileToBeRemoved) {
-    _objectFileToBeRemoved = objectFileToBeRemoved;
-  }
-
-  bool finished() {
-    return _finished;
+  bool timeout() {
+    if (!_responded && DateTime.now().isAfter(_requestTime.add(_defaultTimeout))) {
+      return true;
+    }
+    return false;
   }
 
   int progress() {
@@ -69,22 +56,18 @@ class RemoveListOfObjectFileProgress {
       _requested = true;
     }
     if (_requested) {
-      if (!_responded && DateTime.now().isAfter(_requestTime.add(_defaultTimeout))) {
-        _finished = true;
-        return _result;
+      if (timeout()) {
+        return Code.internalError;
       }
       if (_responded) {
         if (_rsp != null) {
           if (_rsp!.getCode() == Code.oK) {
-            _result = _rsp!.getCode();
-            _finished = true;
             return Code.oK;
           }
         }
-        _finished = true;
-        return _result;
+        return Code.internalError;
       }
     }
-    return _result * -1;
+    return 1;
   }
 }

@@ -48,6 +48,7 @@ class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
     _requested = true;
     _responded = true;
     _finished = true;
+    _rsp = FetchHeaderListOfObjectFileListOfAdvertisementRsp.fromJson({"code": Code.oK});
   }
 
   void setNameListOfFile(List<String> nameListOfFile) {
@@ -77,7 +78,7 @@ class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
       _requested = true;
     }
     if (_requested) {
-      if ( !_responded && DateTime.now().isAfter(_requestTime.add(_defaultTimeout))) {
+      if (!_responded && DateTime.now().isAfter(_requestTime.add(_defaultTimeout))) {
         _finished = true;
         return _result;
       }

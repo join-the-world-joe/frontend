@@ -23,17 +23,6 @@ import '../config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter_framework/dashboard/local/image_item.dart';
 
-/*
-use cases
-1. delete image; modify original record
-2. add new image; need to upload image
-3. delete image & add new image; modify record & need to upload image
-
-optimization
-1. frontend provides the remove key list for backend
-2. frontend use the update interface to modify the specific record
- */
-
 Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Advertisement advertisement) async {
   var oriObserve = Runtime.getObserve();
   int status = advertisement.getStatus();
@@ -119,29 +108,13 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
           dbKey: key,
         );
         oriImageMap[key] = imageMap[key]!;
+        if (commonPath.isEmpty && key.contains(Config.thumbnailPrefix)) {
+          commonPath = imageMap[key]!.getUrl().split(oriObjectFileName)[0];
+        }
       });
-      // if (imageMap.containsKey('0')) {
-      //   extension = path.extension(imageMap['0']!.getUrl()).toLowerCase();
-      //   commonPath = imageMap['0']!.getUrl().split('${advertisement.getId()}/0$extension')[0];
-      //   imageMap[thumbnailKey] = imageMap['0']!;
-      //   imageMap.remove('0');
-      // }
       Runtime.setObserve(observe);
     } catch (e) {
-      print('showUpdateAdvertisementDialog failure, err: $e');
-    } finally {
-      // print('Original Image map: ');
-      // oriImageMap.forEach(
-      //   (key, value) {
-      //     print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
-      //   },
-      // );
-      // print('Image map: ');
-      // imageMap.forEach(
-      //   (key, value) {
-      //     print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
-      //   },
-      // );
+      print('showUpdateRecordOfAdvertisementDialog failure, err: $e');
     }
   }
 
@@ -194,14 +167,6 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                 );
                 return;
               }
-              // if (!imageMap.containsKey(thumbnailKey)) {
-              //   showMessageDialog(
-              //     context,
-              //     Translator.translate(Language.titleOfNotification),
-              //     Translator.translate(Language.thumbnailOfAdvertisementNotProvided),
-              //   );
-              //   return;
-              // }
               if (imageMap.length < 2) {
                 showMessageDialog(
                   context,
@@ -210,10 +175,6 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                 );
                 return;
               }
-
-              // imageMap['0'] = imageMap[thumbnailKey]!;
-              // imageMap.remove(thumbnailKey);
-
               var tempImageMap = () {
                 Map<String, ImageItem> output = {};
                 imageMap.forEach(
@@ -221,8 +182,6 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                     output[key] = value;
                   },
                 );
-                // output['0'] = output[thumbnailKey]!;
-                // output.remove(thumbnailKey);
                 return output;
               }();
 
@@ -437,9 +396,6 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                       child: TextFormField(
                         readOnly: true,
                         controller: thumbnailController,
-                        // decoration: InputDecoration(
-                        //   labelText: Translator.translate(Language.thumbnailOfAdvertisement),
-                        // ),
                         decoration: InputDecoration(
                           suffixIcon: IconButton(
                             tooltip: Translator.translate(Language.pressToModifyThumbnail),
@@ -447,23 +403,28 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                             onPressed: () async {
                               var mediaData = await ImagePickerWeb.getImageInfo;
                               if (mediaData != null) {
-                                //   imageMap[thumbnailKey] = mediaData;
+                                // remove thumbnail from map
+                                var thumbnailKey = '';
+                                imageMap.forEach((key, value) {
+                                  if (key.contains(Config.thumbnailPrefix))  {
+                                    thumbnailKey = key;
+                                  }
+                                });
+                                if (thumbnailKey.isNotEmpty) {
+                                  imageMap.remove(thumbnailKey);
+                                }
+                                // insert thumbnail to map
                                 var timestamp = (DateTime.now().millisecondsSinceEpoch) ~/ 1000;
                                 String extension = path.extension(mediaData.fileName!).toLowerCase();
                                 var objectFileName = '${advertisement.getId()}/${Config.thumbnailPrefix}$timestamp$extension';
                                 imageMap[objectFileName] = ImageItem.construct(
                                   native: true,
                                   data: mediaData.data!,
-                                  objectFile: '${advertisement.getId()}/0$extension',
+                                  objectFile: objectFileName,
                                   url: '',
                                   nativeFileName: mediaData.fileName!,
                                   dbKey: '${Config.thumbnailPrefix}$timestamp',
                                 );
-
-                                // print('thumbnail file name: ${mediaData.fileName!}');
-                                // print('thumbnail extension: $extension');
-                                // print('thumbnail size: ${mediaData.data!.length}');
-                                // print('thumbnail object file: ${imageMap[thumbnailKey]!.getObjectFile()}');
                                 curStage++;
                               }
                             },
@@ -471,45 +432,40 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                           prefixIcon: Wrap(
                             children: () {
                               List<Widget> widgetList = [];
-                              if (imageMap[thumbnailKey] != null) {
-                                var title = '';
-                                if (!imageMap[thumbnailKey]!.getNative()) {
-                                  title = imageMap[thumbnailKey]!.getDBKey();
-                                } else {
-                                  title = imageMap[thumbnailKey]!.getNativeFileName();
-                                }
-                                widgetList.add(Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: InputChip(
-                                    label: Text(
-                                      title,
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                              imageMap.forEach((key, value) {
+                                if(key.contains(Config.thumbnailPrefix)) {
+                                  var title = '';
+                                  if (!value.getNative()) {
+                                    title = value.getDBKey();
+                                  } else {
+                                    title = value.getNativeFileName();
+                                  }
+                                  widgetList.add(Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: InputChip(
+                                      label: Text(
+                                        title,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                        ),
                                       ),
+                                      onPressed: () {
+                                        if (!value.getNative()) {
+                                          showViewNetworkImageDialog(context, value.getUrl());
+                                        } else {
+                                          // native
+                                          showViewImageDialog(context, value.getData());
+                                        }
+                                      },
+                                      backgroundColor: Colors.green,
+                                      // selectedColor: Colors.green,
+                                      elevation: 6.0,
+                                      shadowColor: Colors.grey[60],
+                                      padding: const EdgeInsets.all(8.0),
                                     ),
-                                    onPressed: () {
-                                      if (!imageMap[thumbnailKey]!.getNative()) {
-                                        showViewNetworkImageDialog(context, imageMap[thumbnailKey]!.getUrl());
-                                      } else {
-                                        // native
-                                        showViewImageDialog(context, imageMap[thumbnailKey]!.getData());
-                                      }
-                                      // if (imageMap[thumbnailKey] != null) {
-                                      //   showViewImageDialog(context, imageMap[thumbnailKey]!.data!);
-                                      // }
-                                    },
-                                    // onDeleted: () {
-                                    //   sellingPoints.remove(element);
-                                    //   curStage++;
-                                    // },
-                                    backgroundColor: Colors.green,
-                                    // selectedColor: Colors.green,
-                                    elevation: 6.0,
-                                    shadowColor: Colors.grey[60],
-                                    padding: const EdgeInsets.all(8.0),
-                                  ),
-                                ));
-                              }
+                                  ));
+                                }
+                              });
                               return widgetList;
                             }(),
                           ),
@@ -533,13 +489,6 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                                 var timestamp = (DateTime.now().millisecondsSinceEpoch) ~/ 1000;
                                 String extension = path.extension(mediaData.fileName!).toLowerCase();
                                 var objectFileName = '${advertisement.getId()}/$timestamp$extension';
-                                // print('key: $timestamp');
-                                // print('file name: ${mediaData.fileName!}');
-                                // print('object file name: $objectFileName');
-                                // print('extension: $extension');
-                                // print('size: ${mediaData.data!.length}');
-                                // imageMap[mediaData.fileName!] = mediaData;
-                                // imageList.add(mediaData.fileName!);
                                 imageMap[mediaData.fileName!] = ImageItem.construct(
                                   native: true,
                                   data: mediaData.data!,
@@ -580,7 +529,6 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                                       }
                                     },
                                     onDeleted: () {
-                                      imageMap.remove(key);
                                       if (imageMap.containsKey(key)) {
                                         imageMap.remove(key);
                                       }

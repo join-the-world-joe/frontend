@@ -2,12 +2,15 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/business/oss/remove_list_of_object_file.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
+import 'package:flutter_framework/common/progress/remove_list_of_object_file_progress.dart';
 import 'package:flutter_framework/common/protocol/admin/soft_delete_records_of_advertisement.dart';
+import 'package:flutter_framework/common/protocol/oss/remove_list_of_object_file.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
+import 'package:flutter_framework/common/route/oss.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/dialog/soft_delete_records_of_advertisement_progress.dart';
@@ -18,11 +21,7 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/business/admin/soft_delete_records_of_advertisement.dart';
-import 'package:flutter_framework/common/protocol/admin/soft_delete_user_record.dart';
 import 'package:path/path.dart' as path;
-
-Map<String, ImageItem> imageMap = {}; // key: key of advertisement in database or native file name
 
 Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id, String name, String image) async {
   var oriObserve = Runtime.getObserve();
@@ -32,8 +31,10 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
   int curStage = 0;
   String from = 'showRemoveRecordOfAdvertisementDialog';
   var commonPath = '';
+  Map<String, ImageItem> imageMap = {}; // key: key of advertisement in database or native file name
   SoftDeleteRecordsOfAdvertisementProgressDialog? softDeleteRecordProgress;
-
+  RemoveListOfObjectFileProgress? removeObjectFileProgress;
+  List<String> objectFileToBeRemoved = [];
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
@@ -61,6 +62,7 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
         nativeFileName: '',
         dbKey: key,
       );
+      objectFileToBeRemoved.add(oriObjectFileName);
     });
   } catch (e) {
     print('showRemoveAdvertisementDialog failure, err: $e');
@@ -99,6 +101,35 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
     }
   }
 
+  void removeListOfObjectFileHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'removeListOfObjectFileHandler';
+    try {
+      var rsp = RemoveListOfObjectFileRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (rsp.getCode() == Code.oK) {
+        return;
+      } else {
+        // error occurs
+        return;
+      }
+    } catch (e) {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
+      return;
+    }
+  }
+
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
@@ -114,6 +145,8 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
       );
       if (major == Major.admin && minor == Admin.softDeleteRecordsOfAdvertisementRsp) {
         softDeleteRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.oss && minor == OSS.removeListOfObjectFileRsp) {
+        removeListOfObjectFileHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
           major: major,
@@ -136,7 +169,11 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
     }
   }
 
-  Runtime.setObserve(observe);
+  void setup() {
+    Runtime.setObserve(observe);
+  }
+
+  setup();
 
   return await showDialog(
     barrierDismissible: true,
@@ -148,8 +185,6 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
         // ],
         content: StreamBuilder(
           builder: (context, snap) {
-            // print('data: ${snap.data}');
-            // if (snap.data != null) {
             return SizedBox(
               width: width,
               height: height,
@@ -157,7 +192,6 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
                 child: Column(
                   children: [
                     Column(
-                      // mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('ID ：${id}'),
@@ -177,6 +211,11 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
                         ),
                         TextButton(
                           onPressed: () {
+                            removeListOfObjectFile(
+                              from: from,
+                              caller: caller,
+                              listOfObjectFile: objectFileToBeRemoved,
+                            );
                             if (softDeleteRecordProgress == null) {
                               softDeleteRecordProgress = SoftDeleteRecordsOfAdvertisementProgressDialog.construct(
                                 result: Code.internalError,

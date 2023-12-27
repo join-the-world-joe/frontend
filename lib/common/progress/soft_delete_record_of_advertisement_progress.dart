@@ -34,6 +34,7 @@ class SoftDeleteRecordsOfAdvertisementProgress {
     print('skip SoftDeleteRecordsOfAdvertisementProgress');
     _requested = true;
     _responded = true;
+    _rsp = SoftDeleteRecordsOfAdvertisementRsp.fromJson({"code": Code.oK});
   }
 
   bool timeout() {

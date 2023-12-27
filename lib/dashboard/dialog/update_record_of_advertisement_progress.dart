@@ -23,21 +23,6 @@ import 'package:flutter_framework/common/protocol/oss/fetch_header_list_of_objec
 import 'package:path/path.dart' as path;
 import 'package:flutter_framework/dashboard/local/image_item.dart';
 
-/*
-work flow
-fetch oss headers    ------->  backend
-oss request headers  <-------  backend
-upload images        ------->  oss server
-http status code     <-------  oss server
-upgrade image field  ------->  backend
-result               <-------  backend
-remove object file   ------->  backend
-result               <-------  backend
-verify oss objects   ------->  backend
-result               <-------  backend
-four possible stage; requested, timeout(after interval), responded, failure(successfully)
- */
-
 Future<int> showUpdateRecordOfAdvertisementProgressDialog(
   BuildContext context, {
   required int advertisementId,
@@ -63,9 +48,6 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
   var oriObserve = Runtime.getObserve();
   Map<String, ObjectFileRequestHeader> requestHeader = {}; // key: object file name
   List<String> objectFileToBeRemoved = [];
-
-  // remove list of object file
-  bool removeListOfObjectFileRequested = false;
 
   String information = '';
   double height = 100;
@@ -93,7 +75,8 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
   var step3 = UpgradeFieldsOfAdvertisementProgress.construct(
     result: -3,
     id: advertisementId,
-    image: '', // later
+    image: '',
+    // later
     name: name,
     title: title,
     stock: stock,
@@ -104,10 +87,7 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
     placeOfOrigin: placeOfOrigin,
   );
 
-  var step4 = RemoveListOfObjectFileProgress.construct(
-    result: -4,
-    objectFileToBeRemoved: [], // later
-  );
+  var step4 = RemoveListOfObjectFileProgress.construct();
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -265,14 +245,11 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
       step2.skip();
     }
     if (objectFileToBeRemoved.isEmpty) {
-      // skip remove object file progress
-      removeListOfObjectFileRequested = true;
+      step4.skip();
     }
   }
 
   void progress() {
-    var caller = 'progress';
-
     if (!hasFigureOutStep1Argument) {
       step1.setAdvertisementId(advertisementId);
       step1.setNameListOfFile(nameListOfFile);
@@ -335,18 +312,18 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
       return;
     }
 
-    if(!hasFigureOutStep4Argument) {
+    if (!hasFigureOutStep4Argument) {
       step4.setObjectFileToBeRemoved(objectFileToBeRemoved);
       hasFigureOutStep4Argument = true;
     }
 
-    step4.progress();
-    if (!step4.finished()) {
+    var ret = step4.progress();
+    if (ret > 0) {
       return;
     }
 
-    if (step4.result() < 0) {
-      result = step4.result();
+    if (ret < 0) {
+      result = -4;
       Navigator.pop(context);
       return;
     }

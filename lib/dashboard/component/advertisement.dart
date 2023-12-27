@@ -473,7 +473,7 @@ class Source extends DataTableSource {
     try {
       Map<String, dynamic> temp = jsonDecode(image);
       temp.forEach((key, value) {
-        if (key != '0') {
+        if (!key.contains(Config.thumbnailPrefix)) {
           output.add(value);
         }
       });
