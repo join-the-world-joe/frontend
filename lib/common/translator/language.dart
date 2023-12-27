@@ -229,9 +229,8 @@ class Language {
   // Wechat
   static String titleOfPublishOfAdvertisement = 'the title of publish operation of advertisement';
   static String approveAdvertisementToGroup = 'to approve an advertisement to group';
-  static String noRecordsOfADOfDeals = "there is no records of ad of deals";
+  static String noRecordsPublished = "no records published";
   static String rejectAdvertisementFromGroup = 'to reject an advertisement from group';
-  static String advertisementOfADOfDealsNotProvided = 'there is no advertisements provided for deals';
   static String publishAdvertisementsSuccessfully = 'publish advertisements successfully';
   static String advertisementIdIsEmpty = 'the advertisement id is empty';
   static String peekInfoFromProductId = "to peek the information from product id";
@@ -247,4 +246,5 @@ class Language {
   static String thumbnailOfAdvertisementNotProvided = 'thumbnail of advertisement not provided';
   static String imageOfAdvertisementNotProvided = 'image of advertisement not provided';
   static String operationToInsertAdvertisement = 'the operation of insertion of advertisement';
+  static String noAdvertisementAssociated = 'there is no advertisement associated with';
 }

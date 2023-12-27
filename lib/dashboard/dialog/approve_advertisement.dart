@@ -16,10 +16,10 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import '../config/config.dart';
 
-Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) async {
+Future<int> showApproveAdvertisementDialog(BuildContext context) async {
   bool closed = false;
   int curStage = 0;
-  String from = 'showApproveAdvertisementOfADOfDealsDialog';
+  String from = 'showApproveAdvertisementDialog';
   var oriObserve = Runtime.getObserve();
   var advertisementIdController = TextEditingController();
   var advertisementNameController = TextEditingController();
@@ -150,7 +150,7 @@ Future<int> showApproveAdvertisementOfADOfDealsDialog(BuildContext context) asyn
                 showMessageDialog(
                   context,
                   Translator.translate(Language.titleOfNotification),
-                  Translator.translate(Language.advertisementOfADOfDealsNotProvided),
+                  Translator.translate(Language.noAdvertisementAssociated),
                 );
                 return;
               }

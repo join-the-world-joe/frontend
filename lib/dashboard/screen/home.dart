@@ -10,6 +10,7 @@ import 'package:flutter_framework/common/translator/english.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/component/advertisement.dart';
+import 'package:flutter_framework/dashboard/component/carousel.dart';
 import 'package:flutter_framework/dashboard/component/deals.dart';
 import 'package:flutter_framework/dashboard/component/field.dart';
 import 'package:flutter_framework/dashboard/component/good.dart';
@@ -61,6 +62,7 @@ class _State extends State<Home> {
   var good = Good();
   var advertisement = Advertisement();
   var deals = Deals();
+  var carousel = Carousel();
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -266,6 +268,7 @@ class _State extends State<Home> {
     good = Good();
     advertisement = Advertisement();
     deals = Deals();
+    carousel = Carousel();
   }
 
   void setup() {
@@ -273,10 +276,7 @@ class _State extends State<Home> {
     // print('home.setup');
     Runtime.setObserve(observe);
     Runtime.setObserver(observer);
-    fetchMenuListOfCondition(
-        from: Screen.home,
-        caller: caller,
-        behavior: 1, userId: 0, roleList: RoleList([]));
+    fetchMenuListOfCondition(from: Screen.home, caller: caller, behavior: 1, userId: 0, roleList: RoleList([]));
   }
 
   @override
@@ -459,7 +459,9 @@ class _State extends State<Home> {
                     return advertisement;
                   } else if (Cache.getContent() == Deals.content) {
                     return deals;
-                  }else {
+                  } else if (Cache.getContent() == Carousel.content) {
+                    return carousel;
+                  } else {
                     return const Text('Unknown');
                   }
                 }

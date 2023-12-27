@@ -232,9 +232,8 @@ class English {
     // WeChat
     Language.titleOfPublishOfAdvertisement: 'Publish',
     Language.approveAdvertisementToGroup: "Approve",
-    Language.noRecordsOfADOfDeals: 'Records of Deals are empty',
+    Language.noRecordsPublished: 'No Records Published',
     Language.rejectAdvertisementFromGroup: "Reject",
-    Language.advertisementOfADOfDealsNotProvided: 'Advertisement Not Provided',
     Language.publishAdvertisementsSuccessfully: 'Publish Successfully',
     Language.advertisementIdIsEmpty: 'Advertisement ID Not Provided',
     Language.peekInfoFromProductId: "Peek",
@@ -250,6 +249,7 @@ class English {
     Language.thumbnailOfAdvertisementNotProvided: 'Thumbnail Not Provided',
     Language.imageOfAdvertisementNotProvided: 'Image Not Provided',
     Language.operationToInsertAdvertisement: 'Insert Advertisement',
+    Language.noAdvertisementAssociated : 'Advertisement Not Provided',
   };
 
   static String getName() {

@@ -55,7 +55,6 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(
   required int productId,
   required Map<String, MediaInfo> imageMap,
   required List<String> imageList,
-  required String thumbnailKey,
 }) async {
   var result = Code.internalError;
   int? advertisementId;
@@ -230,9 +229,9 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(
   }
 
   void figureOutNameListOfFile() {
-    String extension = path.extension(imageMap[thumbnailKey]!.fileName!).toLowerCase();
-    nameListOfFile.add('$advertisementId/0$extension');
-    objectDataMapping['$advertisementId/0$extension'] = imageMap[thumbnailKey]!.data!;
+    String extension = path.extension(imageMap[Config.defaultThumbnailObjectFileName]!.fileName!).toLowerCase();
+    nameListOfFile.add('$advertisementId/${Config.defaultThumbnailObjectFileName}$extension');
+    objectDataMapping['$advertisementId/${Config.defaultThumbnailObjectFileName}$extension'] = imageMap[Config.defaultThumbnailObjectFileName]!.data!;
     for (var index = 0; index < imageList.length; index++) {
       extension = path.extension(imageMap[imageList[index]]!.fileName!).toLowerCase();
       nameListOfFile.add('$advertisementId/${index + 1}$extension');
@@ -242,8 +241,6 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(
   }
 
   void progress() {
-    var caller = 'progress';
-
     step1.progress();
     if (!step1.finished()) {
       return;

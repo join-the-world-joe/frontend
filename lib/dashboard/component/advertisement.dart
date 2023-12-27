@@ -457,9 +457,11 @@ class Source extends DataTableSource {
     String output = '';
     try {
       Map<String, dynamic> temp = jsonDecode(image);
-      if (temp.containsKey('0')) {
-        output =  temp['0'];
-      }
+      temp.forEach((key, value) {
+        if (key.contains(Config.thumbnailPrefix)) {
+          output = temp[key];
+        }
+      });
     } catch(e) {
       print('Advertisement.Source.getThumbnail failure, err: $e');
     }

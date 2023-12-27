@@ -13,11 +13,11 @@ import '../config/config.dart';
 import 'package:flutter_framework/common/business/admin/soft_delete_records_of_advertisement.dart';
 import 'package:flutter_framework/common/protocol/admin/soft_delete_user_record.dart';
 
-Future<bool> showRejectAdvertisementOfADOfDealsDialog(BuildContext context, String id, String name) async {
+Future<bool> showRejectAdvertisementDialog(BuildContext context, String id, String name) async {
   var oriObserve = Runtime.getObserve();
   bool closed = false;
   int curStage = 0;
-  var from = 'showRejectAdvertisementOfADOfDealsDialog';
+  var from = 'showRejectAdvertisementDialog';
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {

@@ -53,7 +53,6 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
   var sellingPointController = TextEditingController();
   Map<String, ImageItem> imageMap = {}; // key: key of advertisement in database or native file name
   Map<String, ImageItem> oriImageMap = {}; // key: key of advertisement in database
-  var thumbnailKey = 'thumbnail';
   var commonPath = '';
 
   Stream<int>? stream() async* {
@@ -121,12 +120,12 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
         );
         oriImageMap[key] = imageMap[key]!;
       });
-      if (imageMap.containsKey('0')) {
-        extension = path.extension(imageMap['0']!.getUrl()).toLowerCase();
-        commonPath = imageMap['0']!.getUrl().split('${advertisement.getId()}/0$extension')[0];
-        imageMap[thumbnailKey] = imageMap['0']!;
-        imageMap.remove('0');
-      }
+      // if (imageMap.containsKey('0')) {
+      //   extension = path.extension(imageMap['0']!.getUrl()).toLowerCase();
+      //   commonPath = imageMap['0']!.getUrl().split('${advertisement.getId()}/0$extension')[0];
+      //   imageMap[thumbnailKey] = imageMap['0']!;
+      //   imageMap.remove('0');
+      // }
       Runtime.setObserve(observe);
     } catch (e) {
       print('showUpdateAdvertisementDialog failure, err: $e');
@@ -195,14 +194,14 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                 );
                 return;
               }
-              if (!imageMap.containsKey(thumbnailKey)) {
-                showMessageDialog(
-                  context,
-                  Translator.translate(Language.titleOfNotification),
-                  Translator.translate(Language.thumbnailOfAdvertisementNotProvided),
-                );
-                return;
-              }
+              // if (!imageMap.containsKey(thumbnailKey)) {
+              //   showMessageDialog(
+              //     context,
+              //     Translator.translate(Language.titleOfNotification),
+              //     Translator.translate(Language.thumbnailOfAdvertisementNotProvided),
+              //   );
+              //   return;
+              // }
               if (imageMap.length < 2) {
                 showMessageDialog(
                   context,
@@ -222,8 +221,8 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                     output[key] = value;
                   },
                 );
-                output['0'] = output[thumbnailKey]!;
-                output.remove(thumbnailKey);
+                // output['0'] = output[thumbnailKey]!;
+                // output.remove(thumbnailKey);
                 return output;
               }();
 
@@ -237,7 +236,6 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                 title: titleController.text,
                 sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
                 sellingPoints: sellingPoints,
-                thumbnailKey: thumbnailKey,
                 image: advertisement.getImage(),
                 imageMap: tempImageMap,
                 placeOfOrigin: placeOfOriginController.text,
@@ -450,14 +448,16 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                               var mediaData = await ImagePickerWeb.getImageInfo;
                               if (mediaData != null) {
                                 //   imageMap[thumbnailKey] = mediaData;
+                                var timestamp = (DateTime.now().millisecondsSinceEpoch) ~/ 1000;
                                 String extension = path.extension(mediaData.fileName!).toLowerCase();
-                                imageMap[thumbnailKey] = ImageItem.construct(
+                                var objectFileName = '${advertisement.getId()}/${Config.thumbnailPrefix}$timestamp$extension';
+                                imageMap[objectFileName] = ImageItem.construct(
                                   native: true,
                                   data: mediaData.data!,
                                   objectFile: '${advertisement.getId()}/0$extension',
                                   url: '',
                                   nativeFileName: mediaData.fileName!,
-                                  dbKey: '0',
+                                  dbKey: '${Config.thumbnailPrefix}$timestamp',
                                 );
 
                                 // print('thumbnail file name: ${mediaData.fileName!}');
@@ -558,7 +558,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                             children: () {
                               List<Widget> widgetList = [];
                               imageMap.forEach((key, value) {
-                                if (key.compareTo(thumbnailKey) == 0) {
+                                if (key.contains(Config.thumbnailPrefix)) {
                                   return;
                                 }
                                 widgetList.add(Padding(

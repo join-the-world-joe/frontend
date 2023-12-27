@@ -67,7 +67,7 @@ class Chinese {
     Language.loading: "加载中",
     Language.clickToView: "点击查看",
     Language.titleOfRefreshOperation: '刷新',
-    Language.accessDenied : '没有权限',
+    Language.accessDenied: '没有权限',
 
     // menu
     Language.titleOfParentMenu: '父级菜单',
@@ -179,7 +179,7 @@ class Chinese {
     Language.updateRecordSuccessfully: '更新成功',
     Language.insertRecordSuccessfully: '插入成功',
     Language.removeOperationFailure: '删除失败',
-    Language.operationTimeout : '超时',
+    Language.operationTimeout: '超时',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',
@@ -202,7 +202,7 @@ class Chinese {
     Language.placeOfOriginOfAdvertisement: "产地",
     Language.sellingPointsOfAdvertisement: "卖点",
     Language.stockOfAdvertisement: "库存",
-    Language.statusOfAdvertisement : "状态",
+    Language.statusOfAdvertisement: "状态",
     Language.imageOfAdvertisement: "图片",
     Language.thumbnailOfAdvertisement: '缩略图',
     Language.newAdvertisement: "新增广告",
@@ -220,7 +220,7 @@ class Chinese {
     Language.modifyAdvertisement: "更新广告",
     Language.noRecordOfGoodInDatabase: "数据库没有任何商品记录",
     Language.noRecordsMatchedTheSearchCondition: "未找到匹配记录",
-    Language.noRecordOfAdvertisementInDatabase : '数据库没有任何广告记录',
+    Language.noRecordOfAdvertisementInDatabase: '数据库没有任何广告记录',
 
     // Good
     Language.productNameNotProvided: "未提供商品名称",
@@ -232,24 +232,24 @@ class Chinese {
     // Wechat
     Language.titleOfPublishOfAdvertisement: '发布',
     Language.approveAdvertisementToGroup: '添加广告',
-    Language.noRecordsOfADOfDeals: '未发布任何特价广告',
+    Language.noRecordsPublished: '未发布任何广告',
     Language.rejectAdvertisementFromGroup: "移除广告",
-    Language.advertisementOfADOfDealsNotProvided: '未关联任何广告',
     Language.publishAdvertisementsSuccessfully: '发布成功',
     Language.advertisementIdIsEmpty: '广告ID为空',
     Language.peekInfoFromProductId: "查看商品信息",
     Language.peekInfoFromAdvertisementId: '查看广告信息',
-    Language.illegalPhoneNumber:'非法的手机号码',
-    Language.pressToAddThumbnail : '添加缩略图',
-    Language.pressToModifyThumbnail : '更换缩略图',
+    Language.illegalPhoneNumber: '非法的手机号码',
+    Language.pressToAddThumbnail: '添加缩略图',
+    Language.pressToModifyThumbnail: '更换缩略图',
     Language.pressRightButtonToAddThumbnail: '点击右则按钮添加缩略图',
-    Language.pressRightButtonToAddImage : '点击右则按钮添加图片',
-    Language.addImageForAdvertisement : '增加广告图片',
+    Language.pressRightButtonToAddImage: '点击右则按钮添加图片',
+    Language.addImageForAdvertisement: '增加广告图片',
     Language.titleOfInsertAdvertisementButton: "新增",
-    Language.urlIllegal : '非法的URL',
+    Language.urlIllegal: '非法的URL',
     Language.thumbnailOfAdvertisementNotProvided: '未指定缩略图',
     Language.imageOfAdvertisementNotProvided: '未指定商品图片',
-    Language.operationToInsertAdvertisement : '新增广告',
+    Language.operationToInsertAdvertisement: '新增广告',
+    Language.noAdvertisementAssociated: '未关联任何广告',
   };
 
   static String getName() {

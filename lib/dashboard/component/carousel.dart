@@ -2,14 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_framework/common/business/admin/insert_record_of_ad_of_deals.dart';
-import 'package:flutter_framework/common/business/advertisement/fetch_id_list_of_ad_of_deals.dart';
-import 'package:flutter_framework/common/business/advertisement/fetch_records_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/business/admin/insert_record_of_ad_of_carousel.dart';
+import 'package:flutter_framework/common/business/advertisement/fetch_id_list_of_ad_of_carousel.dart';
+import 'package:flutter_framework/common/business/advertisement/fetch_records_of_ad_of_carousel.dart';
+import 'package:flutter_framework/common/business/advertisement/fetch_version_of_ad_of_carousel.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
-import 'package:flutter_framework/common/protocol/admin/insert_record_of_ad_of_deals.dart';
-import 'package:flutter_framework/common/protocol/advertisement/fetch_id_list_of_ad_of_deals.dart';
-import 'package:flutter_framework/common/protocol/advertisement/fetch_records_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/protocol/admin/insert_record_of_ad_of_carousel.dart';
+import 'package:flutter_framework/common/protocol/advertisement/fetch_id_list_of_ad_of_carousel.dart';
+import 'package:flutter_framework/common/protocol/advertisement/fetch_records_of_ad_of_carousel.dart';
+import 'package:flutter_framework/common/protocol/advertisement/fetch_version_of_ad_of_carousel.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/advertisement.dart';
 import 'dart:async';
@@ -21,29 +23,27 @@ import 'package:flutter_framework/dashboard/dialog/reject_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
-import 'package:flutter_framework/dashboard/model/ad_of_deals.dart';
+import 'package:flutter_framework/dashboard/model/ad_of_carousel.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
-import 'package:flutter_framework/common/protocol/advertisement/fetch_version_of_ad_of_deals.dart';
 import 'package:flutter_framework/dashboard/local/image_item.dart';
 
-class Deals extends StatefulWidget {
-  const Deals({Key? key}) : super(key: key);
+class Carousel extends StatefulWidget {
+  const Carousel({Key? key}) : super(key: key);
 
-  static String content = 'Deals';
+  static String content = 'Carousel';
 
   @override
   State createState() => _State();
 }
 
-class _State extends State<Deals> {
+class _State extends State<Carousel> {
   bool closed = false;
   int curStage = 1;
   final nameController = TextEditingController();
@@ -51,7 +51,7 @@ class _State extends State<Deals> {
   final vendorController = TextEditingController();
   final scrollController = ScrollController();
   List<int> idList = [];
-  Map<int, ADOfDeals> dataMap = {};
+  Map<int, ADOfCarousel> dataMap = {};
   Map<int, DateTime> datetimeMap = {};
   Map<int, bool> boolMap = {};
 
@@ -77,17 +77,17 @@ class _State extends State<Deals> {
       Future.delayed(
         const Duration(milliseconds: 500),
         () {
-          print('Deals.navigate to $page');
+          print('Carousel.navigate to $page');
           Navigate.to(context, Screen.build(page));
         },
       );
     }
   }
 
-  void insertRecordOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'insertRecordOfADOfDealsHandler';
+  void insertRecordOfADOfCarouselHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'insertRecordOfADOfCarouselHandler';
     try {
-      InsertRecordOfADOfDealsRsp rsp = InsertRecordOfADOfDealsRsp.fromJson(body);
+      var rsp = InsertRecordOfADOfCarouselRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         showMessageDialog(
           context,
@@ -105,21 +105,21 @@ class _State extends State<Deals> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Deals.content,
+        from: Carousel.content,
         caller: caller,
         message: 'failure, err: $e',
       );
     } finally {}
   }
 
-  void fetchVersionOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'fetchVersionOfADOfDealsHandler';
+  void fetchVersionOfADOfCarouselHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchVersionOfADOfCarouselHandler';
     try {
-      FetchVersionOfADOfDealsRsp rsp = FetchVersionOfADOfDealsRsp.fromJson(body);
+      var rsp = FetchVersionOfADOfCarouselRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
-        from: Deals.content,
+        from: Carousel.content,
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
@@ -135,21 +135,21 @@ class _State extends State<Deals> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Deals.content,
+        from: Carousel.content,
         caller: caller,
         message: 'failure, err: $e',
       );
     } finally {}
   }
 
-  void fetchIdListOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'fetchIdListOfADOfDealsHandler';
+  void fetchIdListOfADOfCarouselHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchIdListOfADOfCarouselHandler';
     try {
-      FetchIdListOfADOfDealsRsp rsp = FetchIdListOfADOfDealsRsp.fromJson(body);
+      var rsp = FetchIdListOfADOfCarouselRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
-        from: Deals.content,
+        from: Carousel.content,
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
@@ -158,7 +158,7 @@ class _State extends State<Deals> {
           Log.debug(
             major: major,
             minor: minor,
-            from: Deals.content,
+            from: Carousel.content,
             caller: caller,
             message: 'advertisement id list: ${rsp.getIdList()}',
           );
@@ -186,7 +186,7 @@ class _State extends State<Deals> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Deals.content,
+        from: Carousel.content,
         caller: caller,
         message: 'failure, err: $e',
       );
@@ -194,14 +194,14 @@ class _State extends State<Deals> {
     }
   }
 
-  void fetchRecordsOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'fetchRecordsOfADOfDealsHandler';
+  void fetchRecordsOfADOfCarouselHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRecordsOfADOfCarouselHandler';
     try {
-      FetchRecordsOfADOfDealsRsp rsp = FetchRecordsOfADOfDealsRsp.fromJson(body);
+      var rsp = FetchRecordsOfADOfCarouselRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
-        from: Deals.content,
+        from: Carousel.content,
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
@@ -217,7 +217,7 @@ class _State extends State<Deals> {
           Log.debug(
             major: major,
             minor: minor,
-            from: Deals.content,
+            from: Carousel.content,
             caller: caller,
             message: 'advertisement id list: $tempIdList',
           );
@@ -257,7 +257,7 @@ class _State extends State<Deals> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Deals.content,
+        from: Carousel.content,
         caller: caller,
         message: 'failure, err: $e',
       );
@@ -275,9 +275,12 @@ class _State extends State<Deals> {
   void setup() {
     var caller = 'setup';
     Runtime.setObserve(observe);
-    // fetchVersionOfADOfDeals();
-    fetchIdListOfADOfDeals(
-      from: Deals.content,
+    fetchVersionOfADOfCarousel(
+      from: Carousel.content,
+      caller: caller,
+    );
+    fetchIdListOfADOfCarousel(
+      from: Carousel.content,
       caller: caller,
     );
   }
@@ -293,23 +296,23 @@ class _State extends State<Deals> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Deals.content,
+        from: Carousel.content,
         caller: caller,
         message: 'responded',
       );
-      if (major == Major.advertisement && minor == Advertisement.fetchVersionOfADOfDealsRsp) {
-        fetchVersionOfADOfDealsHandler(major: major, minor: minor, body: body);
-      } else if (major == Major.advertisement && minor == Advertisement.fetchRecordsOfADOfDealsRsp) {
-        fetchRecordsOfADOfDealsHandler(major: major, minor: minor, body: body);
-      } else if (major == Major.advertisement && minor == Advertisement.fetchIdListOfADOfDealsRsp) {
-        fetchIdListOfADOfDealsHandler(major: major, minor: minor, body: body);
-      } else if (major == Major.admin && minor == Admin.insertRecordOfADOfDealsRsp) {
-        insertRecordOfADOfDealsHandler(major: major, minor: minor, body: body);
+      if (major == Major.advertisement && minor == Advertisement.fetchVersionOfADOfCarouselRsp) {
+        fetchVersionOfADOfCarouselHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.advertisement && minor == Advertisement.fetchRecordsOfADOfCarouselRsp) {
+        fetchRecordsOfADOfCarouselHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.advertisement && minor == Advertisement.fetchIdListOfADOfCarouselRsp) {
+        fetchIdListOfADOfCarouselHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.admin && minor == Admin.insertRecordOfADOfCarouselRsp) {
+        insertRecordOfADOfCarouselHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
           major: major,
           minor: minor,
-          from: Deals.content,
+          from: Carousel.content,
           caller: caller,
           message: 'not matched',
         );
@@ -319,7 +322,7 @@ class _State extends State<Deals> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Deals.content,
+        from: Carousel.content,
         caller: caller,
         message: 'failure, err: $e',
       );
@@ -362,7 +365,7 @@ class _State extends State<Deals> {
                       SizedBox(
                         width: 250,
                         child: Text(
-                          Translator.translate(Language.menuOfDeals),
+                          Translator.translate(Language.menuOfCarousel),
                           style: const TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -388,9 +391,9 @@ class _State extends State<Deals> {
                           onPressed: () async {
                             resetSource();
                             curStage++;
-                            fetchIdListOfADOfDeals(
-                              from: Deals.content,
-                              caller: '$caller.fetchIdListOfADOfDeals',
+                            fetchIdListOfADOfCarousel(
+                              from: Carousel.content,
+                              caller: caller,
                             );
                           },
                           label: Text(
@@ -428,9 +431,9 @@ class _State extends State<Deals> {
                               );
                               return;
                             }
-                            insertRecordOfADOfDeals(
-                              from: Deals.content,
-                              caller: '$caller.insertRecordOfADOfDeals',
+                            insertRecordOfADOfCarousel(
+                              from: Carousel.content,
+                              caller: caller,
                               advertisementIdList: idList,
                             );
                           },
@@ -476,7 +479,7 @@ class _State extends State<Deals> {
 
 class Source extends DataTableSource {
   List<int> idList;
-  Map<int, ADOfDeals> dataMap;
+  Map<int, ADOfCarousel> dataMap;
   Map<int, DateTime> datetimeMap;
   Map<int, bool> boolMap;
   BuildContext buildContext;
@@ -582,9 +585,9 @@ class Source extends DataTableSource {
           }
         }
         // print("requestIdList: $requestIdList");
-        fetchRecordsOfADOfDeals(
-          from: Deals.content,
-          caller: '$caller.fetchRecordsOfADOfDeals',
+        fetchRecordsOfADOfCarousel(
+          from: Carousel.content,
+          caller: caller,
           advertisementIdList: requestIdList,
         );
       }

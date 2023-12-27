@@ -51,7 +51,6 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
   required int productId,
   required Map<String, ImageItem> imageMap,
   required Map<String, ImageItem> oriImageMap,
-  required String thumbnailKey,
   required String image,
   required String commonPath,
 }) async {

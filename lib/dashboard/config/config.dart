@@ -30,4 +30,8 @@ AUeJ6PeW+DAkmJWF6QIDAQAB
   // screen
   static Duration periodOfScreenInitialisation = const Duration(milliseconds: 100);
   static Duration periodOfScreenNormal = const Duration(milliseconds: 500);
+
+  // misc
+  static String thumbnailPrefix = 'thumbnail-';
+  static String defaultThumbnailObjectFileName = '${thumbnailPrefix}0';
 }

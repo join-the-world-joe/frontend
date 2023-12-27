@@ -30,7 +30,6 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
   List<String> sellingPoints = [];
   List<String> imageList = []; // native file name
   Map<String, MediaInfo> imageMap = {}; // key: native file name
-  var thumbnailKey = 'thumbnail';
   var oriObserve = Runtime.getObserve();
   var productIdController = TextEditingController();
   var nameController = TextEditingController();
@@ -189,7 +188,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                 return;
               }
 
-              if (!imageMap.containsKey(thumbnailKey)) {
+              if (!imageMap.containsKey(Config.defaultThumbnailObjectFileName)) {
                 showMessageDialog(
                   context,
                   Translator.translate(Language.titleOfNotification),
@@ -216,7 +215,6 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                 sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
                 imageMap: imageMap,
                 imageList: imageList,
-                thumbnailKey: thumbnailKey,
               ).then((value) {
                 if (value == Code.oK) {
                   showMessageDialog(
@@ -409,20 +407,20 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                         readOnly: true,
                         controller: thumbnailController,
                         decoration: InputDecoration(
-                          labelText: imageMap[thumbnailKey] == null ? Translator.translate(Language.pressRightButtonToAddThumbnail) : '',
+                          labelText: imageMap[Config.defaultThumbnailObjectFileName] == null ? Translator.translate(Language.pressRightButtonToAddThumbnail) : '',
                           suffixIcon: IconButton(
                             tooltip: () {
-                              if (imageMap[thumbnailKey] == null) {
+                              if (imageMap[Config.defaultThumbnailObjectFileName] == null) {
                                 return Translator.translate(Language.pressToAddThumbnail);
                               } else {
                                 return Translator.translate(Language.pressToModifyThumbnail);
                               }
                             }(),
-                            icon: imageMap[thumbnailKey] == null ? const Icon(Icons.add_circle_outlined) : const Icon(Icons.edit),
+                            icon: imageMap[Config.defaultThumbnailObjectFileName] == null ? const Icon(Icons.add_circle_outlined) : const Icon(Icons.edit),
                             onPressed: () async {
                               var mediaData = await ImagePickerWeb.getImageInfo;
                               if (mediaData != null) {
-                                imageMap[thumbnailKey] = mediaData;
+                                imageMap[Config.defaultThumbnailObjectFileName] = mediaData;
                                 String extension = path.extension(mediaData.fileName!).toLowerCase();
                                 print('file name: ${mediaData.fileName!}');
                                 print('extension: $extension');
@@ -434,19 +432,19 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                           prefixIcon: Wrap(
                             children: () {
                               List<Widget> widgetList = [];
-                              if (imageMap[thumbnailKey] != null) {
+                              if (imageMap[Config.defaultThumbnailObjectFileName] != null) {
                                 widgetList.add(Padding(
                                   padding: const EdgeInsets.all(5.0),
                                   child: InputChip(
                                     label: Text(
-                                      imageMap[thumbnailKey]!.fileName!,
+                                      imageMap[Config.defaultThumbnailObjectFileName]!.fileName!,
                                       style: const TextStyle(
                                         color: Colors.white,
                                       ),
                                     ),
                                     onPressed: () {
-                                      if (imageMap[thumbnailKey] != null) {
-                                        showViewImageDialog(context, imageMap[thumbnailKey]!.data!);
+                                      if (imageMap[Config.defaultThumbnailObjectFileName] != null) {
+                                        showViewImageDialog(context, imageMap[Config.defaultThumbnailObjectFileName]!.data!);
                                       }
                                     },
                                     // onDeleted: () {
