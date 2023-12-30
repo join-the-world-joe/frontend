@@ -624,7 +624,15 @@ class Source extends DataTableSource {
             onPressed: () {
               // show thumbnail
               // print('view thumbnail');
-              showViewNetworkImageDialog(buildContext, imageMap['0']!.getUrl());
+              showViewNetworkImageDialog(buildContext, () {
+                String output = '';
+                imageMap.forEach((key, value) {
+                  if (key.contains(Config.thumbnailPrefix)) {
+                    output = value.getUrl();
+                  }
+                });
+                return output;
+              }());
             },
           ),
         ),
@@ -638,7 +646,7 @@ class Source extends DataTableSource {
               showViewNetworkImageGroupDialog(buildContext, () {
                 List<String> output = [];
                 imageMap.forEach((key, value) {
-                  if (key != '0') {
+                  if (!key.contains(Config.thumbnailPrefix)) {
                     output.add(value.getUrl());
                   }
                 });

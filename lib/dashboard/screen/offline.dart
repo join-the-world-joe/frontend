@@ -74,7 +74,7 @@ class _State extends State<Offline> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Screen.loading,
+        from: Screen.offline,
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
@@ -160,6 +160,13 @@ class _State extends State<Offline> {
           Translator.translate(Language.titleOfNotification),
           '${Translator.translate(Language.failureWithErrorCode)}${rsp.getCode()}',
         );
+        if (rsp.getCode() == Code.noUserSessionKey) {
+          Cache.setUserId(rsp.getUserId());
+          Cache.setMemberId(rsp.getMemberId());
+          Cache.setSecret(rsp.getSecret());
+          navigate(Screen.smsSignIn);
+          return;
+        }
         return;
       }
     } catch (e) {
@@ -285,17 +292,11 @@ class _State extends State<Offline> {
 
                         fetchRateLimitingConfig(from: Screen.offline, caller: caller);
 
-                        if (Runtime.allow(major: int.parse(Major.backendGateway), minor: int.parse(BackendGateway.pingReq))) {
-                          echo(
-                            from: Screen.offline,
-                            caller: '$caller.reconnect',
-                            message: message,
-                          );
-                        }
-
-                        if (!Runtime.allow(major: int.parse(Major.admin), minor: int.parse(Admin.signInReq))) {
-                          return;
-                        }
+                        echo(
+                          from: Screen.offline,
+                          caller: '$caller.reconnect',
+                          message: message,
+                        );
 
                         if (Cache.getMemberId().isNotEmpty && Cache.getSecret().isNotEmpty && Cache.getUserId() > 0) {
                           Future.delayed(
@@ -304,7 +305,7 @@ class _State extends State<Offline> {
                               var totp = OTP.generateTOTPCodeString(Cache.getSecret(), DateTime.now().millisecondsSinceEpoch, algorithm: Algorithm.SHA1, isGoogle: true);
                               signIn(
                                 from: Screen.offline,
-                                caller: caller+'.reconnect',
+                                caller: caller + '.reconnect',
                                 userId: Cache.getUserId(),
                                 email: '',
                                 memberId: Cache.getMemberId(),

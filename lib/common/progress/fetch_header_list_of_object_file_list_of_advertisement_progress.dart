@@ -44,11 +44,11 @@ class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
 
   void skip() {
     print('skip FetchHeaderListOfObjectFileListOfAdvertisementProgress');
+    _rsp = FetchHeaderListOfObjectFileListOfAdvertisementRsp.fromJson({"code": Code.oK});
     _result = 0;
     _requested = true;
     _responded = true;
     _finished = true;
-    _rsp = FetchHeaderListOfObjectFileListOfAdvertisementRsp.fromJson({"code": Code.oK});
   }
 
   void setNameListOfFile(List<String> nameListOfFile) {

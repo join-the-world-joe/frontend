@@ -196,7 +196,9 @@ class _State extends State<SMSSignIn> {
       if (signInProgress != null) {
         signInProgress!.respond(rsp);
       } else {
-        navigate(Screen.home);
+        if (rsp.getCode() == Code.oK) {
+          navigate(Screen.home);
+        }
       }
     } catch (e) {
       Log.debug(

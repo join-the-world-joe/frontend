@@ -31,9 +31,9 @@ class RemoveListOfObjectFileProgress {
 
   void skip() {
     print('skip RemoveListOfObjectFileProgress');
+    _rsp = RemoveListOfObjectFileRsp.fromJson({"code":Code.oK});
     _requested = true;
     _responded = true;
-    _rsp = RemoveListOfObjectFileRsp.fromJson({"code":Code.oK});
   }
 
   bool timeout() {

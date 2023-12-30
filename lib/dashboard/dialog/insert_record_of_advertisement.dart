@@ -423,6 +423,8 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                                 print('extension: $extension');
                                 print('size: ${mediaData.data!.length}');
                                 curStage++;
+                                // get width and height then send to backend
+                                // Image.memory(bytes).width and height
                               }
                             },
                           ),
