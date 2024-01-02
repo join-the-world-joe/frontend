@@ -75,7 +75,7 @@ class Language {
   static String menuOfField = 'Field';
   static String menuOfTrack = 'Track';
   static String menuOfData = 'Data';
-  static String menuOfGood = "Good";
+  static String menuOfProduct = "Product";
   static String menuOfWechat = "Wechat";
   static String menuOfDeals = "Deals";
   static String menuOfCamping = "Camping";
@@ -84,7 +84,7 @@ class Language {
   static String menuOfBarbecue = "Barbecue";
   static String menuOfCategory = "Category";
   static String menuOfAdvertisement = "Advertisement";
-  static String descriptionOfGoodMenu = "The description of Good menu";
+  static String descriptionOfProductMenu = "The description of Product menu";
   static String descriptionOfAdvertisementMenu = "The description of Advertisement menu";
   static String descriptionOfCategoryMenu = "The description of Category menu";
 
@@ -183,13 +183,13 @@ class Language {
   static String messageForceOffline = 'Your account has been logon somewhere! Your have to logout immediately.';
 
   // Data
-  static String idOfGood = "the id of good";
-  static String nameOfGood = "the name of good";
-  static String listOfGoods = "the list of goods";
-  static String importGood = "import the data of a good";
-  static String buyingPrice = "the buying price of a good";
-  static String vendorOfGood = "the vendor of a good";
-  static String statusOfGood = "the status of a good";
+  static String idOfProduct = "the id of product";
+  static String nameOfProduct = "the name of product";
+  static String listOfProducts = "the list of products";
+  static String importProduct = "import the data of a product";
+  static String buyingPrice = "the buying price of a product";
+  static String vendorOfProduct = "the vendor of a product";
+  static String statusOfProduct = "the status of a product";
   static String contactOfVendor = "the contact of a vendor";
   static String idOfAdvertisement = "the id of an advertisement";
   static String nameOfAdvertisement = "the name of an advertisement";
@@ -201,10 +201,10 @@ class Language {
   static String stockOfAdvertisement = "the stock of an advertisement";
   static String statusOfAdvertisement = "the status of an advertisement";
   static String imageOfAdvertisement = "the image of an advertisement";
-  static String thumbnailOfAdvertisement = 'the thumbnail of an advertisement';
+  static String coverImageOfAdvertisement = 'the cover image of an advertisement';
   static String newAdvertisement = "to new an advertisement";
   static String editAdvertisement = "to edit an advertisement";
-  static String modifyGood = "to modify the information of good";
+  static String modifyProduct = "to modify the information of product";
   static String productIdIsEmpty = "the product id is empty";
   static String withoutProductInfoInResponse = "there is no product info in response";
   static String nameOfAdvertisementIsEmpty = "the name of advertisement not provided";
@@ -215,11 +215,11 @@ class Language {
   static String incorrectSellingPriceInController = "the selling price in controller is invalid";
   static String needToPeekProductInfo = "need to peek product info";
   static String modifyAdvertisement = "to modify the information of advertisement";
-  static String noRecordOfGoodInDatabase = "there is no record of good in database";
+  static String noRecordOfProductInDatabase = "there is no record of product in database";
   static String noRecordsMatchedTheSearchCondition = "no records matched the search conditions";
   static String noRecordOfAdvertisementInDatabase = "there is no record of advertisement in database";
 
-  // Good
+  // Product
   static String nameOfProductNotProvided = "the name of product not provided";
   static String buyingPriceNotProvided = "the buying price not provided";
   static String vendorOfProductNotProvided = "the vendor of product not provided";

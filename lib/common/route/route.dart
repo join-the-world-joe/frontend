@@ -4,6 +4,7 @@ import 'package:flutter_framework/common/route/backend_gateway.dart';
 import 'package:flutter_framework/common/route/inform.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/oss.dart';
+import 'package:flutter_framework/common/route/product.dart';
 import 'package:flutter_framework/common/route/sms.dart';
 
 class Route {
@@ -21,6 +22,8 @@ class Route {
         return '${Major.getName(major: major)}.${Advertisement().getName(minor: minor)}';
       case Major.oss:
         return '${Major.getName(major: major)}.${OSS().getName(minor: minor)}';
+      case Major.product:
+        return '${Major.getName(major: major)}.${Product().getName(minor: minor)}';
       default:
         return 'unknown';
     }

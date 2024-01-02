@@ -28,7 +28,6 @@ import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/common/protocol/advertisement/fetch_version_of_ad_of_deals.dart';
@@ -445,15 +444,15 @@ class _State extends State<Deals> {
                       columns: [
                         DataColumn(label: Text(Translator.translate(Language.idOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.nameOfAdvertisement))),
-                        DataColumn(label: Text(Translator.translate(Language.idOfGood))),
-                        DataColumn(label: Text(Translator.translate(Language.nameOfGood))),
+                        DataColumn(label: Text(Translator.translate(Language.idOfProduct))),
+                        DataColumn(label: Text(Translator.translate(Language.nameOfProduct))),
                         DataColumn(label: Text(Translator.translate(Language.titleOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.sellingPriceOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.placeOfOriginOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.sellingPointsOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.stockOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.statusOfAdvertisement))),
-                        DataColumn(label: Text(Translator.translate(Language.thumbnailOfAdvertisement))),
+                        DataColumn(label: Text(Translator.translate(Language.coverImageOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.imageOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.operation))),
                       ],

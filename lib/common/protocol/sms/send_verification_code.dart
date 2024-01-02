@@ -1,16 +1,5 @@
 import 'dart:typed_data';
-import 'package:flutter_framework/common/route/sms.dart';
-
 import '../../../../utils/convert.dart';
-import '../../route/major.dart';
-import '../../route/minor.dart';
-import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/framework/packet_client.dart';
-import 'package:flutter_framework/runtime/runtime.dart';
-
-// behavior begin
-
-// behavior end
 
 class Behavior {
   static const String login = 'Login';

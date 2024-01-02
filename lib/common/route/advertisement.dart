@@ -29,6 +29,10 @@ class Advertisement {
   static const String fetchIdListOfADOfSnacksRsp = "28";
   static const String fetchRecordsOfADOfSnacksReq = "29";
   static const String fetchRecordsOfADOfSnacksRsp = "30";
+  static const String fetchIdListOfAdvertisementReq = "31";
+  static const String fetchIdListOfAdvertisementRsp = "32";
+  static const String fetchRecordsOfAdvertisementReq = "33";
+  static const String fetchRecordsOfAdvertisementRsp = "34";
 
   String getName({required String minor}) {
     switch (minor) {
@@ -92,6 +96,14 @@ class Advertisement {
         return 'fetchRecordsOfADOfSnacksReq';
       case fetchRecordsOfADOfSnacksRsp:
         return 'fetchRecordsOfADOfSnacksRsp';
+      case fetchIdListOfAdvertisementReq:
+        return 'fetchIdListOfAdvertisementReq';
+      case fetchIdListOfAdvertisementRsp:
+        return 'fetchIdListOfAdvertisementRsp';
+      case fetchRecordsOfAdvertisementReq:
+        return 'fetchRecordsOfAdvertisementReq';
+      case fetchRecordsOfAdvertisementRsp:
+        return 'fetchRecordsOfAdvertisementRsp';
       default:
         return 'unknown';
     }

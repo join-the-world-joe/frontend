@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 import '../../../utils/convert.dart';
 
-class FetchIdListOfGoodReq {
+class FetchIdListOfProductReq {
   int _behavior = -1;
   String _productName = '';
   int _categoryId = -1;
 
-  FetchIdListOfGoodReq.construct({
+  FetchIdListOfProductReq.construct({
     required int behavior,
     required String productName,
     required int categoryId,
@@ -26,7 +26,7 @@ class FetchIdListOfGoodReq {
   }
 }
 
-class FetchIdListOfGoodRsp {
+class FetchIdListOfProductRsp {
   int _code = -1;
   int _behavior = -1;
   List<int> _idList = [];
@@ -52,7 +52,7 @@ class FetchIdListOfGoodRsp {
     return Convert.bytes2String(Convert.toBytes(this));
   }
 
-  FetchIdListOfGoodRsp.fromJson(Map<String, dynamic> json) {
+  FetchIdListOfProductRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
       _code = json['code'];
     }
@@ -61,8 +61,8 @@ class FetchIdListOfGoodRsp {
       if (body.containsKey('behavior')) {
         _behavior = body['behavior'];
       }
-      if (body.containsKey('id_list_of_good')) {
-        _idList = List<int>.from(body['id_list_of_good'] as List);
+      if (body.containsKey('id_list_of_product')) {
+        _idList = List<int>.from(body['id_list_of_product'] as List);
       }
     }
   }

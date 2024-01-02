@@ -1,8 +1,8 @@
 
-class SoftDeleteRecordsOfGoodReq {
+class SoftDeleteRecordsOfProductReq {
   List<int> _productIdList = [];
 
-  SoftDeleteRecordsOfGoodReq.construct({required List<int> productIdList}) {
+  SoftDeleteRecordsOfProductReq.construct({required List<int> productIdList}) {
     _productIdList = productIdList;
   }
 
@@ -13,10 +13,10 @@ class SoftDeleteRecordsOfGoodReq {
   }
 }
 
-class SoftDeleteRecordsOfGoodRsp {
+class SoftDeleteRecordsOfProductRsp {
   int code = -1;
 
-  SoftDeleteRecordsOfGoodRsp.fromJson(Map<String, dynamic> json) {
+  SoftDeleteRecordsOfProductRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
       code = json['code'];
     }

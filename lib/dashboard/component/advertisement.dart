@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/route/advertisement.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
@@ -25,10 +26,11 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../model/advertisement.dart' as model;
-import 'package:flutter_framework/common/protocol/admin/fetch_id_list_of_advertisement.dart';
+import 'package:flutter_framework/common/protocol/advertisement/fetch_id_list_of_advertisement.dart';
 import 'package:flutter_framework/common/business/admin/fetch_id_list_of_advertisement.dart';
 import 'package:flutter_framework/common/protocol/admin/fetch_records_of_advertisement.dart';
 import 'package:flutter_framework/common/business/admin/fetch_records_of_advertisement.dart';
+import 'package:flutter_framework/common/route/advertisement.dart' as route;
 
 class Advertisement extends StatefulWidget {
   const Advertisement({Key? key}) : super(key: key);
@@ -93,9 +95,9 @@ class _State extends State<Advertisement> {
         caller: caller,
         message: 'responded',
       );
-      if (major == Major.admin && minor == Admin.fetchIdListOfAdvertisementRsp) {
+      if (major == Major.advertisement && minor == route.Advertisement.fetchIdListOfAdvertisementRsp) {
         fetchIdListOfAdvertisementHandler(major: major, minor: minor, body: body);
-      } else if (major == Major.admin && minor == Admin.fetchRecordsOfAdvertisementRsp) {
+      } else if (major == Major.advertisement && minor == route.Advertisement.fetchRecordsOfAdvertisementRsp) {
         fetchRecordsOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
@@ -195,7 +197,7 @@ class _State extends State<Advertisement> {
   void fetchRecordsOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'fetchRecordsOfAdvertisementHandler';
     try {
-      FetchRecordsOfAdvertisementRsp rsp = FetchRecordsOfAdvertisementRsp.fromJson(body);
+      var rsp = FetchRecordsOfAdvertisementRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         if (Config.debug) {
           List<int> tempList = [];
@@ -397,7 +399,7 @@ class _State extends State<Advertisement> {
                       header: Text(Translator.translate(Language.listOfAdvertisements)),
                       columns: [
                         DataColumn(label: Text(Translator.translate(Language.idOfAdvertisement))),
-                        DataColumn(label: Text(Translator.translate(Language.idOfGood))),
+                        DataColumn(label: Text(Translator.translate(Language.idOfProduct))),
                         DataColumn(label: Text(Translator.translate(Language.nameOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.titleOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.sellingPriceOfAdvertisement))),
@@ -405,7 +407,7 @@ class _State extends State<Advertisement> {
                         DataColumn(label: Text(Translator.translate(Language.sellingPointsOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.stockOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.statusOfAdvertisement))),
-                        DataColumn(label: Text(Translator.translate(Language.thumbnailOfAdvertisement))),
+                        DataColumn(label: Text(Translator.translate(Language.coverImageOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.imageOfAdvertisement))),
                         DataColumn(label: Text(Translator.translate(Language.operation))),
                       ],
@@ -462,7 +464,7 @@ class Source extends DataTableSource {
           output = temp[key];
         }
       });
-    } catch(e) {
+    } catch (e) {
       print('Advertisement.Source.getThumbnail failure, err: $e');
     }
     return output;
@@ -477,7 +479,7 @@ class Source extends DataTableSource {
           output.add(value);
         }
       });
-    } catch(e) {
+    } catch (e) {
       print('Advertisement.Source.getImageUrlList failure, err: $e');
     }
     return output;
@@ -488,7 +490,7 @@ class Source extends DataTableSource {
     // print("getRow: $index");
     var caller = 'Source.getRow';
     var idOfAdvertisement = Translator.translate(Language.loading);
-    var idOfGood = Translator.translate(Language.loading);
+    var idOfProduct = Translator.translate(Language.loading);
     var nameOfAdvertisement = Translator.translate(Language.loading);
     var titleOfAdvertisement = Translator.translate(Language.loading);
     var sellingPriceOfAdvertisement = Translator.translate(Language.loading);
@@ -522,8 +524,8 @@ class Source extends DataTableSource {
                   fontWeight: FontWeight.bold,
                   color: Colors.red,
                 ));
-        idOfGood = dataMap[key]!.getProductId().toString();
-        image = dataMap[key]!.getImage().toString();
+        idOfProduct = dataMap[key]!.getProductId().toString();
+        // image = dataMap[key]!.getImage().toString();
         sellingPoints = dataMap[key]!.getSellingPoints();
         sellingPriceOfAdvertisement = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
         if (image.isNotEmpty) {
@@ -567,7 +569,7 @@ class Source extends DataTableSource {
       },
       cells: [
         DataCell(Text(idOfAdvertisement)),
-        DataCell(Text(idOfGood)),
+        DataCell(Text(idOfProduct)),
         DataCell(Text(nameOfAdvertisement)),
         DataCell(Text(titleOfAdvertisement)),
         DataCell(Text(sellingPriceOfAdvertisement)),
@@ -640,15 +642,15 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.delete),
                 tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
-                  await showRemoveRecordOfAdvertisementDialog(buildContext, dataMap[key]!.getId(), dataMap[key]!.getName(), dataMap[key]!.getImage()).then(
-                    (value) => () {
-                      // print('value: $value');
-                      if (value) {
-                        idList.removeAt(index);
-                        notifyListeners();
-                      }
-                    }(),
-                  );
+                  // await showRemoveRecordOfAdvertisementDialog(buildContext, dataMap[key]!.getId(), dataMap[key]!.getName(), dataMap[key]!.getImage()).then(
+                  //   (value) => () {
+                  //     // print('value: $value');
+                  //     if (value) {
+                  //       idList.removeAt(index);
+                  //       notifyListeners();
+                  //     }
+                  //   }(),
+                  // );
                 },
               ),
             ],

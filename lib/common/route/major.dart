@@ -8,6 +8,7 @@ class Major {
   static const String inform = '6';
   static const String advertisement = '7';
   static const String oss = '8';
+  static const String product = '9';
 
   static String getName({required String major}) {
     switch (major) {
@@ -29,6 +30,8 @@ class Major {
         return 'advertisement';
       case oss:
         return 'oss';
+      case product:
+        return 'product';
       default:
         return 'unknown';
     }

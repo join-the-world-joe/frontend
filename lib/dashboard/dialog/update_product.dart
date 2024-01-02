@@ -14,13 +14,13 @@ import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import '../model/product.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/update_record_of_good.dart';
-import 'package:flutter_framework/common/business/admin/update_record_of_good.dart';
+import 'package:flutter_framework/common/protocol/admin/update_record_of_product.dart';
+import 'package:flutter_framework/common/business/admin/update_record_of_product.dart';
 
-Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
+Future<bool> showUpdateProductDialog(BuildContext context, Product product) async {
   int curStage = 0;
   bool closed = false;
-  String from = 'showUpdateGoodDialog';
+  String from = 'showUpdateProductDialog';
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController(text: product.getName());
   var vendorController = TextEditingController(text: product.getVendor());
@@ -32,7 +32,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      // print('showUpdateGoodDialog, last: $lastStage, cur: $curStage');
+      // print('showUpdateProductDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -40,10 +40,10 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
     }
   }
 
-  void updateRecordOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'updateRecordOfGoodHandler';
+  void updateRecordOfProductHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'updateRecordOfProductHandler';
     try {
-      UpdateRecordOfGoodRsp rsp = UpdateRecordOfGoodRsp.fromJson(body);
+      var rsp = UpdateRecordOfProductRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -97,8 +97,8 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
         caller: caller,
         message: '',
       );
-      if (major == Major.admin && minor == Admin.updateRecordOfGoodRsp) {
-        updateRecordOfGoodHandler(major: major, minor: minor, body: body);
+      if (major == Major.admin && minor == Admin.updateRecordOfProductRsp) {
+        updateRecordOfProductHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
           major: major,
@@ -129,7 +129,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
     builder: (context) {
       var caller = 'builder';
       return AlertDialog(
-        title: Text(Translator.translate(Language.modifyGood)),
+        title: Text(Translator.translate(Language.modifyProduct)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -153,9 +153,9 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
                 await showWarningDialog(context, Translator.translate(Language.contactOfVendorNotProvided));
                 return;
               }
-              updateRecordOfGood(
+              updateRecordOfProduct(
                 from: from,
-                caller: '$caller.updateRecordOfGood',
+                caller: '$caller.updateRecordOfProduct',
                 name: nameController.text,
                 productId: int.parse(idController.text),
                 buyingPrice: Convert.doubleStringMultiple10toInt(buyingPriceController.text),
@@ -182,7 +182,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
                       child: TextFormField(
                         controller: nameController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.nameOfGood),
+                          labelText: Translator.translate(Language.nameOfProduct),
                         ),
                       ),
                     ),
@@ -192,7 +192,7 @@ Future<bool> showUpdateGoodDialog(BuildContext context, Product product) async {
                       child: TextFormField(
                         controller: vendorController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.vendorOfGood),
+                          labelText: Translator.translate(Language.vendorOfProduct),
                         ),
                       ),
                     ),

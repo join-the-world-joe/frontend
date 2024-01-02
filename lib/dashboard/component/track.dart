@@ -11,7 +11,6 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';

@@ -11,9 +11,9 @@ import 'package:flutter_framework/dashboard/component/advertisement.dart';
 import 'package:flutter_framework/dashboard/component/carousel.dart';
 import 'package:flutter_framework/dashboard/component/deals.dart';
 import 'package:flutter_framework/dashboard/component/field.dart';
-import 'package:flutter_framework/dashboard/component/good.dart';
 import 'package:flutter_framework/dashboard/component/menu.dart';
 import 'package:flutter_framework/dashboard/component/permission.dart';
+import 'package:flutter_framework/dashboard/component/product.dart';
 import 'package:flutter_framework/dashboard/component/role.dart';
 import 'package:flutter_framework/dashboard/component/track.dart';
 import 'package:flutter_framework/dashboard/component/user.dart';
@@ -55,7 +55,7 @@ class _State extends State<Home> {
   var menu = Menu();
   var permission = Permission();
   var field = Field();
-  var good = Good();
+  var product = Product();
   var advertisement = Advertisement();
   var deals = Deals();
   var carousel = Carousel();
@@ -261,7 +261,7 @@ class _State extends State<Home> {
     menu = Menu();
     permission = Permission();
     field = Field();
-    good = Good();
+    product = Product();
     advertisement = Advertisement();
     deals = Deals();
     carousel = Carousel();
@@ -449,8 +449,8 @@ class _State extends State<Home> {
                     return field;
                   } else if (Cache.getContent() == Track.content) {
                     return track;
-                  } else if (Cache.getContent() == Good.content) {
-                    return good;
+                  } else if (Cache.getContent() == Product.content) {
+                    return product;
                   } else if (Cache.getContent() == Advertisement.content) {
                     return advertisement;
                   } else if (Cache.getContent() == Deals.content) {

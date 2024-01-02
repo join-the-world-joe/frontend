@@ -95,7 +95,8 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
     try {
       String extension = '';
       var oriObjectFileName = '';
-      Map<String, dynamic> image = jsonDecode(advertisement.getImage());
+      // Map<String, dynamic> image = jsonDecode(advertisement.getImage());
+      Map<String, dynamic> image ={};
       image.forEach((key, value) {
         extension = path.extension(value).toLowerCase();
         oriObjectFileName = '${advertisement.getId()}/$key$extension';
@@ -195,7 +196,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                 title: titleController.text,
                 sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
                 sellingPoints: sellingPoints,
-                image: advertisement.getImage(),
+                image: '',
                 imageMap: tempImageMap,
                 placeOfOrigin: placeOfOriginController.text,
                 oriImageMap: oriImageMap,
@@ -296,7 +297,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                           LengthLimitingTextInputFormatter(11),
                         ],
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.idOfGood),
+                          labelText: Translator.translate(Language.idOfProduct),
                         ),
                       ),
                     ),

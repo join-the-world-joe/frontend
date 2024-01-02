@@ -8,11 +8,16 @@ class Advertisement {
   String _title = '';
   String _placeOfOrigin = '';
   List<String> _sellingPoints = [];
-  String _image = '';
   int _sellingPrice = 0;
   int _stock = 0;
   int _status = 0;
   int _productId = 0;
+  String _coverImage = '';
+  String _firstImage = '';
+  String _secondImage = '';
+  String _thirdImage = '';
+  String _fourthImage = '';
+  String _fifthImage = '';
 
   int getId() {
     return _id;
@@ -26,8 +31,22 @@ class Advertisement {
     return _sellingPoints;
   }
 
-  String getImage() {
-    return _image;
+  String getCoverImage() {
+    return _coverImage;
+  }
+
+  String getSecondImage() {
+    return _secondImage;
+  }
+
+  String getThirdImage() {
+    return _thirdImage;
+  }
+  String getFourthImage() {
+    return _fourthImage;
+  }
+  String getFifthImage() {
+    return _fifthImage;
   }
 
   int getStock() {
@@ -60,7 +79,12 @@ class Advertisement {
     required String title,
     required String placeOfOrigin,
     required List<String> sellingPoints,
-    required String image,
+    required String coverImage,
+    required String firstImage,
+    required String secondImage,
+    required String thirdImage,
+    required String fourthImage,
+    required String fifthImage,
     required int sellingPrice,
     required int stock,
     required int status,
@@ -71,7 +95,12 @@ class Advertisement {
     _title = title;
     _placeOfOrigin = placeOfOrigin;
     _sellingPoints = sellingPoints;
-    _image = image;
+    _coverImage = coverImage;
+    _firstImage = firstImage;
+    _secondImage = secondImage;
+    _thirdImage = thirdImage;
+    _fourthImage = fourthImage;
+    _fifthImage = fifthImage;
     _sellingPrice = sellingPrice;
     _stock = stock;
     _status = status;

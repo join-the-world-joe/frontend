@@ -4,7 +4,6 @@ import 'package:flutter_framework/common/route/account.dart';
 import '../../../../utils/convert.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import '../../route/major.dart';
-import '../../route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/protocol/account/login.dart';

@@ -12,14 +12,14 @@ import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/insert_record_of_good.dart';
-import 'package:flutter_framework/common/business/admin/insert_record_of_good.dart';
+import 'package:flutter_framework/common/protocol/admin/insert_record_of_product.dart';
+import 'package:flutter_framework/common/business/admin/insert_record_of_product.dart';
 
-Future<void> showInsertGoodDialog(BuildContext context) async {
+Future<void> showInsertProductDialog(BuildContext context) async {
   bool closed = false;
   int curStage = 0;
   int status = int.parse('1');
-  String from = 'showInsertGoodDialog';
+  String from = 'showInsertProductDialog';
 
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController();
@@ -31,7 +31,6 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
     var lastStage = curStage;
     while (!closed) {
       await Future.delayed(Config.checkStageIntervalNormal);
-      // print('showInsertGoodDialog, last: $lastStage, cur: $curStage');
       if (lastStage != curStage) {
         lastStage = curStage;
         yield lastStage;
@@ -39,10 +38,10 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
     }
   }
 
-  void insertRecordOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'insertRecordOfGoodHandler';
+  void insertRecordOfProductHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'insertRecordOfProductHandler';
     try {
-      InsertRecordOfGoodRsp rsp = InsertRecordOfGoodRsp.fromJson(body);
+      var rsp = InsertRecordOfProductRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -95,8 +94,8 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
         caller: caller,
         message: 'responded',
       );
-      if (major == Major.admin && minor == Admin.insertRecordOfGoodRsp) {
-        insertRecordOfGoodHandler(major: major, minor: minor, body: body);
+      if (major == Major.admin && minor == Admin.insertRecordOfProductRsp) {
+        insertRecordOfProductHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
           major: major,
@@ -127,7 +126,7 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
     builder: (context) {
       var caller = 'builder';
       return AlertDialog(
-        title: Text(Translator.translate(Language.importGood)),
+        title: Text(Translator.translate(Language.importProduct)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, null),
@@ -151,9 +150,9 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
                 );
                 return;
               }
-              insertRecordOfGood(
+              insertRecordOfProduct(
                 from: from,
-                caller: '$caller.insertRecordOfGood',
+                caller: '$caller.insertRecordOfProduct',
                 name: nameController.text,
                 vendor: vendorController.text,
                 contact: contactController.text,
@@ -207,7 +206,7 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
                       child: TextFormField(
                         controller: nameController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.nameOfGood),
+                          labelText: Translator.translate(Language.nameOfProduct),
                         ),
                       ),
                     ),
@@ -231,7 +230,7 @@ Future<void> showInsertGoodDialog(BuildContext context) async {
                       child: TextFormField(
                         controller: vendorController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.vendorOfGood),
+                          labelText: Translator.translate(Language.vendorOfProduct),
                         ),
                       ),
                     ),

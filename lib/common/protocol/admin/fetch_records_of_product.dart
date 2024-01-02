@@ -1,9 +1,9 @@
 import 'package:flutter_framework/dashboard/model/product.dart';
 
-class FetchRecordsOfGoodReq {
+class FetchRecordsOfProductReq {
   List<int> _productIdList = [];
 
-  FetchRecordsOfGoodReq.construct({
+  FetchRecordsOfProductReq.construct({
     required List<int> productIdList,
   }) {
     _productIdList = productIdList;
@@ -16,7 +16,7 @@ class FetchRecordsOfGoodReq {
   }
 }
 
-class FetchRecordsOfGoodRsp {
+class FetchRecordsOfProductRsp {
   int _code = -1;
   Map<int, Product> _dataMap = {};
 
@@ -28,14 +28,14 @@ class FetchRecordsOfGoodRsp {
     return _dataMap;
   }
 
-  FetchRecordsOfGoodRsp.fromJson(Map<String, dynamic> json) {
+  FetchRecordsOfProductRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
       _code = json['code'];
     }
     if (json.containsKey('body')) {
       Map<String, dynamic> body = json['body'];
-      if (body.containsKey('records_of_good')) {
-        final Map some = Map.from(body['records_of_good']);
+      if (body.containsKey('records_of_product')) {
+        final Map some = Map.from(body['records_of_product']);
         some.forEach(
           (key, value) {
             _dataMap[value['id']] = Product.construct(

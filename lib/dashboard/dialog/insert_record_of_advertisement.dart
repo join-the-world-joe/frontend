@@ -4,6 +4,7 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
+import 'package:flutter_framework/common/route/product.dart';
 import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_record_of_advertisement_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
@@ -15,8 +16,8 @@ import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_records_of_good.dart';
-import 'package:flutter_framework/common/business/admin/fetch_records_of_good.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_records_of_product.dart';
+import 'package:flutter_framework/common/business/admin/fetch_records_of_product.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:path/path.dart' as path;
 
@@ -50,10 +51,10 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
     }
   }
 
-  void fetchRecordsOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'fetchRecordsOfGoodHandler';
+  void fetchRecordsOfProductHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRecordsOfProductHandler';
     try {
-      FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
+      var rsp = FetchRecordsOfProductRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -66,7 +67,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
         if (rsp.getDataMap().containsKey(key)) {
           showMessageDialog(
             context,
-            Translator.translate(Language.nameOfGood),
+            Translator.translate(Language.nameOfProduct),
             rsp.getDataMap()[key]!.getName(),
           );
           curStage++;
@@ -111,8 +112,8 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
         caller: caller,
         message: 'responded',
       );
-      if (major == Major.admin && minor == Admin.fetchRecordsOfGoodRsp) {
-        fetchRecordsOfGoodHandler(major: major, minor: minor, body: body);
+      if (major == Major.admin && minor == Product.fetchRecordsOfProductRsp) {
+        fetchRecordsOfProductHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
           major: major,
@@ -257,7 +258,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                           LengthLimitingTextInputFormatter(11),
                         ],
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.idOfGood),
+                          labelText: Translator.translate(Language.idOfProduct),
                           labelStyle: const TextStyle(
                             color: Colors.redAccent,
                           ),
@@ -273,9 +274,9 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                                 );
                                 return;
                               } else {
-                                fetchRecordsOfGood(
+                                fetchRecordsOfProduct(
                                   from: from,
-                                  caller: '$caller.fetchRecordsOfGood',
+                                  caller: '$caller.fetchRecordsOfProduct',
                                   productIdList: [int.parse(productIdController.text)],
                                 );
                                 return;

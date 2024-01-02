@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/business/product/fetch_id_list_of_product.dart';
+import 'package:flutter_framework/common/business/admin/fetch_records_of_product.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
-import 'package:flutter_framework/common/route/admin.dart';
 import 'dart:async';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
-import 'package:flutter_framework/dashboard/dialog/insert_good.dart';
-import 'package:flutter_framework/dashboard/dialog/remove_good.dart';
-import 'package:flutter_framework/dashboard/dialog/update_good.dart';
+import 'package:flutter_framework/dashboard/dialog/insert_product.dart';
+import 'package:flutter_framework/dashboard/dialog/remove_product.dart';
+import 'package:flutter_framework/dashboard/dialog/update_product.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -17,26 +18,24 @@ import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
-import '../model/product.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_id_list_of_good.dart';
-import 'package:flutter_framework/common/business/admin/fetch_id_list_of_good.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_records_of_good.dart';
-import 'package:flutter_framework/common/business/admin/fetch_records_of_good.dart';
+import '../model/product.dart' as model;
+import 'package:flutter_framework/common/protocol/product/fetch_id_list_of_product.dart';
+import 'package:flutter_framework/common/protocol/admin/fetch_records_of_product.dart';
+import 'package:flutter_framework/common/route/product.dart' as route;
 
-class Good extends StatefulWidget {
-  const Good({Key? key}) : super(key: key);
+class Product extends StatefulWidget {
+  const Product({Key? key}) : super(key: key);
 
-  static String content = 'Good';
+  static String content = 'Product';
 
   @override
   State createState() => _State();
 }
 
-class _State extends State<Good> {
+class _State extends State<Product> {
   bool closed = false;
   int curStage = 1;
   final nameController = TextEditingController();
@@ -44,7 +43,7 @@ class _State extends State<Good> {
   final vendorController = TextEditingController();
   final scrollController = ScrollController();
   List<int> idList = [];
-  Map<int, Product> dataMap = {};
+  Map<int, model.Product> dataMap = {};
   Map<int, DateTime> datetimeMap = {};
   Map<int, bool> boolMap = {};
 
@@ -70,22 +69,22 @@ class _State extends State<Good> {
       Future.delayed(
         const Duration(milliseconds: 500),
         () {
-          print('Good.navigate to $page');
+          print('Product.navigate to $page');
           Navigate.to(context, Screen.build(page));
         },
       );
     }
   }
 
-  void fetchIdListOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'fetchIdListOfGoodHandler';
+  void fetchIdListOfProductHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchIdListOfProductHandler';
     try {
-      FetchIdListOfGoodRsp rsp = FetchIdListOfGoodRsp.fromJson(body);
+      var rsp = FetchIdListOfProductRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         Log.debug(
           major: major,
           minor: minor,
-          from: Good.content,
+          from: Product.content,
           caller: caller,
           message: 'product id list: ${rsp.getIdList()}',
         );
@@ -94,7 +93,7 @@ class _State extends State<Good> {
             showMessageDialog(
               context,
               Translator.translate(Language.titleOfNotification),
-              Translator.translate(Language.noRecordOfGoodInDatabase),
+              Translator.translate(Language.noRecordOfProductInDatabase),
             );
             return;
           } else if (rsp.getBehavior() == 2) {
@@ -128,7 +127,7 @@ class _State extends State<Good> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Good.content,
+        from: Product.content,
         caller: caller,
         message: 'failure, err: $e',
       );
@@ -137,10 +136,10 @@ class _State extends State<Good> {
     }
   }
 
-  void fetchRecordsOfGoodHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'fetchRecordsOfGoodHandler';
+  void fetchRecordsOfProductHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchRecordsOfProductHandler';
     try {
-      FetchRecordsOfGoodRsp rsp = FetchRecordsOfGoodRsp.fromJson(body);
+      var rsp = FetchRecordsOfProductRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         // print('product map: ${rsp.getDataMap().toString()}');
         if (Config.debug) {
@@ -151,7 +150,7 @@ class _State extends State<Good> {
           Log.debug(
             major: major,
             minor: minor,
-            from: Good.content,
+            from: Product.content,
             caller: caller,
             message: 'id list: $tempList',
           );
@@ -192,7 +191,7 @@ class _State extends State<Good> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Good.content,
+        from: Product.content,
         caller: caller,
         message: 'failure, err: $e',
       );
@@ -223,19 +222,19 @@ class _State extends State<Good> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Good.content,
+        from: Product.content,
         caller: caller,
         message: 'responded',
       );
-      if (major == Major.admin && minor == Admin.fetchIdListOfGoodRsp) {
-        fetchIdListOfGoodHandler(major: major, minor: minor, body: body);
-      } else if (major == Major.admin && minor == Admin.fetchRecordsOfGoodRsp) {
-        fetchRecordsOfGoodHandler(major: major, minor: minor, body: body);
+      if (major == Major.product && minor == route.Product.fetchIdListOfProductRsp) {
+        fetchIdListOfProductHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.product && minor == route.Product.fetchRecordsOfProductRsp) {
+        fetchRecordsOfProductHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
           major: major,
           minor: minor,
-          from: Good.content,
+          from: Product.content,
           caller: caller,
           message: 'not matched',
         );
@@ -245,7 +244,7 @@ class _State extends State<Good> {
       Log.debug(
         major: major,
         minor: minor,
-        from: Good.content,
+        from: Product.content,
         caller: caller,
         message: 'failure, err: $e',
       );
@@ -291,7 +290,7 @@ class _State extends State<Good> {
                           controller: idController,
                           decoration: InputDecoration(
                             // border: const UnderlineInputBorder(),
-                            labelText: Translator.translate(Language.idOfGood),
+                            labelText: Translator.translate(Language.idOfProduct),
                           ),
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
@@ -307,7 +306,7 @@ class _State extends State<Good> {
                           controller: nameController,
                           decoration: InputDecoration(
                             // border: const UnderlineInputBorder(),
-                            labelText: Translator.translate(Language.nameOfGood),
+                            labelText: Translator.translate(Language.nameOfProduct),
                           ),
                         ),
                       ),
@@ -319,9 +318,9 @@ class _State extends State<Good> {
                           onPressed: () {
                             if (idController.text.isEmpty && nameController.text.isEmpty) {
                               resetSource();
-                              fetchIdListOfGood(
-                                from: Good.content,
-                                caller: '${caller}.fetchIdListOfGood',
+                              fetchIdListOfProduct(
+                                from: Product.content,
+                                caller: '${caller}.fetchIdListOfProduct',
                                 behavior: 1,
                                 productName: "",
                                 categoryId: 0,
@@ -330,18 +329,18 @@ class _State extends State<Good> {
                             }
                             if (idController.text.isNotEmpty) {
                               resetSource();
-                              fetchRecordsOfGood(
-                                from: Good.content,
-                                caller: '${caller}fetchRecordsOfGood',
+                              fetchRecordsOfProduct(
+                                from: Product.content,
+                                caller: '${caller}fetchRecordsOfProduct',
                                 productIdList: [int.parse(idController.text)],
                               );
                               return;
                             }
                             if (nameController.text.isNotEmpty) {
                               resetSource();
-                              fetchIdListOfGood(
-                                from: Good.content,
-                                caller: '${caller}fetchIdListOfGood',
+                              fetchIdListOfProduct(
+                                from: Product.content,
+                                caller: '${caller}fetchIdListOfProduct',
                                 behavior: 2,
                                 productName: nameController.text,
                                 categoryId: 0,
@@ -388,21 +387,21 @@ class _State extends State<Good> {
                         ElevatedButton.icon(
                           icon: const Icon(Icons.add),
                           onPressed: () async {
-                            showInsertGoodDialog(context);
+                            showInsertProductDialog(context);
                           },
                           label: Text(
-                            Translator.translate(Language.importGood),
+                            Translator.translate(Language.importProduct),
                             style: const TextStyle(color: Colors.white, fontSize: 15),
                           ),
                         ),
                       ],
                       source: Source(context, idList, dataMap, datetimeMap, boolMap),
-                      header: Text(Translator.translate(Language.listOfGoods)),
+                      header: Text(Translator.translate(Language.listOfProducts)),
                       columns: [
-                        DataColumn(label: Text(Translator.translate(Language.idOfGood))),
-                        DataColumn(label: Text(Translator.translate(Language.nameOfGood))),
+                        DataColumn(label: Text(Translator.translate(Language.idOfProduct))),
+                        DataColumn(label: Text(Translator.translate(Language.nameOfProduct))),
                         DataColumn(label: Text(Translator.translate(Language.buyingPrice))),
-                        DataColumn(label: Text(Translator.translate(Language.vendorOfGood))),
+                        DataColumn(label: Text(Translator.translate(Language.vendorOfProduct))),
                         DataColumn(label: Text(Translator.translate(Language.contactOfVendor))),
                         DataColumn(label: Text(Translator.translate(Language.operation))),
                       ],
@@ -425,7 +424,7 @@ class _State extends State<Good> {
 
 class Source extends DataTableSource {
   List<int> idList;
-  Map<int, Product> dataMap;
+  Map<int, model.Product> dataMap;
   Map<int, DateTime> datetimeMap;
   Map<int, bool> boolMap;
   BuildContext buildContext;
@@ -492,9 +491,9 @@ class Source extends DataTableSource {
           }
         }
         // print("requestIdList: $requestIdList");
-        fetchRecordsOfGood(
-          from: Good.content,
-          caller: '$caller.fetchRecordsOfGood',
+        fetchRecordsOfProduct(
+          from: Product.content,
+          caller: '$caller.fetchRecordsOfProduct',
           productIdList: requestIdList,
         );
       }
@@ -522,12 +521,12 @@ class Source extends DataTableSource {
                   if (!boolMap.containsKey(key)) {
                     return;
                   }
-                  showUpdateGoodDialog(buildContext, dataMap[key]!).then((value) {
+                  showUpdateProductDialog(buildContext, dataMap[key]!).then((value) {
                     if (value) {
                       print("notifyListeners");
-                      fetchRecordsOfGood(
-                        from: Good.content,
-                        caller: '$caller.fetchRecordsOfGood',
+                      fetchRecordsOfProduct(
+                        from: Product.content,
+                        caller: '$caller.fetchRecordsOfProduct',
                         productIdList: [dataMap[key]!.getId()],
                       );
                       notifyListeners();
@@ -542,7 +541,7 @@ class Source extends DataTableSource {
                   if (!boolMap.containsKey(key)) {
                     return;
                   }
-                  await showRemoveGoodDialog(buildContext, dataMap[key]!).then(
+                  await showRemoveProductDialog(buildContext, dataMap[key]!).then(
                     (value) => () {
                       // print('value: $value');
                       if (value) {

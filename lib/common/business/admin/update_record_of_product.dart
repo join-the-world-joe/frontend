@@ -1,10 +1,9 @@
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
-import 'package:flutter_framework/common/protocol/admin/update_record_of_good.dart';
+import 'package:flutter_framework/common/protocol/admin/update_record_of_product.dart';
 
-void updateRecordOfGood({
+void updateRecordOfProduct({
   required String from,
   required String caller,
   required String name,
@@ -17,8 +16,8 @@ void updateRecordOfGood({
     from: from,
     caller: caller,
     major: Major.admin,
-    minor: Admin.updateRecordOfGoodReq,
-    body: UpdateRecordOfGoodReq.construct(
+    minor: Admin.updateRecordOfProductReq,
+    body: UpdateRecordOfProductReq.construct(
       productId: productId,
       name: name,
       buyingPrice: buyingPrice,

@@ -5,6 +5,7 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/protocol/admin/fetch_records_of_advertisement.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/route/advertisement.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -98,7 +99,7 @@ Future<int> showApproveAdvertisementDialog(BuildContext context) async {
         caller: caller,
         message: 'responded',
       );
-      if (major == Major.admin && minor == Admin.fetchRecordsOfAdvertisementRsp) {
+      if (major == Major.advertisement && minor == Advertisement.fetchRecordsOfAdvertisementRsp) {
         return fetchRecordsOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
@@ -229,7 +230,7 @@ Future<int> showApproveAdvertisementDialog(BuildContext context) async {
                         readOnly: true,
                         controller: productIdController,
                         decoration: InputDecoration(
-                          labelText: Translator.translate(Language.idOfGood),
+                          labelText: Translator.translate(Language.idOfProduct),
                         ),
                       ),
                     ),

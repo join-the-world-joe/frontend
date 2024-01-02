@@ -1,45 +1,41 @@
 import 'dart:convert';
 
-class UpdateRecordOfGoodReq {
+class InsertRecordOfProductReq {
   String _name = '';
-  int _productId = -1;
-  int _buyingPrice = -1;
   String _vendor = '';
   String _contact = '';
+  int _buyingPrice = -1;
 
-  UpdateRecordOfGoodReq.construct({
+  InsertRecordOfProductReq.construct({
     required String name,
-    required int productId,
-    required int buyingPrice,
     required String vendor,
     required String contact,
+    required int buyingPrice,
   }) {
     _name = name;
-    _productId = productId;
-    _buyingPrice = buyingPrice;
     _vendor = vendor;
     _contact = contact;
+    _buyingPrice = buyingPrice;
   }
 
   Map<String, dynamic> toJson() {
     return {
       'name': utf8.encode(_name),
-      'product_id': _productId,
-      'buying_price': _buyingPrice,
       'vendor': utf8.encode(_vendor),
       'contact': utf8.encode(_contact),
+      'buying_price': _buyingPrice,
     };
   }
 }
 
-class UpdateRecordOfGoodRsp {
+class InsertRecordOfProductRsp {
   int _code = -1;
 
   int getCode() {
     return _code;
   }
 
-  UpdateRecordOfGoodRsp.fromJson(Map<String, dynamic> json) {
+  InsertRecordOfProductRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
       _code = json['code'];
     }

@@ -14,7 +14,6 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/validator/mobile.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/route/minor.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/common/protocol/account/login.dart';
 import 'package:flutter_framework/common/business/account/login.dart';

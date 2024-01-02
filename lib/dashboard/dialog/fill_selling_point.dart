@@ -42,7 +42,7 @@ Future<String> showFillSellingPointDialog(BuildContext context) async {
         caller: caller,
         message: 'responded',
       );
-      if (major == Major.admin && minor == Admin.insertRecordOfGoodRsp) {
+      if (major == Major.admin && minor == Admin.insertRecordOfProductRsp) {
       } else {
         Log.debug(
           major: major,
