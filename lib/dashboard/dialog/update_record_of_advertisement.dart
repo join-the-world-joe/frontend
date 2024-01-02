@@ -103,15 +103,16 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
         imageMap[key] = ImageItem.construct(
           native: false,
           data: Uint8List(0),
-          objectFile: oriObjectFileName,
+          objectFileName: oriObjectFileName,
           url: value,
           nativeFileName: '',
-          dbKey: key,
+          width: 0,
+          height: 0,
         );
         oriImageMap[key] = imageMap[key]!;
-        if (commonPath.isEmpty && key.contains(Config.thumbnailPrefix)) {
-          commonPath = imageMap[key]!.getUrl().split(oriObjectFileName)[0];
-        }
+        // if (commonPath.isEmpty && key.contains(Config.thumbnailPrefix)) {
+        //   commonPath = imageMap[key]!.getUrl().split(oriObjectFileName)[0];
+        // }
       });
       Runtime.setObserve(observe);
     } catch (e) {
@@ -399,74 +400,74 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                         controller: thumbnailController,
                         decoration: InputDecoration(
                           suffixIcon: IconButton(
-                            tooltip: Translator.translate(Language.pressToModifyThumbnail),
+                            tooltip: Translator.translate(Language.pressToModifyCoverImage),
                             icon: const Icon(Icons.edit),
                             onPressed: () async {
-                              var mediaData = await ImagePickerWeb.getImageInfo;
-                              if (mediaData != null) {
-                                // remove thumbnail from map
-                                var thumbnailKey = '';
-                                imageMap.forEach((key, value) {
-                                  if (key.contains(Config.thumbnailPrefix))  {
-                                    thumbnailKey = key;
-                                  }
-                                });
-                                if (thumbnailKey.isNotEmpty) {
-                                  imageMap.remove(thumbnailKey);
-                                }
-                                // insert thumbnail to map
-                                var timestamp = (DateTime.now().millisecondsSinceEpoch) ~/ 1000;
-                                String extension = path.extension(mediaData.fileName!).toLowerCase();
-                                var objectFileName = '${advertisement.getId()}/${Config.thumbnailPrefix}$timestamp$extension';
-                                imageMap[objectFileName] = ImageItem.construct(
-                                  native: true,
-                                  data: mediaData.data!,
-                                  objectFile: objectFileName,
-                                  url: '',
-                                  nativeFileName: mediaData.fileName!,
-                                  dbKey: '${Config.thumbnailPrefix}$timestamp',
-                                );
-                                curStage++;
-                              }
+                            //   var mediaData = await ImagePickerWeb.getImageInfo;
+                            //   if (mediaData != null) {
+                            //     // remove thumbnail from map
+                            //     var thumbnailKey = '';
+                            //     imageMap.forEach((key, value) {
+                            //       if (key.contains(Config.thumbnailPrefix))  {
+                            //         thumbnailKey = key;
+                            //       }
+                            //     });
+                            //     if (thumbnailKey.isNotEmpty) {
+                            //       imageMap.remove(thumbnailKey);
+                            //     }
+                            //     // insert thumbnail to map
+                            //     var timestamp = (DateTime.now().millisecondsSinceEpoch) ~/ 1000;
+                            //     String extension = path.extension(mediaData.fileName!).toLowerCase();
+                            //     var objectFileName = '${advertisement.getId()}/${Config.thumbnailPrefix}$timestamp$extension';
+                            //     imageMap[objectFileName] = ImageItem.construct(
+                            //       native: true,
+                            //       data: mediaData.data!,
+                            //       objectFile: objectFileName,
+                            //       url: '',
+                            //       nativeFileName: mediaData.fileName!,
+                            //       dbKey: '${Config.thumbnailPrefix}$timestamp',
+                            //     );
+                            //     curStage++;
+                            //   }
                             },
                           ),
                           prefixIcon: Wrap(
                             children: () {
                               List<Widget> widgetList = [];
-                              imageMap.forEach((key, value) {
-                                if(key.contains(Config.thumbnailPrefix)) {
-                                  var title = '';
-                                  if (!value.getNative()) {
-                                    title = value.getDBKey();
-                                  } else {
-                                    title = value.getNativeFileName();
-                                  }
-                                  widgetList.add(Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: InputChip(
-                                      label: Text(
-                                        title,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        if (!value.getNative()) {
-                                          showViewNetworkImageDialog(context, value.getUrl());
-                                        } else {
-                                          // native
-                                          showViewImageDialog(context, value.getData());
-                                        }
-                                      },
-                                      backgroundColor: Colors.green,
-                                      // selectedColor: Colors.green,
-                                      elevation: 6.0,
-                                      shadowColor: Colors.grey[60],
-                                      padding: const EdgeInsets.all(8.0),
-                                    ),
-                                  ));
-                                }
-                              });
+                              // imageMap.forEach((key, value) {
+                              //   if(key.contains(Config.thumbnailPrefix)) {
+                              //     var title = '';
+                              //     if (!value.getNative()) {
+                              //       title = value.getDBKey();
+                              //     } else {
+                              //       title = value.getNativeFileName();
+                              //     }
+                              //     widgetList.add(Padding(
+                              //       padding: const EdgeInsets.all(5.0),
+                              //       child: InputChip(
+                              //         label: Text(
+                              //           title,
+                              //           style: const TextStyle(
+                              //             color: Colors.white,
+                              //           ),
+                              //         ),
+                              //         onPressed: () {
+                              //           if (!value.getNative()) {
+                              //             showViewNetworkImageDialog(context, value.getUrl());
+                              //           } else {
+                              //             // native
+                              //             showViewImageDialog(context, value.getData());
+                              //           }
+                              //         },
+                              //         backgroundColor: Colors.green,
+                              //         // selectedColor: Colors.green,
+                              //         elevation: 6.0,
+                              //         shadowColor: Colors.grey[60],
+                              //         padding: const EdgeInsets.all(8.0),
+                              //       ),
+                              //     ));
+                              //   }
+                              // });
                               return widgetList;
                             }(),
                           ),
@@ -493,10 +494,12 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                                 imageMap[mediaData.fileName!] = ImageItem.construct(
                                   native: true,
                                   data: mediaData.data!,
-                                  objectFile: objectFileName,
+                                  objectFileName: objectFileName,
                                   url: '',
                                   nativeFileName: mediaData.fileName!,
-                                  dbKey: '$timestamp',
+                                  // dbKey: '$timestamp',
+                                  width: 0,
+                                  height: 0,
                                 );
                                 curStage++;
                               }
@@ -508,9 +511,9 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                             children: () {
                               List<Widget> widgetList = [];
                               imageMap.forEach((key, value) {
-                                if (key.contains(Config.thumbnailPrefix)) {
-                                  return;
-                                }
+                                // if (key.contains(Config.thumbnailPrefix)) {
+                                //   return;
+                                // }
                                 widgetList.add(Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: InputChip(

@@ -227,14 +227,14 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(
   }
 
   void figureOutNameListOfFile() {
-    String extension = path.extension(imageMap[Config.defaultThumbnailObjectFileName]!.fileName!).toLowerCase();
-    nameListOfFile.add('$advertisementId/${Config.defaultThumbnailObjectFileName}$extension');
-    objectDataMapping['$advertisementId/${Config.defaultThumbnailObjectFileName}$extension'] = imageMap[Config.defaultThumbnailObjectFileName]!.data!;
-    for (var index = 0; index < imageList.length; index++) {
-      extension = path.extension(imageMap[imageList[index]]!.fileName!).toLowerCase();
-      nameListOfFile.add('$advertisementId/${index + 1}$extension');
-      objectDataMapping['$advertisementId/${index + 1}$extension'] = imageMap[imageList[index]]!.data!;
-    }
+    // String extension = path.extension(imageMap[Config.defaultThumbnailObjectFileName]!.fileName!).toLowerCase();
+    // nameListOfFile.add('$advertisementId/${Config.defaultThumbnailObjectFileName}$extension');
+    // objectDataMapping['$advertisementId/${Config.defaultThumbnailObjectFileName}$extension'] = imageMap[Config.defaultThumbnailObjectFileName]!.data!;
+    // for (var index = 0; index < imageList.length; index++) {
+    //   extension = path.extension(imageMap[imageList[index]]!.fileName!).toLowerCase();
+    //   nameListOfFile.add('$advertisementId/${index + 1}$extension');
+    //   objectDataMapping['$advertisementId/${index + 1}$extension'] = imageMap[imageList[index]]!.data!;
+    // }
     print('nameList: $nameListOfFile');
   }
 

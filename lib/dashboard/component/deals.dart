@@ -550,10 +550,11 @@ class Source extends DataTableSource {
             imageMap[key] = ImageItem.construct(
               native: false,
               data: Uint8List(0),
-              objectFile: '',
+              objectFileName: '',
               url: value,
               nativeFileName: '',
-              dbKey: key,
+              width: 0,
+              height: 0,
             );
           });
         } catch (e) {
@@ -620,15 +621,15 @@ class Source extends DataTableSource {
             onPressed: () {
               // show thumbnail
               // print('view thumbnail');
-              showViewNetworkImageDialog(buildContext, () {
-                String output = '';
-                imageMap.forEach((key, value) {
-                  if (key.contains(Config.thumbnailPrefix)) {
-                    output = value.getUrl();
-                  }
-                });
-                return output;
-              }());
+              // showViewNetworkImageDialog(buildContext, () {
+              //   String output = '';
+              //   imageMap.forEach((key, value) {
+              //     if (key.contains(Config.thumbnailPrefix)) {
+              //       output = value.getUrl();
+              //     }
+              //   });
+              //   return output;
+              // }());
             },
           ),
         ),
@@ -641,11 +642,11 @@ class Source extends DataTableSource {
               // print('view image');
               showViewNetworkImageGroupDialog(buildContext, () {
                 List<String> output = [];
-                imageMap.forEach((key, value) {
-                  if (!key.contains(Config.thumbnailPrefix)) {
-                    output.add(value.getUrl());
-                  }
-                });
+                // imageMap.forEach((key, value) {
+                //   if (!key.contains(Config.thumbnailPrefix)) {
+                //     output.add(value.getUrl());
+                //   }
+                // });
                 return output;
               }());
             },

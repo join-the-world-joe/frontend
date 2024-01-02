@@ -455,17 +455,12 @@ class Source extends DataTableSource {
   @override
   int get selectedRowCount => 0;
 
-  String getThumbnail(String image) {
+  String getCoverImageUrl(String image) {
     String output = '';
     try {
-      Map<String, dynamic> temp = jsonDecode(image);
-      temp.forEach((key, value) {
-        if (key.contains(Config.thumbnailPrefix)) {
-          output = temp[key];
-        }
-      });
+
     } catch (e) {
-      print('Advertisement.Source.getThumbnail failure, err: $e');
+      print('Advertisement.Source.getCoverImageUrl failure, err: $e');
     }
     return output;
   }
@@ -473,12 +468,7 @@ class Source extends DataTableSource {
   List<String> getImageUrlList(String image) {
     List<String> output = [];
     try {
-      Map<String, dynamic> temp = jsonDecode(image);
-      temp.forEach((key, value) {
-        if (!key.contains(Config.thumbnailPrefix)) {
-          output.add(value);
-        }
-      });
+
     } catch (e) {
       print('Advertisement.Source.getImageUrlList failure, err: $e');
     }
@@ -500,7 +490,7 @@ class Source extends DataTableSource {
     Text status = Text(Translator.translate(Language.loading));
     var image = Translator.translate(Language.loading);
     var key = idList[index];
-    var thumbnailUrl = '';
+    var coverImageUrl = '';
     List<String> imageUrlList = [];
 
     if (boolMap.containsKey(key)) {
@@ -529,7 +519,7 @@ class Source extends DataTableSource {
         sellingPoints = dataMap[key]!.getSellingPoints();
         sellingPriceOfAdvertisement = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
         if (image.isNotEmpty) {
-          thumbnailUrl = getThumbnail(image);
+          coverImageUrl = getCoverImageUrl(dataMap[key]!.getCoverImage());
           imageUrlList = getImageUrlList(image);
         }
       } else {
@@ -593,15 +583,14 @@ class Source extends DataTableSource {
             tooltip: Translator.translate(Language.clickToView),
             icon: const Icon(Icons.search),
             onPressed: () {
-              // show thumbnail
-              // print('view thumbnail');
-              var ret = Uri.parse(thumbnailUrl).isAbsolute;
+              // show cover image
+              // print('view cover image');
+              var ret = Uri.parse(coverImageUrl).isAbsolute;
               if (!ret) {
                 showWarningDialog(buildContext, Translator.translate(Language.urlIllegal));
-                // print('url: $thumbnailUrl, image: $image');
                 return;
               }
-              showViewNetworkImageDialog(buildContext, thumbnailUrl);
+              showViewNetworkImageDialog(buildContext, coverImageUrl);
             },
           ),
         ),

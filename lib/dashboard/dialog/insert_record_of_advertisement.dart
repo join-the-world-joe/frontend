@@ -8,6 +8,7 @@ import 'package:flutter_framework/common/route/product.dart';
 import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_record_of_advertisement_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
+import 'package:flutter_framework/dashboard/local/image_item.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
@@ -19,7 +20,6 @@ import '../config/config.dart';
 import 'package:flutter_framework/common/protocol/admin/fetch_records_of_product.dart';
 import 'package:flutter_framework/common/business/admin/fetch_records_of_product.dart';
 import 'package:image_picker_web/image_picker_web.dart';
-import 'package:path/path.dart' as path;
 
 Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
   bool closed = false;
@@ -27,7 +27,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
   String from = 'showInsertRecordOfAdvertisementDialog';
   List<String> sellingPoints = [];
   List<String> imageList = []; // native file name
-  Map<String, MediaInfo> imageMap = {}; // key: native file name
+  // Map<String, MediaInfo> imageMap = {}; // key: native file name
   var oriObserve = Runtime.getObserve();
   var productIdController = TextEditingController();
   var nameController = TextEditingController();
@@ -36,8 +36,15 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
   var placeOfOriginController = TextEditingController();
   var sellingPointController = TextEditingController();
   var stockController = TextEditingController();
-  var imageController = TextEditingController();
-  var thumbnailController = TextEditingController();
+  // var imageController = TextEditingController();
+  var coverImageController = TextEditingController();
+  var firstImageController = TextEditingController();
+  ImageItem? coverImage;
+  ImageItem? firstImage;
+  ImageItem? secondImage;
+  ImageItem? thirdImage;
+  ImageItem? fourthImage;
+  ImageItem? fifthImage;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -186,22 +193,22 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                 return;
               }
 
-              if (!imageMap.containsKey(Config.defaultThumbnailObjectFileName)) {
-                showMessageDialog(
-                  context,
-                  Translator.translate(Language.titleOfNotification),
-                  Translator.translate(Language.thumbnailOfAdvertisementNotProvided),
-                );
-                return;
-              }
-              if (imageMap.length < 2) {
-                showMessageDialog(
-                  context,
-                  Translator.translate(Language.titleOfNotification),
-                  Translator.translate(Language.imageOfAdvertisementNotProvided),
-                );
-                return;
-              }
+              // if (!imageMap.containsKey(Config.defaultThumbnailObjectFileName)) {
+              //   showMessageDialog(
+              //     context,
+              //     Translator.translate(Language.titleOfNotification),
+              //     Translator.translate(Language.thumbnailOfAdvertisementNotProvided),
+              //   );
+              //   return;
+              // }
+              // if (imageMap.length < 2) {
+              //   showMessageDialog(
+              //     context,
+              //     Translator.translate(Language.titleOfNotification),
+              //     Translator.translate(Language.imageOfAdvertisementNotProvided),
+              //   );
+              //   return;
+              // }
               showInsertRecordOfAdvertisementProgressDialog(
                 context,
                 name: nameController.text,
@@ -211,7 +218,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                 placeOfOrigin: placeOfOriginController.text,
                 sellingPoints: sellingPoints,
                 sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
-                imageMap: imageMap,
+                imageMap: {},
                 imageList: imageList,
               ).then((value) {
                 if (value == Code.oK) {
@@ -403,48 +410,41 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                       width: 350,
                       child: TextFormField(
                         readOnly: true,
-                        controller: thumbnailController,
+                        controller: coverImageController,
                         decoration: InputDecoration(
-                          labelText: imageMap[Config.defaultThumbnailObjectFileName] == null ? Translator.translate(Language.pressRightButtonToAddThumbnail) : '',
+                          labelText: coverImage == null ? Translator.translate(Language.pressRightButtonToAddCoverImage) : '',
                           suffixIcon: IconButton(
                             tooltip: () {
-                              if (imageMap[Config.defaultThumbnailObjectFileName] == null) {
-                                return Translator.translate(Language.pressToAddThumbnail);
+                              if (coverImage == null) {
+                                return Translator.translate(Language.pressToAddCoverImage);
                               } else {
-                                return Translator.translate(Language.pressToModifyThumbnail);
+                                return Translator.translate(Language.pressToModifyCoverImage);
                               }
                             }(),
-                            icon: imageMap[Config.defaultThumbnailObjectFileName] == null ? const Icon(Icons.add_circle_outlined) : const Icon(Icons.edit),
+                            icon: coverImage == null ? const Icon(Icons.add_circle_outlined) : const Icon(Icons.edit),
                             onPressed: () async {
-                              var mediaData = await ImagePickerWeb.getImageInfo;
-                              if (mediaData != null) {
-                                imageMap[Config.defaultThumbnailObjectFileName] = mediaData;
-                                String extension = path.extension(mediaData.fileName!).toLowerCase();
-                                print('file name: ${mediaData.fileName!}');
-                                print('extension: $extension');
-                                print('size: ${mediaData.data!.length}');
+                              var mediaInfo = await ImagePickerWeb.getImageInfo;
+                              if (mediaInfo != null) {
+                                coverImage = await ImageItem.fromMediaInfo(mediaInfo: mediaInfo);
                                 curStage++;
-                                // get width and height then send to backend
-                                // Image.memory(bytes).width and height
                               }
                             },
                           ),
                           prefixIcon: Wrap(
-                            children: () {
-                              List<Widget> widgetList = [];
-                              if (imageMap[Config.defaultThumbnailObjectFileName] != null) {
-                                widgetList.add(Padding(
+                            children: [
+                              if (coverImage != null)
+                                Padding(
                                   padding: const EdgeInsets.all(5.0),
                                   child: InputChip(
                                     label: Text(
-                                      imageMap[Config.defaultThumbnailObjectFileName]!.fileName!,
+                                      coverImage!.getNativeFileName(),
                                       style: const TextStyle(
                                         color: Colors.white,
                                       ),
                                     ),
                                     onPressed: () {
-                                      if (imageMap[Config.defaultThumbnailObjectFileName] != null) {
-                                        showViewImageDialog(context, imageMap[Config.defaultThumbnailObjectFileName]!.data!);
+                                      if (coverImage != null) {
+                                        showViewImageDialog(context, coverImage!.getData());
                                       }
                                     },
                                     // onDeleted: () {
@@ -457,10 +457,8 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                                     shadowColor: Colors.grey[60],
                                     padding: const EdgeInsets.all(8.0),
                                   ),
-                                ));
-                              }
-                              return widgetList;
-                            }(),
+                                )
+                            ],
                           ),
                         ),
                       ),
@@ -470,48 +468,45 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                       width: 350,
                       child: TextFormField(
                         readOnly: true,
-                        controller: imageController,
+                        controller: firstImageController,
                         decoration: InputDecoration(
-                          labelText: imageList.isEmpty ? Translator.translate(Language.pressRightButtonToAddImage) : "",
+                          labelText: firstImage == null ? Translator.translate(Language.pressRightButtonToAddFirstImage) : '',
                           suffixIcon: IconButton(
-                            tooltip: Translator.translate(Language.addImageForAdvertisement),
-                            icon: const Icon(Icons.add_circle_outlined),
+                            tooltip: () {
+                              if (firstImage == null) {
+                                return Translator.translate(Language.pressToAddFirstImage);
+                              } else {
+                                return Translator.translate(Language.pressToModifyFirstImage);
+                              }
+                            }(),
+                            icon: firstImage == null ? const Icon(Icons.add_circle_outlined) : const Icon(Icons.edit),
                             onPressed: () async {
-                              var mediaData = await ImagePickerWeb.getImageInfo;
-                              if (mediaData != null) {
-                                String extension = path.extension(mediaData.fileName!).toLowerCase();
-                                print('file name: ${mediaData.fileName!}');
-                                print('extension: $extension');
-                                print('size: ${mediaData.data!.length}');
-                                imageMap[mediaData.fileName!] = mediaData;
-                                imageList.add(mediaData.fileName!);
+                              var mediaInfo = await ImagePickerWeb.getImageInfo;
+                              if (mediaInfo != null) {
+                                firstImage = await ImageItem.fromMediaInfo(mediaInfo: mediaInfo);
                                 curStage++;
                               }
                             },
                           ),
                           prefixIcon: Wrap(
-                            children: () {
-                              List<Widget> widgetList = [];
-                              for (var element in imageList) {
-                                widgetList.add(Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                            children: [
+                              if (firstImage != null)
+                                Padding(
+                                  padding: const EdgeInsets.all(5.0),
                                   child: InputChip(
                                     label: Text(
-                                      element,
+                                      firstImage!.getNativeFileName(),
                                       style: const TextStyle(
                                         color: Colors.white,
                                       ),
                                     ),
                                     onPressed: () {
-                                      if (imageMap.containsKey(element)) {
-                                        showViewImageDialog(context, imageMap[element]!.data!);
+                                      if (firstImage != null) {
+                                        showViewImageDialog(context, firstImage!.getData());
                                       }
                                     },
                                     onDeleted: () {
-                                      imageList.remove(element);
-                                      if (imageMap.containsKey(element)) {
-                                        imageMap.remove(element);
-                                      }
+                                      firstImage = null;
                                       curStage++;
                                     },
                                     backgroundColor: Colors.green,
@@ -520,29 +515,13 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                                     shadowColor: Colors.grey[60],
                                     padding: const EdgeInsets.all(8.0),
                                   ),
-                                ));
-                              }
-                              return widgetList;
-                            }(),
+                                )
+                            ],
                           ),
                         ),
                       ),
                     ),
                     Spacing.addVerticalSpace(10),
-                    // SizedBox(
-                    //   width: 350,
-                    //   child: TextButton(
-                    //     onPressed: () {
-                    //       print('image: $imageList');
-                    //       imageMap.forEach((key, value) {
-                    //         print("file: $key");
-                    //         print("size: ${value.data!.length}");
-                    //       });
-                    //     },
-                    //     child: Text('打印选中图片'),
-                    //   ),
-                    // ),
-                    // Spacing.addVerticalSpace(10),
                   ],
                 ),
               ),

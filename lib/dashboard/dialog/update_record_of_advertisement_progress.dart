@@ -202,30 +202,30 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
 
   void figureOutNameListOfFile() {
     try {
-      imageMap.forEach(
-        (key, value) {
-          if (imageMap[key]!.getNative()) {
-            // to be uploaded condition
-            nameListOfFile.add(imageMap[key]!.getObjectFile());
-            objectDataMapping[imageMap[key]!.getObjectFile()] = value.getData();
-
-            // to be removed condition
-            if (oriImageMap.containsKey(key)) {
-              if (oriImageMap[key]!.getObjectFile().compareTo(imageMap[key]!.getObjectFile()) != 0) {
-                objectFileToBeRemoved.add(oriImageMap[key]!.getObjectFile());
-              }
-            }
-          }
-        },
-      );
-      oriImageMap.forEach(
-        (key, value) {
-          if (!imageMap.containsKey(key)) {
-            // to be removed condition
-            objectFileToBeRemoved.add(oriImageMap[key]!.getObjectFile());
-          }
-        },
-      );
+      // imageMap.forEach(
+      //   (key, value) {
+      //     if (imageMap[key]!.getNative()) {
+      //       // to be uploaded condition
+      //       nameListOfFile.add(imageMap[key]!.getObjectFileName());
+      //       objectDataMapping[imageMap[key]!.getObjectFileName()] = value.getData();
+      //
+      //       // to be removed condition
+      //       if (oriImageMap.containsKey(key)) {
+      //         if (oriImageMap[key]!.getObjectFile().compareTo(imageMap[key]!.getObjectFile()) != 0) {
+      //           objectFileToBeRemoved.add(oriImageMap[key]!.getObjectFile());
+      //         }
+      //       }
+      //     }
+      //   },
+      // );
+      // oriImageMap.forEach(
+      //   (key, value) {
+      //     if (!imageMap.containsKey(key)) {
+      //       // to be removed condition
+      //       objectFileToBeRemoved.add(oriImageMap[key]!.getObjectFile());
+      //     }
+      //   },
+      // );
     } catch (e) {
       print('$from failure: $e');
     } finally {
@@ -287,17 +287,17 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
 
     if (!hasFigureOutStep3Argument) {
       var imageOfAdvertisement = () {
-        String output = '';
-        Map<String, String> temp = {};
-        imageMap.forEach(
-          (key, value) {
-            temp[value.getDBKey()] = commonPath + value.getObjectFile();
-          },
-        );
-        output = jsonEncode(temp);
-        return output;
+      //   String output = '';
+      //   Map<String, String> temp = {};
+      //   imageMap.forEach(
+      //     (key, value) {
+      //       temp[value.getDBKey()] = commonPath + value.getObjectFile();
+      //     },
+      //   );
+      //   output = jsonEncode(temp);
+      //   return output;
       }();
-      step3.setImage(imageOfAdvertisement);
+      // step3.setImage(imageOfAdvertisement);
       hasFigureOutStep3Argument = true;
     }
 
@@ -376,18 +376,18 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
   }
 
   void setup() {
-    print('Original Image map: ');
-    oriImageMap.forEach(
-      (key, value) {
-        print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
-      },
-    );
-    print('Image map: ');
-    imageMap.forEach(
-      (key, value) {
-        print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
-      },
-    );
+    // print('Original Image map: ');
+    // oriImageMap.forEach(
+    //   (key, value) {
+    //     print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+    //   },
+    // );
+    // print('Image map: ');
+    // imageMap.forEach(
+    //   (key, value) {
+    //     print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+    //   },
+    // );
     figureOutNameListOfFile();
     figureOutProgress();
     Runtime.setObserve(observe);

@@ -57,22 +57,23 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
       imageMap[key] = ImageItem.construct(
         native: false,
         data: Uint8List(0),
-        objectFile: oriObjectFileName,
+        objectFileName: oriObjectFileName,
         url: value,
         nativeFileName: '',
-        dbKey: key,
+        width: 0,
+        height: 0,
       );
       objectFileToBeRemoved.add(oriObjectFileName);
     });
   } catch (e) {
     print('showRemoveAdvertisementDialog failure, err: $e');
   } finally {
-    print('Image map: ');
-    imageMap.forEach(
-      (key, value) {
-        print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
-      },
-    );
+    // print('Image map: ');
+    // imageMap.forEach(
+    //   (key, value) {
+    //     print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
+    //   },
+    // );
   }
 
   void softDeleteRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {

@@ -32,6 +32,10 @@ AUeJ6PeW+DAkmJWF6QIDAQAB
   static Duration periodOfScreenNormal = const Duration(milliseconds: 500);
 
   // misc
-  static String thumbnailPrefix = 'thumbnail-';
-  static String defaultThumbnailObjectFileName = '${thumbnailPrefix}0';
+  static String coverImagePrefix = '0-';
+  static String firstImagePrefix = '1-';
+  static String secondImagePrefix = '2-';
+  static String thirdImagePrefix = '3-';
+  static String fourthImagePrefix = '4-';
+  static String fifthImagePrefix = '5-';
 }

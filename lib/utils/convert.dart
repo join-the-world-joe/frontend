@@ -88,4 +88,15 @@ class Convert {
     }
     return output;
   }
+
+  static int doubleToInt(double input) {
+    int output = 0;
+    try {
+      var temp = input.toInt();
+      output = temp;
+    } catch (e) {
+      print('doubleToInt failure($input), err: $e');
+    }
+    return output;
+  }
 }
