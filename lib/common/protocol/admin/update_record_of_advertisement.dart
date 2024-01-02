@@ -9,7 +9,12 @@ class UpdateRecordOfAdvertisementReq {
   int _sellingPrice = 0;
   String _placeOfOrigin = '';
   List<String> _sellingPoints = [];
-  String _image = '';
+  String _coverImage = '';
+  String _firstImage = '';
+  String _secondImage = '';
+  String _thirdImage = '';
+  String _fourthImage = '';
+  String _fifthImage = '';
   int _stock = 0;
   int _status = 0;
 
@@ -21,7 +26,12 @@ class UpdateRecordOfAdvertisementReq {
     required int sellingPrice,
     required String placeOfOrigin,
     required List<String> sellingPoints,
-    required String image,
+    required String coverImage,
+    required String firstImage,
+    required String secondImage,
+    required String thirdImage,
+    required String fourthImage,
+    required String fifthImage,
     required int stock,
     required int status,
   }) {
@@ -32,7 +42,12 @@ class UpdateRecordOfAdvertisementReq {
     _sellingPrice = sellingPrice;
     _placeOfOrigin = placeOfOrigin;
     _sellingPoints = sellingPoints;
-    _image = image;
+    _coverImage = coverImage;
+    _firstImage = firstImage;
+    _secondImage = secondImage;
+    _thirdImage = thirdImage;
+    _fourthImage = fourthImage;
+    _fifthImage = fifthImage;
     _stock = stock;
     _status = status;
   }
@@ -43,11 +58,16 @@ class UpdateRecordOfAdvertisementReq {
       'name': utf8.encode(_name),
       'title': utf8.encode(_title),
       'stock': _stock,
-      'status':_status,
+      'status': _status,
       'product_id': _productId,
       'selling_points': Convert.utf8EncodeListString(_sellingPoints),
       'selling_price': _sellingPrice,
-      'image': utf8.encode(_image),
+      'cover_image': utf8.encode(_coverImage),
+      "first_image": Convert.utf8Encode(_firstImage),
+      "second_image": Convert.utf8Encode(_secondImage),
+      "third_image": Convert.utf8Encode(_thirdImage),
+      "fourth_image": Convert.utf8Encode(_fourthImage),
+      "fifth_image": Convert.utf8Encode(_fifthImage),
       'place_of_origin': utf8.encode(_placeOfOrigin),
     };
   }

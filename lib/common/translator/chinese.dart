@@ -261,7 +261,7 @@ class Chinese {
     Language.addImageForAdvertisement: '增加广告图片',
     Language.titleOfInsertAdvertisementButton: "新增",
     Language.urlIllegal: '非法的URL',
-    Language.thumbnailOfAdvertisementNotProvided: '未指定缩略图',
+    Language.coverImageOfAdvertisementNotProvided: '未指定封面图',
     Language.imageOfAdvertisementNotProvided: '未指定商品图片',
     Language.operationToInsertAdvertisement: '新增广告',
     Language.noAdvertisementAssociated: '未关联任何广告',

@@ -47,18 +47,23 @@ class InsertRecordOfAdvertisementProgress {
     if (!_requested) {
       _responded = false;
       _requestTime = DateTime.now();
-      // insertRecordOfAdvertisement(
-      //   from: from,
-      //   caller: caller,
-      //   name: _record!.getName(),
-      //   title: _record!.getTitle(),
-      //   sellingPrice: _record!.getSellingPrice(),
-      //   sellingPoints: _record!.getSellingPoints(),
-      //   image: _record!.getImage(),
-      //   placeOfOrigin: _record!.getPlaceOfOrigin(),
-      //   stock: _record!.getStock(),
-      //   productId: _record!.getProductId(),
-      // );
+      insertRecordOfAdvertisement(
+        from: from,
+        caller: caller,
+        name: _record!.getName(),
+        title: _record!.getTitle(),
+        sellingPrice: _record!.getSellingPrice(),
+        sellingPoints: _record!.getSellingPoints(),
+        coverImage: _record!.getCoverImage(),
+        firstImage: _record!.getFirstImage(),
+        secondImage: _record!.getSecondImage(),
+        thirdImage: _record!.getThirdImage(),
+        fourthImage: _record!.getFourthImage(),
+        fifthImage: _record!.getFifthImage(),
+        placeOfOrigin: _record!.getPlaceOfOrigin(),
+        stock: _record!.getStock(),
+        productId: _record!.getProductId(),
+      );
       _requested = true;
     }
     if (_requested) {

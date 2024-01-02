@@ -35,6 +35,10 @@ class Advertisement {
     return _coverImage;
   }
 
+  String getFirstImage() {
+    return _firstImage;
+  }
+
   String getSecondImage() {
     return _secondImage;
   }

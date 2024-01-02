@@ -11,6 +11,7 @@ import 'package:flutter_framework/common/protocol/admin/update_record_of_adverti
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/oss.dart';
+import 'package:flutter_framework/dashboard/local/image_item.dart';
 import 'package:flutter_framework/dashboard/model/advertisement.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -37,18 +38,20 @@ verify oss objects   ------->  backend
 result               <-------  backend
  */
 
-Future<int> showInsertRecordOfAdvertisementProgressDialog(
-  BuildContext context, {
-  required String name,
-  required String title,
-  required int sellingPrice,
-  required List<String> sellingPoints,
-  required String placeOfOrigin,
-  required int stock,
-  required int productId,
-  required Map<String, MediaInfo> imageMap,
-  required List<String> imageList,
-}) async {
+Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
+    {required String name,
+    required String title,
+    required int sellingPrice,
+    required List<String> sellingPoints,
+    required String placeOfOrigin,
+    required int stock,
+    required int productId,
+    required ImageItem? coverImage,
+    required ImageItem? firstImage,
+    required ImageItem? secondImage,
+    required ImageItem? thirdImage,
+    required ImageItem? fourthImage,
+    required ImageItem? fifthImage}) async {
   var result = Code.internalError;
   int? advertisementId;
   bool closed = false;
@@ -77,12 +80,12 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(
       title: title,
       placeOfOrigin: placeOfOrigin,
       sellingPoints: sellingPoints,
-      coverImage: '',
-      firstImage: '',
-      secondImage: '',
-      thirdImage: '',
-      fourthImage: '',
-      fifthImage: '',
+      coverImage: defaultImage,
+      firstImage: defaultImage,
+      secondImage: defaultImage,
+      thirdImage: defaultImage,
+      fourthImage: defaultImage,
+      fifthImage: defaultImage,
       sellingPrice: sellingPrice,
       stock: stock,
       status: 0,
@@ -99,14 +102,19 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(
   var step3 = UploadImageListProgress.construct(
     result: -3,
     ossHost: '',
-    requestHeader: {},
-    objectDataMapping: {},
+    requestHeader: requestHeader,
+    objectDataMapping: objectDataMapping,
   );
 
   var step4 = UpgradeFieldsOfAdvertisementProgress.construct(
     result: -4,
     id: -1,
-    image: '',
+    coverImage: defaultImage,
+    firstImage: defaultImage,
+    secondImage: defaultImage,
+    thirdImage: defaultImage,
+    fourthImage: defaultImage,
+    fifthImage: defaultImage,
     name: name,
     title: title,
     stock: stock,
@@ -227,14 +235,38 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(
   }
 
   void figureOutNameListOfFile() {
-    // String extension = path.extension(imageMap[Config.defaultThumbnailObjectFileName]!.fileName!).toLowerCase();
-    // nameListOfFile.add('$advertisementId/${Config.defaultThumbnailObjectFileName}$extension');
-    // objectDataMapping['$advertisementId/${Config.defaultThumbnailObjectFileName}$extension'] = imageMap[Config.defaultThumbnailObjectFileName]!.data!;
-    // for (var index = 0; index < imageList.length; index++) {
-    //   extension = path.extension(imageMap[imageList[index]]!.fileName!).toLowerCase();
-    //   nameListOfFile.add('$advertisementId/${index + 1}$extension');
-    //   objectDataMapping['$advertisementId/${index + 1}$extension'] = imageMap[imageList[index]]!.data!;
-    // }
+    if (coverImage != null) {
+      nameListOfFile.add('$advertisementId/${coverImage.getObjectFileName()}');
+      objectDataMapping['$advertisementId/${coverImage.getObjectFileName()}'] = coverImage.getData();
+    }
+    if (firstImage != null) {
+      nameListOfFile.add('$advertisementId/${firstImage.getObjectFileName()}');
+      objectDataMapping['$advertisementId/${firstImage.getObjectFileName()}'] = firstImage.getData();
+    }
+    if (secondImage != null) {
+      nameListOfFile.add('$advertisementId/${secondImage.getObjectFileName()}');
+      objectDataMapping['$advertisementId/${secondImage.getObjectFileName()}'] = secondImage.getData();
+    } else {
+      return;
+    }
+    if (thirdImage != null) {
+      nameListOfFile.add('$advertisementId/${thirdImage.getObjectFileName()}');
+      objectDataMapping['$advertisementId/${thirdImage.getObjectFileName()}'] = thirdImage.getData();
+    } else {
+      return;
+    }
+    if (fourthImage != null) {
+      nameListOfFile.add('$advertisementId/${fourthImage.getObjectFileName()}');
+      objectDataMapping['$advertisementId/${fourthImage.getObjectFileName()}'] = fourthImage.getData();
+    } else {
+      return;
+    }
+    if (fifthImage != null) {
+      nameListOfFile.add('$advertisementId/${fifthImage.getObjectFileName()}');
+      objectDataMapping['$advertisementId/${fifthImage.getObjectFileName()}'] = fifthImage.getData();
+    } else {
+      return;
+    }
     print('nameList: $nameListOfFile');
   }
 
@@ -286,23 +318,33 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(
     }
 
     if (!hasFigureOutStep4Argument) {
-      var image = () {
-        String output = '';
-        try {
-          Map<String, String> temp = {};
-          for (var e in nameListOfFile) {
-            var key = ((e.split('.')[0]).split('/'))[1];
-            temp[key] = commonOSSPath + e;
-          }
-          output = jsonEncode(temp);
-          print('output: $output');
-        } catch (e) {
-          print('upgradeImageFieldProgress failure, err: $e');
-        }
-        return output;
-      }();
+      if (coverImage != null) {
+        coverImage.setUrl(commonOSSPath + coverImage.getObjectFileName());
+        step4.setCoverImage(coverImage);
+      }
+      if (firstImage != null) {
+        firstImage.setUrl(commonOSSPath + firstImage.getObjectFileName());
+        step4.setFirstImage(firstImage);
+      }
+      if (firstImage != null && secondImage != null) {
+        secondImage.setUrl(commonOSSPath + secondImage.getObjectFileName());
+        step4.setSecondImage(secondImage);
+      }
+      if (firstImage != null && secondImage != null && thirdImage != null) {
+        thirdImage.setUrl(commonOSSPath + thirdImage.getObjectFileName());
+        step4.setThirdImage(thirdImage);
+      }
+      if (firstImage != null && secondImage != null && thirdImage != null && fourthImage != null) {
+        fourthImage.setUrl(commonOSSPath + fourthImage.getObjectFileName());
+        step4.setFourthImage(fourthImage);
+      }
+      if (firstImage != null && secondImage != null && thirdImage != null && fourthImage != null && fifthImage != null) {
+        fifthImage.setUrl(commonOSSPath + fifthImage.getObjectFileName());
+        step4.setFifthImage(fifthImage);
+      }
+
       step4.setAdvertisementId(advertisementId!);
-      step4.setImage(image);
+
       hasFigureOutStep4Argument = true;
     }
 

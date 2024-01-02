@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:core';
 
 import 'package:flutter_framework/common/business/admin/update_record_of_advertisement.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/protocol/admin/update_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
+import 'package:flutter_framework/dashboard/local/image_item.dart';
 
 /*
 three possible stage; requested, timeout, responded()
@@ -18,7 +20,12 @@ class UpgradeFieldsOfAdvertisementProgress {
   final Duration _defaultTimeout = Config.httpDefaultTimeout;
   UpdateRecordOfAdvertisementRsp? _rsp;
   int _advertisementId = -1;
-  String _image = '';
+  String _coverImage = '';
+  String _firstImage = '';
+  String _secondImage = '';
+  String _thirdImage = '';
+  String _fourthImage = '';
+  String _fifthImage = '';
   String _name = '';
   String _title = '';
   int _stock = -1;
@@ -31,7 +38,12 @@ class UpgradeFieldsOfAdvertisementProgress {
   UpgradeFieldsOfAdvertisementProgress.construct({
     required int result,
     required int id,
-    required String image,
+    required String coverImage,
+    required String firstImage,
+    required String secondImage,
+    required String thirdImage,
+    required String fourthImage,
+    required String fifthImage,
     required String name,
     required String title,
     required int stock,
@@ -46,7 +58,12 @@ class UpgradeFieldsOfAdvertisementProgress {
     _finished = false;
     _result = result;
     _advertisementId = id;
-    _image = image;
+    _coverImage = coverImage;
+    _firstImage = firstImage;
+    _secondImage = secondImage;
+    _thirdImage = thirdImage;
+    _fourthImage = fourthImage;
+    _fifthImage = fifthImage;
     _name = name;
     _title = title;
     _stock = stock;
@@ -74,8 +91,43 @@ class UpgradeFieldsOfAdvertisementProgress {
     _advertisementId = id;
   }
 
-  void setImage(String image) {
-    _image = image;
+  String genImageField(ImageItem item) {
+    var output = '';
+    try {
+      Map<String, String> temp = {};
+      temp['width'] = item.getWidth().toString();
+      temp['height'] = item.getHeight().toString();
+      temp['url'] = item.getUrl();
+      temp['object_file_name'] = item.getObjectFileName();
+      output = jsonEncode(temp);
+    } catch (e) {
+      print('genImageField failure, e: $e');
+    }
+    return output;
+  }
+
+  void setCoverImage(ImageItem image) {
+    _coverImage = genImageField(image);
+  }
+
+  void setFirstImage(ImageItem image) {
+    _firstImage = genImageField(image);
+  }
+
+  void setSecondImage(ImageItem image) {
+    _secondImage = genImageField(image);
+  }
+
+  void setThirdImage(ImageItem image) {
+    _thirdImage = genImageField(image);
+  }
+
+  void setFourthImage(ImageItem image) {
+    _fourthImage = genImageField(image);
+  }
+
+  void setFifthImage(ImageItem image) {
+    _fifthImage = genImageField(image);
   }
 
   int progress() {
@@ -85,7 +137,12 @@ class UpgradeFieldsOfAdvertisementProgress {
         from: from,
         caller: caller,
         id: _advertisementId,
-        image: _image,
+        coverImage: _coverImage,
+        firstImage: _firstImage,
+        secondImage: _secondImage,
+        thirdImage: _thirdImage,
+        fourthImage: _fourthImage,
+        fifthImage: _fifthImage,
         name: _name,
         title: _title,
         stock: _stock,

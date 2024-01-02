@@ -261,7 +261,7 @@ class English {
     Language.addImageForAdvertisement: 'Add Advertisement Image',
     Language.titleOfInsertAdvertisementButton: 'Insert Advertisement',
     Language.urlIllegal: 'URL is illegal',
-    Language.thumbnailOfAdvertisementNotProvided: 'Thumbnail Not Provided',
+    Language.coverImageOfAdvertisementNotProvided: 'Cover Image Not Provided',
     Language.imageOfAdvertisementNotProvided: 'Image Not Provided',
     Language.operationToInsertAdvertisement: 'Insert Advertisement',
     Language.noAdvertisementAssociated: 'Advertisement Not Provided',

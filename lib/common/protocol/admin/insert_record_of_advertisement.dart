@@ -7,7 +7,12 @@ class InsertRecordOfAdvertisementReq {
   int _sellingPrice = 0;
   List<dynamic> _sellingPoints = [];
   String _placeOfOrigin = '';
-  String _image = '';
+  String _coverImage = '';
+  String _firstImage = '';
+  String _secondImage = '';
+  String _thirdImage = '';
+  String _fourthImage = '';
+  String _fifthImage = '';
   int _stock = 0;
   int _productId = 0;
 
@@ -17,7 +22,12 @@ class InsertRecordOfAdvertisementReq {
     required int sellingPrice,
     required List<String> sellingPoints,
     required String placeOfOrigin,
-    required String image,
+    required String coverImage,
+    required String firstImage,
+    required String secondImage,
+    required String thirdImage,
+    required String fourthImage,
+    required String fifthImage,
     required int stock,
     required int productId,
   }) {
@@ -26,9 +36,14 @@ class InsertRecordOfAdvertisementReq {
     _sellingPrice = sellingPrice;
     _sellingPoints = Convert.utf8EncodeListString(sellingPoints);
     _placeOfOrigin = placeOfOrigin;
-    _image = image;
     _stock = stock;
     _productId = productId;
+    _coverImage = coverImage;
+    _firstImage = firstImage;
+    _secondImage = secondImage;
+    _thirdImage = thirdImage;
+    _fourthImage = fourthImage;
+    _fifthImage = fifthImage;
   }
 
   Map<String, dynamic> toJson() {
@@ -37,7 +52,12 @@ class InsertRecordOfAdvertisementReq {
       'title': Convert.utf8Encode(_title),
       'selling_points': _sellingPoints,
       'selling_price': _sellingPrice,
-      "image": Convert.utf8Encode(_image),
+      "cover_image": Convert.utf8Encode(_coverImage),
+      "first_image": Convert.utf8Encode(_firstImage),
+      "second_image": Convert.utf8Encode(_secondImage),
+      "third_image": Convert.utf8Encode(_thirdImage),
+      "fourth_image": Convert.utf8Encode(_fourthImage),
+      "fifth_image": Convert.utf8Encode(_fifthImage),
       "product_id": _productId,
       "stock": _stock,
       "place_of_origin": Convert.utf8Encode(_placeOfOrigin),

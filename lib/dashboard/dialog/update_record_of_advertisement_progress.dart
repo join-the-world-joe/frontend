@@ -75,7 +75,12 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
   var step3 = UpgradeFieldsOfAdvertisementProgress.construct(
     result: -3,
     id: advertisementId,
-    image: '',
+    coverImage: '',
+    firstImage: '',
+    secondImage: '',
+    thirdImage: '',
+    fourthImage: '',
+    fifthImage: '',
     // later
     name: name,
     title: title,

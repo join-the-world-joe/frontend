@@ -42,6 +42,10 @@ class ImageItem {
     return _data;
   }
 
+  void setUrl(String url) {
+    _url = url;
+  }
+
   String getNativeFileName() {
     return _nativeFileName;
   }
@@ -64,7 +68,7 @@ class ImageItem {
     _nativeFileName = nativeFileName;
   }
 
-  static Future<ImageItem> fromMediaInfo({required MediaInfo mediaInfo}) async {
+  static Future<ImageItem> fromMediaInfo({required MediaInfo mediaInfo, required String prefix}) async {
     var timestamp = (DateTime.now().millisecondsSinceEpoch) ~/ 1000;
     var nativeFileName = mediaInfo.fileName!;
     var fileSize = mediaInfo.data!.length;
@@ -73,7 +77,7 @@ class ImageItem {
     int width = frameInfo.image.width;
     int height = frameInfo.image.height;
     String extension = path.extension(mediaInfo.fileName!).toLowerCase();
-    var objectFileName = '${Config.coverImagePrefix}$timestamp$extension';
+    var objectFileName = '$prefix$timestamp$extension';
     print('file name: $nativeFileName');
     print('extension: $extension');
     print('size: $fileSize');

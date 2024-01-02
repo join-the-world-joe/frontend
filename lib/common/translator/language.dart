@@ -258,7 +258,7 @@ class Language {
   static String addImageForAdvertisement = 'add image for the advertisement';
   static String titleOfInsertAdvertisementButton = 'title of insert advertisement button';
   static String urlIllegal = 'url is illegal ';
-  static String thumbnailOfAdvertisementNotProvided = 'thumbnail of advertisement not provided';
+  static String coverImageOfAdvertisementNotProvided = 'cover image of advertisement not provided';
   static String imageOfAdvertisementNotProvided = 'image of advertisement not provided';
   static String operationToInsertAdvertisement = 'the operation of insertion of advertisement';
   static String noAdvertisementAssociated = 'there is no advertisement associated with';
