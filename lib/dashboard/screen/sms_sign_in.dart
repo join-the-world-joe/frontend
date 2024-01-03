@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/service/admin/progress/sign_in/sign_in_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/sign_in/sign_in_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/sign_in.dart';
 import 'package:flutter_framework/common/service/sms/protocol/send_verification_code.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/sms.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/cache/cache.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
-import 'package:flutter_framework/dashboard/dialog/sign_in_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'screen.dart';
@@ -40,7 +40,7 @@ class _State extends State<SMSSignIn> {
   final countryCodeControl = TextEditingController();
   final phoneNumberControl = TextEditingController(text: '18629309942');
   final verificationCodeControl = TextEditingController(text: '1111');
-  SignInProgressDialog? signInProgress;
+  SignInProgress? signInProgress;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -188,17 +188,8 @@ class _State extends State<SMSSignIn> {
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
-      if (rsp.getCode() == Code.oK) {
-        Cache.setUserId(rsp.getUserId());
-        Cache.setMemberId(rsp.getMemberId());
-        Cache.setSecret(rsp.getSecret());
-      }
       if (signInProgress != null) {
         signInProgress!.respond(rsp);
-      } else {
-        if (rsp.getCode() == Code.oK) {
-          navigate(Screen.home);
-        }
       }
     } catch (e) {
       Log.debug(
@@ -438,11 +429,16 @@ class _State extends State<SMSSignIn> {
                       child: ElevatedButton(
                         onPressed: () async {
                           if (signInProgress == null) {
-                            signInProgress = SignInProgressDialog.construct(result: Code.internalError);
-                            signInProgress!.setBehavior(2);
-                            signInProgress!.setPhoneNumber(phoneNumberControl.text);
-                            signInProgress!.setCountryCode(countryCodeControl.text);
-                            signInProgress!.setVerificationCode(int.parse(verificationCodeControl.text));
+                            var step = SignInStep.construct();
+                            step.setBehavior(2);
+                            step.setPhoneNumber(phoneNumberControl.text);
+                            step.setCountryCode(countryCodeControl.text);
+                            step.setVerificationCode(int.parse(verificationCodeControl.text));
+                            signInProgress = SignInProgress.construct(
+                              result: Code.internalError,
+                              step: step,
+                              message: Translator.translate(Language.tryingToSignIn),
+                            );
                             signInProgress!.show(context: context).then((value) {
                               if (value == Code.oK) {
                                 navigate(Screen.home);

@@ -180,6 +180,7 @@ class Chinese {
     Language.insertRecordSuccessfully: '插入成功',
     Language.removeOperationFailure: '删除失败',
     Language.operationTimeout: '超时',
+    Language.tryingToSignIn: '尝试登录系统....',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',

@@ -180,6 +180,7 @@ class English {
     Language.insertRecordSuccessfully: 'Insert Record Successfully',
     Language.removeOperationFailure: 'Remove Operation Fail',
     Language.operationTimeout: 'Timeout',
+    Language.tryingToSignIn: 'Sign In....',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',

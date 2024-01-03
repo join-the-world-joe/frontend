@@ -177,6 +177,7 @@ class Language {
   static String insertRecordSuccessfully = 'the operation of inert is success';
   static String removeOperationFailure = 'the operation of removal is fail';
   static String operationTimeout = 'the operation is timeout';
+  static String tryingToSignIn = 'trying to sign in';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';

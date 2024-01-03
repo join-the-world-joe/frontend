@@ -2,11 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/service/admin/progress/sign_in/sign_in_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/sign_in/sign_in_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/sign_in.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
-import 'package:flutter_framework/dashboard/dialog/sign_in_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/utils/log.dart';
@@ -33,7 +34,7 @@ class _State extends State<PasswordSignIn> {
   final passwordControl = TextEditingController(text: '123456');
   double widgetWidth = 450;
   Duration loginBusyDuration = const Duration(seconds: 10);
-  SignInProgressDialog? signInProgress;
+  SignInProgress? signInProgress;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -114,28 +115,8 @@ class _State extends State<PasswordSignIn> {
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
-      if (rsp.getCode() == Code.oK) {
-        Cache.setUserId(rsp.getUserId());
-        Cache.setMemberId(rsp.getMemberId());
-        Cache.setSecret(rsp.getSecret());
-      }
       if (signInProgress != null) {
         signInProgress!.respond(rsp);
-      } else {
-        navigate(Screen.home);
-      }
-      if (rsp.getCode() == Code.oK) {
-        // Cache.setUserId(rsp.getUserId());
-        // Cache.setMemberId(rsp.getMemberId());
-        // Cache.setSecret(rsp.getSecret());
-        // navigate(Screen.home);
-      } else {
-        // showMessageDialog(
-        //   context,
-        //   Translator.translate(Language.titleOfNotification),
-        //   '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        // );
-        return;
       }
       return;
     } catch (e) {
@@ -313,27 +294,35 @@ class _State extends State<PasswordSignIn> {
                           var behavior = 1; // email, by default
                           if (!isEmailValid(idControl.text)) {
                             behavior = 4;
-                            if (signInProgress == null) {
-                              signInProgress = SignInProgressDialog.construct(result: Code.internalError);
-                              signInProgress!.setBehavior(behavior);
-                              signInProgress!.setAccount(idControl.text);
-                              signInProgress!.setPassword(Runtime.rsa.encrypt(passwordControl.text));
-                              signInProgress!.show(context: context).then((value) {
-                                if (value == Code.oK) {
-                                  navigate(Screen.home);
-                                } else {
-                                  showWarningDialog(context, Translator.translate(Language.operationTimeout));
-                                }
-                                signInProgress = null;
-                              });
-                            }
+                            var step = SignInStep.construct();
+                            step.setBehavior(behavior);
+                            step.setAccount(idControl.text);
+                            step.setPassword(Runtime.rsa.encrypt(passwordControl.text));
+                            signInProgress = SignInProgress.construct(
+                              result: Code.internalError,
+                              step: step,
+                              message: Translator.translate(Language.tryingToSignIn),
+                            );
+                            signInProgress!.show(context: context).then((value) {
+                              if (value == Code.oK) {
+                                navigate(Screen.home);
+                              } else {
+                                showWarningDialog(context, Translator.translate(Language.operationTimeout));
+                              }
+                              signInProgress = null;
+                            });
                             return;
                           }
                           if (signInProgress == null) {
-                            signInProgress = SignInProgressDialog.construct(result: Code.internalError);
-                            signInProgress!.setBehavior(behavior);
-                            signInProgress!.setEmail(idControl.text);
-                            signInProgress!.setPassword(Runtime.rsa.encrypt(passwordControl.text));
+                            var step = SignInStep.construct();
+                            step.setBehavior(behavior);
+                            step.setEmail(idControl.text);
+                            step.setPassword(Runtime.rsa.encrypt(passwordControl.text));
+                            signInProgress = SignInProgress.construct(
+                              result: Code.internalError,
+                              step: step,
+                              message: Translator.translate(Language.tryingToSignIn),
+                            );
                             signInProgress!.show(context: context).then((value) {
                               if (value == Code.oK) {
                                 navigate(Screen.home);

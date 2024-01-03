@@ -1,10 +1,11 @@
 import 'dart:typed_data';
-import 'package:flutter_framework/app/config.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/service/admin/business/sign_in.dart';
 import 'package:flutter_framework/common/service/admin/protocol/sign_in.dart';
+import 'package:flutter_framework/dashboard/cache/cache.dart';
+import 'package:flutter_framework/dashboard/config/config.dart';
 
-class SignInProgress {
+class SignInStep {
   String from = 'SignInProgress';
   DateTime _requestTime = DateTime.now();
   bool _requested = false;
@@ -21,20 +22,28 @@ class SignInProgress {
   Uint8List _password = Uint8List(0);
   String _email = '';
 
-  SignInProgress.construct() {
+  SignInStep.construct() {
+    _rsp = null;
     _requested = false;
     _responded = false;
   }
 
-  void respond(SignInRsp? rsp) {
+  void respond(SignInRsp rsp) {
+    if (rsp.getCode() == Code.oK) {
+      Cache.setUserId(rsp.getUserId());
+      Cache.setMemberId(rsp.getMemberId());
+      Cache.setSecret(rsp.getSecret());
+    }
     _rsp = rsp;
     _responded = true;
   }
 
   void skip() {
-    print('skip SignInProgress');
     _requested = true;
     _responded = true;
+    _rsp = SignInRsp.fromJson({
+      "body": {"code": Code.oK}
+    });
   }
 
   bool timeout() {
@@ -106,6 +115,7 @@ class SignInProgress {
       if (_responded) {
         if (_rsp != null) {
           if (_rsp!.getCode() == Code.oK) {
+            // print('ok');
             return Code.oK;
           }
         }
