@@ -46,6 +46,7 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
     required String placeOfOrigin,
     required int stock,
     required int productId,
+    required String ossFolder,
     required ImageItem? coverImage,
     required ImageItem? firstImage,
     required ImageItem? secondImage,
@@ -53,7 +54,6 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
     required ImageItem? fourthImage,
     required ImageItem? fifthImage}) async {
   var result = Code.internalError;
-  int? advertisementId;
   bool closed = false;
   int curStage = 0;
   var ossHost = '';
@@ -69,10 +69,31 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
   double width = 200;
   Map<String, Uint8List> objectDataMapping = {}; // key: object file name, value: native file name
   bool hasFigureOutNameListOfFile = false;
-  bool hasFigureOutStep3Argument = false;
+  bool hasFigureOutStep2Argument = false;
   bool hasFigureOutStep4Argument = false;
 
-  var step1 = InsertRecordOfAdvertisementProgress.construct(
+  String genImageField(ImageItem item) {
+    var output = '';
+    try {
+      Map<String, String> temp = {};
+      temp['width'] = item.getWidth().toString();
+      temp['height'] = item.getHeight().toString();
+      temp['url'] = item.getUrl();
+      temp['object_file_name'] = item.getObjectFileName();
+      output = jsonEncode(temp);
+    } catch (e) {
+      print('genImageField failure, e: $e');
+    }
+    return output;
+  }
+
+  var step1 = FetchHeaderListOfObjectFileListOfAdvertisementProgress.construct(
+    result: -2,
+    ossFolder: ossFolder,
+    nameListOfFile: nameListOfFile,
+  );
+
+  var step2 = InsertRecordOfAdvertisementProgress.construct(
     result: -1,
     record: Advertisement.construct(
       id: 0,
@@ -80,50 +101,46 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
       title: title,
       placeOfOrigin: placeOfOrigin,
       sellingPoints: sellingPoints,
-      coverImage: defaultImage,
-      firstImage: defaultImage,
-      secondImage: defaultImage,
-      thirdImage: defaultImage,
-      fourthImage: defaultImage,
-      fifthImage: defaultImage,
+      coverImage: coverImage == null ? '' : genImageField(coverImage),
+      firstImage: firstImage == null ? '' : genImageField(firstImage),
+      secondImage: secondImage == null ? '' : genImageField(secondImage),
+      thirdImage: thirdImage == null ? '' : genImageField(thirdImage),
+      fourthImage: fourthImage == null ? '' : genImageField(fourthImage),
+      fifthImage: fifthImage == null ? '' : genImageField(fifthImage),
       sellingPrice: sellingPrice,
+      ossFolder: ossFolder,
+      ossPath: '',
       stock: stock,
       status: 0,
       productId: productId,
     ),
   );
 
-  var step2 = FetchHeaderListOfObjectFileListOfAdvertisementProgress.construct(
-    result: -2,
-    advertisementId: 0,
-    nameListOfFile: nameListOfFile,
-  );
+  // var step3 = UploadImageListProgress.construct(
+  //   result: -3,
+  //   ossHost: '',
+  //   requestHeader: requestHeader,
+  //   objectDataMapping: objectDataMapping,
+  // );
 
-  var step3 = UploadImageListProgress.construct(
-    result: -3,
-    ossHost: '',
-    requestHeader: requestHeader,
-    objectDataMapping: objectDataMapping,
-  );
-
-  var step4 = UpgradeFieldsOfAdvertisementProgress.construct(
-    result: -4,
-    id: -1,
-    coverImage: defaultImage,
-    firstImage: defaultImage,
-    secondImage: defaultImage,
-    thirdImage: defaultImage,
-    fourthImage: defaultImage,
-    fifthImage: defaultImage,
-    name: name,
-    title: title,
-    stock: stock,
-    status: 1,
-    productId: productId,
-    sellingPrice: sellingPrice,
-    sellingPoints: sellingPoints,
-    placeOfOrigin: placeOfOrigin,
-  );
+  // var step4 = UpgradeFieldsOfAdvertisementProgress.construct(
+  //   result: -4,
+  //   id: -1,
+  //   coverImage: defaultImage,
+  //   firstImage: defaultImage,
+  //   secondImage: defaultImage,
+  //   thirdImage: defaultImage,
+  //   fourthImage: defaultImage,
+  //   fifthImage: defaultImage,
+  //   name: name,
+  //   title: title,
+  //   stock: stock,
+  //   status: 1,
+  //   productId: productId,
+  //   sellingPrice: sellingPrice,
+  //   sellingPoints: sellingPoints,
+  //   placeOfOrigin: placeOfOrigin,
+  // );
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -148,8 +165,8 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
         caller: caller,
         message: 'code: ${rsp.getCode()}, advertisementId: ${rsp.getAdvertisementId()}',
       );
-      advertisementId = rsp.getAdvertisementId();
-      step1.respond(rsp);
+      // advertisementId = rsp.getAdvertisementId();
+      step2.respond(rsp);
     } catch (e) {
       Log.debug(
         major: major,
@@ -188,7 +205,7 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
           },
         );
         commonOSSPath = rsp.getCommonPath();
-        step2.respond(rsp);
+        step1.respond(rsp);
       } else {
         // error occurs
       }
@@ -204,73 +221,79 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
     } finally {}
   }
 
-  void updateRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'updateRecordOfAdvertisementHandler';
-    try {
-      var rsp = UpdateRecordOfAdvertisementRsp.fromJson(body);
-      Log.debug(
-        major: major,
-        minor: minor,
-        from: from,
-        caller: caller,
-        message: 'code: ${rsp.getCode()}',
-      );
-      step4.respond(rsp);
-      if (rsp.getCode() == Code.oK) {
-        return;
-      } else {
-        // error occurs
-        return;
-      }
-    } catch (e) {
-      Log.debug(
-        major: major,
-        minor: minor,
-        from: from,
-        caller: caller,
-        message: 'failure, err: $e',
-      );
-      return;
-    } finally {}
-  }
+  // void updateRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+  //   var caller = 'updateRecordOfAdvertisementHandler';
+  //   try {
+  //     var rsp = UpdateRecordOfAdvertisementRsp.fromJson(body);
+  //     Log.debug(
+  //       major: major,
+  //       minor: minor,
+  //       from: from,
+  //       caller: caller,
+  //       message: 'code: ${rsp.getCode()}',
+  //     );
+  //     step4.respond(rsp);
+  //     if (rsp.getCode() == Code.oK) {
+  //       return;
+  //     } else {
+  //       // error occurs
+  //       return;
+  //     }
+  //   } catch (e) {
+  //     Log.debug(
+  //       major: major,
+  //       minor: minor,
+  //       from: from,
+  //       caller: caller,
+  //       message: 'failure, err: $e',
+  //     );
+  //     return;
+  //   } finally {}
+  // }
 
   void figureOutNameListOfFile() {
     if (coverImage != null) {
-      nameListOfFile.add('$advertisementId/${coverImage.getObjectFileName()}');
-      objectDataMapping['$advertisementId/${coverImage.getObjectFileName()}'] = coverImage.getData();
+      nameListOfFile.add(coverImage.getObjectFileName());
+      objectDataMapping[coverImage.getObjectFileName()] = coverImage.getData();
     }
     if (firstImage != null) {
-      nameListOfFile.add('$advertisementId/${firstImage.getObjectFileName()}');
-      objectDataMapping['$advertisementId/${firstImage.getObjectFileName()}'] = firstImage.getData();
+      nameListOfFile.add(firstImage.getObjectFileName());
+      objectDataMapping[firstImage.getObjectFileName()] = firstImage.getData();
     }
     if (secondImage != null) {
-      nameListOfFile.add('$advertisementId/${secondImage.getObjectFileName()}');
-      objectDataMapping['$advertisementId/${secondImage.getObjectFileName()}'] = secondImage.getData();
+      nameListOfFile.add(secondImage.getObjectFileName());
+      objectDataMapping[secondImage.getObjectFileName()] = secondImage.getData();
     } else {
       return;
     }
     if (thirdImage != null) {
-      nameListOfFile.add('$advertisementId/${thirdImage.getObjectFileName()}');
-      objectDataMapping['$advertisementId/${thirdImage.getObjectFileName()}'] = thirdImage.getData();
+      nameListOfFile.add(thirdImage.getObjectFileName());
+      objectDataMapping[thirdImage.getObjectFileName()] = thirdImage.getData();
     } else {
       return;
     }
     if (fourthImage != null) {
-      nameListOfFile.add('$advertisementId/${fourthImage.getObjectFileName()}');
-      objectDataMapping['$advertisementId/${fourthImage.getObjectFileName()}'] = fourthImage.getData();
+      nameListOfFile.add(fourthImage.getObjectFileName());
+      objectDataMapping[fourthImage.getObjectFileName()] = fourthImage.getData();
     } else {
       return;
     }
     if (fifthImage != null) {
-      nameListOfFile.add('$advertisementId/${fifthImage.getObjectFileName()}');
-      objectDataMapping['$advertisementId/${fifthImage.getObjectFileName()}'] = fifthImage.getData();
+      nameListOfFile.add(fifthImage.getObjectFileName());
+      objectDataMapping[fifthImage.getObjectFileName()] = fifthImage.getData();
     } else {
       return;
     }
-    print('nameList: $nameListOfFile');
   }
 
   void progress() {
+    if (!hasFigureOutNameListOfFile) {
+      figureOutNameListOfFile();
+      print('nameList: $nameListOfFile');
+      step1.setOSSFolder(ossFolder);
+      hasFigureOutNameListOfFile = true;
+    }
+
     step1.progress();
     if (!step1.finished()) {
       return;
@@ -282,10 +305,10 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
       return;
     }
 
-    if (!hasFigureOutNameListOfFile && step1.result() == 0) {
-      figureOutNameListOfFile();
-      step2.setAdvertisementId(advertisementId!);
-      hasFigureOutNameListOfFile = true;
+    if (!hasFigureOutStep2Argument) {
+      step2.setOSSFolder(ossFolder);
+      step2.setOSSPath(commonOSSPath);
+      hasFigureOutStep2Argument = true;
     }
 
     step2.progress();
@@ -299,65 +322,72 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
       return;
     }
 
-    if (!hasFigureOutStep3Argument) {
-      step3.setObjectDataMapping(objectDataMapping);
-      step3.setOSSHost(ossHost);
-      step3.setRequestHeader(requestHeader);
-      hasFigureOutStep3Argument = true;
-    }
+    // if (!hasFigureOutNameListOfFile && step1.finished()) {
+    //   figureOutNameListOfFile();
+    //   print('nameList: $nameListOfFile');
+    //   step2.setOSSFolder(ossFolder);
+    //   hasFigureOutNameListOfFile = true;
+    // }
 
-    step3.progress();
-    if (!step3.finished()) {
-      return;
-    }
+    // if (!hasFigureOutStep3Argument) {
+    //   step3.setObjectDataMapping(objectDataMapping);
+    //   step3.setOSSHost(ossHost);
+    //   step3.setRequestHeader(requestHeader);
+    //   hasFigureOutStep3Argument = true;
+    // }
+    //
+    // step3.progress();
+    // if (!step3.finished()) {
+    //   return;
+    // }
 
-    if (step3.result() < 0) {
-      result = step3.result();
-      Navigator.pop(context);
-      return;
-    }
-
-    if (!hasFigureOutStep4Argument) {
-      if (coverImage != null) {
-        coverImage.setUrl(commonOSSPath + coverImage.getObjectFileName());
-        step4.setCoverImage(coverImage);
-      }
-      if (firstImage != null) {
-        firstImage.setUrl(commonOSSPath + firstImage.getObjectFileName());
-        step4.setFirstImage(firstImage);
-      }
-      if (firstImage != null && secondImage != null) {
-        secondImage.setUrl(commonOSSPath + secondImage.getObjectFileName());
-        step4.setSecondImage(secondImage);
-      }
-      if (firstImage != null && secondImage != null && thirdImage != null) {
-        thirdImage.setUrl(commonOSSPath + thirdImage.getObjectFileName());
-        step4.setThirdImage(thirdImage);
-      }
-      if (firstImage != null && secondImage != null && thirdImage != null && fourthImage != null) {
-        fourthImage.setUrl(commonOSSPath + fourthImage.getObjectFileName());
-        step4.setFourthImage(fourthImage);
-      }
-      if (firstImage != null && secondImage != null && thirdImage != null && fourthImage != null && fifthImage != null) {
-        fifthImage.setUrl(commonOSSPath + fifthImage.getObjectFileName());
-        step4.setFifthImage(fifthImage);
-      }
-
-      step4.setAdvertisementId(advertisementId!);
-
-      hasFigureOutStep4Argument = true;
-    }
-
-    step4.progress();
-    if (!step4.finished()) {
-      return;
-    }
-
-    if (step4.result() < 0) {
-      result = step4.result();
-      Navigator.pop(context);
-      return;
-    }
+    // if (step3.result() < 0) {
+    //   result = step3.result();
+    //   Navigator.pop(context);
+    //   return;
+    // }
+    //
+    // if (!hasFigureOutStep4Argument) {
+    //   if (coverImage != null) {
+    //     coverImage.setUrl(commonOSSPath + '$ossFolder/' + coverImage.getObjectFileName());
+    //     step4.setCoverImage(coverImage);
+    //   }
+    //   if (firstImage != null) {
+    //     firstImage.setUrl(commonOSSPath + '$ossFolder/' + firstImage.getObjectFileName());
+    //     step4.setFirstImage(firstImage);
+    //   }
+    //   if (firstImage != null && secondImage != null) {
+    //     secondImage.setUrl(commonOSSPath + '$ossFolder/' + secondImage.getObjectFileName());
+    //     step4.setSecondImage(secondImage);
+    //   }
+    //   if (firstImage != null && secondImage != null && thirdImage != null) {
+    //     thirdImage.setUrl(commonOSSPath + '$ossFolder/' + thirdImage.getObjectFileName());
+    //     step4.setThirdImage(thirdImage);
+    //   }
+    //   if (firstImage != null && secondImage != null && thirdImage != null && fourthImage != null) {
+    //     fourthImage.setUrl(commonOSSPath + '$ossFolder/' + fourthImage.getObjectFileName());
+    //     step4.setFourthImage(fourthImage);
+    //   }
+    //   if (firstImage != null && secondImage != null && thirdImage != null && fourthImage != null && fifthImage != null) {
+    //     fifthImage.setUrl(commonOSSPath + '$ossFolder/' + fifthImage.getObjectFileName());
+    //     step4.setFifthImage(fifthImage);
+    //   }
+    //
+    //   step4.setAdvertisementId(advertisementId!);
+    //
+    //   hasFigureOutStep4Argument = true;
+    // }
+    //
+    // step4.progress();
+    // if (!step4.finished()) {
+    //   return;
+    // }
+    //
+    // if (step4.result() < 0) {
+    //   result = step4.result();
+    //   Navigator.pop(context);
+    //   return;
+    // }
 
     result = 0;
     Navigator.pop(context);
@@ -383,7 +413,7 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
       } else if (major == Major.admin && minor == Admin.insertRecordOfAdvertisementRsp) {
         insertRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.updateRecordOfAdvertisementRsp) {
-        updateRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
+        // updateRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
           major: major,

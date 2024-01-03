@@ -68,7 +68,11 @@ class ImageItem {
     _nativeFileName = nativeFileName;
   }
 
-  static Future<ImageItem> fromMediaInfo({required MediaInfo mediaInfo, required String prefix}) async {
+  static Future<ImageItem> fromMediaInfo({
+    required MediaInfo mediaInfo,
+    required String prefix,
+    required String ossFolder,
+  }) async {
     var timestamp = (DateTime.now().millisecondsSinceEpoch) ~/ 1000;
     var nativeFileName = mediaInfo.fileName!;
     var fileSize = mediaInfo.data!.length;
@@ -77,7 +81,7 @@ class ImageItem {
     int width = frameInfo.image.width;
     int height = frameInfo.image.height;
     String extension = path.extension(mediaInfo.fileName!).toLowerCase();
-    var objectFileName = '$prefix$timestamp$extension';
+    var objectFileName = '$ossFolder/$prefix$timestamp$extension';
     print('file name: $nativeFileName');
     print('extension: $extension');
     print('size: $fileSize');

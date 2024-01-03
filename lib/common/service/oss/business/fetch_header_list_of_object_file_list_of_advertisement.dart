@@ -6,7 +6,7 @@ import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_
 void fetchHeaderListOfObjectFileListOfAdvertisement({
   required String from,
   required String caller,
-  required int advertisementId,
+  required String ossFolder,
   required List<String> nameListOfFile,
 }) {
   Runtime.request(
@@ -15,7 +15,7 @@ void fetchHeaderListOfObjectFileListOfAdvertisement({
     major: Major.oss,
     minor: OSS.fetchHeaderListOfObjectFileListOfAdvertisementReq,
     body: FetchHeaderListOfObjectFileListOfAdvertisementReq.construct(
-      advertisementId: advertisementId,
+      ossFolder: ossFolder,
       nameListOfFile: nameListOfFile,
     ),
   );

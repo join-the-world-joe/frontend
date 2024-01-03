@@ -52,6 +52,8 @@ class FetchRecordsOfAdvertisementRsp {
               fourthImage: value['fourth_image'],
               fifthImage: value['fifth_image'],
               sellingPrice: value['selling_price'],
+              ossFolder: value['oss_folder'],
+              ossPath: value['oss_path'],
               stock: value['stock'],
               status: value['status'],
               productId: value['product_id'],

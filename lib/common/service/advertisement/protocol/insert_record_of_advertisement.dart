@@ -15,6 +15,8 @@ class InsertRecordOfAdvertisementReq {
   String _fifthImage = '';
   int _stock = 0;
   int _productId = 0;
+  String _ossPath = '';
+  String _ossFolder = '';
 
   InsertRecordOfAdvertisementReq.construct({
     required String name,
@@ -30,6 +32,8 @@ class InsertRecordOfAdvertisementReq {
     required String fifthImage,
     required int stock,
     required int productId,
+    required String ossPath,
+    required String ossFolder,
   }) {
     _name = name;
     _title = title;
@@ -44,6 +48,8 @@ class InsertRecordOfAdvertisementReq {
     _thirdImage = thirdImage;
     _fourthImage = fourthImage;
     _fifthImage = fifthImage;
+    _ossPath = ossPath;
+    _ossFolder = ossFolder;
   }
 
   Map<String, dynamic> toJson() {
@@ -61,6 +67,8 @@ class InsertRecordOfAdvertisementReq {
       "product_id": _productId,
       "stock": _stock,
       "place_of_origin": Convert.utf8Encode(_placeOfOrigin),
+      "oss_path": _ossPath,
+      "oss_folder": _ossFolder,
     };
   }
 }

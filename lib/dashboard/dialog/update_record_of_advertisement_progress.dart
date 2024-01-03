@@ -61,7 +61,7 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
 
   var step1 = FetchHeaderListOfObjectFileListOfAdvertisementProgress.construct(
     result: -1,
-    advertisementId: 0, // later
+    ossFolder: '', // later
     nameListOfFile: nameListOfFile, // later
   );
 
@@ -256,7 +256,7 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
 
   void progress() {
     if (!hasFigureOutStep1Argument) {
-      step1.setAdvertisementId(advertisementId);
+      // step1.setAdvertisementId(advertisementId);
       step1.setNameListOfFile(nameListOfFile);
       hasFigureOutStep1Argument = true;
     }

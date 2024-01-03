@@ -12,20 +12,20 @@ Body json.RawMessage `json:"body"`
  */
 
 class FetchHeaderListOfObjectFileListOfAdvertisementReq {
-  int _advertisementId = -1;
+  String _ossFolder = '';
   List<String> _nameListOfFile = [];
 
   FetchHeaderListOfObjectFileListOfAdvertisementReq.construct({
-    required int advertisementId,
+    required String ossFolder,
     required List<String> nameListOfFile,
   }) {
-    _advertisementId = advertisementId;
+    _ossFolder = ossFolder;
     _nameListOfFile = nameListOfFile;
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "advertisement_id": _advertisementId,
+      "oss_folder": _ossFolder,
       "name_list_of_file": _nameListOfFile,
     };
   }

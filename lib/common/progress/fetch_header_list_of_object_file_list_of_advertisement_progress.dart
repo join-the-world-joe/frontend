@@ -11,7 +11,7 @@ three possible stage; requested, timeout, responded()
 class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
   String from = 'FetchHeaderListOfObjectFileListOfAdvertisementProgress';
   int _result = -1;
-  int _advertisementId = -1;
+  String _ossFolder = '';
   List<String> _nameListOfFile = [];
   DateTime _requestTime = DateTime.now();
   bool _requested = false;
@@ -22,19 +22,19 @@ class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
 
   FetchHeaderListOfObjectFileListOfAdvertisementProgress.construct({
     required int result,
-    required int advertisementId,
+    required String ossFolder,
     required List<String> nameListOfFile,
   }) {
     _requested = false;
     _responded = false;
     _finished = false;
     _result = result;
-    _advertisementId = advertisementId;
+    _ossFolder = ossFolder;
     _nameListOfFile = nameListOfFile;
   }
 
-  void setAdvertisementId(int advertisementId) {
-    _advertisementId = advertisementId;
+  void setOSSFolder(String ossFolder) {
+    _ossFolder = ossFolder;
   }
 
   int result() {
@@ -69,7 +69,7 @@ class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
       fetchHeaderListOfObjectFileListOfAdvertisement(
         from: from,
         caller: caller,
-        advertisementId: _advertisementId,
+        ossFolder: _ossFolder,
         nameListOfFile: _nameListOfFile,
       );
       _responded = false;

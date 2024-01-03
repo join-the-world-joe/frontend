@@ -19,6 +19,8 @@ void insertRecordOfAdvertisement({
   required String placeOfOrigin,
   required int stock,
   required int productId,
+  required String ossPath,
+  required String ossFolder,
 }) {
   Runtime.request(
     from: from,
@@ -39,6 +41,8 @@ void insertRecordOfAdvertisement({
       fifthImage: fifthImage,
       stock: stock,
       productId: productId,
+      ossPath: ossPath,
+      ossFolder: ossFolder,
     ),
   );
 }

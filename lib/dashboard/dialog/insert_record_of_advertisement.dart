@@ -20,6 +20,7 @@ import 'package:flutter_framework/common/translator/translator.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/common/service/admin/business/fetch_records_of_product.dart';
 import 'package:image_picker_web/image_picker_web.dart';
+import 'package:uuid/uuid.dart';
 
 Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
   bool closed = false;
@@ -46,6 +47,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
   ImageItem? thirdImage;
   ImageItem? fourthImage;
   ImageItem? fifthImage;
+  var ossFolder = const Uuid().v4();
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -330,7 +332,11 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
             onPressed: () async {
               var mediaInfo = await ImagePickerWeb.getImageInfo;
               if (mediaInfo != null) {
-                coverImage = await ImageItem.fromMediaInfo(mediaInfo: mediaInfo, prefix: Config.coverImagePrefix);
+                coverImage = await ImageItem.fromMediaInfo(
+                  mediaInfo: mediaInfo,
+                  prefix: Config.coverImagePrefix,
+                  ossFolder: ossFolder,
+                );
                 curStage++;
               }
             },
@@ -390,7 +396,11 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
             onPressed: () async {
               var mediaInfo = await ImagePickerWeb.getImageInfo;
               if (mediaInfo != null) {
-                firstImage = await ImageItem.fromMediaInfo(mediaInfo: mediaInfo, prefix: Config.firstImagePrefix);
+                firstImage = await ImageItem.fromMediaInfo(
+                  mediaInfo: mediaInfo,
+                  prefix: Config.firstImagePrefix,
+                  ossFolder: ossFolder,
+                );
                 curStage++;
               }
             },
@@ -457,7 +467,11 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
             onPressed: () async {
               var mediaInfo = await ImagePickerWeb.getImageInfo;
               if (mediaInfo != null) {
-                secondImage = await ImageItem.fromMediaInfo(mediaInfo: mediaInfo, prefix: Config.secondImagePrefix);
+                secondImage = await ImageItem.fromMediaInfo(
+                  mediaInfo: mediaInfo,
+                  prefix: Config.secondImagePrefix,
+                  ossFolder: ossFolder,
+                );
                 curStage++;
               }
             },
@@ -526,7 +540,11 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
             onPressed: () async {
               var mediaInfo = await ImagePickerWeb.getImageInfo;
               if (mediaInfo != null) {
-                thirdImage = await ImageItem.fromMediaInfo(mediaInfo: mediaInfo, prefix: Config.thirdImagePrefix);
+                thirdImage = await ImageItem.fromMediaInfo(
+                  mediaInfo: mediaInfo,
+                  prefix: Config.thirdImagePrefix,
+                  ossFolder: ossFolder,
+                );
                 curStage++;
               }
             },
@@ -595,7 +613,11 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
             onPressed: () async {
               var mediaInfo = await ImagePickerWeb.getImageInfo;
               if (mediaInfo != null) {
-                fourthImage = await ImageItem.fromMediaInfo(mediaInfo: mediaInfo, prefix: Config.fourthImagePrefix);
+                fourthImage = await ImageItem.fromMediaInfo(
+                  mediaInfo: mediaInfo,
+                  prefix: Config.fourthImagePrefix,
+                  ossFolder: ossFolder,
+                );
                 curStage++;
               }
             },
@@ -664,7 +686,11 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
             onPressed: () async {
               var mediaInfo = await ImagePickerWeb.getImageInfo;
               if (mediaInfo != null) {
-                fifthImage = await ImageItem.fromMediaInfo(mediaInfo: mediaInfo, prefix: Config.fifthImagePrefix);
+                fifthImage = await ImageItem.fromMediaInfo(
+                  mediaInfo: mediaInfo,
+                  prefix: Config.fifthImagePrefix,
+                  ossFolder: ossFolder,
+                );
                 curStage++;
               }
             },
@@ -789,6 +815,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                 placeOfOrigin: placeOfOriginController.text,
                 sellingPoints: sellingPoints,
                 sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
+                ossFolder: ossFolder,
                 coverImage: coverImage,
                 firstImage: firstImage,
                 secondImage: secondImage,

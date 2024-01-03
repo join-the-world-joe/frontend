@@ -18,9 +18,19 @@ class Advertisement {
   String _thirdImage = '';
   String _fourthImage = '';
   String _fifthImage = '';
+  String _oss_path = '';
+  String _oss_folder = '';
 
   int getId() {
     return _id;
+  }
+
+  String getOSSPath() {
+    return _oss_path;
+  }
+
+  String getOSSFolder() {
+    return _oss_folder;
   }
 
   String getName() {
@@ -93,6 +103,8 @@ class Advertisement {
     required int stock,
     required int status,
     required int productId,
+    required String ossPath,
+    required String ossFolder,
   }) {
     _id = id;
     _name = name;
@@ -109,5 +121,7 @@ class Advertisement {
     _stock = stock;
     _status = status;
     _productId = productId;
+    _oss_folder = ossFolder;
+    _oss_path = ossPath;
   }
 }

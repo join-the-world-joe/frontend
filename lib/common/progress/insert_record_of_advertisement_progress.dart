@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter_framework/app/config.dart';
 import 'package:flutter_framework/common/service/admin/business/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/service/advertisement/protocol/insert_record_of_advertisement.dart';
+import 'package:flutter_framework/dashboard/local/image_item.dart';
 import 'package:flutter_framework/dashboard/model/advertisement.dart';
 
 /*
@@ -17,6 +20,8 @@ class InsertRecordOfAdvertisementProgress {
   final Duration _defaultTimeout = Config.httpDefaultTimeout;
   Advertisement? _record;
   InsertRecordOfAdvertisementRsp? _rsp;
+  String _ossPath = '';
+  String _ossFolder = '';
 
   InsertRecordOfAdvertisementProgress.construct({
     required int result,
@@ -27,6 +32,14 @@ class InsertRecordOfAdvertisementProgress {
     _finished = false;
     _result = result;
     _record = record;
+  }
+
+  void setOSSPath(String path) {
+    _ossPath = path;
+  }
+
+  void setOSSFolder(String folder) {
+    _ossFolder = folder;
   }
 
   int result() {
@@ -63,6 +76,8 @@ class InsertRecordOfAdvertisementProgress {
         placeOfOrigin: _record!.getPlaceOfOrigin(),
         stock: _record!.getStock(),
         productId: _record!.getProductId(),
+        ossFolder: _ossFolder,
+        ossPath: _ossPath,
       );
       _requested = true;
     }
