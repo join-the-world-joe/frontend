@@ -173,11 +173,6 @@ Future<bool> showSoftDeleteRecordOfProductDialog(BuildContext context, Product p
                                 softDeleteRecordsOfProductProgress = null;
                               });
                             }
-                            // softDeleteRecordsOfProduct(
-                            //   from: from,
-                            //   caller: '$caller.softDeleteRecordsOfProduct',
-                            //   productIdList: [product.getId()],
-                            // );
                           },
                           child: Text(Translator.translate(Language.confirm)),
                         ),

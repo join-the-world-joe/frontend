@@ -183,6 +183,7 @@ class English {
     Language.tryingToSignIn: 'Sign In....',
     Language.tryingToInsertRecordOfProduct: 'Inert Record....',
     Language.tryingToSoftDeleteRecordOfProduct: 'Remove Record....',
+    Language.tryingToUpdateRecordOfProduct: 'Update Record....',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',

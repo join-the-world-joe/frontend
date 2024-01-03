@@ -180,6 +180,7 @@ class Language {
   static String tryingToSignIn = 'trying to sign in';
   static String tryingToInsertRecordOfProduct = 'trying to insert record of product';
   static String tryingToSoftDeleteRecordOfProduct = 'trying to soft delete record of product';
+  static String tryingToUpdateRecordOfProduct = 'trying to update record of product';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';

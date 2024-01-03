@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/service/admin/business/update_record_of_product.dart';
+import 'package:flutter_framework/common/service/admin/progress/update_record_of_product/update_record_of_product_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/update_record_of_product/update_record_of_product_step.dart';
 import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -17,16 +19,18 @@ import '../model/product.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/common/service/admin/protocol/update_record_of_product.dart';
 
-Future<bool> showUpdateProductDialog(BuildContext context, Product product) async {
+Future<bool> showUpdateRecordOfProductDialog(BuildContext context, Product product) async {
   int curStage = 0;
   bool closed = false;
-  String from = 'showUpdateProductDialog';
+  String from = 'showUpdateRecordOfProductDialog';
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController(text: product.getName());
   var vendorController = TextEditingController(text: product.getVendor());
   var contactController = TextEditingController(text: product.getContact());
   var buyingPriceController = TextEditingController(text: Convert.intDivide10toDoubleString(product.getBuyingPrice()));
   var idController = TextEditingController(text: product.getId().toString());
+
+  UpdateRecordOfProductProgress? updateRecordOfProductProgress;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -51,26 +55,8 @@ Future<bool> showUpdateProductDialog(BuildContext context, Product product) asyn
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
-      if (rsp.getCode() == Code.oK) {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          Translator.translate(
-            Language.updateRecordSuccessfully,
-          ),
-        ).then(
-          (value) {
-            Navigator.pop(context, true);
-          },
-        );
-        return;
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
-        return;
+      if (updateRecordOfProductProgress != null) {
+        updateRecordOfProductProgress!.respond(rsp);
       }
     } catch (e) {
       Log.debug(
@@ -153,15 +139,35 @@ Future<bool> showUpdateProductDialog(BuildContext context, Product product) asyn
                 await showWarningDialog(context, Translator.translate(Language.contactOfVendorNotProvided));
                 return;
               }
-              updateRecordOfProduct(
-                from: from,
-                caller: '$caller.updateRecordOfProduct',
-                name: nameController.text,
-                productId: int.parse(idController.text),
-                buyingPrice: Convert.doubleStringMultiple10toInt(buyingPriceController.text),
-                vendor: vendorController.text,
-                contact: contactController.text,
-              );
+              if (updateRecordOfProductProgress == null) {
+                var step = UpdateRecordOfProductStep.construct();
+                step.setName(nameController.text);
+                step.setVendor(vendorController.text);
+                step.setContact(contactController.text);
+                step.setProductId(idController.text);
+                step.setBuyingPrice(buyingPriceController.text);
+                updateRecordOfProductProgress = UpdateRecordOfProductProgress.construct(
+                  result: Code.internalError,
+                  step: step,
+                  message: Translator.translate(Language.tryingToUpdateRecordOfProduct),
+                );
+                updateRecordOfProductProgress!.show(context: context).then((value) {
+                  if (value == Code.oK) {
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      Translator.translate(Language.updateRecordSuccessfully),
+                    ).then(
+                          (value) {
+                        Navigator.pop(context, true);
+                      },
+                    );
+                  } else {
+                    showWarningDialog(context, Translator.translate(Language.operationTimeout));
+                  }
+                  updateRecordOfProductProgress = null;
+                });
+              }
             },
             child: Text(Translator.translate(Language.confirm)),
           ),
