@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/service/admin/progress/insert_record_of_product/insert_record_of_product_progress.dart';
 import 'package:flutter_framework/common/service/admin/protocol/fetch_records_of_product.dart';
 import 'package:flutter_framework/common/service/product/business/fetch_id_list_of_product.dart';
 import 'package:flutter_framework/common/service/admin/business/fetch_records_of_product.dart';
@@ -9,7 +10,7 @@ import 'dart:async';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
-import 'package:flutter_framework/dashboard/dialog/insert_product.dart';
+import 'package:flutter_framework/dashboard/dialog/insert_record_of_product.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_product.dart';
 import 'package:flutter_framework/dashboard/dialog/update_product.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
@@ -387,7 +388,7 @@ class _State extends State<Product> {
                         ElevatedButton.icon(
                           icon: const Icon(Icons.add),
                           onPressed: () async {
-                            showInsertProductDialog(context);
+                            showInsertRecordOfProductDialog(context);
                           },
                           label: Text(
                             Translator.translate(Language.importProduct),

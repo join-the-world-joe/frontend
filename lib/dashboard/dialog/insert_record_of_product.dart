@@ -4,7 +4,10 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
+import 'package:flutter_framework/common/service/admin/progress/insert_record_of_product/insert_record_of_product_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/insert_record_of_product/insert_record_of_product_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_product.dart';
+import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
@@ -15,11 +18,12 @@ import 'package:flutter_framework/common/translator/translator.dart';
 import '../config/config.dart';
 import 'package:flutter_framework/common/service/admin/business/insert_record_of_product.dart';
 
-Future<void> showInsertProductDialog(BuildContext context) async {
+Future<void> showInsertRecordOfProductDialog(BuildContext context) async {
   bool closed = false;
   int curStage = 0;
   int status = int.parse('1');
-  String from = 'showInsertProductDialog';
+  String from = 'showInsertRecordOfProductDialog';
+  InsertRecordOfProductProgress? insertRecordOfProductProgress;
 
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController();
@@ -49,24 +53,8 @@ Future<void> showInsertProductDialog(BuildContext context) async {
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
-      if (rsp.getCode() == Code.oK) {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.insertRecordSuccessfully),
-        ).then(
-          (value) {
-            Navigator.pop(context, null);
-          },
-        );
-        return;
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
-        return;
+      if (insertRecordOfProductProgress != null) {
+        insertRecordOfProductProgress!.respond(rsp);
       }
     } catch (e) {
       Log.debug(
@@ -150,14 +138,34 @@ Future<void> showInsertProductDialog(BuildContext context) async {
                 );
                 return;
               }
-              insertRecordOfProduct(
-                from: from,
-                caller: '$caller.insertRecordOfProduct',
-                name: nameController.text,
-                vendor: vendorController.text,
-                contact: contactController.text,
-                buyingPrice: Convert.doubleStringMultiple10toInt(buyingPriceController.text),
-              );
+              if (insertRecordOfProductProgress == null) {
+                var step = InsertRecordOfProductStep.construct();
+                step.setName(nameController.text);
+                step.setVendor(vendorController.text);
+                step.setContact(contactController.text);
+                step.setBuyingPrice(Convert.doubleStringMultiple10toInt(buyingPriceController.text));
+                insertRecordOfProductProgress = InsertRecordOfProductProgress.construct(
+                  result: Code.internalError,
+                  step: step,
+                  message: Translator.translate(Language.tryingToInsertRecordOfProduct),
+                );
+                insertRecordOfProductProgress!.show(context: context).then((value) {
+                  if (value == Code.oK) {
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      Translator.translate(Language.insertRecordSuccessfully),
+                    ).then(
+                      (value) {
+                        Navigator.pop(context, null);
+                      },
+                    );
+                  } else {
+                    showWarningDialog(context, Translator.translate(Language.operationTimeout));
+                  }
+                  insertRecordOfProductProgress = null;
+                });
+              }
             },
             child: Text(Translator.translate(Language.confirm)),
           ),

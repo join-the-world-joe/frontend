@@ -181,6 +181,7 @@ class English {
     Language.removeOperationFailure: 'Remove Operation Fail',
     Language.operationTimeout: 'Timeout',
     Language.tryingToSignIn: 'Sign In....',
+    Language.tryingToInsertRecordOfProduct: 'Inert Record....',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',
