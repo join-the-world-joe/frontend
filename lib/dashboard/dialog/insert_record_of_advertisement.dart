@@ -5,6 +5,7 @@ import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/product.dart';
+import 'package:flutter_framework/common/service/admin/protocol/fetch_records_of_product.dart';
 import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_record_of_advertisement_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
@@ -17,8 +18,7 @@ import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_records_of_product.dart';
-import 'package:flutter_framework/common/business/admin/fetch_records_of_product.dart';
+import 'package:flutter_framework/common/service/admin/business/fetch_records_of_product.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 
 Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {

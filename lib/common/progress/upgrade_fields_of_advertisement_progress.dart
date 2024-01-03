@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:core';
 
-import 'package:flutter_framework/common/business/admin/update_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/business/update_record_of_advertisement.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/protocol/admin/update_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/protocol/update_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/local/image_item.dart';
 

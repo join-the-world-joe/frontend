@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/protocol/oss/fetch_header_list_of_object_file_list_of_advertisement.dart';
+import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/utils/api.dart';
 

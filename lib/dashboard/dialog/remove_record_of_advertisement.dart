@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_framework/common/business/oss/remove_list_of_object_file.dart';
+import 'package:flutter_framework/common/service/admin/protocol/soft_delete_records_of_advertisement.dart';
+import 'package:flutter_framework/common/service/oss/business/remove_list_of_object_file.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/progress/remove_list_of_object_file_progress.dart';
-import 'package:flutter_framework/common/protocol/admin/soft_delete_records_of_advertisement.dart';
-import 'package:flutter_framework/common/protocol/oss/remove_list_of_object_file.dart';
+import 'package:flutter_framework/common/service/oss/protocol/remove_list_of_object_file.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/oss.dart';

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/service/admin/protocol/sign_in.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
@@ -16,7 +17,6 @@ import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/validator/email.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/sign_in.dart';
 
 class PasswordSignIn extends StatefulWidget {
   const PasswordSignIn({Key? key}) : super(key: key);
@@ -106,7 +106,7 @@ class _State extends State<PasswordSignIn> {
   void signInHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'signInHandler';
     try {
-      SignInRsp rsp = SignInRsp.fromJson(body);
+      var rsp = SignInRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,

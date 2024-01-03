@@ -3,6 +3,10 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
+import 'package:flutter_framework/common/service/admin/business/fetch_role_list_of_condition.dart';
+import 'package:flutter_framework/common/service/admin/business/insert_user_record.dart';
+import 'package:flutter_framework/common/service/admin/protocol/fetch_role_list_of_condition.dart';
+import 'package:flutter_framework/common/service/admin/protocol/insert_user_record.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
@@ -13,10 +17,6 @@ import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_role_list_of_condition.dart';
-import 'package:flutter_framework/common/business/admin/fetch_role_list_of_condition.dart';
-import 'package:flutter_framework/common/protocol/admin/insert_user_record.dart';
-import 'package:flutter_framework/common/business/admin/insert_user_record.dart';
 
 Future<void> showInsertUserDialog(BuildContext context) async {
   String? countryCode;
@@ -50,7 +50,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
   void fetchRoleListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'fetchRoleListOfConditionHandler';
     try {
-      FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
+      var rsp = FetchRoleListOfConditionRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -102,7 +102,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
   void insertUserRecordHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'insertUserRecordHandler';
     try {
-      InsertUserRecordRsp rsp = InsertUserRecordRsp.fromJson(body);
+      var rsp = InsertUserRecordRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,

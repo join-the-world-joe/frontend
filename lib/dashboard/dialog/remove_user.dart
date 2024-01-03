@@ -3,6 +3,8 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
+import 'package:flutter_framework/common/service/admin/business/soft_delete_user_record.dart';
+import 'package:flutter_framework/common/service/admin/protocol/soft_delete_user_record.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -11,8 +13,6 @@ import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/soft_delete_user_record.dart';
-import 'package:flutter_framework/common/business//admin/soft_delete_user_record.dart';
 
 Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
   var oriObserve = Runtime.getObserve();
@@ -36,7 +36,7 @@ Future<bool> showRemoveUserDialog(BuildContext context, User user) async {
   void softDeleteUserRecordHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'softDeleteUserRecordHandler';
     try {
-      SoftDeleteUserRecordRsp rsp = SoftDeleteUserRecordRsp.fromJson(body);
+      var rsp = SoftDeleteUserRecordRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,

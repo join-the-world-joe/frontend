@@ -1,7 +1,7 @@
 import 'package:flutter_framework/app/config.dart';
-import 'package:flutter_framework/common/business/admin/insert_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/business/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/protocol/admin/insert_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/advertisement/protocol/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/model/advertisement.dart';
 
 /*

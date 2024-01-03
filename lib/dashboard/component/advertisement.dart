@@ -26,10 +26,10 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../model/advertisement.dart' as model;
-import 'package:flutter_framework/common/protocol/advertisement/fetch_id_list_of_advertisement.dart';
-import 'package:flutter_framework/common/business/admin/fetch_id_list_of_advertisement.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_records_of_advertisement.dart';
-import 'package:flutter_framework/common/business/admin/fetch_records_of_advertisement.dart';
+import 'package:flutter_framework/common/service/advertisement/protocol/fetch_id_list_of_advertisement.dart';
+import 'package:flutter_framework/common/service/advertisement/business/fetch_id_list_of_advertisement.dart';
+import 'package:flutter_framework/common/service/advertisement/business/fetch_records_of_advertisement.dart';
+import 'package:flutter_framework/common/service/advertisement/protocol/fetch_records_of_advertisement.dart';
 import 'package:flutter_framework/common/route/advertisement.dart' as route;
 
 class Advertisement extends StatefulWidget {

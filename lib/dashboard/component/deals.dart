@@ -2,16 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_framework/common/business/admin/insert_record_of_ad_of_deals.dart';
-import 'package:flutter_framework/common/business/advertisement/fetch_id_list_of_ad_of_deals.dart';
-import 'package:flutter_framework/common/business/advertisement/fetch_records_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/service/admin/business/insert_record_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/service/advertisement/business/fetch_id_list_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/service/advertisement/business/fetch_records_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
-import 'package:flutter_framework/common/protocol/admin/insert_record_of_ad_of_deals.dart';
-import 'package:flutter_framework/common/protocol/advertisement/fetch_id_list_of_ad_of_deals.dart';
-import 'package:flutter_framework/common/protocol/advertisement/fetch_records_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/advertisement.dart';
+import 'package:flutter_framework/common/service/advertisement/protocol/fetch_id_list_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/service/advertisement/protocol/fetch_records_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/service/advertisement/protocol/fetch_version_of_ad_of_deals.dart';
 import 'dart:async';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
@@ -19,7 +20,6 @@ import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/dialog/approve_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/reject_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
-import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
 import 'package:flutter_framework/dashboard/model/ad_of_deals.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -30,7 +30,6 @@ import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
-import 'package:flutter_framework/common/protocol/advertisement/fetch_version_of_ad_of_deals.dart';
 import 'package:flutter_framework/dashboard/local/image_item.dart';
 
 class Deals extends StatefulWidget {
@@ -86,7 +85,7 @@ class _State extends State<Deals> {
   void insertRecordOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'insertRecordOfADOfDealsHandler';
     try {
-      InsertRecordOfADOfDealsRsp rsp = InsertRecordOfADOfDealsRsp.fromJson(body);
+      var rsp = InsertRecordOfADOfDealsRsp.fromJson(body);
       if (rsp.getCode() == Code.oK) {
         showMessageDialog(
           context,
@@ -114,7 +113,7 @@ class _State extends State<Deals> {
   void fetchVersionOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'fetchVersionOfADOfDealsHandler';
     try {
-      FetchVersionOfADOfDealsRsp rsp = FetchVersionOfADOfDealsRsp.fromJson(body);
+      var rsp = FetchVersionOfADOfDealsRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -144,7 +143,7 @@ class _State extends State<Deals> {
   void fetchIdListOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'fetchIdListOfADOfDealsHandler';
     try {
-      FetchIdListOfADOfDealsRsp rsp = FetchIdListOfADOfDealsRsp.fromJson(body);
+      var rsp = FetchIdListOfADOfDealsRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -196,7 +195,7 @@ class _State extends State<Deals> {
   void fetchRecordsOfADOfDealsHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'fetchRecordsOfADOfDealsHandler';
     try {
-      FetchRecordsOfADOfDealsRsp rsp = FetchRecordsOfADOfDealsRsp.fromJson(body);
+      var rsp = FetchRecordsOfADOfDealsRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,

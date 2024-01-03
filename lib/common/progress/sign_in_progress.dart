@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter_framework/app/config.dart';
-import 'package:flutter_framework/common/business/admin/sign_in.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/protocol/admin/sign_in.dart';
+import 'package:flutter_framework/common/service/admin/business/sign_in.dart';
+import 'package:flutter_framework/common/service/admin/protocol/sign_in.dart';
 
 class SignInProgress {
   String from = 'SignInProgress';

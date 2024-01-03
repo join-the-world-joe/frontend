@@ -21,8 +21,8 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../setup.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_field_list_of_condition.dart';
-import 'package:flutter_framework/common/business/admin/fetch_field_list_of_condition.dart';
+import 'package:flutter_framework/common/service/admin/protocol/fetch_field_list_of_condition.dart';
+import 'package:flutter_framework/common/service/admin/business/fetch_field_list_of_condition.dart';
 
 class Field extends StatefulWidget {
   const Field({Key? key}) : super(key: key);

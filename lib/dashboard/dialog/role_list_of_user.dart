@@ -3,6 +3,8 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
+import 'package:flutter_framework/common/service/admin/business/fetch_role_list_of_condition.dart';
+import 'package:flutter_framework/common/service/admin/protocol/fetch_role_list_of_condition.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/model/role_list.dart';
@@ -12,8 +14,6 @@ import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_role_list_of_condition.dart';
-import 'package:flutter_framework/common/business/admin/fetch_role_list_of_condition.dart';
 
 Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
   bool closed = false;
@@ -37,7 +37,7 @@ Future<int> showRoleListOfUserDialog(BuildContext context, User user) async {
   void fetchRoleListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'fetchRoleListOfConditionHandler';
     try {
-      FetchRoleListOfConditionRsp rsp = FetchRoleListOfConditionRsp.fromJson(body);
+      var rsp = FetchRoleListOfConditionRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,

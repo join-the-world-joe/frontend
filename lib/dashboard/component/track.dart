@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/service/admin/protocol/fetch_track_list_of_condition.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/model/track_list.dart';
@@ -15,8 +16,7 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_track_list_of_condition.dart';
-import 'package:flutter_framework/common/business/admin/fetch_track_list_of_condition.dart';
+import 'package:flutter_framework/common/service/admin/business/fetch_track_list_of_condition.dart';
 
 class Track extends StatefulWidget {
   const Track({Key? key}) : super(key: key);
@@ -80,7 +80,7 @@ class _State extends State<Track> {
   void fetchTrackListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'fetchTrackListOfConditionHandler';
     try {
-      FetchTrackListOfConditionRsp rsp = FetchTrackListOfConditionRsp.fromJson(body);
+      var rsp = FetchTrackListOfConditionRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,

@@ -1,8 +1,8 @@
 import 'package:flutter_framework/app/config.dart';
-import 'package:flutter_framework/common/business/admin/soft_delete_records_of_advertisement.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/protocol/admin/soft_delete_records_of_advertisement.dart';
-import 'package:flutter_framework/common/protocol/oss/remove_list_of_object_file.dart';
+import 'package:flutter_framework/common/service/admin/business/soft_delete_records_of_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/protocol/soft_delete_records_of_advertisement.dart';
+import 'package:flutter_framework/common/service/oss/protocol/remove_list_of_object_file.dart';
 
 /*
 three possible stage; requested, timeout, responded()

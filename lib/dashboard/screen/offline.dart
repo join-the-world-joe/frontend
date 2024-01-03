@@ -5,6 +5,8 @@ import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/backend_gateway.dart';
 import 'package:flutter_framework/common/route/major.dart';
+import 'package:flutter_framework/common/service/admin/business/sign_in.dart';
+import 'package:flutter_framework/common/service/admin/protocol/sign_in.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
@@ -18,12 +20,10 @@ import '../../runtime/runtime.dart';
 import '../screen/screen.dart';
 import 'package:otp/otp.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/backend_gateway/echo.dart';
-import 'package:flutter_framework/common/business/backend_gateway/echo.dart';
-import 'package:flutter_framework/common/protocol/backend_gateway/fetch_rate_limiting_config.dart';
-import 'package:flutter_framework/common/business/backend_gateway/fetch_rate_limiting_config.dart';
-import 'package:flutter_framework/common/protocol/admin/sign_in.dart';
-import 'package:flutter_framework/common/business//admin/sign_in.dart';
+import 'package:flutter_framework/common/service/backend_gateway/protocol/echo.dart';
+import 'package:flutter_framework/common/service/backend_gateway/business/echo.dart';
+import 'package:flutter_framework/common/service/backend_gateway/protocol/fetch_rate_limiting_config.dart';
+import 'package:flutter_framework/common/service/backend_gateway/business/fetch_rate_limiting_config.dart';
 
 class Offline extends StatefulWidget {
   const Offline({Key? key}) : super(key: key);
@@ -139,7 +139,7 @@ class _State extends State<Offline> {
   void signInHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'signInHandler';
     try {
-      SignInRsp rsp = SignInRsp.fromJson(body);
+      var rsp = SignInRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,

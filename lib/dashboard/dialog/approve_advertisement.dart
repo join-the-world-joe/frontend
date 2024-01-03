@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_framework/common/business/admin/fetch_records_of_advertisement.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_records_of_advertisement.dart';
+import 'package:flutter_framework/common/service/advertisement/business/fetch_records_of_advertisement.dart';
+import 'package:flutter_framework/common/service/advertisement/protocol/fetch_records_of_advertisement.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/advertisement.dart';
 import 'package:flutter_framework/common/route/major.dart';

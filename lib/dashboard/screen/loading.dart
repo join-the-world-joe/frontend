@@ -10,10 +10,10 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import '../setup.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flutter_framework/common/protocol/backend_gateway/echo.dart';
-import 'package:flutter_framework/common/business/backend_gateway/echo.dart';
-import 'package:flutter_framework/common/protocol/backend_gateway/fetch_rate_limiting_config.dart';
-import 'package:flutter_framework/common/business/backend_gateway/fetch_rate_limiting_config.dart';
+import 'package:flutter_framework/common/service/backend_gateway/protocol/echo.dart';
+import 'package:flutter_framework/common/service/backend_gateway/business/echo.dart';
+import 'package:flutter_framework/common/service/backend_gateway/protocol/fetch_rate_limiting_config.dart';
+import 'package:flutter_framework/common/service/backend_gateway/business/fetch_rate_limiting_config.dart';
 
 class Loading extends StatefulWidget {
   const Loading({Key? key}) : super(key: key);

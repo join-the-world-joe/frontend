@@ -1,10 +1,9 @@
 import 'package:flutter_framework/app/config.dart';
-import 'package:flutter_framework/common/business/admin/insert_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/business/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/protocol/admin/insert_record_of_advertisement.dart';
-import 'package:flutter_framework/common/protocol/oss/remove_list_of_object_file.dart';
+import 'package:flutter_framework/common/service/oss/protocol/remove_list_of_object_file.dart';
 import 'package:flutter_framework/dashboard/model/advertisement.dart';
-import 'package:flutter_framework/common/business/oss/remove_list_of_object_file.dart';
+import 'package:flutter_framework/common/service/oss/business/remove_list_of_object_file.dart';
 
 class RemoveListOfObjectFileProgress {
   String from = 'RemoveListOfObjectFileProgress';

@@ -3,6 +3,8 @@ import 'dart:js_util';
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/service/admin/business/fetch_permission_list_of_condition.dart';
+import 'package:flutter_framework/common/service/admin/protocol/fetch_permission_list_of_condition.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/model/permission_list.dart';
@@ -15,8 +17,6 @@ import 'package:flutter_framework/dashboard/model/role.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_permission_list_of_condition.dart';
-import 'package:flutter_framework/common/business/admin/fetch_permission_list_of_condition.dart';
 
 Future<int> showPermissionListOfRoleDialog(BuildContext context, Role role) async {
   bool closed = false;
@@ -40,7 +40,7 @@ Future<int> showPermissionListOfRoleDialog(BuildContext context, Role role) asyn
   void fetchPermissionListOfConditionHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'fetchPermissionListOfConditionHandler';
     try {
-      FetchPermissionListOfConditionRsp rsp = FetchPermissionListOfConditionRsp.fromJson(body);
+      var rsp = FetchPermissionListOfConditionRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_framework/common/business/product/fetch_id_list_of_product.dart';
-import 'package:flutter_framework/common/business/admin/fetch_records_of_product.dart';
+import 'package:flutter_framework/common/service/admin/protocol/fetch_records_of_product.dart';
+import 'package:flutter_framework/common/service/product/business/fetch_id_list_of_product.dart';
+import 'package:flutter_framework/common/service/admin/business/fetch_records_of_product.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'dart:async';
@@ -22,8 +23,7 @@ import 'package:flutter_framework/utils/navigate.dart';
 import '../screen/screen.dart';
 import 'package:flutter_framework/dashboard/cache/cache.dart';
 import '../model/product.dart' as model;
-import 'package:flutter_framework/common/protocol/product/fetch_id_list_of_product.dart';
-import 'package:flutter_framework/common/protocol/admin/fetch_records_of_product.dart';
+import 'package:flutter_framework/common/service/product/protocol/fetch_id_list_of_product.dart';
 import 'package:flutter_framework/common/route/product.dart' as route;
 
 class Product extends StatefulWidget {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/route/admin.dart';
+import 'package:flutter_framework/common/service/admin/business/update_record_of_product.dart';
 import 'package:flutter_framework/utils/convert.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
@@ -14,8 +15,7 @@ import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import '../model/product.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/protocol/admin/update_record_of_product.dart';
-import 'package:flutter_framework/common/business/admin/update_record_of_product.dart';
+import 'package:flutter_framework/common/service/admin/protocol/update_record_of_product.dart';
 
 Future<bool> showUpdateProductDialog(BuildContext context, Product product) async {
   int curStage = 0;
