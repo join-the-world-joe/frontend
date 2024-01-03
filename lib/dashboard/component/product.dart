@@ -11,7 +11,7 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/dialog/insert_record_of_product.dart';
-import 'package:flutter_framework/dashboard/dialog/remove_product.dart';
+import 'package:flutter_framework/dashboard/dialog/soft_delete_record_of_product.dart';
 import 'package:flutter_framework/dashboard/dialog/update_product.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -542,7 +542,7 @@ class Source extends DataTableSource {
                   if (!boolMap.containsKey(key)) {
                     return;
                   }
-                  await showRemoveProductDialog(buildContext, dataMap[key]!).then(
+                  await showSoftDeleteRecordOfProductDialog(buildContext, dataMap[key]!).then(
                     (value) => () {
                       // print('value: $value');
                       if (value) {

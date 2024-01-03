@@ -1,4 +1,3 @@
-
 class SoftDeleteRecordsOfProductReq {
   List<int> _productIdList = [];
 
@@ -14,11 +13,15 @@ class SoftDeleteRecordsOfProductReq {
 }
 
 class SoftDeleteRecordsOfProductRsp {
-  int code = -1;
+  int _code = -1;
+
+  int getCode() {
+    return _code;
+  }
 
   SoftDeleteRecordsOfProductRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
-      code = json['code'];
+      _code = json['code'];
     }
   }
 }

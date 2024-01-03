@@ -4,9 +4,13 @@ import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/service/admin/business/soft_delete_records_of_product.dart';
+import 'package:flutter_framework/common/service/admin/progress/soft_delete_record_of_product/soft_delete_records_of_product_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/soft_delete_record_of_product/soft_delete_records_of_product_step.dart';
+import 'package:flutter_framework/common/service/admin/protocol/soft_delete_records_of_product.dart';
 import 'package:flutter_framework/common/service/admin/protocol/soft_delete_user_record.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
+import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/model/product.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -14,11 +18,12 @@ import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import '../config/config.dart';
 
-Future<bool> showRemoveProductDialog(BuildContext context, Product product) async {
+Future<bool> showSoftDeleteRecordOfProductDialog(BuildContext context, Product product) async {
   var oriObserve = Runtime.getObserve();
   bool closed = false;
   int curStage = 0;
-  String from = 'showRemoveProductDialog';
+  String from = 'showSoftDeleteRecordOfProductDialog';
+  SoftDeleteRecordsOfProductProgress? softDeleteRecordsOfProductProgress;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -35,7 +40,7 @@ Future<bool> showRemoveProductDialog(BuildContext context, Product product) asyn
   void softDeleteRecordOfProductHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'softDeleteRecordOfProductHandler';
     try {
-      var rsp = SoftDeleteUserRecordRsp.fromJson(body);
+      var rsp = SoftDeleteRecordsOfProductRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -43,24 +48,8 @@ Future<bool> showRemoveProductDialog(BuildContext context, Product product) asyn
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
-      if (rsp.getCode() == Code.oK) {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.removeRecordSuccessfully),
-        ).then(
-          (value) {
-            Navigator.pop(context, true);
-          },
-        );
-        return;
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
-        return;
+      if (softDeleteRecordsOfProductProgress != null) {
+        softDeleteRecordsOfProductProgress!.respond(rsp);
       }
     } catch (e) {
       Log.debug(
@@ -159,11 +148,36 @@ Future<bool> showRemoveProductDialog(BuildContext context, Product product) asyn
                         ),
                         TextButton(
                           onPressed: () {
-                            softDeleteRecordsOfProduct(
-                              from: from,
-                              caller: '$caller.softDeleteRecordsOfProduct',
-                              productIdList: [product.getId()],
-                            );
+                            if (softDeleteRecordsOfProductProgress == null) {
+                              var step = SoftDeleteRecordsOfProductStep.construct();
+                              step.setProductIdList([product.getId()]);
+                              softDeleteRecordsOfProductProgress = SoftDeleteRecordsOfProductProgress.construct(
+                                result: Code.internalError,
+                                step: step,
+                                message: Translator.translate(Language.tryingToSoftDeleteRecordOfProduct),
+                              );
+                              softDeleteRecordsOfProductProgress!.show(context: context).then((value) {
+                                if (value == Code.oK) {
+                                  showMessageDialog(
+                                    context,
+                                    Translator.translate(Language.titleOfNotification),
+                                    Translator.translate(Language.removeRecordSuccessfully),
+                                  ).then(
+                                    (value) {
+                                      Navigator.pop(context, true);
+                                    },
+                                  );
+                                } else {
+                                  showWarningDialog(context, Translator.translate(Language.operationTimeout));
+                                }
+                                softDeleteRecordsOfProductProgress = null;
+                              });
+                            }
+                            // softDeleteRecordsOfProduct(
+                            //   from: from,
+                            //   caller: '$caller.softDeleteRecordsOfProduct',
+                            //   productIdList: [product.getId()],
+                            // );
                           },
                           child: Text(Translator.translate(Language.confirm)),
                         ),

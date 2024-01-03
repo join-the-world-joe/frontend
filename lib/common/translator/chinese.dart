@@ -182,6 +182,7 @@ class Chinese {
     Language.operationTimeout: '超时',
     Language.tryingToSignIn: '尝试登录系统....',
     Language.tryingToInsertRecordOfProduct: '尝试插入商品记录....',
+    Language.tryingToSoftDeleteRecordOfProduct: '尝试删除商品记录....',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',
