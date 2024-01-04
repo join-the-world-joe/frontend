@@ -15,8 +15,8 @@ import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
-import '../model/product.dart';
-import '../config/config.dart';
+import '../../../../dashboard/model/product.dart';
+import '../../../../dashboard/config/config.dart';
 import 'package:flutter_framework/common/service/admin/protocol/update_record_of_product.dart';
 
 Future<bool> showUpdateRecordOfProductDialog(BuildContext context, Product product) async {

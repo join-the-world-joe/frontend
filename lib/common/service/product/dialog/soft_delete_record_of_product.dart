@@ -16,7 +16,7 @@ import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
-import '../config/config.dart';
+import '../../../../dashboard/config/config.dart';
 
 Future<bool> showSoftDeleteRecordOfProductDialog(BuildContext context, Product product) async {
   var oriObserve = Runtime.getObserve();

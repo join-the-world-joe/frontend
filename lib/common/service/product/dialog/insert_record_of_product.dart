@@ -15,7 +15,7 @@ import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import '../config/config.dart';
+import '../../../../dashboard/config/config.dart';
 import 'package:flutter_framework/common/service/admin/business/insert_record_of_product.dart';
 
 Future<void> showInsertRecordOfProductDialog(BuildContext context) async {

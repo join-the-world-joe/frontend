@@ -85,6 +85,37 @@ class ImageItem {
     _nativeFileName = nativeFileName;
   }
 
+  static ImageItem fromRemote(String input, String ossPath) {
+    var native = false;
+    var data = Uint8List(0);
+    var objectFileName = '';
+    var width = 0;
+    var height = 0;
+    try {
+      Map<String, dynamic> temp = jsonDecode(input);
+      if (temp.containsKey('object_file_name')) {
+        objectFileName = temp['object_file_name'];
+      }
+      if (temp.containsKey('width')) {
+        width = int.parse(temp['width']);
+      }
+      if (temp.containsKey('height')) {
+        height = int.parse(temp['height']);
+      }
+    } catch (e) {
+      print('ImageItem.fromField failure, err: $e');
+    }
+    return ImageItem.construct(
+      native: native,
+      data: data,
+      objectFileName: objectFileName,
+      url: ossPath + objectFileName,
+      nativeFileName: '',
+      width: width,
+      height: height,
+    );
+  }
+
   static Future<ImageItem> fromMediaInfo({
     required MediaInfo mediaInfo,
     required String prefix,

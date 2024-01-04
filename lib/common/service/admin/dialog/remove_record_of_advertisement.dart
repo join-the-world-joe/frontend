@@ -1,40 +1,39 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_framework/common/service/admin/progress/soft_delete_records_of_advertisement/soft_delete_records_of_advertisement_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/soft_delete_records_of_advertisement/soft_delete_records_of_advertisement_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/soft_delete_records_of_advertisement.dart';
-import 'package:flutter_framework/common/service/oss/business/remove_list_of_object_file.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
-import 'package:flutter_framework/common/progress/remove_list_of_object_file_progress.dart';
+import 'package:flutter_framework/common/service/oss/progress/remove_list_of_object_file/remove_list_of_object_file_progress.dart';
+import 'package:flutter_framework/common/service/oss/progress/remove_list_of_object_file/remove_list_of_object_file_step.dart';
 import 'package:flutter_framework/common/service/oss/protocol/remove_list_of_object_file.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/oss.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/dialog/soft_delete_records_of_advertisement_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/local/image_item.dart';
+import 'package:flutter_framework/dashboard/model/advertisement.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
-import '../config/config.dart';
+import '../../../../dashboard/config/config.dart';
 import 'package:path/path.dart' as path;
 
-Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id, String name, String image) async {
+Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, Advertisement advertisement) async {
   var oriObserve = Runtime.getObserve();
   double width = 220;
   double height = 150;
   bool closed = false;
   int curStage = 0;
   String from = 'showRemoveRecordOfAdvertisementDialog';
-  var commonPath = '';
-  Map<String, ImageItem> imageMap = {}; // key: key of advertisement in database or native file name
-  SoftDeleteRecordsOfAdvertisementProgressDialog? softDeleteRecordProgress;
-  RemoveListOfObjectFileProgress? removeObjectFileProgress;
-  List<String> objectFileToBeRemoved = [];
+  List<String> objectFileList = [];
+
+  SoftDeleteRecordsOfAdvertisementProgress? softDeleteRecordsOfAdvertisementProgress;
+  RemoveListOfObjectFileProgress? removeListOfObjectFileProgress;
+
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
@@ -47,33 +46,32 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
     }
   }
 
-  try {
-    String extension = '';
-    var oriObjectFileName = '';
-    Map<String, dynamic> imageOfAdvertisement = jsonDecode(image);
-    imageOfAdvertisement.forEach((key, value) {
-      extension = path.extension(value).toLowerCase();
-      oriObjectFileName = '$id/$key$extension';
-      imageMap[key] = ImageItem.construct(
-        native: false,
-        data: Uint8List(0),
-        objectFileName: oriObjectFileName,
-        url: value,
-        nativeFileName: '',
-        width: 0,
-        height: 0,
-      );
-      objectFileToBeRemoved.add(oriObjectFileName);
-    });
-  } catch (e) {
-    print('showRemoveAdvertisementDialog failure, err: $e');
-  } finally {
-    // print('Image map: ');
-    // imageMap.forEach(
-    //   (key, value) {
-    //     print('key: $key, dbKey: ${value.getDBKey()}, objectFile: ${value.getObjectFile()}, url: ${value.getUrl()}');
-    //   },
-    // );
+  void figureOutputObjectFileList() {
+    objectFileList.clear();
+    if (advertisement.getCoverImage().isNotEmpty) {
+      var imageItem = ImageItem.fromRemote(advertisement.getCoverImage(), advertisement.getOSSPath());
+      objectFileList.add(imageItem.getObjectFileName());
+    }
+    if (advertisement.getFirstImage().isNotEmpty) {
+      var imageItem = ImageItem.fromRemote(advertisement.getFirstImage(), advertisement.getOSSPath());
+      objectFileList.add(imageItem.getObjectFileName());
+    }
+    if (advertisement.getSecondImage().isNotEmpty) {
+      var imageItem = ImageItem.fromRemote(advertisement.getSecondImage(), advertisement.getOSSPath());
+      objectFileList.add(imageItem.getObjectFileName());
+    }
+    if (advertisement.getThirdImage().isNotEmpty) {
+      var imageItem = ImageItem.fromRemote(advertisement.getThirdImage(), advertisement.getOSSPath());
+      objectFileList.add(imageItem.getObjectFileName());
+    }
+    if (advertisement.getFourthImage().isNotEmpty) {
+      var imageItem = ImageItem.fromRemote(advertisement.getFourthImage(), advertisement.getOSSPath());
+      objectFileList.add(imageItem.getObjectFileName());
+    }
+    if (advertisement.getFifthImage().isNotEmpty) {
+      var imageItem = ImageItem.fromRemote(advertisement.getFifthImage(), advertisement.getOSSPath());
+      objectFileList.add(imageItem.getObjectFileName());
+    }
   }
 
   void softDeleteRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
@@ -87,8 +85,8 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
-      if (softDeleteRecordProgress != null) {
-        softDeleteRecordProgress!.respond(rsp);
+      if (softDeleteRecordsOfAdvertisementProgress != null) {
+        softDeleteRecordsOfAdvertisementProgress!.respond(rsp);
       }
     } catch (e) {
       Log.debug(
@@ -113,11 +111,8 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
-      if (rsp.getCode() == Code.oK) {
-        return;
-      } else {
-        // error occurs
-        return;
+      if (removeListOfObjectFileProgress != null) {
+        removeListOfObjectFileProgress!.respond(rsp);
       }
     } catch (e) {
       Log.debug(
@@ -195,9 +190,9 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('ID ：${id}'),
+                        Text('ID ：${advertisement.getId()}'),
                         Spacing.addVerticalSpace(20),
-                        Text('${Translator.translate(Language.nameOfAdvertisement)} : $name'),
+                        Text('${Translator.translate(Language.nameOfAdvertisement)} : ${advertisement.getName()}'),
                         Spacing.addVerticalSpace(20),
                       ],
                     ),
@@ -211,33 +206,40 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, int id,
                           child: Text(Translator.translate(Language.cancel)),
                         ),
                         TextButton(
-                          onPressed: () {
-                            removeListOfObjectFile(
-                              from: from,
-                              caller: caller,
-                              listOfObjectFile: objectFileToBeRemoved,
-                            );
-                            if (softDeleteRecordProgress == null) {
-                              softDeleteRecordProgress = SoftDeleteRecordsOfAdvertisementProgressDialog.construct(
-                                result: Code.internalError,
+                          onPressed: () async {
+                            if (softDeleteRecordsOfAdvertisementProgress == null) {
+                              var step = SoftDeleteRecordsOfAdvertisementStep.construct();
+                              step.setAdvertisementIdList([advertisement.getId()]);
+                              softDeleteRecordsOfAdvertisementProgress = SoftDeleteRecordsOfAdvertisementProgress.construct(
+                                result: -1,
+                                step: step,
+                                message: Translator.translate(Language.tryingToSoftDeleteRecordOfAdvertisement),
                               );
-                              softDeleteRecordProgress!.setAdvertisementIdList([id]);
-                              softDeleteRecordProgress!.show(context: context).then((value) {
+                              softDeleteRecordsOfAdvertisementProgress!.show(context: context).then((value) {
                                 if (value == Code.oK) {
-                                  showMessageDialog(
-                                    context,
-                                    Translator.translate(Language.titleOfNotification),
-                                    Translator.translate(Language.removeRecordSuccessfully),
-                                  ).then(
-                                    (value) {
-                                      Navigator.pop(context);
-                                      curStage++;
-                                    },
+                                  figureOutputObjectFileList();
+                                  var step = RemoveListOfObjectFileStep.construct(listOfObjectFile: objectFileList);
+                                  removeListOfObjectFileProgress = RemoveListOfObjectFileProgress.construct(
+                                    result: -1,
+                                    step: step,
+                                    message: Translator.translate(Language.tryingToRemoveListOfObjectFile),
                                   );
+                                  removeListOfObjectFileProgress!.show(context: context).then((value) {
+                                    showMessageDialog(
+                                      context,
+                                      Translator.translate(Language.titleOfNotification),
+                                      Translator.translate(Language.removeRecordSuccessfully),
+                                    ).then(
+                                      (value) {
+                                        Navigator.pop(context);
+                                        curStage++;
+                                      },
+                                    );
+                                  });
                                 } else {
                                   showWarningDialog(context, Translator.translate(Language.operationTimeout));
                                 }
-                                softDeleteRecordProgress = null;
+                                softDeleteRecordsOfAdvertisementProgress = null;
                               });
                             }
                           },

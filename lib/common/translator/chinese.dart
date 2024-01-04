@@ -185,8 +185,10 @@ class Chinese {
     Language.tryingToSoftDeleteRecordOfProduct: '尝试删除商品记录....',
     Language.tryingToUpdateRecordOfProduct: '尝试更新商品记录....',
     Language.tryingToFetchHeaderListOfOSSObjectFile: '尝试获取OSS校验头....',
-    Language.tryingToUploadImageList : '尝试上传图片至OSS....',
+    Language.tryingToUploadImageList: '尝试上传图片至OSS....',
     Language.tryingToInsertRecordOfAdvertisement: '尝试插入广告记录....',
+    Language.tryingToSoftDeleteRecordOfAdvertisement: '尝试删除广告记录',
+    Language.tryingToRemoveListOfObjectFile: '尝试删除OSS图片文件',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',

@@ -9,7 +9,7 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/common/service/admin/dialog/insert_record_of_advertisement.dart';
-import 'package:flutter_framework/dashboard/dialog/remove_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/dialog/remove_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/update_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
@@ -250,7 +250,7 @@ class _State extends State<Advertisement> {
         message: 'failure, err: $e',
       );
       return;
-    } finally {}
+    }
   }
 
   void refresh() {
@@ -631,15 +631,15 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.delete),
                 tooltip: Translator.translate(Language.remove),
                 onPressed: () async {
-                  // await showRemoveRecordOfAdvertisementDialog(buildContext, dataMap[key]!.getId(), dataMap[key]!.getName(), dataMap[key]!.getImage()).then(
-                  //   (value) => () {
-                  //     // print('value: $value');
-                  //     if (value) {
-                  //       idList.removeAt(index);
-                  //       notifyListeners();
-                  //     }
-                  //   }(),
-                  // );
+                  await showRemoveRecordOfAdvertisementDialog(buildContext, dataMap[key]!).then(
+                    (value) => () {
+                      // print('value: $value');
+                      if (value) {
+                        idList.removeAt(index);
+                        notifyListeners();
+                      }
+                    }(),
+                  );
                 },
               ),
             ],

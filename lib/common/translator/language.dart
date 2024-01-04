@@ -184,6 +184,8 @@ class Language {
   static String tryingToFetchHeaderListOfOSSObjectFile = 'trying to fetch header list of oss object file';
   static String tryingToUploadImageList = 'trying to upload image list';
   static String tryingToInsertRecordOfAdvertisement = 'trying to insert record of advertisement';
+  static String tryingToSoftDeleteRecordOfAdvertisement = 'trying to soft delete record of advertisement';
+  static String tryingToRemoveListOfObjectFile = 'trying to remove list of object file';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';

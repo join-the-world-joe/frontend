@@ -122,7 +122,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
         minor: minor,
         from: from,
         caller: caller,
-        message: '',
+        message: 'code: ${rsp.getCode()}',
       );
       if (rsp.getCode() == Code.oK) {
         var key = int.parse(productIdController.text);
