@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-class InsertUserRecordReq {
+class InsertRecordOfUserReq {
   String _name = '';
   String _phoneNumber = '';
   String _countryCode = '';
@@ -9,7 +9,7 @@ class InsertUserRecordReq {
   Uint8List _password = Uint8List.fromList([]);
   List<String> _roleList = [];
 
-  InsertUserRecordReq.construct({
+  InsertRecordOfUserReq.construct({
     required String name,
     required String phoneNumber,
     required String countryCode,
@@ -37,14 +37,14 @@ class InsertUserRecordReq {
   }
 }
 
-class InsertUserRecordRsp {
+class InsertRecordOfUserRsp {
   int _code = -1;
 
   int getCode() {
     return _code;
   }
 
-  InsertUserRecordRsp.fromJson(Map<String, dynamic> json) {
+  InsertRecordOfUserRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
       _code = json['code'];
     }

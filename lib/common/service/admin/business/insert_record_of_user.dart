@@ -5,7 +5,7 @@ import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_user_record.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
-void insertUserRecord({
+void insertRecordOfUser({
   required String from,
   required String caller,
   required String name,
@@ -19,8 +19,8 @@ void insertUserRecord({
     from: from,
     caller: caller,
     major: Major.admin,
-    minor: Admin.insertUserRecordReq,
-    body: InsertUserRecordReq.construct(
+    minor: Admin.insertRecordOfUserReq,
+    body: InsertRecordOfUserReq.construct(
       name: name,
       phoneNumber: phoneNumber,
       countryCode: countryCode,

@@ -4,7 +4,7 @@ import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/service/admin/business/fetch_role_list_of_condition.dart';
-import 'package:flutter_framework/common/service/admin/business/insert_user_record.dart';
+import 'package:flutter_framework/common/service/admin/business/insert_record_of_user.dart';
 import 'package:flutter_framework/common/service/admin/protocol/fetch_role_list_of_condition.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_user_record.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
@@ -16,13 +16,13 @@ import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import '../config/config.dart';
+import '../../../../dashboard/config/config.dart';
 
-Future<void> showInsertUserDialog(BuildContext context) async {
+Future<void> showInsertRecordOfUserDialog(BuildContext context) async {
   String? countryCode;
   bool closed = false;
   int curStage = 0;
-  String from = 'showInsertUserDialog';
+  String from = 'showInsertRecordOfUserDialog';
   RoleList wholeRoleList;
   Map<Role, bool> roleStatus = {};
   RoleList roleList = RoleList([]);
@@ -102,7 +102,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
   void insertUserRecordHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'insertUserRecordHandler';
     try {
-      var rsp = InsertUserRecordRsp.fromJson(body);
+      var rsp = InsertRecordOfUserRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -155,7 +155,7 @@ Future<void> showInsertUserDialog(BuildContext context) async {
         caller: caller,
         message: 'responded',
       );
-      if (major == Major.admin && minor == Admin.insertUserRecordRsp) {
+      if (major == Major.admin && minor == Admin.insertRecordOfUserRsp) {
         insertUserRecordHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(major: major, minor: minor, body: body);
@@ -233,9 +233,9 @@ Future<void> showInsertUserDialog(BuildContext context) async {
                 print('selected: $roleList');
                 return roleList;
               }();
-              insertUserRecord(
+              insertRecordOfUser(
                 from: from,
-                caller: '$caller.insertUserRecord',
+                caller: caller,
                 name: nameController.text,
                 phoneNumber: phoneNumberController.text,
                 countryCode: countryCode ?? '86',

@@ -16,10 +16,10 @@ import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
-import '../config/config.dart';
+import '../../../../dashboard/config/config.dart';
 import 'package:flutter_framework/common/service/admin/protocol/update_user_record.dart';
 
-Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
+Future<bool> showUpdateRecordOfUserDialog(BuildContext context, User user) async {
   String countryCode = user.getCountryCode();
   int status = int.parse(user.getStatus());
   Map<Role, bool> roleStatus = {}; // key: role_name, value: bool
@@ -27,7 +27,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
   RoleList roleList = RoleList([]);
   int curStage = 0;
   bool closed = false;
-  String from = 'showUpdateUserDialog';
+  String from = 'showUpdateRecordOfUserDialog';
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController(text: user.getName());
   var passwordController = TextEditingController(text: '');
@@ -156,7 +156,7 @@ Future<bool> showUpdateUserDialog(BuildContext context, User user) async {
       );
       if (major == Major.admin && minor == Admin.fetchRoleListOfConditionRsp) {
         fetchRoleListOfConditionHandler(major: major, minor: minor, body: body);
-      } else if (major == Major.admin && minor == Admin.updateUserRecordRsp) {
+      } else if (major == Major.admin && minor == Admin.updateRecordOfUserRsp) {
         updateUserRecordHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(

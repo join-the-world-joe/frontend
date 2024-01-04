@@ -9,12 +9,12 @@ class Admin {
   static const String fetchRoleListOfConditionRsp = "8";
   static const String fetchPermissionListOfConditionReq = "9";
   static const String fetchPermissionListOfConditionRsp = "10";
-  static const String insertUserRecordReq = "11";
-  static const String insertUserRecordRsp = "12";
-  static const String softDeleteUserRecordReq = "13";
-  static const String softDeleteUserRecordRsp = "14";
-  static const String updateUserRecordReq = "15";
-  static const String updateUserRecordRsp = "16";
+  static const String insertRecordOfUserReq = "11";
+  static const String insertRecordOfUserRsp = "12";
+  static const String softDeleteRecordOfUserReq = "13";
+  static const String softDeleteRecordOfUserRsp = "14";
+  static const String updateRecordOfUserReq = "15";
+  static const String updateRecordOfUserRsp = "16";
   static const String fetchFieldListOfConditionReq = "17";
   static const String fetchFieldListOfConditionRsp = "18";
   static const String fetchTrackListOfConditionReq = "19";
@@ -76,18 +76,18 @@ class Admin {
         return 'fetchPermissionListOfConditionReq';
       case fetchPermissionListOfConditionRsp:
         return 'fetchPermissionListOfConditionRsp';
-      case insertUserRecordReq:
-        return 'insertUserRecordReq';
-      case insertUserRecordRsp:
-        return 'insertUserRecordRsp';
-      case softDeleteUserRecordReq:
-        return 'softDeleteUserRecordReq';
-      case softDeleteUserRecordRsp:
-        return 'softDeleteUserRecordRsp';
-      case updateUserRecordReq:
-        return 'updateUserRecordReq';
-      case updateUserRecordRsp:
-        return 'updateUserRecordRsp';
+      case insertRecordOfUserReq:
+        return 'insertRecordOfUserReq';
+      case insertRecordOfUserRsp:
+        return 'insertRecordOfUserRsp';
+      case softDeleteRecordOfUserReq:
+        return 'softDeleteRecordOfUserReq';
+      case softDeleteRecordOfUserRsp:
+        return 'softDeleteRecordOfUserRsp';
+      case updateRecordOfUserReq:
+        return 'updateRecordOfUserReq';
+      case updateRecordOfUserRsp:
+        return 'updateRecordOfUserRsp';
       case fetchFieldListOfConditionReq:
         return 'fetchFieldListOfConditionReq';
       case fetchFieldListOfConditionRsp:

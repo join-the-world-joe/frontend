@@ -7,12 +7,12 @@ import 'package:flutter_framework/common/service/admin/protocol/fetch_user_list_
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
-import 'package:flutter_framework/dashboard/dialog/insert_user.dart';
+import 'package:flutter_framework/common/service/admin/dialog/insert_record_of_user.dart';
 import 'package:flutter_framework/dashboard/dialog/menu_list_of_user.dart';
-import 'package:flutter_framework/dashboard/dialog/update_user.dart';
+import 'package:flutter_framework/common/service/admin/dialog/soft_delete_record_of_user.dart';
 import 'package:flutter_framework/dashboard/dialog/permission_list_of_user.dart';
-import 'package:flutter_framework/dashboard/dialog/remove_user.dart';
 import 'package:flutter_framework/dashboard/dialog/role_list_of_user.dart';
+import 'package:flutter_framework/common/service/admin/dialog/update_record_of_user.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -100,7 +100,7 @@ class _State extends State<User> {
         from: User.content,
         caller: caller,
         major: Major.admin,
-        minor: Admin.insertUserRecordReq,
+        minor: Admin.insertRecordOfUserReq,
       );
     });
     Future.delayed(const Duration(milliseconds: 300), () {
@@ -108,7 +108,7 @@ class _State extends State<User> {
         from: User.content,
         caller: caller,
         major: Major.admin,
-        minor: Admin.softDeleteUserRecordReq,
+        minor: Admin.softDeleteRecordOfUserReq,
       );
     });
   }
@@ -168,9 +168,9 @@ class _State extends State<User> {
         hasFetchPermissionListOfCondition = rsp.getCode() == Code.oK ? true : false;
       } else if (rsp.getMinor() == int.parse(Admin.fetchMenuListOfConditionReq)) {
         hasFetchMenuListOfCondition = rsp.getCode() == Code.oK ? true : false;
-      } else if (rsp.getMinor() == int.parse(Admin.insertUserRecordReq)) {
+      } else if (rsp.getMinor() == int.parse(Admin.insertRecordOfUserReq)) {
         hasInsertUserRecord = rsp.getCode() == Code.oK ? true : false;
-      } else if (rsp.getMinor() == int.parse(Admin.softDeleteUserRecordReq)) {
+      } else if (rsp.getMinor() == int.parse(Admin.softDeleteRecordOfUserReq)) {
         hasSoftDeleteUserRecord = rsp.getCode() == Code.oK ? true : false;
       }
       curStage++;
@@ -349,7 +349,7 @@ class _State extends State<User> {
                           ElevatedButton.icon(
                             icon: const Icon(Icons.add),
                             onPressed: () async {
-                              showInsertUserDialog(context);
+                              showInsertRecordOfUserDialog(context);
                             },
                             label: Text(
                               Translator.translate(Language.newUser),
@@ -479,7 +479,7 @@ class Source extends DataTableSource {
                 icon: const Icon(Icons.edit),
                 tooltip: Translator.translate(Language.update),
                 onPressed: () async {
-                  showUpdateUserDialog(context, userList.getBody()[index]);
+                  showUpdateRecordOfUserDialog(context, userList.getBody()[index]);
                 },
               ),
               if (hasSoftDeleteUserRecord)
@@ -487,7 +487,7 @@ class Source extends DataTableSource {
                   icon: const Icon(Icons.delete),
                   tooltip: Translator.translate(Language.remove),
                   onPressed: () async {
-                    await showRemoveUserDialog(context, userList.getBody()[index]).then(
+                    await showSoftDeleteRecordOfUserDialog(context, userList.getBody()[index]).then(
                       (value) => () {
                         // print('value: $value');
                         if (value) {

@@ -20,7 +20,7 @@ void updateUserRecord({
     from: from,
     caller: caller,
     major: Major.admin,
-    minor: Admin.updateUserRecordReq,
+    minor: Admin.updateRecordOfUserReq,
     body: UpdateUserRecordReq.construct(
       userId: userId,
       name: name,
