@@ -15,6 +15,7 @@ import 'package:flutter_framework/dashboard/dialog/update_record_of_advertisemen
 import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
+import 'package:flutter_framework/dashboard/local/image_item.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -455,20 +456,51 @@ class Source extends DataTableSource {
   @override
   int get selectedRowCount => 0;
 
-  String getCoverImageUrl(String image) {
+  String getImageUrl(String imageField, String ossPath) {
     String output = '';
     try {
-
+      var imageItem = ImageItem.fromRemote(imageField, ossPath);
+      output = imageItem.getUrl();
     } catch (e) {
-      print('Advertisement.Source.getCoverImageUrl failure, err: $e');
+      print('Advertisement.Source.getImageUrl failure, err: $e');
     }
     return output;
   }
 
-  List<String> getImageUrlList(String image) {
+  List<String> getImageUrlList({
+    required String first,
+    required String second,
+    required String third,
+    required String fourth,
+    required String fifth,
+    required String ossPath,
+  }) {
     List<String> output = [];
     try {
+      if (first.isEmpty) {
+        return output;
+      }
+      output.add(getImageUrl(first, ossPath));
 
+      if (second.isEmpty) {
+        return output;
+      }
+      output.add(getImageUrl(second, ossPath));
+
+      if (third.isEmpty) {
+        return output;
+      }
+      output.add(getImageUrl(third, ossPath));
+
+      if (fourth.isEmpty) {
+        return output;
+      }
+      output.add(getImageUrl(fourth, ossPath));
+
+      if (fifth.isEmpty) {
+        return output;
+      }
+      output.add(getImageUrl(fifth, ossPath));
     } catch (e) {
       print('Advertisement.Source.getImageUrlList failure, err: $e');
     }
@@ -490,7 +522,6 @@ class Source extends DataTableSource {
     Text status = Text(Translator.translate(Language.loading));
     var image = Translator.translate(Language.loading);
     var key = idList[index];
-    var coverImageUrl = '';
     List<String> imageUrlList = [];
 
     if (boolMap.containsKey(key)) {
@@ -515,13 +546,8 @@ class Source extends DataTableSource {
                   color: Colors.red,
                 ));
         idOfProduct = dataMap[key]!.getProductId().toString();
-        // image = dataMap[key]!.getImage().toString();
         sellingPoints = dataMap[key]!.getSellingPoints();
         sellingPriceOfAdvertisement = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
-        if (image.isNotEmpty) {
-          coverImageUrl = getCoverImageUrl(dataMap[key]!.getCoverImage());
-          imageUrlList = getImageUrlList(image);
-        }
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
@@ -585,6 +611,8 @@ class Source extends DataTableSource {
             onPressed: () {
               // show cover image
               // print('view cover image');
+              var coverImageUrl = getImageUrl(dataMap[key]!.getCoverImage(), dataMap[key]!.getOSSPath());
+              // print('coverImageUrl: $coverImageUrl');
               var ret = Uri.parse(coverImageUrl).isAbsolute;
               if (!ret) {
                 showWarningDialog(buildContext, Translator.translate(Language.urlIllegal));
@@ -601,7 +629,16 @@ class Source extends DataTableSource {
             onPressed: () {
               // show image
               // print('view image');
-              showViewNetworkImageGroupDialog(buildContext, imageUrlList);
+              showViewNetworkImageGroupDialog(
+                  buildContext,
+                  getImageUrlList(
+                    first: dataMap[key]!.getFirstImage(),
+                    second: dataMap[key]!.getSecondImage(),
+                    third: dataMap[key]!.getThirdImage(),
+                    fourth: dataMap[key]!.getFourthImage(),
+                    fifth: dataMap[key]!.getFifthImage(),
+                    ossPath: dataMap[key]!.getOSSPath(),
+                  ));
             },
           ),
         ),
