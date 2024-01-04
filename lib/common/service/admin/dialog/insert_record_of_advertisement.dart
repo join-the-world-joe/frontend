@@ -15,7 +15,7 @@ import 'package:flutter_framework/common/service/oss/progress/fetch_header_list_
 import 'package:flutter_framework/common/service/oss/progress/upload_image_list/upload_image_list_progress.dart';
 import 'package:flutter_framework/common/service/oss/progress/upload_image_list/upload_image_list_step.dart';
 import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list.dart';
-import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
+import 'package:flutter_framework/common/service/admin/dialog/fill_selling_point.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
 import 'package:flutter_framework/dashboard/local/image_item.dart';
 import 'package:flutter_framework/dashboard/model/advertisement.dart';
@@ -485,10 +485,6 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                         showViewImageDialog(context, coverImage!.getData());
                       }
                     },
-                    // onDeleted: () {
-                    //   sellingPoints.remove(element);
-                    //   curStage++;
-                    // },
                     backgroundColor: Colors.green,
                     // selectedColor: Colors.green,
                     elevation: 6.0,

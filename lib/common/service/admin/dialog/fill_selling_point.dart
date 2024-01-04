@@ -7,7 +7,7 @@ import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import '../config/config.dart';
+import '../../../../dashboard/config/config.dart';
 
 Future<String> showFillSellingPointDialog(BuildContext context) async {
   bool closed = false;

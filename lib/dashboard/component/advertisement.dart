@@ -11,7 +11,7 @@ import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/common/service/admin/dialog/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/common/service/admin/dialog/remove_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
-import 'package:flutter_framework/dashboard/dialog/update_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/dialog/update_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
