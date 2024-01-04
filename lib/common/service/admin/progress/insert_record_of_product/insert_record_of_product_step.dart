@@ -47,14 +47,6 @@ class InsertRecordOfProductStep {
     _responded = true;
   }
 
-  void skip() {
-    _requested = true;
-    _responded = true;
-    _rsp = InsertRecordOfProductRsp.fromJson({
-      "body": {"code": Code.oK}
-    });
-  }
-
   bool timeout() {
     if (!_responded && DateTime.now().isAfter(_requestTime.add(_defaultTimeout))) {
       return true;

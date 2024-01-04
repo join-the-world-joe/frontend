@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter_framework/dashboard/config/config.dart';
@@ -48,6 +49,22 @@ class ImageItem {
 
   String getNativeFileName() {
     return _nativeFileName;
+  }
+
+  static String transToImageField(ImageItem? item) {
+    var output = '';
+    try {
+      Map<String, String> temp = {};
+      if (item != null) {
+        temp['width'] = item.getWidth().toString();
+        temp['height'] = item.getHeight().toString();
+        temp['object_file_name'] = item.getObjectFileName();
+        output = jsonEncode(temp);
+      }
+    } catch (e) {
+      print('ImageItem.genImageField failure, e: $e');
+    }
+    return output;
   }
 
   ImageItem.construct({

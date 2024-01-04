@@ -183,6 +183,7 @@ class Language {
   static String tryingToUpdateRecordOfProduct = 'trying to update record of product';
   static String tryingToFetchHeaderListOfOSSObjectFile = 'trying to fetch header list of oss object file';
   static String tryingToUploadImageList = 'trying to upload image list';
+  static String tryingToInsertRecordOfAdvertisement = 'trying to insert record of advertisement';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';

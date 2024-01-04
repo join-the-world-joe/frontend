@@ -52,11 +52,9 @@ class FetchHeaderListOfObjectFileListStep {
       if (_responded) {
         if (_rsp != null) {
           if (_rsp!.getCode() == Code.oK) {
-            print('ok');
             return Code.oK;
           }
         }
-        print('not ok');
         return Code.internalError;
       }
     }

@@ -10,10 +10,10 @@ import 'package:flutter_framework/runtime/runtime.dart';
 class InsertRecordOfAdvertisementProgress {
   late String _message;
   int _result = Code.internalError;
-  late InsertRecordOfAdvertisementStep _stepOfInsertRecord;
+  late InsertRecordOfAdvertisementStep _step;
 
-  void respondOfInsertRecord(InsertRecordOfAdvertisementRsp rsp) {
-  _stepOfInsertRecord.respond(rsp);
+  void respond(InsertRecordOfAdvertisementRsp rsp) {
+    _step.respond(rsp);
   }
 
   InsertRecordOfAdvertisementProgress.construct({
@@ -21,7 +21,7 @@ class InsertRecordOfAdvertisementProgress {
     required InsertRecordOfAdvertisementStep step,
     required String message,
   }) {
-  _stepOfInsertRecord = step;
+    _step = step;
     _result = result;
     _message = message;
   }
@@ -30,7 +30,7 @@ class InsertRecordOfAdvertisementProgress {
     required BuildContext context,
   }) async {
     void progress() {
-      var ret = _stepOfInsertRecord.progress();
+      var ret = _step.progress();
       if (ret < 0) {
         Navigator.pop(context);
         return;
@@ -66,7 +66,7 @@ class InsertRecordOfAdvertisementProgress {
         );
       },
     ).then(
-          (value) {
+      (value) {
         Runtime.setPeriod(Config.periodOfScreenNormal);
         Runtime.setPeriodic(null);
         return _result;

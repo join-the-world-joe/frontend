@@ -6,16 +6,19 @@ import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/oss.dart';
 import 'package:flutter_framework/common/route/product.dart';
+import 'package:flutter_framework/common/service/admin/progress/insert_record_of_advertisement/insert_record_of_advertisement_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/insert_record_of_advertisement/insert_record_of_advertisement_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/fetch_records_of_product.dart';
+import 'package:flutter_framework/common/service/advertisement/protocol/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/common/service/oss/progress/fetch_header_list_of_object_file_list/fetch_header_list_of_object_file_list_progress.dart';
 import 'package:flutter_framework/common/service/oss/progress/fetch_header_list_of_object_file_list/fetch_header_list_of_object_file_list_step.dart';
 import 'package:flutter_framework/common/service/oss/progress/upload_image_list/upload_image_list_progress.dart';
 import 'package:flutter_framework/common/service/oss/progress/upload_image_list/upload_image_list_step.dart';
 import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list.dart';
 import 'package:flutter_framework/dashboard/dialog/fill_selling_point.dart';
-import 'package:flutter_framework/common/service/admin/dialog/insert_record_of_advertisement_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
 import 'package:flutter_framework/dashboard/local/image_item.dart';
+import 'package:flutter_framework/dashboard/model/advertisement.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
@@ -61,6 +64,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
   Map<String, ObjectFileRequestHeader> requestHeader = {}; // key: object file name
   FetchHeaderListOfObjectFileListProgress? fetchHeaderListOfObjectFileListProgress;
   UploadImageListProgress? uploadImageListProgress;
+  InsertRecordOfAdvertisementProgress? insertRecordOfAdvertisementProgress;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -201,6 +205,33 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
     } finally {}
   }
 
+  void insertRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'insertRecordOfAdvertisementHandler';
+    try {
+      var rsp = InsertRecordOfAdvertisementRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}, advertisementId: ${rsp.getAdvertisementId()}',
+      );
+      // advertisementId = rsp.getAdvertisementId();
+      if (insertRecordOfAdvertisementProgress != null) {
+        insertRecordOfAdvertisementProgress!.respond(rsp);
+      }
+    } catch (e) {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
+      return;
+    }
+  }
+
   void observe(PacketClient packet) {
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
@@ -214,7 +245,9 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
         caller: caller,
         message: 'responded',
       );
-      if (major == Major.oss && minor == OSS.fetchHeaderListOfObjectFileListOfAdvertisementRsp) {
+      if (major == Major.admin && minor == Admin.insertRecordOfAdvertisementRsp) {
+        insertRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.oss && minor == OSS.fetchHeaderListOfObjectFileListOfAdvertisementRsp) {
         fetchHeaderListOfObjectFileListHandler(major: major, minor: minor, body: body);
       } else if (major == Major.product && minor == Product.fetchRecordsOfProductRsp) {
         fetchRecordsOfProductHandler(major: major, minor: minor, body: body);
@@ -911,73 +944,86 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                   step: step,
                   message: Translator.translate(Language.tryingToFetchHeaderListOfOSSObjectFile),
                 );
-                var code = await fetchHeaderListOfObjectFileListProgress!.show(context: context);
-                if (code != Code.oK) {
-                  print('获取oss校验头失败');
-                  fetchHeaderListOfObjectFileListProgress = null;
-                  return;
-                }
-
-                if (uploadImageListProgress == null) {
-                  var step = UploadImageListStep.construct(
-                    ossHost: ossHost,
-                    requestHeader: requestHeader,
-                    objectDataMapping: objectDataMapping,
-                  );
-                  uploadImageListProgress = UploadImageListProgress.construct(
-                    result: -1,
-                    step: step,
-                    message: Translator.translate(Language.tryingToUploadImageList),
-                  );
-                  var code = await uploadImageListProgress!.show(context: context);
-                  if (code != Code.oK) {
-                    print('上传图片失败');
-                    uploadImageListProgress = null;
-                    fetchHeaderListOfObjectFileListProgress = null;
-                    return;
+                await fetchHeaderListOfObjectFileListProgress!.show(context: context).then((value) {
+                  if (value != Code.oK) {
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      '${Translator.translate(Language.failureWithErrorCode)}  $value',
+                    );
+                  } else {
+                    var step = UploadImageListStep.construct(
+                      ossHost: ossHost,
+                      requestHeader: requestHeader,
+                      objectDataMapping: objectDataMapping,
+                    );
+                    uploadImageListProgress = UploadImageListProgress.construct(
+                      result: -2,
+                      step: step,
+                      message: Translator.translate(Language.tryingToUploadImageList),
+                    );
+                    uploadImageListProgress!.show(context: context).then((value) {
+                      if (value != Code.oK) {
+                        showMessageDialog(
+                          context,
+                          Translator.translate(Language.titleOfNotification),
+                          '${Translator.translate(Language.failureWithErrorCode)}  $value',
+                        );
+                        return;
+                      }
+                      var step = InsertRecordOfAdvertisementStep.construct(
+                          result: -3,
+                          record: Advertisement.construct(
+                            id: 0,
+                            name: nameController.text,
+                            title: titleController.text,
+                            placeOfOrigin: placeOfOriginController.text,
+                            sellingPoints: sellingPoints,
+                            coverImage: ImageItem.transToImageField(coverImage),
+                            firstImage: ImageItem.transToImageField(firstImage),
+                            secondImage: ImageItem.transToImageField(secondImage),
+                            thirdImage: ImageItem.transToImageField(thirdImage),
+                            fourthImage: ImageItem.transToImageField(fourthImage),
+                            fifthImage: ImageItem.transToImageField(fifthImage),
+                            status: 1,
+                            ossPath: commonOSSPath,
+                            stock: int.parse(stockController.text),
+                            productId: int.parse(productIdController.text),
+                            sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
+                            ossFolder: ossFolder,
+                          ));
+                      insertRecordOfAdvertisementProgress = InsertRecordOfAdvertisementProgress.construct(
+                        result: -3,
+                        step: step,
+                        message: Translator.translate(Language.tryingToInsertRecordOfAdvertisement),
+                      );
+                      insertRecordOfAdvertisementProgress!.show(context: context).then((value) {
+                        if (value != Code.oK) {
+                          showMessageDialog(
+                            context,
+                            Translator.translate(Language.titleOfNotification),
+                            '${Translator.translate(Language.failureWithErrorCode)}  $value',
+                          );
+                          return;
+                        }
+                        showMessageDialog(
+                          context,
+                          Translator.translate(Language.titleOfNotification),
+                          Translator.translate(Language.insertRecordSuccessfully),
+                        ).then(
+                          (value) {
+                            Navigator.pop(context, null);
+                          },
+                        );
+                      });
+                    });
                   }
-                }
+                });
 
                 uploadImageListProgress = null;
+                insertRecordOfAdvertisementProgress = null;
                 fetchHeaderListOfObjectFileListProgress = null;
               }
-
-              // showInsertRecordOfAdvertisementProgressDialog(
-              //   context,
-              //   name: nameController.text,
-              //   title: titleController.text,
-              //   stock: int.parse(stockController.text),
-              //   productId: int.parse(productIdController.text),
-              //   placeOfOrigin: placeOfOriginController.text,
-              //   sellingPoints: sellingPoints,
-              //   sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
-              //   ossFolder: ossFolder,
-              //   coverImage: coverImage,
-              //   firstImage: firstImage,
-              //   secondImage: secondImage,
-              //   thirdImage: thirdImage,
-              //   fourthImage: fourthImage,
-              //   fifthImage: fifthImage,
-              // ).then((value) {
-              //   if (value == Code.oK) {
-              //     showMessageDialog(
-              //       context,
-              //       Translator.translate(Language.titleOfNotification),
-              //       Translator.translate(Language.insertRecordSuccessfully),
-              //     ).then(
-              //       (value) {
-              //         Navigator.pop(context, null);
-              //       },
-              //     );
-              //   } else {
-              //     // error occurs
-              //     showMessageDialog(
-              //       context,
-              //       Translator.translate(Language.titleOfNotification),
-              //       '${Translator.translate(Language.failureWithErrorCode)}  $value',
-              //     );
-              //   }
-              // });
             },
           ),
           // Spacing.AddVerticalSpace(50),

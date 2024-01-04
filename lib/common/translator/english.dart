@@ -181,11 +181,12 @@ class English {
     Language.removeOperationFailure: 'Remove Operation Fail',
     Language.operationTimeout: 'Timeout',
     Language.tryingToSignIn: 'Sign In....',
-    Language.tryingToInsertRecordOfProduct: 'Inert Record....',
+    Language.tryingToInsertRecordOfProduct: 'Inert Product....',
     Language.tryingToSoftDeleteRecordOfProduct: 'Remove Record....',
     Language.tryingToUpdateRecordOfProduct: 'Update Record....',
     Language.tryingToFetchHeaderListOfOSSObjectFile: 'Fetch OSS Header....',
-    Language.tryingToUploadImageList : 'Upload Image....',
+    Language.tryingToUploadImageList: 'Upload Image....',
+    Language.tryingToInsertRecordOfAdvertisement: 'Insert Advertisement',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',

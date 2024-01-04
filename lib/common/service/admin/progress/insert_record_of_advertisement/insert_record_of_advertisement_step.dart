@@ -8,29 +8,28 @@ import 'package:flutter_framework/dashboard/model/advertisement.dart';
 
 class InsertRecordOfAdvertisementStep {
   String from = 'InsertRecordOfAdvertisementStep';
+  int _result = Code.internalError;
   DateTime _requestTime = DateTime.now();
   bool _requested = false;
   bool _responded = false;
   final Duration _defaultTimeout = Config.httpDefaultTimeout;
   InsertRecordOfAdvertisementRsp? _rsp;
-  bool _skip = false;
   Advertisement? _record;
 
   InsertRecordOfAdvertisementStep.construct({
+    required int result,
     required Advertisement record,
   }) {
     _rsp = null;
     _requested = false;
     _responded = false;
+    _result = result;
+    _record = record;
   }
 
   void respond(InsertRecordOfAdvertisementRsp rsp) {
     _rsp = rsp;
     _responded = true;
-  }
-
-  void skip() {
-    _skip = true;
   }
 
   bool timeout() {
@@ -42,9 +41,6 @@ class InsertRecordOfAdvertisementStep {
 
   int progress() {
     var caller = 'progress';
-    if (_skip) {
-      return Code.oK;
-    }
     if (!_requested) {
       _requestTime = DateTime.now();
       insertRecordOfAdvertisement(
@@ -79,7 +75,7 @@ class InsertRecordOfAdvertisementStep {
             return Code.oK;
           }
         }
-        return Code.internalError;
+        return _result;
       }
     }
     return Code.internalError * -1;

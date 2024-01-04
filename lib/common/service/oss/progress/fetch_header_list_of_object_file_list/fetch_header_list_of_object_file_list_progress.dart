@@ -9,14 +9,9 @@ class FetchHeaderListOfObjectFileListProgress {
   late String _message;
   int _result = Code.internalError;
   late FetchHeaderListOfObjectFileListStep _step;
-  bool _skip = false;
 
   void respond(FetchHeaderListOfObjectFileListRsp rsp) {
     _step.respond(rsp);
-  }
-
-  void skip() {
-    _skip = true;
   }
 
   FetchHeaderListOfObjectFileListProgress.construct({
@@ -33,11 +28,6 @@ class FetchHeaderListOfObjectFileListProgress {
     required BuildContext context,
   }) async {
     void progress() {
-      print('progress');
-      if (_skip) {
-        _result = Code.oK;
-        Navigator.pop(context);
-      }
       var ret = _step.progress();
       if (ret < 0) {
         Navigator.pop(context);

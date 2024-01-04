@@ -9,7 +9,6 @@ import 'package:flutter_framework/utils/api.dart';
 class UploadImageListStep {
   String from = 'UploadImageListStep';
   bool _requested = false;
-  bool _skip = false;
   String _ossHost = '';
   Map<String, ObjectFileRequestHeader> _requestHeader = {};
   Map<String, Uint8List> _objectDataMapping = {};
@@ -41,15 +40,7 @@ class UploadImageListStep {
     _ossHost = host;
   }
 
-  void skip() {
-    _skip = true;
-    _requested = false;
-  }
-
   int progress() {
-    if (_skip) {
-      return Code.oK;
-    }
     if (!_requested) {
       _objectDataMapping.forEach(
         (key, value) {

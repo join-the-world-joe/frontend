@@ -186,6 +186,7 @@ class Chinese {
     Language.tryingToUpdateRecordOfProduct: '尝试更新商品记录....',
     Language.tryingToFetchHeaderListOfOSSObjectFile: '尝试获取OSS校验头....',
     Language.tryingToUploadImageList : '尝试上传图片至OSS....',
+    Language.tryingToInsertRecordOfAdvertisement: '尝试插入广告记录....',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',
