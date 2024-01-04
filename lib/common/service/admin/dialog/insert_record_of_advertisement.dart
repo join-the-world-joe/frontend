@@ -8,7 +8,7 @@ import 'package:flutter_framework/common/route/oss.dart';
 import 'package:flutter_framework/common/route/product.dart';
 import 'package:flutter_framework/common/service/admin/progress/insert_record_of_advertisement/insert_record_of_advertisement_progress.dart';
 import 'package:flutter_framework/common/service/admin/progress/insert_record_of_advertisement/insert_record_of_advertisement_step.dart';
-import 'package:flutter_framework/common/service/admin/protocol/fetch_records_of_product.dart';
+import 'package:flutter_framework/common/service/product/protocol/fetch_records_of_product.dart';
 import 'package:flutter_framework/common/service/advertisement/protocol/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/common/service/oss/progress/fetch_header_list_of_object_file_list/fetch_header_list_of_object_file_list_progress.dart';
 import 'package:flutter_framework/common/service/oss/progress/fetch_header_list_of_object_file_list/fetch_header_list_of_object_file_list_step.dart';
@@ -27,7 +27,7 @@ import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import '../../../../dashboard/config/config.dart';
-import 'package:flutter_framework/common/service/admin/business/fetch_records_of_product.dart';
+import 'package:flutter_framework/common/service/product/business/fetch_records_of_product.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:uuid/uuid.dart';
 

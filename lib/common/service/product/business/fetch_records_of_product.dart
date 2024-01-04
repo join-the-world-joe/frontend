@@ -1,6 +1,6 @@
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/product.dart';
-import 'package:flutter_framework/common/service/admin/protocol/fetch_records_of_product.dart';
+import 'package:flutter_framework/common/service/product/protocol/fetch_records_of_product.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 void fetchRecordsOfProduct({
