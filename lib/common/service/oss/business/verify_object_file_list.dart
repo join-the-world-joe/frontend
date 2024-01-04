@@ -1,13 +1,13 @@
 import 'dart:typed_data';
-import 'package:flutter_framework/common/service/oss/protocol/verify_object_file_list_of_advertisement.dart';
 import 'package:flutter_framework/common/route/oss.dart';
+import 'package:flutter_framework/common/service/oss/protocol/verify_object_file_list.dart';
 import '../../../route/major.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 void verifyObjectFileListOfAdvertisement({
   required String from,
   required String caller,
-  required int advertisementId,
+  required String ossFolder,
   required List<String> nameListOfObjectFile,
 }) {
   Runtime.request(
@@ -15,8 +15,8 @@ void verifyObjectFileListOfAdvertisement({
     caller: caller,
     major: Major.oss,
     minor: OSS.verifyObjectFileListOfAdvertisementReq,
-    body: VerifyObjectFileListOfAdvertisementReq.construct(
-      advertisementId: advertisementId,
+    body: VerifyObjectFileListReq.construct(
+      ossFolder: ossFolder,
       nameListOfObjectFile: nameListOfObjectFile,
     ),
   );

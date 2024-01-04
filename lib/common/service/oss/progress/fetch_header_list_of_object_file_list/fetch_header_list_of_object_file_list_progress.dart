@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/service/admin/progress/insert_record_of_advertisement/insert_record_of_advertisement_step.dart';
-import 'package:flutter_framework/common/service/admin/progress/insert_record_of_product/insert_record_of_product_step.dart';
-import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_product.dart';
-import 'package:flutter_framework/common/service/advertisement/protocol/insert_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/oss/progress/fetch_header_list_of_object_file_list/fetch_header_list_of_object_file_list_step.dart';
+import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
-class InsertRecordOfAdvertisementProgress {
+class FetchHeaderListOfObjectFileListProgress {
   late String _message;
   int _result = Code.internalError;
-  late InsertRecordOfAdvertisementStep _stepOfInsertRecord;
+  late FetchHeaderListOfObjectFileListStep _step;
+  bool _skip = false;
 
-  void respondOfInsertRecord(InsertRecordOfAdvertisementRsp rsp) {
-  _stepOfInsertRecord.respond(rsp);
+  void respond(FetchHeaderListOfObjectFileListRsp rsp) {
+    _step.respond(rsp);
   }
 
-  InsertRecordOfAdvertisementProgress.construct({
+  void skip() {
+    _skip = true;
+  }
+
+  FetchHeaderListOfObjectFileListProgress.construct({
     required int result,
-    required InsertRecordOfAdvertisementStep step,
+    required FetchHeaderListOfObjectFileListStep step,
     required String message,
   }) {
-  _stepOfInsertRecord = step;
+    _step = step;
     _result = result;
     _message = message;
   }
@@ -30,7 +33,12 @@ class InsertRecordOfAdvertisementProgress {
     required BuildContext context,
   }) async {
     void progress() {
-      var ret = _stepOfInsertRecord.progress();
+      print('progress');
+      if (_skip) {
+        _result = Code.oK;
+        Navigator.pop(context);
+      }
+      var ret = _step.progress();
       if (ret < 0) {
         Navigator.pop(context);
         return;

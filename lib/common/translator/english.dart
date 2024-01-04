@@ -184,6 +184,8 @@ class English {
     Language.tryingToInsertRecordOfProduct: 'Inert Record....',
     Language.tryingToSoftDeleteRecordOfProduct: 'Remove Record....',
     Language.tryingToUpdateRecordOfProduct: 'Update Record....',
+    Language.tryingToFetchHeaderListOfOSSObjectFile: 'Fetch OSS Header....',
+    Language.tryingToUploadImageList : 'Upload Image....',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',

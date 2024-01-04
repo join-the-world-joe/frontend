@@ -8,7 +8,7 @@ import 'dart:convert';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
-import 'package:flutter_framework/dashboard/dialog/insert_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/dialog/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/remove_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/update_record_of_advertisement.dart';

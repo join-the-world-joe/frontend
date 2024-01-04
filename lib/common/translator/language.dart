@@ -181,6 +181,8 @@ class Language {
   static String tryingToInsertRecordOfProduct = 'trying to insert record of product';
   static String tryingToSoftDeleteRecordOfProduct = 'trying to soft delete record of product';
   static String tryingToUpdateRecordOfProduct = 'trying to update record of product';
+  static String tryingToFetchHeaderListOfOSSObjectFile = 'trying to fetch header list of oss object file';
+  static String tryingToUploadImageList = 'trying to upload image list';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';

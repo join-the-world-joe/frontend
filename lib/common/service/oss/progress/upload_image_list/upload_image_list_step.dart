@@ -1,60 +1,32 @@
 import 'dart:typed_data';
+
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/service/oss/business/fetch_header_list_of_object_file_list.dart';
 import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/utils/api.dart';
 
-/*
-three possible stage; requested, timeout, responded()
- */
-class UploadImageListProgress {
-  String from = 'UploadImageListProgress';
-  int _result = -1;
-  DateTime _requestTime = DateTime.now();
+class UploadImageListStep {
+  String from = 'UploadImageListStep';
   bool _requested = false;
-  bool _finished = false;
+  bool _skip = false;
+  String _ossHost = '';
+  Map<String, ObjectFileRequestHeader> _requestHeader = {};
+  Map<String, Uint8List> _objectDataMapping = {};
   int _imageCount = 0;
   int _failureCount = 0;
   int _totalImageCount = 0;
-  Map<String, Uint8List> _objectDataMapping = {};
-  String _ossHost = '';
-  Map<String, ObjectFileRequestHeader> _requestHeader = {};
 
-  UploadImageListProgress.construct({
-    required int result,
+  UploadImageListStep.construct({
     required String ossHost,
     required Map<String, ObjectFileRequestHeader> requestHeader,
     required Map<String, Uint8List> objectDataMapping,
   }) {
     _ossHost = ossHost;
     _requested = false;
-    _finished = false;
-    _result = result;
     _requestHeader = requestHeader;
     _objectDataMapping = objectDataMapping;
     _totalImageCount = _objectDataMapping.length;
-  }
-
-  int result() {
-    return _result;
-  }
-
-  void skip() {
-    print('skip UploadImageListProgress');
-    _result = 0;
-    _requested = true;
-    _finished = true;
-    _imageCount = 0;
-    _failureCount = 0;
-    _totalImageCount = 0;
-  }
-
-  bool finished() {
-    return _finished;
-  }
-
-  void setOSSHost(String host) {
-    _ossHost = host;
   }
 
   void setRequestHeader(Map<String, ObjectFileRequestHeader> requestHeader) {
@@ -65,12 +37,22 @@ class UploadImageListProgress {
     _objectDataMapping = objectDataMapping;
   }
 
+  void setOSSHost(String host) {
+    _ossHost = host;
+  }
+
+  void skip() {
+    _skip = true;
+    _requested = false;
+  }
+
   int progress() {
-    var caller = 'progress';
+    if (_skip) {
+      return Code.oK;
+    }
     if (!_requested) {
-      _requestTime = DateTime.now();
       _objectDataMapping.forEach(
-            (key, value) {
+        (key, value) {
           API
               .put(
             scheme: 'https://',
@@ -85,7 +67,8 @@ class UploadImageListProgress {
               "x-oss-date": _requestHeader[key]!.getXOssDate(),
             },
             body: value,
-          ).then((value){
+          )
+              .then((value) {
             if (value.getCode() == Code.oK) {
               _imageCount++;
             } else {
@@ -99,15 +82,12 @@ class UploadImageListProgress {
     if (_requested) {
       if (_imageCount + _failureCount == _totalImageCount) {
         if (_failureCount == 0) {
-          _result = Code.oK;
+          return Code.oK;
         }
-        _finished = true;
+        return Code.internalError;
       }
-      if (!_finished && DateTime.now().isAfter(_requestTime.add(Duration(seconds: Config.httpDefaultTimeoutInSecond * _totalImageCount)))) {
-        _finished = true;
-        return _result;
-      }
+      return Code.internalError * -1;
     }
-    return _result * -1;
+    return Code.internalError * -1;
   }
 }

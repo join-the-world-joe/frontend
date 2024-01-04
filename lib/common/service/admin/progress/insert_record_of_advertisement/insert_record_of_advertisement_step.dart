@@ -1,7 +1,10 @@
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/service/admin/business/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/common/service/admin/business/insert_record_of_product.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_product.dart';
+import 'package:flutter_framework/common/service/advertisement/protocol/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
+import 'package:flutter_framework/dashboard/model/advertisement.dart';
 
 class InsertRecordOfAdvertisementStep {
   String from = 'InsertRecordOfAdvertisementStep';
@@ -9,45 +12,25 @@ class InsertRecordOfAdvertisementStep {
   bool _requested = false;
   bool _responded = false;
   final Duration _defaultTimeout = Config.httpDefaultTimeout;
-  InsertRecordOfProductRsp? _rsp;
-  String _name = '';
-  String _vendor = '';
-  String _contact = '';
-  int _buyingPrice = 0;
+  InsertRecordOfAdvertisementRsp? _rsp;
+  bool _skip = false;
+  Advertisement? _record;
 
-  InsertRecordOfAdvertisementStep.construct() {
+  InsertRecordOfAdvertisementStep.construct({
+    required Advertisement record,
+  }) {
     _rsp = null;
     _requested = false;
     _responded = false;
   }
 
-  void setName(String name) {
-    _name = name;
-  }
-
-  void setVendor(String vendor) {
-    _vendor = vendor;
-  }
-
-  void setContact(String contact) {
-    _contact = contact;
-  }
-
-  void setBuyingPrice(int buyingPrice) {
-    _buyingPrice = buyingPrice;
-  }
-
-  void respond(InsertRecordOfProductRsp rsp) {
+  void respond(InsertRecordOfAdvertisementRsp rsp) {
     _rsp = rsp;
     _responded = true;
   }
 
   void skip() {
-    _requested = true;
-    _responded = true;
-    _rsp = InsertRecordOfProductRsp.fromJson({
-      "body": {"code": Code.oK}
-    });
+    _skip = true;
   }
 
   bool timeout() {
@@ -59,15 +42,29 @@ class InsertRecordOfAdvertisementStep {
 
   int progress() {
     var caller = 'progress';
+    if (_skip) {
+      return Code.oK;
+    }
     if (!_requested) {
       _requestTime = DateTime.now();
-      insertRecordOfProduct(
+      insertRecordOfAdvertisement(
         from: from,
         caller: caller,
-        name: _name,
-        vendor: _vendor,
-        contact: _contact,
-        buyingPrice: _buyingPrice,
+        name: _record!.getName(),
+        title: _record!.getTitle(),
+        sellingPrice: _record!.getSellingPrice(),
+        sellingPoints: _record!.getSellingPoints(),
+        coverImage: _record!.getCoverImage(),
+        firstImage: _record!.getFirstImage(),
+        secondImage: _record!.getSecondImage(),
+        thirdImage: _record!.getThirdImage(),
+        fourthImage: _record!.getFourthImage(),
+        fifthImage: _record!.getFifthImage(),
+        placeOfOrigin: _record!.getPlaceOfOrigin(),
+        stock: _record!.getStock(),
+        productId: _record!.getProductId(),
+        ossFolder: _record!.getOSSFolder(),
+        ossPath: _record!.getOSSPath(),
       );
       _requested = true;
     }

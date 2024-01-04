@@ -3,11 +3,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/progress/fetch_header_list_of_object_file_list_of_advertisement_progress.dart';
+import 'package:flutter_framework/common/progress/fetch_header_list_of_object_file_list_progress.dart';
 import 'package:flutter_framework/common/progress/remove_list_of_object_file_progress.dart';
 import 'package:flutter_framework/common/progress/upgrade_fields_of_advertisement_progress.dart';
 import 'package:flutter_framework/common/progress/upload_image_list_progress.dart';
 import 'package:flutter_framework/common/service/admin/protocol/update_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list.dart';
 import 'package:flutter_framework/common/service/oss/protocol/remove_list_of_object_file.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
@@ -19,7 +20,6 @@ import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import '../config/config.dart';
-import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list_of_advertisement.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter_framework/dashboard/local/image_item.dart';
 
@@ -59,7 +59,7 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
   bool hasFigureOutStep3Argument = false;
   bool hasFigureOutStep4Argument = false;
 
-  var step1 = FetchHeaderListOfObjectFileListOfAdvertisementProgress.construct(
+  var step1 = FetchHeaderListOfObjectFileListProgress.construct(
     result: -1,
     ossFolder: '', // later
     nameListOfFile: nameListOfFile, // later
@@ -108,7 +108,7 @@ Future<int> showUpdateRecordOfAdvertisementProgressDialog(
   fetchHeaderListOfObjectFileListOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
     var caller = 'fetchHeaderListOfObjectFileListOfAdvertisementHandler';
     try {
-      var rsp = FetchHeaderListOfObjectFileListOfAdvertisementRsp.fromJson(body);
+      var rsp = FetchHeaderListOfObjectFileListRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,

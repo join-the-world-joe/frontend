@@ -1,15 +1,14 @@
 import 'package:flutter_framework/app/config.dart';
 import 'package:flutter_framework/common/service/admin/business/insert_record_of_advertisement.dart';
-import 'package:flutter_framework/common/service/oss/business/fetch_header_list_of_object_file_list_of_advertisement.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list_of_advertisement.dart';
-import 'package:flutter_framework/dashboard/model/advertisement.dart';
+import 'package:flutter_framework/common/service/oss/business/fetch_header_list_of_object_file_list.dart';
+import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list.dart';
 
 /*
 three possible stage; requested, timeout, responded()
  */
-class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
-  String from = 'FetchHeaderListOfObjectFileListOfAdvertisementProgress';
+class FetchHeaderListOfObjectFileListProgress {
+  String from = 'FetchHeaderListOfObjectFileListProgress';
   int _result = -1;
   String _ossFolder = '';
   List<String> _nameListOfFile = [];
@@ -18,9 +17,9 @@ class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
   bool _responded = false;
   bool _finished = false;
   final Duration _defaultTimeout = Config.httpDefaultTimeout;
-  FetchHeaderListOfObjectFileListOfAdvertisementRsp? _rsp;
+  FetchHeaderListOfObjectFileListRsp? _rsp;
 
-  FetchHeaderListOfObjectFileListOfAdvertisementProgress.construct({
+  FetchHeaderListOfObjectFileListProgress.construct({
     required int result,
     required String ossFolder,
     required List<String> nameListOfFile,
@@ -42,8 +41,8 @@ class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
   }
 
   void skip() {
-    print('skip FetchHeaderListOfObjectFileListOfAdvertisementProgress');
-    _rsp = FetchHeaderListOfObjectFileListOfAdvertisementRsp.fromJson({"code": Code.oK});
+    print('skip FetchHeaderListOfObjectFileListProgress');
+    _rsp = FetchHeaderListOfObjectFileListRsp.fromJson({"code": Code.oK});
     _result = 0;
     _requested = true;
     _responded = true;
@@ -54,7 +53,7 @@ class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
     _nameListOfFile = nameListOfFile;
   }
 
-  void respond(FetchHeaderListOfObjectFileListOfAdvertisementRsp? rsp) {
+  void respond(FetchHeaderListOfObjectFileListRsp? rsp) {
     _rsp = rsp;
     _responded = true;
   }
@@ -66,10 +65,9 @@ class FetchHeaderListOfObjectFileListOfAdvertisementProgress {
   int progress() {
     var caller = 'progress';
     if (!_requested) {
-      fetchHeaderListOfObjectFileListOfAdvertisement(
+      fetchHeaderListOfObjectFileList(
         from: from,
         caller: caller,
-        ossFolder: _ossFolder,
         nameListOfFile: _nameListOfFile,
       );
       _responded = false;

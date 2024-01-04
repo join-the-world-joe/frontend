@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/progress/fetch_header_list_of_object_file_list_of_advertisement_progress.dart';
+import 'package:flutter_framework/common/progress/fetch_header_list_of_object_file_list_progress.dart';
 import 'package:flutter_framework/common/progress/insert_record_of_advertisement_progress.dart';
 import 'package:flutter_framework/common/progress/upgrade_fields_of_advertisement_progress.dart';
 import 'package:flutter_framework/common/progress/upload_image_list_progress.dart';
@@ -11,6 +11,8 @@ import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/oss.dart';
 import 'package:flutter_framework/common/service/admin/protocol/update_record_of_advertisement.dart';
 import 'package:flutter_framework/common/service/advertisement/protocol/insert_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/oss/progress/fetch_header_list_of_object_file_list/fetch_header_list_of_object_file_list_step.dart';
+import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list.dart';
 import 'package:flutter_framework/dashboard/local/image_item.dart';
 import 'package:flutter_framework/dashboard/model/advertisement.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -20,8 +22,7 @@ import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:image_picker_web/image_picker_web.dart';
-import '../config/config.dart';
-import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list_of_advertisement.dart';
+import '../../../../dashboard/config/config.dart';
 import 'package:path/path.dart' as path;
 
 /*
@@ -62,8 +63,6 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
   List<String> nameListOfFile = [];
   var oriObserve = Runtime.getObserve();
   Map<String, ObjectFileRequestHeader> requestHeader = {}; // key: object file name
-
-  String defaultImage = '';
   String information = '';
   double height = 100;
   double width = 200;
@@ -72,13 +71,17 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
   bool hasFigureOutStep2Argument = false;
   bool hasFigureOutStep4Argument = false;
 
+  bool hasFigureOutHeaderListArgument = false;
+  bool hasFigureOutUploadImageArgument = false;
+  FetchHeaderListOfObjectFileListProgress? fetchHeaderListOfObjectFileListProgress;
+  UploadImageListProgress? uploadImageListProgress;
+
   String genImageField(ImageItem item) {
     var output = '';
     try {
       Map<String, String> temp = {};
       temp['width'] = item.getWidth().toString();
       temp['height'] = item.getHeight().toString();
-      temp['url'] = item.getUrl();
       temp['object_file_name'] = item.getObjectFileName();
       output = jsonEncode(temp);
     } catch (e) {
@@ -87,7 +90,7 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
     return output;
   }
 
-  var step1 = FetchHeaderListOfObjectFileListOfAdvertisementProgress.construct(
+  var step1 = FetchHeaderListOfObjectFileListProgress.construct(
     result: -2,
     ossFolder: ossFolder,
     nameListOfFile: nameListOfFile,
@@ -116,12 +119,12 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
     ),
   );
 
-  // var step3 = UploadImageListProgress.construct(
-  //   result: -3,
-  //   ossHost: '',
-  //   requestHeader: requestHeader,
-  //   objectDataMapping: objectDataMapping,
-  // );
+  var step3 = UploadImageListProgress.construct(
+    result: -3,
+    ossHost: '',
+    requestHeader: requestHeader,
+    objectDataMapping: objectDataMapping,
+  );
 
   // var step4 = UpgradeFieldsOfAdvertisementProgress.construct(
   //   result: -4,
@@ -179,47 +182,7 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
     }
   }
 
-  fetchHeaderListOfObjectFileListOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'fetchHeaderListOfObjectFileListOfAdvertisementHandler';
-    try {
-      FetchHeaderListOfObjectFileListOfAdvertisementRsp rsp = FetchHeaderListOfObjectFileListOfAdvertisementRsp.fromJson(body);
-      Log.debug(
-        major: major,
-        minor: minor,
-        from: from,
-        caller: caller,
-        message: '',
-      );
-      if (rsp.getCode() == Code.oK) {
-        rsp.getRequestHeader().forEach((key, value) {
-          requestHeader[key] = value;
-        });
-        ossHost = rsp.getHost();
-        print('ossHost: $ossHost');
-        requestHeader.forEach(
-          (key, value) {
-            print('file: $key, value: ${value.toString()}');
-            if (objectDataMapping.containsKey(key)) {
-              print('size: ${objectDataMapping[key]!.length}');
-            }
-          },
-        );
-        commonOSSPath = rsp.getCommonPath();
-        step1.respond(rsp);
-      } else {
-        // error occurs
-      }
-    } catch (e) {
-      Log.debug(
-        major: major,
-        minor: minor,
-        from: from,
-        caller: caller,
-        message: 'failure, err: $e',
-      );
-      return;
-    } finally {}
-  }
+
 
   // void updateRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
   //   var caller = 'updateRecordOfAdvertisementHandler';
@@ -287,40 +250,63 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
   }
 
   void progress() {
-    if (!hasFigureOutNameListOfFile) {
+    if (!hasFigureOutHeaderListArgument) {
       figureOutNameListOfFile();
-      print('nameList: $nameListOfFile');
-      step1.setOSSFolder(ossFolder);
-      hasFigureOutNameListOfFile = true;
+      print('nameListOfFile: $nameListOfFile');
+      fetchHeaderListOfObjectFileListProgress = FetchHeaderListOfObjectFileListProgress.construct(
+        result: -1,
+        ossFolder: ossFolder,
+        nameListOfFile: nameListOfFile,
+      );
+      hasFigureOutHeaderListArgument = true;
     }
 
-    step1.progress();
-    if (!step1.finished()) {
-      return;
-    }
+    // if (!hasFigureOutUploadImageArgument) {
+    //   uploadImageListProgress = UploadImageListProgress.construct(
+    //     result: result,
+    //     ossHost: ossHost,
+    //     requestHeader: requestHeader,
+    //     objectDataMapping: objectDataMapping,
+    //   );
+    //   hasFigureOutUploadImageArgument = true;
+    // }
 
-    if (step1.result() < 0) {
-      result = step1.result();
-      Navigator.pop(context);
-      return;
-    }
-
-    if (!hasFigureOutStep2Argument) {
-      step2.setOSSFolder(ossFolder);
-      step2.setOSSPath(commonOSSPath);
-      hasFigureOutStep2Argument = true;
-    }
-
-    step2.progress();
-    if (!step2.finished()) {
-      return;
-    }
-
-    if (step2.result() < 0) {
-      result = step2.result();
-      Navigator.pop(context);
-      return;
-    }
+    result = 0;
+    Navigator.pop(context);
+    // if (!hasFigureOutNameListOfFile) {
+    //   figureOutNameListOfFile();
+    //   print('nameList: $nameListOfFile');
+    //   step1.setOSSFolder(ossFolder);
+    //   hasFigureOutNameListOfFile = true;
+    // }
+    //
+    // step1.progress();
+    // if (!step1.finished()) {
+    //   return;
+    // }
+    //
+    // if (step1.result() < 0) {
+    //   result = step1.result();
+    //   Navigator.pop(context);
+    //   return;
+    // }
+    //
+    // if (!hasFigureOutStep2Argument) {
+    //   step2.setOSSFolder(ossFolder);
+    //   step2.setOSSPath(commonOSSPath);
+    //   hasFigureOutStep2Argument = true;
+    // }
+    //
+    // step2.progress();
+    // if (!step2.finished()) {
+    //   return;
+    // }
+    //
+    // if (step2.result() < 0) {
+    //   result = step2.result();
+    //   Navigator.pop(context);
+    //   return;
+    // }
 
     // if (!hasFigureOutNameListOfFile && step1.finished()) {
     //   figureOutNameListOfFile();
@@ -389,8 +375,6 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
     //   return;
     // }
 
-    result = 0;
-    Navigator.pop(context);
     return;
   }
 
@@ -409,7 +393,7 @@ Future<int> showInsertRecordOfAdvertisementProgressDialog(BuildContext context,
         message: 'responded',
       );
       if (major == Major.oss && minor == OSS.fetchHeaderListOfObjectFileListOfAdvertisementRsp) {
-        fetchHeaderListOfObjectFileListOfAdvertisementHandler(major: major, minor: minor, body: body);
+        // fetchHeaderListOfObjectFileListOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.insertRecordOfAdvertisementRsp) {
         insertRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else if (major == Major.admin && minor == Admin.updateRecordOfAdvertisementRsp) {
