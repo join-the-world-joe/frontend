@@ -134,23 +134,23 @@ class _State extends State<Home> {
     var minor = packet.getHeader().getMinor();
     var body = packet.getBody();
     try {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Screen.home,
+        caller: caller,
+        message: 'Responded',
+      );
       if (major == Major.inform && minor == Inform.notification) {
+        notificationHandler(major: major, minor: minor, body: body);
+      } else {
         Log.debug(
           major: major,
           minor: minor,
           from: Screen.home,
           caller: caller,
-          message: 'Notification',
+          message: 'not matched',
         );
-        notificationHandler(major: major, minor: minor, body: body);
-      } else {
-        // Log.debug(
-        //   major: major,
-        //   minor: minor,
-        //   from: Screen.home,
-        //   caller: caller,
-        //   message: 'not matched',
-        // );
       }
       return;
     } catch (e) {

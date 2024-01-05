@@ -388,7 +388,7 @@ class _State extends State<SMSSignIn> {
                                 smsButtonLabel,
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 25.0,
+                                  fontSize: 18.0,
                                 ),
                               ),
                               onPressed: () {

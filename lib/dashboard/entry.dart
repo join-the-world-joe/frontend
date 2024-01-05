@@ -21,7 +21,7 @@ class _State extends State<Entry> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: bgColor,
+        scaffoldBackgroundColor: scaffoldBackgroundColor,
         // textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
         //     .apply(bodyColor: Colors.white),
         canvasColor: secondaryColor,
