@@ -4,6 +4,15 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/progress/upgrade_fields_of_advertisement_progress.dart';
+import 'package:flutter_framework/common/route/major.dart';
+import 'package:flutter_framework/common/route/oss.dart';
+import 'package:flutter_framework/common/service/oss/progress/fetch_header_list_of_object_file_list/fetch_header_list_of_object_file_list_progress.dart';
+import 'package:flutter_framework/common/service/oss/progress/fetch_header_list_of_object_file_list/fetch_header_list_of_object_file_list_step.dart';
+import 'package:flutter_framework/common/service/oss/progress/remove_list_of_object_file/remove_list_of_object_file_progress.dart';
+import 'package:flutter_framework/common/service/oss/progress/remove_list_of_object_file/remove_list_of_object_file_step.dart';
+import 'package:flutter_framework/common/service/oss/progress/upload_image_list/upload_image_list_progress.dart';
+import 'package:flutter_framework/common/service/oss/progress/upload_image_list/upload_image_list_step.dart';
 import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list.dart';
 import 'package:flutter_framework/dashboard/dialog/update_record_of_advertisement_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
@@ -31,6 +40,9 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
   bool closed = false;
   String from = 'showUpdateRecordOfAdvertisementDialog';
   List<String> sellingPoints = advertisement.getSellingPoints();
+
+  var ossHost = '';
+  var commonOSSPath = '';
 
   List<String> nameListOfFile = []; // object file to be uploaded
   List<String> objectFileToBeRemoved = [];
@@ -77,6 +89,11 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
   ImageItem? fourthImage = oriFourthImage;
   ImageItem? fifthImage = oriFifthImage;
 
+  FetchHeaderListOfObjectFileListProgress? fetchHeaderListOfObjectFileListProgress;
+  UploadImageListProgress? uploadImageListProgress;
+  UpgradeFieldsOfAdvertisementProgress? upgradeFieldsOfAdvertisementProgress;
+  RemoveListOfObjectFileProgress? removeListOfObjectFileProgress;
+
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
@@ -86,6 +103,49 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
         yield lastStage;
       }
     }
+  }
+
+  fetchHeaderListOfObjectFileListOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'fetchHeaderListOfObjectFileListOfAdvertisementHandler';
+    try {
+      var rsp = FetchHeaderListOfObjectFileListRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (rsp.getCode() == Code.oK) {
+        rsp.getRequestHeader().forEach((key, value) {
+          requestHeader[key] = value;
+        });
+        ossHost = rsp.getHost();
+        print('ossHost: $ossHost');
+        requestHeader.forEach((key, value) {
+          print('file: $key, value: ${value.toString()}');
+          if (objectDataMapping.containsKey(key)) {
+            print('size: ${objectDataMapping[key]!.length}');
+          }
+        });
+        commonOSSPath = rsp.getCommonPath();
+        print('commonOSSPath: $commonOSSPath}');
+        if (fetchHeaderListOfObjectFileListProgress != null) {
+          fetchHeaderListOfObjectFileListProgress!.respond(rsp);
+        }
+      } else {
+        // error occurs
+      }
+    } catch (e) {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
+      return;
+    } finally {}
   }
 
   void observe(PacketClient packet) {
@@ -100,17 +160,20 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
         minor: minor,
         from: from,
         caller: caller,
-        message: '',
+        message: 'responded',
       );
 
-      Log.debug(
-        major: major,
-        minor: minor,
-        from: from,
-        caller: caller,
-        message: 'not matched',
-      );
-
+      if (major == Major.oss && minor == OSS.fetchHeaderListOfObjectFileListOfAdvertisementRsp) {
+        fetchHeaderListOfObjectFileListOfAdvertisementHandler(major: major, minor: minor, body: body);
+      } else {
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: from,
+          caller: caller,
+          message: 'not matched',
+        );
+      }
       return;
     } catch (e) {
       Log.debug(
@@ -144,30 +207,71 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
     if (secondImage != null) {
       if (secondImage!.getNative()) {
         nameListOfFile.add(secondImage!.getObjectFileName());
-        objectFileToBeRemoved.add(oriSecondImage!.getObjectFileName());
+        if (oriSecondImage != null) {
+          objectFileToBeRemoved.add(oriSecondImage!.getObjectFileName());
+        }
         objectDataMapping[secondImage!.getObjectFileName()] = secondImage!.getData();
       }
       if (thirdImage != null) {
         if (thirdImage!.getNative()) {
           nameListOfFile.add(thirdImage!.getObjectFileName());
-          objectFileToBeRemoved.add(oriThirdImage!.getObjectFileName());
+          if (oriThirdImage != null) {
+            objectFileToBeRemoved.add(oriThirdImage!.getObjectFileName());
+          }
           objectDataMapping[thirdImage!.getObjectFileName()] = thirdImage!.getData();
         }
         if (fourthImage != null) {
           if (fourthImage!.getNative()) {
             nameListOfFile.add(fourthImage!.getObjectFileName());
-            objectFileToBeRemoved.add(oriFourthImage!.getObjectFileName());
+            if (oriFourthImage != null) {
+              objectFileToBeRemoved.add(oriFourthImage!.getObjectFileName());
+            }
             objectDataMapping[fourthImage!.getObjectFileName()] = fourthImage!.getData();
           }
           if (fifthImage != null) {
             if (fifthImage!.getNative()) {
               nameListOfFile.add(fifthImage!.getObjectFileName());
-              objectFileToBeRemoved.add(oriFifthImage!.getObjectFileName());
+              if (oriFifthImage != null) {
+                objectFileToBeRemoved.add(oriFifthImage!.getObjectFileName());
+              }
               objectDataMapping[fifthImage!.getObjectFileName()] = fifthImage!.getData();
             }
           }
         }
       }
+    }
+
+    if (secondImage == null && oriSecondImage != null) {
+      objectFileToBeRemoved.add(oriSecondImage.getObjectFileName());
+      if (oriThirdImage != null) {
+        objectFileToBeRemoved.add(oriThirdImage.getObjectFileName());
+      }
+      if (oriFourthImage != null) {
+        objectFileToBeRemoved.add(oriFourthImage.getObjectFileName());
+      }
+      if (oriFifthImage != null) {
+        objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
+      }
+    }
+
+    if (thirdImage == null && oriThirdImage != null) {
+      objectFileToBeRemoved.add(oriThirdImage.getObjectFileName());
+      if (oriFourthImage != null) {
+        objectFileToBeRemoved.add(oriFourthImage.getObjectFileName());
+      }
+      if (oriFifthImage != null) {
+        objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
+      }
+    }
+
+    if (fourthImage == null && oriFourthImage != null) {
+      objectFileToBeRemoved.add(oriFourthImage.getObjectFileName());
+      if (oriFifthImage != null) {
+        objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
+      }
+    }
+    if (fifthImage == null && oriFifthImage != null) {
+      objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
     }
   }
 
@@ -365,7 +469,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
               if (mediaInfo != null) {
                 coverImage = await ImageItem.fromMediaInfo(
                   mediaInfo: mediaInfo,
-                  prefix: Config.firstImagePrefix,
+                  prefix: Config.coverImagePrefix,
                   ossFolder: advertisement.getOSSFolder(),
                 );
                 curStage++;
@@ -568,10 +672,8 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
 
   List<Widget> secondImageComponentList() {
     List<Widget> widgets = [];
-    if (secondImage != null) {
-      widgets.add(secondImageComponent());
-      widgets.add(Spacing.addVerticalSpace(10));
-    }
+    widgets.add(secondImageComponent());
+    widgets.add(Spacing.addVerticalSpace(10));
     return widgets;
   }
 
@@ -652,7 +754,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
 
   List<Widget> thirdImageComponentList() {
     List<Widget> widgets = [];
-    if (secondImage != null && thirdImage != null) {
+    if (secondImage != null) {
       widgets.add(thirdImageComponent());
       widgets.add(Spacing.addVerticalSpace(10));
     }
@@ -736,7 +838,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
 
   List<Widget> fourthImageComponentList() {
     List<Widget> widgets = [];
-    if (secondImage != null && thirdImage != null && fourthImage != null) {
+    if (secondImage != null && thirdImage != null) {
       widgets.add(fourthImageComponent());
       widgets.add(Spacing.addVerticalSpace(10));
     }
@@ -820,7 +922,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
 
   List<Widget> fifthImageComponentList() {
     List<Widget> widgets = [];
-    if (secondImage != null && thirdImage != null && fourthImage != null && fifthImage != null) {
+    if (secondImage != null && thirdImage != null && fourthImage != null) {
       widgets.add(fifthImageComponent());
       widgets.add(Spacing.addVerticalSpace(10));
     }
@@ -880,6 +982,68 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
 
               print("name list of file: $nameListOfFile");
               print("object file to be removed: $objectFileToBeRemoved");
+
+              if (objectFileToBeRemoved.isNotEmpty) {
+                var step = RemoveListOfObjectFileStep.construct(
+                  listOfObjectFile: objectFileToBeRemoved,
+                );
+                removeListOfObjectFileProgress = RemoveListOfObjectFileProgress.construct(
+                  result: -1,
+                  step: step,
+                  message: Translator.translate(Language.attemptToRemoveListOfObjectFile),
+                );
+                removeListOfObjectFileProgress!.show(context: context).then((value) {
+                  if (value != Code.oK) {
+
+                  }
+                });
+              }
+
+              if (nameListOfFile.isNotEmpty) {
+                if (fetchHeaderListOfObjectFileListProgress == null) {
+                  var step = FetchHeaderListOfObjectFileListStep.construct();
+                  step.setNameListOfFile(nameListOfFile);
+                  fetchHeaderListOfObjectFileListProgress = FetchHeaderListOfObjectFileListProgress.construct(
+                    result: -1,
+                    step: step,
+                    message: Translator.translate(Language.attemptToFetchHeaderListOfOSSObjectFile),
+                  );
+                  await fetchHeaderListOfObjectFileListProgress!.show(context: context).then((value) {
+                    if (value != Code.oK) {
+                      showMessageDialog(
+                        context,
+                        Translator.translate(Language.titleOfNotification),
+                        '${Translator.translate(Language.failureWithErrorCode)}  ${step.getCode()}',
+                      ).then((value) {
+                        fetchHeaderListOfObjectFileListProgress = null;
+                      });
+                      return;
+                    } else {
+                      var step = UploadImageListStep.construct(
+                        ossHost: ossHost,
+                        requestHeader: requestHeader,
+                        objectDataMapping: objectDataMapping,
+                      );
+                      uploadImageListProgress = UploadImageListProgress.construct(
+                        result: -2,
+                        step: step,
+                        message: Translator.translate(Language.attemptToUploadImageList),
+                      );
+                      uploadImageListProgress!.show(context: context).then((value) {
+                        if (value != Code.oK) {
+                          showMessageDialog(
+                            context,
+                            Translator.translate(Language.titleOfNotification),
+                            '${Translator.translate(Language.failureWithErrorCode)} -2',
+                          ).then((value) {
+                            return;
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+              }
 
               // if (imageMap.length < 2) {
               //   showMessageDialog(

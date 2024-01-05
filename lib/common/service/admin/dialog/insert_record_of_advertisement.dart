@@ -945,7 +945,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                     showMessageDialog(
                       context,
                       Translator.translate(Language.titleOfNotification),
-                      '${Translator.translate(Language.failureWithErrorCode)}  $value',
+                      '${Translator.translate(Language.failureWithErrorCode)}  ${step.getCode()}',
                     );
                   } else {
                     var step = UploadImageListStep.construct(

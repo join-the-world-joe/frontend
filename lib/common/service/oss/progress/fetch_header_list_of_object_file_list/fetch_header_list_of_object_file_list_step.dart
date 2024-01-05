@@ -18,6 +18,13 @@ class FetchHeaderListOfObjectFileListStep {
     _responded = false;
   }
 
+  int getCode() {
+    if (_rsp != null) {
+      return _rsp!.getCode();
+    }
+    return 1;
+  }
+
   void setNameListOfFile(List<String> nameListOfFile) {
     _nameListOfFile = nameListOfFile;
   }
