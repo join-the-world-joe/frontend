@@ -3,8 +3,9 @@ import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/service/admin/business/soft_delete_record_of_user.dart';
-import 'package:flutter_framework/common/service/admin/protocol/soft_delete_user_record.dart';
+import 'package:flutter_framework/common/service/admin/progress/soft_delete_record_of_user/soft_delete_record_of_user_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/soft_delete_record_of_user/soft_delete_record_of_user_step.dart';
+import 'package:flutter_framework/common/service/admin/protocol/soft_delete_records_of_user.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -14,11 +15,12 @@ import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/dashboard/model/user.dart';
 import '../../../../dashboard/config/config.dart';
 
-Future<bool> showSoftDeleteRecordOfUserDialog(BuildContext context, User user) async {
+Future<bool> showSoftDeleteRecordsOfUserDialog(BuildContext context, User user) async {
   var oriObserve = Runtime.getObserve();
   bool closed = false;
   int curStage = 0;
-  String from = 'showSoftDeleteRecordOfUserDialog';
+  String from = 'showSoftDeleteRecordsOfUserDialog';
+  SoftDeleteRecordsOfUserProgress? softDeleteRecordsOfUserProgress;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -33,10 +35,10 @@ Future<bool> showSoftDeleteRecordOfUserDialog(BuildContext context, User user) a
     }
   }
 
-  void softDeleteRecordOfUserHandler({required String major, required String minor, required Map<String, dynamic> body}) {
-    var caller = 'softDeleteRecordOfUserHandler';
+  void softDeleteRecordsOfUserHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'softDeleteRecordsOfUserHandler';
     try {
-      var rsp = SoftDeleteUserRecordRsp.fromJson(body);
+      var rsp = SoftDeleteRecordsOfUserRsp.fromJson(body);
       Log.debug(
         major: major,
         minor: minor,
@@ -44,25 +46,8 @@ Future<bool> showSoftDeleteRecordOfUserDialog(BuildContext context, User user) a
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
-      if (rsp.getCode() == Code.oK) {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.removeRecordSuccessfully),
-        ).then(
-          (value) {
-            Navigator.pop(context);
-            curStage++;
-          },
-        );
-        return;
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
-        return;
+      if (softDeleteRecordsOfUserProgress != null) {
+        softDeleteRecordsOfUserProgress!.respond(rsp);
       }
     } catch (e) {
       Log.debug(
@@ -72,14 +57,6 @@ Future<bool> showSoftDeleteRecordOfUserDialog(BuildContext context, User user) a
         caller: caller,
         message: 'failure, err: $e',
       );
-      showMessageDialog(
-        context,
-        Translator.translate(Language.titleOfNotification),
-        Translator.translate(Language.removeRecordSuccessfully),
-      ).then((value) {
-        Navigator.pop(context);
-        curStage = -1;
-      });
       return;
     }
   }
@@ -99,7 +76,7 @@ Future<bool> showSoftDeleteRecordOfUserDialog(BuildContext context, User user) a
         message: 'responded',
       );
       if (major == Major.admin && minor == Admin.softDeleteRecordOfUserRsp) {
-        softDeleteRecordOfUserHandler(major: major, minor: minor, body: body);
+        softDeleteRecordsOfUserHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
           major: major,
@@ -159,17 +136,40 @@ Future<bool> showSoftDeleteRecordOfUserDialog(BuildContext context, User user) a
                       children: [
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pop(context, false);
                           },
                           child: Text(Translator.translate(Language.cancel)),
                         ),
                         TextButton(
                           onPressed: () {
-                            softDeleteRecordOfUser(
-                              from: from,
-                              caller: '$caller.softDeleteUserRecord',
-                              userList: [int.parse(user.getId())],
-                            );
+                            if (softDeleteRecordsOfUserProgress == null) {
+                              var step = SoftDeleteRecordsOfUserStep.construct(userIdList: [int.parse(user.getId())]);
+                              softDeleteRecordsOfUserProgress = SoftDeleteRecordsOfUserProgress.construct(
+                                result: -1,
+                                step: step,
+                                message: Translator.translate(Language.attemptToSoftDeleteRecordsOfUser),
+                              );
+                              softDeleteRecordsOfUserProgress!.show(context: context).then((value) {
+                                if (value == Code.oK) {
+                                  showMessageDialog(
+                                    context,
+                                    Translator.translate(Language.titleOfNotification),
+                                    Translator.translate(Language.removeRecordSuccessfully),
+                                  ).then(
+                                    (value) {
+                                      Navigator.pop(context, true);
+                                    },
+                                  );
+                                } else {
+                                  showMessageDialog(
+                                    context,
+                                    Translator.translate(Language.titleOfNotification),
+                                    '${Translator.translate(Language.failureWithErrorCode)}  ${step.getCode()}',
+                                  );
+                                }
+                                softDeleteRecordsOfUserProgress = null;
+                              });
+                            }
                           },
                           child: Text(Translator.translate(Language.confirm)),
                         ),
@@ -180,12 +180,6 @@ Future<bool> showSoftDeleteRecordOfUserDialog(BuildContext context, User user) a
                 ),
               ),
             );
-            // }
-            // return const SizedBox(
-            //   width: 400,
-            //   height: 250,
-            //   child: Center(child: CircularProgressIndicator()),
-            // );
           },
           stream: stream(),
         ),
@@ -194,6 +188,6 @@ Future<bool> showSoftDeleteRecordOfUserDialog(BuildContext context, User user) a
   ).then((value) {
     closed = true;
     Runtime.setObserve(oriObserve);
-    return curStage > 0;
+    return value;
   });
 }

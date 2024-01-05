@@ -20,7 +20,7 @@ import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/dialog/approve_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/reject_advertisement.dart';
-import 'package:flutter_framework/dashboard/dialog/selling_point_of_advertisement.dart';
+import 'package:flutter_framework/common/service/advertisement/dialog/selling_point_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/model/ad_of_carousel.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';

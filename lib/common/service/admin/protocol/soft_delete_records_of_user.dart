@@ -1,8 +1,7 @@
-
-class SoftDeleteUserRecordReq {
+class SoftDeleteRecordsOfUserReq {
   List<int> _userIdList = [];
 
-  SoftDeleteUserRecordReq.construct({
+  SoftDeleteRecordsOfUserReq.construct({
     required List<int> userIdList,
   }) {
     _userIdList = userIdList;
@@ -15,14 +14,14 @@ class SoftDeleteUserRecordReq {
   }
 }
 
-class SoftDeleteUserRecordRsp {
+class SoftDeleteRecordsOfUserRsp {
   int _code = -1;
 
   int getCode() {
     return _code;
   }
 
-  SoftDeleteUserRecordRsp.fromJson(Map<String, dynamic> json) {
+  SoftDeleteRecordsOfUserRsp.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('code')) {
       _code = json['code'];
     }

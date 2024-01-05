@@ -7,7 +7,6 @@ import 'package:flutter_framework/common/service/admin/business/soft_delete_reco
 import 'package:flutter_framework/common/service/admin/progress/soft_delete_record_of_product/soft_delete_records_of_product_progress.dart';
 import 'package:flutter_framework/common/service/admin/progress/soft_delete_record_of_product/soft_delete_records_of_product_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/soft_delete_records_of_product.dart';
-import 'package:flutter_framework/common/service/admin/protocol/soft_delete_user_record.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
@@ -18,11 +17,11 @@ import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import '../../../../dashboard/config/config.dart';
 
-Future<bool> showSoftDeleteRecordOfProductDialog(BuildContext context, Product product) async {
+Future<bool> showSoftDeleteRecordsOfProductDialog(BuildContext context, Product product) async {
   var oriObserve = Runtime.getObserve();
   bool closed = false;
   int curStage = 0;
-  String from = 'showSoftDeleteRecordOfProductDialog';
+  String from = 'showSoftDeleteRecordsOfProductDialog';
   SoftDeleteRecordsOfProductProgress? softDeleteRecordsOfProductProgress;
 
   Stream<int>? stream() async* {

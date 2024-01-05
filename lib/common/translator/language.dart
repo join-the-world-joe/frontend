@@ -187,6 +187,7 @@ class Language {
   static String attemptToSoftDeleteRecordOfAdvertisement = 'attempt to soft delete record of advertisement';
   static String attemptToRemoveListOfObjectFile = 'attempt to remove list of object file';
   static String attemptToInsertRecordOfUser = 'attempt to insert record of user';
+  static String attemptToSoftDeleteRecordsOfUser = 'attempt to soft delete records of user';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';

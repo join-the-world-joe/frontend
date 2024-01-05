@@ -542,7 +542,7 @@ class Source extends DataTableSource {
                   if (!boolMap.containsKey(key)) {
                     return;
                   }
-                  await showSoftDeleteRecordOfProductDialog(buildContext, dataMap[key]!).then(
+                  await showSoftDeleteRecordsOfProductDialog(buildContext, dataMap[key]!).then(
                     (value) => () {
                       // print('value: $value');
                       if (value) {

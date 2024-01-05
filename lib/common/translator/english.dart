@@ -186,10 +186,11 @@ class English {
     Language.attemptToUpdateRecordOfProduct: 'Update Record....',
     Language.attemptToFetchHeaderListOfOSSObjectFile: 'Fetch OSS Header....',
     Language.attemptToUploadImageList: 'Upload Image....',
-    Language.attemptToInsertRecordOfAdvertisement: 'Insert Advertisement',
-    Language.attemptToSoftDeleteRecordOfAdvertisement : 'Remove Advertisement',
-    Language.attemptToRemoveListOfObjectFile: 'Remove OSS Object File',
-    Language.attemptToInsertRecordOfUser : 'Insert User',
+    Language.attemptToInsertRecordOfAdvertisement: 'Insert Advertisement....',
+    Language.attemptToSoftDeleteRecordOfAdvertisement : 'Remove Advertisement....',
+    Language.attemptToRemoveListOfObjectFile: 'Remove OSS Object File....',
+    Language.attemptToInsertRecordOfUser : 'Insert User....',
+    Language.attemptToSoftDeleteRecordsOfUser: 'Remove User....',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',

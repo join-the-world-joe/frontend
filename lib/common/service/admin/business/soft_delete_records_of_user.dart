@@ -1,9 +1,9 @@
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
-import 'package:flutter_framework/common/service/admin/protocol/soft_delete_user_record.dart';
+import 'package:flutter_framework/common/service/admin/protocol/soft_delete_records_of_user.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
-void softDeleteRecordOfUser({
+void softDeleteRecordsOfUser({
   required String from,
   required String caller,
   required List<int> userList,
@@ -13,7 +13,7 @@ void softDeleteRecordOfUser({
     caller: caller,
     major: Major.admin,
     minor: Admin.softDeleteRecordOfUserReq,
-    body: SoftDeleteUserRecordReq.construct(
+    body: SoftDeleteRecordsOfUserReq.construct(
       userIdList: userList,
     ),
   );

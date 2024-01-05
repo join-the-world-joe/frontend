@@ -5,7 +5,7 @@ import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import '../config/config.dart';
+import '../../../../dashboard/config/config.dart';
 
 Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, String id, List<String> sellingPoints) async {
   bool closed = false;
@@ -31,8 +31,6 @@ Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, Strin
     var caller = 'observe';
     var major = packet.getHeader().getMajor();
     var minor = packet.getHeader().getMinor();
-    var routingKey = '$major-$minor';
-    var body = packet.getBody();
 
     try {
       Log.debug(
@@ -59,13 +57,13 @@ Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, Strin
         message: 'failure, err: $e',
       );
       return;
-    } finally {}
+    }
   }
 
   Runtime.setObserve(observe);
 
   return await showDialog(
-    barrierDismissible: false,
+    barrierDismissible: true,
     context: context,
     builder: (context) {
       return AlertDialog(
@@ -112,10 +110,6 @@ Future<String> showSellingPointOfAdvertisementDialog(BuildContext context, Strin
                                         color: Colors.white,
                                       ),
                                     ),
-                                    // onDeleted: () {
-                                    //   sellingPoints.remove(element);
-                                    //   curStage++;
-                                    // },
                                     backgroundColor: Colors.green,
                                     selectedColor: Colors.green,
                                     elevation: 6.0,

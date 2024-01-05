@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
-import 'package:flutter_framework/common/service/admin/protocol/soft_delete_records_of_product.dart';
+import 'package:flutter_framework/common/service/admin/progress/soft_delete_record_of_user/soft_delete_record_of_user_step.dart';
+import 'package:flutter_framework/common/service/admin/protocol/soft_delete_records_of_user.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
-import './soft_delete_records_of_product_step.dart';
 
-class SoftDeleteRecordsOfProductProgress {
+class SoftDeleteRecordsOfUserProgress {
   late String _message;
   int _result = Code.internalError;
-  late SoftDeleteRecordsOfProductStep _step;
+  late SoftDeleteRecordsOfUserStep _step;
 
-  void respond(SoftDeleteRecordsOfProductRsp rsp) {
+  void respond(SoftDeleteRecordsOfUserRsp rsp) {
     _step.respond(rsp);
   }
 
-  SoftDeleteRecordsOfProductProgress.construct({
+  SoftDeleteRecordsOfUserProgress.construct({
     required int result,
-    required SoftDeleteRecordsOfProductStep step,
+    required SoftDeleteRecordsOfUserStep step,
     required String message,
   }) {
     _step = step;

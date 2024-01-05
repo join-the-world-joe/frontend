@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/service/admin/business/fetch_user_list_of_condition.dart';
+import 'package:flutter_framework/common/service/admin/dialog/soft_delete_records_of_user.dart';
 import 'package:flutter_framework/common/service/admin/protocol/fetch_user_list_of_condition.dart';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/service/admin/dialog/insert_record_of_user.dart';
 import 'package:flutter_framework/dashboard/dialog/menu_list_of_user.dart';
-import 'package:flutter_framework/common/service/admin/dialog/soft_delete_record_of_user.dart';
 import 'package:flutter_framework/dashboard/dialog/permission_list_of_user.dart';
 import 'package:flutter_framework/dashboard/dialog/role_list_of_user.dart';
 import 'package:flutter_framework/common/service/admin/dialog/update_record_of_user.dart';
@@ -487,7 +487,7 @@ class Source extends DataTableSource {
                   icon: const Icon(Icons.delete),
                   tooltip: Translator.translate(Language.remove),
                   onPressed: () async {
-                    await showSoftDeleteRecordOfUserDialog(context, userList.getBody()[index]).then(
+                    await showSoftDeleteRecordsOfUserDialog(context, userList.getBody()[index]).then(
                       (value) => () {
                         // print('value: $value');
                         if (value) {
