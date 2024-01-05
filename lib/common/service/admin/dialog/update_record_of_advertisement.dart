@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list.dart';
 import 'package:flutter_framework/dashboard/dialog/update_record_of_advertisement_progress.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
@@ -30,6 +31,11 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
   bool closed = false;
   String from = 'showUpdateRecordOfAdvertisementDialog';
   List<String> sellingPoints = advertisement.getSellingPoints();
+
+  List<String> nameListOfFile = []; // object file to be uploaded
+  List<String> objectFileToBeRemoved = [];
+  Map<String, Uint8List> objectDataMapping = {}; // key: object file name, value: native file name
+  Map<String, ObjectFileRequestHeader> requestHeader = {}; // key: object file name
 
   var nameController = TextEditingController(text: advertisement.getName());
   var titleController = TextEditingController(text: advertisement.getTitle());
@@ -64,8 +70,8 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
     oriFifthImage = ImageItem.fromRemote(advertisement.getFifthImage(), advertisement.getOSSPath());
   }
 
-  ImageItem? coverImage = oriCoverImage;
-  ImageItem? firstImage = oriFistImage;
+  ImageItem coverImage = oriCoverImage;
+  ImageItem firstImage = oriFistImage;
   ImageItem? secondImage = oriSecondImage;
   ImageItem? thirdImage = oriThirdImage;
   ImageItem? fourthImage = oriFourthImage;
@@ -115,6 +121,53 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
         message: 'failure, err: $e',
       );
       return;
+    }
+  }
+
+  void figureOutArgument() {
+    nameListOfFile = [];
+    objectFileToBeRemoved = [];
+    objectDataMapping = {};
+    requestHeader = {};
+    if (coverImage.getNative()) {
+      nameListOfFile.add(coverImage.getObjectFileName());
+      objectFileToBeRemoved.add(oriCoverImage.getObjectFileName());
+      objectDataMapping[coverImage.getObjectFileName()] = coverImage.getData();
+    }
+
+    if (firstImage.getNative()) {
+      nameListOfFile.add(firstImage.getObjectFileName());
+      objectFileToBeRemoved.add(oriFistImage.getObjectFileName());
+      objectDataMapping[firstImage.getObjectFileName()] = firstImage.getData();
+    }
+
+    if (secondImage != null) {
+      if (secondImage!.getNative()) {
+        nameListOfFile.add(secondImage!.getObjectFileName());
+        objectFileToBeRemoved.add(oriSecondImage!.getObjectFileName());
+        objectDataMapping[secondImage!.getObjectFileName()] = secondImage!.getData();
+      }
+      if (thirdImage != null) {
+        if (thirdImage!.getNative()) {
+          nameListOfFile.add(thirdImage!.getObjectFileName());
+          objectFileToBeRemoved.add(oriThirdImage!.getObjectFileName());
+          objectDataMapping[thirdImage!.getObjectFileName()] = thirdImage!.getData();
+        }
+        if (fourthImage != null) {
+          if (fourthImage!.getNative()) {
+            nameListOfFile.add(fourthImage!.getObjectFileName());
+            objectFileToBeRemoved.add(oriFourthImage!.getObjectFileName());
+            objectDataMapping[fourthImage!.getObjectFileName()] = fourthImage!.getData();
+          }
+          if (fifthImage != null) {
+            if (fifthImage!.getNative()) {
+              nameListOfFile.add(fifthImage!.getObjectFileName());
+              objectFileToBeRemoved.add(oriFifthImage!.getObjectFileName());
+              objectDataMapping[fifthImage!.getObjectFileName()] = fifthImage!.getData();
+            }
+          }
+        }
+      }
     }
   }
 
@@ -321,39 +374,38 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
           ),
           prefixIcon: Wrap(
             children: [
-              if (coverImage != null)
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: InputChip(
-                    label: Text(
-                      () {
-                        var title = '';
-                        if (!coverImage!.getNative()) {
-                          title = coverImage!.getObjectFileName().split('/')[1];
-                        } else {
-                          title = coverImage!.getNativeFileName();
-                        }
-                        return title;
-                      }(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    onPressed: () {
-                      if (!coverImage!.getNative()) {
-                        showViewNetworkImageDialog(context, coverImage!.getUrl());
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: InputChip(
+                  label: Text(
+                    () {
+                      var title = '';
+                      if (!coverImage.getNative()) {
+                        title = coverImage.getObjectFileName().split('/')[1];
                       } else {
-                        // native
-                        showViewImageDialog(context, coverImage!.getData());
+                        title = coverImage.getNativeFileName();
                       }
-                    },
-                    backgroundColor: Colors.green,
-                    // selectedColor: Colors.green,
-                    elevation: 6.0,
-                    shadowColor: Colors.grey[60],
-                    padding: const EdgeInsets.all(8.0),
+                      return title;
+                    }(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
-                )
+                  onPressed: () {
+                    if (!coverImage.getNative()) {
+                      showViewNetworkImageDialog(context, coverImage.getUrl());
+                    } else {
+                      // native
+                      showViewImageDialog(context, coverImage.getData());
+                    }
+                  },
+                  backgroundColor: Colors.green,
+                  // selectedColor: Colors.green,
+                  elevation: 6.0,
+                  shadowColor: Colors.grey[60],
+                  padding: const EdgeInsets.all(8.0),
+                ),
+              )
             ],
           ),
         ),
@@ -393,39 +445,38 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
           ),
           prefixIcon: Wrap(
             children: [
-              if (firstImage != null)
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: InputChip(
-                    label: Text(
-                      () {
-                        var title = '';
-                        if (!firstImage!.getNative()) {
-                          title = firstImage!.getObjectFileName().split('/')[1];
-                        } else {
-                          title = firstImage!.getNativeFileName();
-                        }
-                        return title;
-                      }(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    onPressed: () {
-                      if (!firstImage!.getNative()) {
-                        showViewNetworkImageDialog(context, firstImage!.getUrl());
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: InputChip(
+                  label: Text(
+                    () {
+                      var title = '';
+                      if (!firstImage.getNative()) {
+                        title = firstImage.getObjectFileName().split('/')[1];
                       } else {
-                        // native
-                        showViewImageDialog(context, firstImage!.getData());
+                        title = firstImage.getNativeFileName();
                       }
-                    },
-                    backgroundColor: Colors.green,
-                    // selectedColor: Colors.green,
-                    elevation: 6.0,
-                    shadowColor: Colors.grey[60],
-                    padding: const EdgeInsets.all(8.0),
+                      return title;
+                    }(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
-                )
+                  onPressed: () {
+                    if (!firstImage.getNative()) {
+                      showViewNetworkImageDialog(context, firstImage.getUrl());
+                    } else {
+                      // native
+                      showViewImageDialog(context, firstImage.getData());
+                    }
+                  },
+                  backgroundColor: Colors.green,
+                  // selectedColor: Colors.green,
+                  elevation: 6.0,
+                  shadowColor: Colors.grey[60],
+                  padding: const EdgeInsets.all(8.0),
+                ),
+              )
             ],
           ),
         ),
@@ -517,7 +568,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
 
   List<Widget> secondImageComponentList() {
     List<Widget> widgets = [];
-    if (firstImage != null) {
+    if (secondImage != null) {
       widgets.add(secondImageComponent());
       widgets.add(Spacing.addVerticalSpace(10));
     }
@@ -560,13 +611,24 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                   padding: const EdgeInsets.all(5.0),
                   child: InputChip(
                     label: Text(
-                      thirdImage!.getNativeFileName(),
+                      () {
+                        var title = '';
+                        if (!thirdImage!.getNative()) {
+                          title = thirdImage!.getObjectFileName().split('/')[1];
+                        } else {
+                          title = thirdImage!.getNativeFileName();
+                        }
+                        return title;
+                      }(),
                       style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
                     onPressed: () {
-                      if (thirdImage != null) {
+                      if (!thirdImage!.getNative()) {
+                        showViewNetworkImageDialog(context, thirdImage!.getUrl());
+                      } else {
+                        // native
                         showViewImageDialog(context, thirdImage!.getData());
                       }
                     },
@@ -590,7 +652,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
 
   List<Widget> thirdImageComponentList() {
     List<Widget> widgets = [];
-    if (firstImage != null && secondImage != null) {
+    if (secondImage != null && thirdImage != null) {
       widgets.add(thirdImageComponent());
       widgets.add(Spacing.addVerticalSpace(10));
     }
@@ -633,13 +695,24 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                   padding: const EdgeInsets.all(5.0),
                   child: InputChip(
                     label: Text(
-                      fourthImage!.getNativeFileName(),
+                      () {
+                        var title = '';
+                        if (!fourthImage!.getNative()) {
+                          title = fourthImage!.getObjectFileName().split('/')[1];
+                        } else {
+                          title = fourthImage!.getNativeFileName();
+                        }
+                        return title;
+                      }(),
                       style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
                     onPressed: () {
-                      if (fourthImage != null) {
+                      if (!fourthImage!.getNative()) {
+                        showViewNetworkImageDialog(context, fourthImage!.getUrl());
+                      } else {
+                        // native
                         showViewImageDialog(context, fourthImage!.getData());
                       }
                     },
@@ -663,7 +736,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
 
   List<Widget> fourthImageComponentList() {
     List<Widget> widgets = [];
-    if (firstImage != null && secondImage != null && thirdImage != null) {
+    if (secondImage != null && thirdImage != null && fourthImage != null) {
       widgets.add(fourthImageComponent());
       widgets.add(Spacing.addVerticalSpace(10));
     }
@@ -706,13 +779,24 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                   padding: const EdgeInsets.all(5.0),
                   child: InputChip(
                     label: Text(
-                      fifthImage!.getNativeFileName(),
+                      () {
+                        var title = '';
+                        if (!fifthImage!.getNative()) {
+                          title = fifthImage!.getObjectFileName().split('/')[1];
+                        } else {
+                          title = fifthImage!.getNativeFileName();
+                        }
+                        return title;
+                      }(),
                       style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
                     onPressed: () {
-                      if (fifthImage != null) {
+                      if (!fifthImage!.getNative()) {
+                        showViewNetworkImageDialog(context, fifthImage!.getUrl());
+                      } else {
+                        // native
                         showViewImageDialog(context, fifthImage!.getData());
                       }
                     },
@@ -736,7 +820,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
 
   List<Widget> fifthImageComponentList() {
     List<Widget> widgets = [];
-    if (firstImage != null && secondImage != null && thirdImage != null && fourthImage != null) {
+    if (secondImage != null && thirdImage != null && fourthImage != null && fifthImage != null) {
       widgets.add(fifthImageComponent());
       widgets.add(Spacing.addVerticalSpace(10));
     }
@@ -790,6 +874,13 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                 );
                 return;
               }
+
+              // figure out name list of object file
+              figureOutArgument();
+
+              print("name list of file: $nameListOfFile");
+              print("object file to be removed: $objectFileToBeRemoved");
+
               // if (imageMap.length < 2) {
               //   showMessageDialog(
               //     context,

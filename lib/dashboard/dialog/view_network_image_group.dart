@@ -13,6 +13,8 @@ Future<bool> showViewNetworkImageGroupDialog(BuildContext context, List<String> 
   String from = 'showViewNetworkImageGroupDialog';
   int currentImage = 0;
 
+  print('showViewNetworkImageGroupDialog.urls: $urls');
+
   Stream<int>? stream() async* {
     var lastStage = curStage;
     while (!closed) {
