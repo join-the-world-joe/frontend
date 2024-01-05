@@ -437,7 +437,7 @@ class _State extends State<SMSSignIn> {
                             signInProgress = SignInProgress.construct(
                               result: Code.internalError,
                               step: step,
-                              message: Translator.translate(Language.tryingToSignIn),
+                              message: Translator.translate(Language.attemptToSignIn),
                             );
                             signInProgress!.show(context: context).then((value) {
                               if (value == Code.oK) {

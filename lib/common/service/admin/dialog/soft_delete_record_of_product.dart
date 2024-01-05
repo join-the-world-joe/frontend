@@ -154,7 +154,7 @@ Future<bool> showSoftDeleteRecordOfProductDialog(BuildContext context, Product p
                               softDeleteRecordsOfProductProgress = SoftDeleteRecordsOfProductProgress.construct(
                                 result: Code.internalError,
                                 step: step,
-                                message: Translator.translate(Language.tryingToSoftDeleteRecordOfProduct),
+                                message: Translator.translate(Language.attemptToSoftDeleteRecordOfProduct),
                               );
                               softDeleteRecordsOfProductProgress!.show(context: context).then((value) {
                                 if (value == Code.oK) {

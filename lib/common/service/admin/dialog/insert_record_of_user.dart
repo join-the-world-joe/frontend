@@ -5,6 +5,8 @@ import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/service/admin/business/fetch_role_list_of_condition.dart';
 import 'package:flutter_framework/common/service/admin/business/insert_record_of_user.dart';
+import 'package:flutter_framework/common/service/admin/progress/insert_record_of_user/insert_record_of_user_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/insert_record_of_user/insert_record_of_user_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/fetch_role_list_of_condition.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_user_record.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
@@ -28,6 +30,8 @@ Future<void> showInsertRecordOfUserDialog(BuildContext context) async {
   RoleList roleList = RoleList([]);
   bool bAccountAlreadyExist = false;
   int status = int.parse('1');
+
+  InsertRecordOfUserProgress? insertRecordOfUserProgress;
 
   var oriObserve = Runtime.getObserve();
   var nameController = TextEditingController();
@@ -110,25 +114,7 @@ Future<void> showInsertRecordOfUserDialog(BuildContext context) async {
         caller: caller,
         message: 'code: ${rsp.getCode()}',
       );
-      if (rsp.getCode() == Code.oK) {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.updateRecordSuccessfully),
-        ).then(
-          (value) {
-            Navigator.pop(context, null);
-          },
-        );
-        return;
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
-        return;
-      }
+      insertRecordOfUserProgress!.respond(rsp);
     } catch (e) {
       Log.debug(
         major: major,
@@ -233,16 +219,41 @@ Future<void> showInsertRecordOfUserDialog(BuildContext context) async {
                 print('selected: $roleList');
                 return roleList;
               }();
-              insertRecordOfUser(
-                from: from,
-                caller: caller,
-                name: nameController.text,
-                phoneNumber: phoneNumberController.text,
-                countryCode: countryCode ?? '86',
-                status: status,
-                password: Runtime.rsa.encrypt(passwordController.text),
-                roleList: roleList,
-              );
+              if (insertRecordOfUserProgress == null) {
+                var step = InsertRecordOfUserStep.construct(
+                  name: nameController.text,
+                  phoneNumber: phoneNumberController.text,
+                  countryCode: countryCode ?? '86',
+                  status: status,
+                  password: Runtime.rsa.encrypt(passwordController.text),
+                  roleList: roleList,
+                );
+                insertRecordOfUserProgress = InsertRecordOfUserProgress.construct(
+                  result: -1,
+                  step: step,
+                  message: Translator.translate(Language.attemptToInsertRecordOfUser),
+                );
+                insertRecordOfUserProgress!.show(context: context).then((value) {
+                  if (value == Code.oK) {
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      Translator.translate(Language.insertRecordSuccessfully),
+                    ).then(
+                      (value) {
+                        Navigator.pop(context, null);
+                      },
+                    );
+                  } else {
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      '${Translator.translate(Language.failureWithErrorCode)} ${step.getCode()}',
+                    );
+                  }
+                  insertRecordOfUserProgress = null;
+                });
+              }
             },
             child: Text(Translator.translate(Language.confirm)),
           ),

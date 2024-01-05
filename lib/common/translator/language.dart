@@ -177,15 +177,16 @@ class Language {
   static String insertRecordSuccessfully = 'the operation of inert is success';
   static String removeOperationFailure = 'the operation of removal is fail';
   static String operationTimeout = 'the operation is timeout';
-  static String tryingToSignIn = 'trying to sign in';
-  static String tryingToInsertRecordOfProduct = 'trying to insert record of product';
-  static String tryingToSoftDeleteRecordOfProduct = 'trying to soft delete record of product';
-  static String tryingToUpdateRecordOfProduct = 'trying to update record of product';
-  static String tryingToFetchHeaderListOfOSSObjectFile = 'trying to fetch header list of oss object file';
-  static String tryingToUploadImageList = 'trying to upload image list';
-  static String tryingToInsertRecordOfAdvertisement = 'trying to insert record of advertisement';
-  static String tryingToSoftDeleteRecordOfAdvertisement = 'trying to soft delete record of advertisement';
-  static String tryingToRemoveListOfObjectFile = 'trying to remove list of object file';
+  static String attemptToSignIn = 'trying to sign in';
+  static String attemptToInsertRecordOfProduct = 'attempt to insert record of product';
+  static String attemptToSoftDeleteRecordOfProduct = 'attempt to soft delete record of product';
+  static String attemptToUpdateRecordOfProduct = 'attempt to update record of product';
+  static String attemptToFetchHeaderListOfOSSObjectFile = 'attempt to fetch header list of oss object file';
+  static String attemptToUploadImageList = 'attempt to upload image list';
+  static String attemptToInsertRecordOfAdvertisement = 'attempt to insert record of advertisement';
+  static String attemptToSoftDeleteRecordOfAdvertisement = 'attempt to soft delete record of advertisement';
+  static String attemptToRemoveListOfObjectFile = 'attempt to remove list of object file';
+  static String attemptToInsertRecordOfUser = 'attempt to insert record of user';
 
   // inform.notification
   static String eventForceOffline = 'Force Offline';

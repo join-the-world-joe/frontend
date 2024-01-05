@@ -213,7 +213,7 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, Adverti
                               softDeleteRecordsOfAdvertisementProgress = SoftDeleteRecordsOfAdvertisementProgress.construct(
                                 result: -1,
                                 step: step,
-                                message: Translator.translate(Language.tryingToSoftDeleteRecordOfAdvertisement),
+                                message: Translator.translate(Language.attemptToSoftDeleteRecordOfAdvertisement),
                               );
                               softDeleteRecordsOfAdvertisementProgress!.show(context: context).then((value) {
                                 if (value == Code.oK) {
@@ -222,7 +222,7 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, Adverti
                                   removeListOfObjectFileProgress = RemoveListOfObjectFileProgress.construct(
                                     result: -1,
                                     step: step,
-                                    message: Translator.translate(Language.tryingToRemoveListOfObjectFile),
+                                    message: Translator.translate(Language.attemptToRemoveListOfObjectFile),
                                   );
                                   removeListOfObjectFileProgress!.show(context: context).then((value) {
                                     showMessageDialog(

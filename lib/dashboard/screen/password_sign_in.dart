@@ -301,7 +301,7 @@ class _State extends State<PasswordSignIn> {
                             signInProgress = SignInProgress.construct(
                               result: Code.internalError,
                               step: step,
-                              message: Translator.translate(Language.tryingToSignIn),
+                              message: Translator.translate(Language.attemptToSignIn),
                             );
                             signInProgress!.show(context: context).then((value) {
                               if (value == Code.oK) {
@@ -321,7 +321,7 @@ class _State extends State<PasswordSignIn> {
                             signInProgress = SignInProgress.construct(
                               result: Code.internalError,
                               step: step,
-                              message: Translator.translate(Language.tryingToSignIn),
+                              message: Translator.translate(Language.attemptToSignIn),
                             );
                             signInProgress!.show(context: context).then((value) {
                               if (value == Code.oK) {

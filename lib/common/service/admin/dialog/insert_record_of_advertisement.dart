@@ -938,7 +938,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                 fetchHeaderListOfObjectFileListProgress = FetchHeaderListOfObjectFileListProgress.construct(
                   result: -1,
                   step: step,
-                  message: Translator.translate(Language.tryingToFetchHeaderListOfOSSObjectFile),
+                  message: Translator.translate(Language.attemptToFetchHeaderListOfOSSObjectFile),
                 );
                 await fetchHeaderListOfObjectFileListProgress!.show(context: context).then((value) {
                   if (value != Code.oK) {
@@ -956,7 +956,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                     uploadImageListProgress = UploadImageListProgress.construct(
                       result: -2,
                       step: step,
-                      message: Translator.translate(Language.tryingToUploadImageList),
+                      message: Translator.translate(Language.attemptToUploadImageList),
                     );
                     uploadImageListProgress!.show(context: context).then((value) {
                       if (value != Code.oK) {
@@ -991,7 +991,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                       insertRecordOfAdvertisementProgress = InsertRecordOfAdvertisementProgress.construct(
                         result: -3,
                         step: step,
-                        message: Translator.translate(Language.tryingToInsertRecordOfAdvertisement),
+                        message: Translator.translate(Language.attemptToInsertRecordOfAdvertisement),
                       );
                       insertRecordOfAdvertisementProgress!.show(context: context).then((value) {
                         if (value != Code.oK) {
