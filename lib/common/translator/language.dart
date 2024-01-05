@@ -265,6 +265,7 @@ class Language {
   static String pressRightButtonToAddFifthImage = 'press the right button to add fifth image';
   static String pressRightButtonToAddImage = 'press the right button to add image';
   static String addImageForAdvertisement = 'add image for the advertisement';
+  static String modifyImageOfAdvertisement = 'modify image of the advertisement';
   static String titleOfInsertAdvertisementButton = 'title of insert advertisement button';
   static String urlIllegal = 'url is illegal ';
   static String coverImageOfAdvertisementNotProvided = 'cover image of advertisement not provided';

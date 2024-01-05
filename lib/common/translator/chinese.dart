@@ -268,6 +268,7 @@ class Chinese {
     Language.pressRightButtonToAddFifthImage: '点击右则按钮添加第五张广告图',
     Language.pressRightButtonToAddImage: '点击右则按钮添加图片',
     Language.addImageForAdvertisement: '增加广告图片',
+    Language.modifyImageOfAdvertisement: '更新广告图片',
     Language.titleOfInsertAdvertisementButton: "新增",
     Language.urlIllegal: '非法的URL',
     Language.coverImageOfAdvertisementNotProvided: '未指定封面图',

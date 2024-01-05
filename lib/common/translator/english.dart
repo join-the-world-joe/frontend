@@ -268,6 +268,7 @@ class English {
     Language.pressRightButtonToAddFifthImage: 'press the right button to add fifth image',
     Language.pressRightButtonToAddImage: 'press right button to add image',
     Language.addImageForAdvertisement: 'Add Advertisement Image',
+    Language.modifyImageOfAdvertisement: 'Modify Image of Advertisement',
     Language.titleOfInsertAdvertisementButton: 'Insert Advertisement',
     Language.urlIllegal: 'URL is illegal',
     Language.coverImageOfAdvertisementNotProvided: 'Cover Image Not Provided',
