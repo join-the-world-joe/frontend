@@ -191,6 +191,7 @@ class English {
     Language.attemptToRemoveListOfObjectFile: 'Remove OSS Object File....',
     Language.attemptToInsertRecordOfUser : 'Insert User....',
     Language.attemptToSoftDeleteRecordsOfUser: 'Remove User....',
+    Language.attemptToUpdateRecordOfAdvertisement: 'Update Advertisement',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',

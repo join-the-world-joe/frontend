@@ -6,7 +6,7 @@ import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/utils/convert.dart';
 
 class UpdateRecordOfProductStep {
-  String from = 'SoftDeleteRecordsOfProductStep';
+  String from = 'UpdateRecordOfProductStep';
   DateTime _requestTime = DateTime.now();
   bool _requested = false;
   bool _responded = false;

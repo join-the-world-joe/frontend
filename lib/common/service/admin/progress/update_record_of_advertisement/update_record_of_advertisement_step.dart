@@ -1,25 +1,21 @@
-import 'dart:convert';
-import 'dart:core';
-
-import 'package:flutter_framework/common/service/admin/business/update_record_of_advertisement.dart';
+import 'dart:typed_data';
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/service/admin/business/update_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/business/update_record_of_product.dart';
 import 'package:flutter_framework/common/service/admin/protocol/update_record_of_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/protocol/update_record_of_product.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/local/image_item.dart';
+import 'package:flutter_framework/utils/convert.dart';
 
-/*
-three possible stage; requested, timeout, responded()
- */
-class UpgradeFieldsOfAdvertisementProgress {
-  String from = 'UpgradeFieldsOfAdvertisementProgress';
-  int _result = Code.internalError;
+class UpdateRecordOfAdvertisementStep {
+  String from = 'UpdateRecordOfAdvertisementStep';
   DateTime _requestTime = DateTime.now();
   bool _requested = false;
   bool _responded = false;
-  bool _finished = false;
   final Duration _defaultTimeout = Config.httpDefaultTimeout;
   UpdateRecordOfAdvertisementRsp? _rsp;
-  int _advertisementId = -1;
+  int _id = 0;
   String _coverImage = '';
   String _firstImage = '';
   String _secondImage = '';
@@ -28,15 +24,14 @@ class UpgradeFieldsOfAdvertisementProgress {
   String _fifthImage = '';
   String _name = '';
   String _title = '';
-  int _stock = -1;
-  int _status = -1;
-  int _productId = -1;
-  int _sellingPrice = -1;
+  int _stock = 0;
+  int _status = 1;
+  int _productId = 0;
+  int _sellingPrice = 0;
   List<String> _sellingPoints = [];
   String _placeOfOrigin = '';
 
-  UpgradeFieldsOfAdvertisementProgress.construct({
-    required int result,
+  UpdateRecordOfAdvertisementStep.construct({
     required int id,
     required String coverImage,
     required String firstImage,
@@ -53,11 +48,10 @@ class UpgradeFieldsOfAdvertisementProgress {
     required List<String> sellingPoints,
     required String placeOfOrigin,
   }) {
+    _rsp = null;
     _requested = false;
     _responded = false;
-    _finished = false;
-    _result = result;
-    _advertisementId = id;
+    _id = id;
     _coverImage = coverImage;
     _firstImage = firstImage;
     _secondImage = secondImage;
@@ -74,69 +68,34 @@ class UpgradeFieldsOfAdvertisementProgress {
     _placeOfOrigin = placeOfOrigin;
   }
 
-  int result() {
-    return _result;
+  int getCode() {
+    if (_rsp != null) {
+      return _rsp!.getCode();
+    }
+    return 1;
   }
 
-  void respond(UpdateRecordOfAdvertisementRsp? rsp) {
+  void respond(UpdateRecordOfAdvertisementRsp rsp) {
     _rsp = rsp;
     _responded = true;
   }
 
-  bool finished() {
-    return _finished;
-  }
-
-  void setAdvertisementId(int id) {
-    _advertisementId = id;
-  }
-
-  String genImageField(ImageItem item) {
-    var output = '';
-    try {
-      Map<String, String> temp = {};
-      temp['width'] = item.getWidth().toString();
-      temp['height'] = item.getHeight().toString();
-      temp['url'] = item.getUrl();
-      temp['object_file_name'] = item.getObjectFileName();
-      output = jsonEncode(temp);
-    } catch (e) {
-      print('genImageField failure, e: $e');
+  bool timeout() {
+    if (!_responded && DateTime.now().isAfter(_requestTime.add(_defaultTimeout))) {
+      return true;
     }
-    return output;
-  }
-
-  void setCoverImage(ImageItem image) {
-    _coverImage = genImageField(image);
-  }
-
-  void setFirstImage(ImageItem image) {
-    _firstImage = genImageField(image);
-  }
-
-  void setSecondImage(ImageItem image) {
-    _secondImage = genImageField(image);
-  }
-
-  void setThirdImage(ImageItem image) {
-    _thirdImage = genImageField(image);
-  }
-
-  void setFourthImage(ImageItem image) {
-    _fourthImage = genImageField(image);
-  }
-
-  void setFifthImage(ImageItem image) {
-    _fifthImage = genImageField(image);
+    return false;
   }
 
   int progress() {
     var caller = 'progress';
     if (!_requested) {
+      _requestTime = DateTime.now();
+      // put business logic here
       updateRecordOfAdvertisement(
         from: from,
         caller: caller,
-        id: _advertisementId,
+        id: _id,
         coverImage: _coverImage,
         firstImage: _firstImage,
         secondImage: _secondImage,
@@ -152,27 +111,22 @@ class UpgradeFieldsOfAdvertisementProgress {
         sellingPoints: _sellingPoints,
         placeOfOrigin: _placeOfOrigin,
       );
-      _responded = false;
-      _requestTime = DateTime.now();
       _requested = true;
     }
     if (_requested) {
-      if (!_responded && DateTime.now().isAfter(_requestTime.add(_defaultTimeout))) {
-        _finished = true;
-        return _result;
+      if (timeout()) {
+        return Code.internalError;
       }
       if (_responded) {
         if (_rsp != null) {
           if (_rsp!.getCode() == Code.oK) {
-            _result = _rsp!.getCode();
-            _finished = true;
+            // print('ok');
             return Code.oK;
           }
         }
-        _finished = true;
-        return _result;
+        return Code.internalError;
       }
     }
-    return _result * -1;
+    return Code.internalError * -1;
   }
 }

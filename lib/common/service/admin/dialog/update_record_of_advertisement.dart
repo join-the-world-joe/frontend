@@ -4,9 +4,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_framework/common/progress/upgrade_fields_of_advertisement_progress.dart';
+import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/route/major.dart';
 import 'package:flutter_framework/common/route/oss.dart';
+import 'package:flutter_framework/common/service/admin/progress/update_record_of_advertisement/update_record_of_advertisement_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/update_record_of_advertisement/update_record_of_advertisement_step.dart';
+import 'package:flutter_framework/common/service/admin/protocol/update_record_of_advertisement.dart';
 import 'package:flutter_framework/common/service/oss/progress/fetch_header_list_of_object_file_list/fetch_header_list_of_object_file_list_progress.dart';
 import 'package:flutter_framework/common/service/oss/progress/fetch_header_list_of_object_file_list/fetch_header_list_of_object_file_list_step.dart';
 import 'package:flutter_framework/common/service/oss/progress/remove_list_of_object_file/remove_list_of_object_file_progress.dart';
@@ -14,7 +17,7 @@ import 'package:flutter_framework/common/service/oss/progress/remove_list_of_obj
 import 'package:flutter_framework/common/service/oss/progress/upload_image_list/upload_image_list_progress.dart';
 import 'package:flutter_framework/common/service/oss/progress/upload_image_list/upload_image_list_step.dart';
 import 'package:flutter_framework/common/service/oss/protocol/fetch_header_list_of_object_file_list.dart';
-import 'package:flutter_framework/dashboard/dialog/update_record_of_advertisement_progress.dart';
+import 'package:flutter_framework/common/service/oss/protocol/remove_list_of_object_file.dart';
 import 'package:flutter_framework/dashboard/dialog/view_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/utils/convert.dart';
@@ -40,7 +43,6 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
   bool closed = false;
   String from = 'showUpdateRecordOfAdvertisementDialog';
   List<String> sellingPoints = advertisement.getSellingPoints();
-
   var ossHost = '';
   var commonOSSPath = '';
 
@@ -91,7 +93,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
 
   FetchHeaderListOfObjectFileListProgress? fetchHeaderListOfObjectFileListProgress;
   UploadImageListProgress? uploadImageListProgress;
-  UpgradeFieldsOfAdvertisementProgress? upgradeFieldsOfAdvertisementProgress;
+  UpdateRecordOfAdvertisementProgress? updateRecordOfAdvertisementProgress;
   RemoveListOfObjectFileProgress? removeListOfObjectFileProgress;
 
   Stream<int>? stream() async* {
@@ -148,6 +150,70 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
     } finally {}
   }
 
+  void removeListOfObjectFileHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'removeListOfObjectFileHandler';
+    try {
+      var rsp = RemoveListOfObjectFileRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (removeListOfObjectFileProgress != null) {
+        removeListOfObjectFileProgress!.respond(rsp);
+      }
+      if (rsp.getCode() == Code.oK) {
+        return;
+      } else {
+        // error occurs
+        return;
+      }
+    } catch (e) {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
+      return;
+    } finally {}
+  }
+
+  void updateRecordOfAdvertisementHandler({required String major, required String minor, required Map<String, dynamic> body}) {
+    var caller = 'updateRecordOfAdvertisementHandler';
+    try {
+      var rsp = UpdateRecordOfAdvertisementRsp.fromJson(body);
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (updateRecordOfAdvertisementProgress != null) {
+        updateRecordOfAdvertisementProgress!.respond(rsp);
+      }
+      if (rsp.getCode() == Code.oK) {
+        return;
+      } else {
+        // error occurs
+        return;
+      }
+    } catch (e) {
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: from,
+        caller: caller,
+        message: 'failure, err: $e',
+      );
+      return;
+    } finally {}
+  }
+
   void observe(PacketClient packet) {
     var caller = 'observe';
     var major = packet.getHeader().getMajor();
@@ -162,8 +228,11 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
         caller: caller,
         message: 'responded',
       );
-
-      if (major == Major.oss && minor == OSS.fetchHeaderListOfObjectFileListOfAdvertisementRsp) {
+      if (major == Major.admin && minor == Admin.updateRecordOfAdvertisementRsp) {
+        updateRecordOfAdvertisementHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.oss && minor == OSS.removeListOfObjectFileRsp) {
+        removeListOfObjectFileHandler(major: major, minor: minor, body: body);
+      } else if (major == Major.oss && minor == OSS.fetchHeaderListOfObjectFileListOfAdvertisementRsp) {
         fetchHeaderListOfObjectFileListOfAdvertisementHandler(major: major, minor: minor, body: body);
       } else {
         Log.debug(
@@ -188,92 +257,140 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
   }
 
   void figureOutArgument() {
+    List<ImageItem?> images = [
+      coverImage,
+      firstImage,
+      secondImage,
+      thirdImage,
+      fourthImage,
+      fifthImage,
+    ];
+
+    List<ImageItem?> originalImages = [
+      oriCoverImage,
+      oriFistImage,
+      oriSecondImage,
+      oriThirdImage,
+      oriFourthImage,
+      oriFifthImage,
+    ];
+
     nameListOfFile = [];
     objectFileToBeRemoved = [];
     objectDataMapping = {};
     requestHeader = {};
-    if (coverImage.getNative()) {
-      nameListOfFile.add(coverImage.getObjectFileName());
-      objectFileToBeRemoved.add(oriCoverImage.getObjectFileName());
-      objectDataMapping[coverImage.getObjectFileName()] = coverImage.getData();
-    }
 
-    if (firstImage.getNative()) {
-      nameListOfFile.add(firstImage.getObjectFileName());
-      objectFileToBeRemoved.add(oriFistImage.getObjectFileName());
-      objectDataMapping[firstImage.getObjectFileName()] = firstImage.getData();
-    }
+    for (int i = 0; i < images.length; i++) {
+      if (images[i] != null && images[i]!.getNative()) {
+        nameListOfFile.add(images[i]!.getObjectFileName());
 
-    if (secondImage != null) {
-      if (secondImage!.getNative()) {
-        nameListOfFile.add(secondImage!.getObjectFileName());
-        if (oriSecondImage != null) {
-          objectFileToBeRemoved.add(oriSecondImage!.getObjectFileName());
+        if (originalImages[i] != null) {
+          objectFileToBeRemoved.add(originalImages[i]!.getObjectFileName());
         }
-        objectDataMapping[secondImage!.getObjectFileName()] = secondImage!.getData();
-      }
-      if (thirdImage != null) {
-        if (thirdImage!.getNative()) {
-          nameListOfFile.add(thirdImage!.getObjectFileName());
-          if (oriThirdImage != null) {
-            objectFileToBeRemoved.add(oriThirdImage!.getObjectFileName());
-          }
-          objectDataMapping[thirdImage!.getObjectFileName()] = thirdImage!.getData();
+
+        objectDataMapping[images[i]!.getObjectFileName()] = images[i]!.getData();
+      } else if (images[i] == null) {
+        if (i < 2) {
+          continue;
         }
-        if (fourthImage != null) {
-          if (fourthImage!.getNative()) {
-            nameListOfFile.add(fourthImage!.getObjectFileName());
-            if (oriFourthImage != null) {
-              objectFileToBeRemoved.add(oriFourthImage!.getObjectFileName());
-            }
-            objectDataMapping[fourthImage!.getObjectFileName()] = fourthImage!.getData();
-          }
-          if (fifthImage != null) {
-            if (fifthImage!.getNative()) {
-              nameListOfFile.add(fifthImage!.getObjectFileName());
-              if (oriFifthImage != null) {
-                objectFileToBeRemoved.add(oriFifthImage!.getObjectFileName());
-              }
-              objectDataMapping[fifthImage!.getObjectFileName()] = fifthImage!.getData();
-            }
+        for (int j = i; j < images.length; j++) {
+          if (originalImages[j] != null) {
+            objectFileToBeRemoved.add(originalImages[j]!.getObjectFileName());
           }
         }
+        break;
       }
-    }
-
-    if (secondImage == null && oriSecondImage != null) {
-      objectFileToBeRemoved.add(oriSecondImage.getObjectFileName());
-      if (oriThirdImage != null) {
-        objectFileToBeRemoved.add(oriThirdImage.getObjectFileName());
-      }
-      if (oriFourthImage != null) {
-        objectFileToBeRemoved.add(oriFourthImage.getObjectFileName());
-      }
-      if (oriFifthImage != null) {
-        objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
-      }
-    }
-
-    if (thirdImage == null && oriThirdImage != null) {
-      objectFileToBeRemoved.add(oriThirdImage.getObjectFileName());
-      if (oriFourthImage != null) {
-        objectFileToBeRemoved.add(oriFourthImage.getObjectFileName());
-      }
-      if (oriFifthImage != null) {
-        objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
-      }
-    }
-
-    if (fourthImage == null && oriFourthImage != null) {
-      objectFileToBeRemoved.add(oriFourthImage.getObjectFileName());
-      if (oriFifthImage != null) {
-        objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
-      }
-    }
-    if (fifthImage == null && oriFifthImage != null) {
-      objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
     }
   }
+
+  //
+  // void figureOutArgument() {
+  //   nameListOfFile = [];
+  //   objectFileToBeRemoved = [];
+  //   objectDataMapping = {};
+  //   requestHeader = {};
+  //   if (coverImage.getNative()) {
+  //     nameListOfFile.add(coverImage.getObjectFileName());
+  //     objectFileToBeRemoved.add(oriCoverImage.getObjectFileName());
+  //     objectDataMapping[coverImage.getObjectFileName()] = coverImage.getData();
+  //   }
+  //
+  //   if (firstImage.getNative()) {
+  //     nameListOfFile.add(firstImage.getObjectFileName());
+  //     objectFileToBeRemoved.add(oriFistImage.getObjectFileName());
+  //     objectDataMapping[firstImage.getObjectFileName()] = firstImage.getData();
+  //   }
+  //
+  //   if (secondImage != null) {
+  //     if (secondImage!.getNative()) {
+  //       nameListOfFile.add(secondImage!.getObjectFileName());
+  //       if (oriSecondImage != null) {
+  //         objectFileToBeRemoved.add(oriSecondImage!.getObjectFileName());
+  //       }
+  //       objectDataMapping[secondImage!.getObjectFileName()] = secondImage!.getData();
+  //     }
+  //     if (thirdImage != null) {
+  //       if (thirdImage!.getNative()) {
+  //         nameListOfFile.add(thirdImage!.getObjectFileName());
+  //         if (oriThirdImage != null) {
+  //           objectFileToBeRemoved.add(oriThirdImage!.getObjectFileName());
+  //         }
+  //         objectDataMapping[thirdImage!.getObjectFileName()] = thirdImage!.getData();
+  //       }
+  //       if (fourthImage != null) {
+  //         if (fourthImage!.getNative()) {
+  //           nameListOfFile.add(fourthImage!.getObjectFileName());
+  //           if (oriFourthImage != null) {
+  //             objectFileToBeRemoved.add(oriFourthImage!.getObjectFileName());
+  //           }
+  //           objectDataMapping[fourthImage!.getObjectFileName()] = fourthImage!.getData();
+  //         }
+  //         if (fifthImage != null) {
+  //           if (fifthImage!.getNative()) {
+  //             nameListOfFile.add(fifthImage!.getObjectFileName());
+  //             if (oriFifthImage != null) {
+  //               objectFileToBeRemoved.add(oriFifthImage!.getObjectFileName());
+  //             }
+  //             objectDataMapping[fifthImage!.getObjectFileName()] = fifthImage!.getData();
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   if (secondImage == null && oriSecondImage != null) {
+  //     objectFileToBeRemoved.add(oriSecondImage.getObjectFileName());
+  //     if (oriThirdImage != null) {
+  //       objectFileToBeRemoved.add(oriThirdImage.getObjectFileName());
+  //     }
+  //     if (oriFourthImage != null) {
+  //       objectFileToBeRemoved.add(oriFourthImage.getObjectFileName());
+  //     }
+  //     if (oriFifthImage != null) {
+  //       objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
+  //     }
+  //   }
+  //
+  //   if (thirdImage == null && oriThirdImage != null) {
+  //     objectFileToBeRemoved.add(oriThirdImage.getObjectFileName());
+  //     if (oriFourthImage != null) {
+  //       objectFileToBeRemoved.add(oriFourthImage.getObjectFileName());
+  //     }
+  //     if (oriFifthImage != null) {
+  //       objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
+  //     }
+  //   }
+  //
+  //   if (fourthImage == null && oriFourthImage != null) {
+  //     objectFileToBeRemoved.add(oriFourthImage.getObjectFileName());
+  //     if (oriFifthImage != null) {
+  //       objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
+  //     }
+  //   }
+  //   if (fifthImage == null && oriFifthImage != null) {
+  //     objectFileToBeRemoved.add(oriFifthImage.getObjectFileName());
+  //   }
+  // }
 
   void setup() {
     try {
@@ -992,114 +1109,125 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                   step: step,
                   message: Translator.translate(Language.attemptToRemoveListOfObjectFile),
                 );
-                removeListOfObjectFileProgress!.show(context: context).then((value) {
+                await removeListOfObjectFileProgress!.show(context: context).then((value) {
                   if (value != Code.oK) {
-
+                    print('remove list of object file failure');
                   }
+                  removeListOfObjectFileProgress = null;
                 });
               }
 
               if (nameListOfFile.isNotEmpty) {
-                if (fetchHeaderListOfObjectFileListProgress == null) {
-                  var step = FetchHeaderListOfObjectFileListStep.construct();
-                  step.setNameListOfFile(nameListOfFile);
-                  fetchHeaderListOfObjectFileListProgress = FetchHeaderListOfObjectFileListProgress.construct(
-                    result: -1,
-                    step: step,
-                    message: Translator.translate(Language.attemptToFetchHeaderListOfOSSObjectFile),
-                  );
-                  await fetchHeaderListOfObjectFileListProgress!.show(context: context).then((value) {
-                    if (value != Code.oK) {
-                      showMessageDialog(
-                        context,
-                        Translator.translate(Language.titleOfNotification),
-                        '${Translator.translate(Language.failureWithErrorCode)}  ${step.getCode()}',
-                      ).then((value) {
-                        fetchHeaderListOfObjectFileListProgress = null;
-                      });
+                var step1 = FetchHeaderListOfObjectFileListStep.construct();
+                step1.setNameListOfFile(nameListOfFile);
+                fetchHeaderListOfObjectFileListProgress = FetchHeaderListOfObjectFileListProgress.construct(
+                  result: -1,
+                  step: step1,
+                  message: Translator.translate(Language.attemptToFetchHeaderListOfOSSObjectFile),
+                );
+                await fetchHeaderListOfObjectFileListProgress!.show(context: context).then((value) {
+                  if (value != Code.oK) {
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      '${Translator.translate(Language.failureWithErrorCode)}  ${step1.getCode()}',
+                    ).then((value) {
+                      fetchHeaderListOfObjectFileListProgress = null;
+                    });
+                    return;
+                  }
+                });
+                var step2 = UploadImageListStep.construct(
+                  ossHost: ossHost,
+                  requestHeader: requestHeader,
+                  objectDataMapping: objectDataMapping,
+                );
+                uploadImageListProgress = UploadImageListProgress.construct(
+                  result: -2,
+                  step: step2,
+                  message: Translator.translate(Language.attemptToUploadImageList),
+                );
+                await uploadImageListProgress!.show(context: context).then((value) {
+                  if (value != Code.oK) {
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      '${Translator.translate(Language.failureWithErrorCode)} -2',
+                    ).then((value) {
+                      fetchHeaderListOfObjectFileListProgress = null;
+                      uploadImageListProgress = null;
                       return;
-                    } else {
-                      var step = UploadImageListStep.construct(
-                        ossHost: ossHost,
-                        requestHeader: requestHeader,
-                        objectDataMapping: objectDataMapping,
-                      );
-                      uploadImageListProgress = UploadImageListProgress.construct(
-                        result: -2,
-                        step: step,
-                        message: Translator.translate(Language.attemptToUploadImageList),
-                      );
-                      uploadImageListProgress!.show(context: context).then((value) {
-                        if (value != Code.oK) {
-                          showMessageDialog(
-                            context,
-                            Translator.translate(Language.titleOfNotification),
-                            '${Translator.translate(Language.failureWithErrorCode)} -2',
-                          ).then((value) {
-                            return;
-                          });
-                        }
-                      });
-                    }
-                  });
-                }
+                    });
+                    return;
+                  }
+                  fetchHeaderListOfObjectFileListProgress = null;
+                  uploadImageListProgress = null;
+                });
               }
 
-              // if (imageMap.length < 2) {
-              //   showMessageDialog(
-              //     context,
-              //     Translator.translate(Language.titleOfNotification),
-              //     Translator.translate(Language.imageOfAdvertisementNotProvided),
-              //   );
-              //   return;
-              // }
-              // var tempImageMap = () {
-              //   Map<String, ImageItem> output = {};
-              //   imageMap.forEach(
-              //     (key, value) {
-              //       output[key] = value;
-              //     },
-              //   );
-              //   return output;
-              // }();
-
-              // showUpdateRecordOfAdvertisementProgressDialog(
-              //   context,
-              //   advertisementId: advertisement.getId(),
-              //   name: nameController.text,
-              //   stock: int.parse(stockController.text),
-              //   status: status,
-              //   productId: advertisement.getProductId(),
-              //   title: titleController.text,
-              //   sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
-              //   sellingPoints: sellingPoints,
-              //   image: '',
-              //   imageMap: tempImageMap,
-              //   placeOfOrigin: placeOfOriginController.text,
-              //   oriImageMap: oriImageMap,
-              //   commonPath: commonPath,
-              // ).then(
-              //   (value) {
-              //     if (value == Code.oK) {
-              //       showMessageDialog(
-              //         context,
-              //         Translator.translate(Language.titleOfNotification),
-              //         Translator.translate(Language.updateRecordSuccessfully),
-              //       ).then(
-              //         (value) {
-              //           Navigator.pop(context, true);
-              //         },
-              //       );
-              //     } else {
-              //       // error occurs
-              //       showMessageDialog(
-              //         context,
-              //         Translator.translate(Language.titleOfNotification),
-              //         '${Translator.translate(Language.failureWithErrorCode)}  $value',
-              //       );
-              //     }
-              //   },
-              // );
+              if (updateRecordOfAdvertisementProgress == null) {
+                ImageItem? second, third, fourth, fifth;
+                if (secondImage != null) {
+                  // print('secondImage != null');
+                  second = secondImage;
+                  if (thirdImage != null) {
+                    // print('thirdImage != null');
+                    third = thirdImage;
+                    if (fourthImage != null) {
+                      // print('fourthImage != null');
+                      fourth = fourthImage;
+                      if (fifthImage != null) {
+                        // print('fifthImage != null');
+                        fifth = fifthImage;
+                      }
+                    }
+                  }
+                }
+                var step = UpdateRecordOfAdvertisementStep.construct(
+                  id: advertisement.getId(),
+                  coverImage: ImageItem.transToImageField(coverImage),
+                  firstImage: ImageItem.transToImageField(firstImage),
+                  secondImage: ImageItem.transToImageField(second),
+                  thirdImage: ImageItem.transToImageField(third),
+                  fourthImage: ImageItem.transToImageField(fourth),
+                  fifthImage: ImageItem.transToImageField(fifth),
+                  name: nameController.text,
+                  title: titleController.text,
+                  stock: int.parse(stockController.text),
+                  status: status,
+                  productId: int.parse(productIdController.text),
+                  sellingPrice: Convert.doubleStringMultiple10toInt(sellingPriceController.text),
+                  sellingPoints: sellingPoints,
+                  placeOfOrigin: placeOfOriginController.text,
+                );
+                updateRecordOfAdvertisementProgress = UpdateRecordOfAdvertisementProgress.construct(
+                  result: -3,
+                  step: step,
+                  message: Translator.translate(Language.attemptToUpdateRecordOfAdvertisement),
+                );
+                await updateRecordOfAdvertisementProgress!.show(context: context).then((value) {
+                  if (value == Code.oK) {
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      Translator.translate(Language.updateRecordSuccessfully),
+                    ).then(
+                      (value) {
+                        updateRecordOfAdvertisementProgress = null;
+                        Navigator.pop(context, true);
+                      },
+                    );
+                  } else {
+                    // error occurs
+                    showMessageDialog(
+                      context,
+                      Translator.translate(Language.titleOfNotification),
+                      '${Translator.translate(Language.failureWithErrorCode)}  ${step.getCode()}',
+                    );
+                    updateRecordOfAdvertisementProgress = null;
+                  }
+                });
+              }
             },
             child: Text(Translator.translate(Language.confirm)),
           ),

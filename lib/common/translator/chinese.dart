@@ -191,6 +191,7 @@ class Chinese {
     Language.attemptToRemoveListOfObjectFile: '尝试删除OSS图片文件',
     Language.attemptToInsertRecordOfUser: '尝试插入用户记录',
     Language.attemptToSoftDeleteRecordsOfUser: '尝试删除用户记录....',
+    Language.attemptToUpdateRecordOfAdvertisement: '尝试更新广告记录',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',
