@@ -21,10 +21,10 @@ class _State extends State<Entry> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: scaffoldBackgroundColor,
+        scaffoldBackgroundColor: THEME.scaffoldBackgroundColor,
         // textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
         //     .apply(bodyColor: Colors.white),
-        canvasColor: secondaryColor,
+        canvasColor: THEME.secondaryColor,
       ),
       initialRoute: '/loading',
       routes: {

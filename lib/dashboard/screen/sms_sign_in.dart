@@ -11,6 +11,7 @@ import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
+import 'package:flutter_framework/dashboard/theme.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'screen.dart';
 import 'package:flutter_framework/utils/navigate.dart';

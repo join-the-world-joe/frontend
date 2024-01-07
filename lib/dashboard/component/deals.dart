@@ -24,6 +24,7 @@ import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/model/ad_of_deals.dart';
+import 'package:flutter_framework/dashboard/theme.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
@@ -382,6 +383,9 @@ class _State extends State<Deals> {
                       },
                       actions: [
                         ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           icon: const Icon(Icons.refresh),
                           onPressed: () async {
                             resetSource();
@@ -397,6 +401,9 @@ class _State extends State<Deals> {
                           ),
                         ),
                         ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           icon: const Icon(Icons.add),
                           onPressed: () async {
                             showApproveAdvertisementDialog(context).then(
@@ -416,6 +423,9 @@ class _State extends State<Deals> {
                           ),
                         ),
                         ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           icon: const Icon(Icons.publish),
                           onPressed: () async {
                             if (idList.isEmpty) {

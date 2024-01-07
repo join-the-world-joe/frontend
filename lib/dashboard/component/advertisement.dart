@@ -17,6 +17,7 @@ import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart
 import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/local/image_item.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
+import 'package:flutter_framework/dashboard/theme.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
@@ -314,6 +315,9 @@ class _State extends State<Advertisement> {
                         height: 30,
                         width: 100,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           onPressed: () {
                             var caller = 'ElevatedButton.onPress';
                             if (idController.text.isEmpty && nameController.text.isEmpty) {
@@ -357,6 +361,9 @@ class _State extends State<Advertisement> {
                         height: 30,
                         width: 100,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           onPressed: () {
                             idController.text = '';
                             nameController.text = '';
@@ -386,6 +393,9 @@ class _State extends State<Advertisement> {
                       },
                       actions: [
                         ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           icon: const Icon(Icons.add),
                           onPressed: () async {
                             showInsertRecordOfAdvertisementDialog(context);

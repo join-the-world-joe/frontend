@@ -22,6 +22,7 @@ import 'package:flutter_framework/dashboard/dialog/approve_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/reject_advertisement.dart';
 import 'package:flutter_framework/common/service/advertisement/dialog/selling_point_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/model/ad_of_carousel.dart';
+import 'package:flutter_framework/dashboard/theme.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
@@ -385,6 +386,9 @@ class _State extends State<Carousel> {
                       },
                       actions: [
                         ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           icon: const Icon(Icons.refresh),
                           onPressed: () async {
                             resetSource();
@@ -400,6 +404,9 @@ class _State extends State<Carousel> {
                           ),
                         ),
                         ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           icon: const Icon(Icons.add),
                           onPressed: () async {
                             showApproveAdvertisementDialog(context).then(
@@ -419,6 +426,9 @@ class _State extends State<Carousel> {
                           ),
                         ),
                         ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           icon: const Icon(Icons.publish),
                           onPressed: () async {
                             if (idList.isEmpty) {

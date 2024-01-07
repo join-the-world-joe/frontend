@@ -14,6 +14,7 @@ import 'package:flutter_framework/common/service/admin/dialog/insert_record_of_p
 import 'package:flutter_framework/common/service/admin/dialog/soft_delete_record_of_product.dart';
 import 'package:flutter_framework/common/service/admin/dialog/update_record_of_product.dart';
 import 'package:flutter_framework/dashboard/model/user_list.dart';
+import 'package:flutter_framework/dashboard/theme.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/convert.dart';
@@ -316,6 +317,9 @@ class _State extends State<Product> {
                         height: 30,
                         width: 100,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           onPressed: () {
                             if (idController.text.isEmpty && nameController.text.isEmpty) {
                               resetSource();
@@ -360,6 +364,9 @@ class _State extends State<Product> {
                         height: 30,
                         width: 100,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           onPressed: () {
                             idController.text = '';
                             nameController.text = '';
@@ -386,6 +393,9 @@ class _State extends State<Product> {
                       },
                       actions: [
                         ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: THEME.backgroundColorOfButton,
+                          ),
                           icon: const Icon(Icons.add),
                           onPressed: () async {
                             showInsertRecordOfProductDialog(context);
