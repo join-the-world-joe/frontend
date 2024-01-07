@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/service/admin/business/insert_record_of_ad_of_carousel.dart';
+import 'package:flutter_framework/common/service/admin/progress/insert_record_of_ad_of_carousel/insert_record_of_ad_of_carousel_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/insert_record_of_ad_of_carousel/insert_record_of_ad_of_carousel_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_ad_of_carousel.dart';
 import 'package:flutter_framework/common/service/advertisement/business/fetch_id_list_of_ad_of_carousel.dart';
 import 'package:flutter_framework/common/code/code.dart';
@@ -18,9 +20,12 @@ import 'dart:async';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
-import 'package:flutter_framework/dashboard/dialog/approve_advertisement.dart';
-import 'package:flutter_framework/dashboard/dialog/reject_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/dialog/approve_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/dialog/reject_advertisement.dart';
 import 'package:flutter_framework/common/service/advertisement/dialog/selling_point_of_advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
+import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
+import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/model/ad_of_carousel.dart';
 import 'package:flutter_framework/dashboard/theme.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
@@ -53,6 +58,7 @@ class _State extends State<Carousel> {
   Map<int, ADOfCarousel> dataMap = {};
   Map<int, DateTime> datetimeMap = {};
   Map<int, bool> boolMap = {};
+  InsertRecordOfADOfCarouselProgress? insertRecordOfADOfCarouselProgress;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -87,18 +93,15 @@ class _State extends State<Carousel> {
     var caller = 'insertRecordOfADOfCarouselHandler';
     try {
       var rsp = InsertRecordOfADOfCarouselRsp.fromJson(body);
-      if (rsp.getCode() == Code.oK) {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.publishAdvertisementsSuccessfully),
-        );
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Carousel.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (insertRecordOfADOfCarouselProgress != null) {
+        insertRecordOfADOfCarouselProgress!.respond(rsp);
       }
     } catch (e) {
       Log.debug(
@@ -439,11 +442,32 @@ class _State extends State<Carousel> {
                               );
                               return;
                             }
-                            insertRecordOfADOfCarousel(
-                              from: Carousel.content,
-                              caller: caller,
-                              advertisementIdList: idList,
-                            );
+                            if (insertRecordOfADOfCarouselProgress == null) {
+                              var step = InsertRecordOfADOfCarouselStep.construct(
+                                advertisementIdList: idList,
+                              );
+                              insertRecordOfADOfCarouselProgress = InsertRecordOfADOfCarouselProgress.construct(
+                                step: step,
+                                message: Translator.translate(Language.attemptToInsertRecordOfADOfCarousel),
+                              );
+                              insertRecordOfADOfCarouselProgress!.show(context: context).then((value) {
+                                if (value != Code.oK) {
+                                  showMessageDialog(
+                                    context,
+                                    Translator.translate(Language.titleOfNotification),
+                                    '${Translator.translate(Language.failureWithErrorCode)}  ${step.getCode()}',
+                                  );
+                                } else {
+                                  // success
+                                  showMessageDialog(
+                                    context,
+                                    Translator.translate(Language.titleOfNotification),
+                                    Translator.translate(Language.publishAdvertisementsSuccessfully),
+                                  );
+                                }
+                                insertRecordOfADOfCarouselProgress = null;
+                              });
+                            }
                           },
                           label: Text(
                             Translator.translate(Language.titleOfPublishOfAdvertisement),
@@ -527,7 +551,6 @@ class Source extends DataTableSource {
     // var statusOfAdvertisement = Translator.translate(Language.loading);
     Text status = Text(Translator.translate(Language.loading));
     List<String> sellingPoints = [];
-    Map<String, ImageItem> imageMap = {};
 
     var key = idList[index];
 
@@ -556,22 +579,6 @@ class Source extends DataTableSource {
                 ));
         sellingPoints = dataMap[key]!.getSellingPoints();
         sellingPrice = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
-        try {
-          Map<String, dynamic> image = jsonDecode(dataMap[key]!.getImage());
-          image.forEach((key, value) {
-            imageMap[key] = ImageItem.construct(
-              native: false,
-              data: Uint8List(0),
-              objectFileName: '',
-              url: value,
-              nativeFileName: '',
-              width: 0,
-              height: 0,
-            );
-          });
-        } catch (e) {
-          print('showUpdateAdvertisementDialog failure, err: $e');
-        }
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
@@ -631,17 +638,13 @@ class Source extends DataTableSource {
             tooltip: Translator.translate(Language.clickToView),
             icon: const Icon(Icons.search),
             onPressed: () {
-              // show thumbnail
-              // print('view thumbnail');
-              // showViewNetworkImageDialog(buildContext, () {
-              //   String output = '';
-              //   imageMap.forEach((key, value) {
-              //     if (key.contains(Config.thumbnailPrefix)) {
-              //       output = value.getUrl();
-              //     }
-              //   });
-              //   return output;
-              // }());
+              var coverImageUrl = ImageItem.getImageUrl(dataMap[key]!.getCoverImage(), dataMap[key]!.getOSSPath());
+              var ret = Uri.parse(coverImageUrl).isAbsolute;
+              if (!ret) {
+                showWarningDialog(buildContext, Translator.translate(Language.urlIllegal));
+                return;
+              }
+              showViewNetworkImageDialog(buildContext, coverImageUrl);
             },
           ),
         ),
@@ -652,15 +655,17 @@ class Source extends DataTableSource {
             onPressed: () {
               // show image
               // print('view image');
-              // showViewNetworkImageGroupDialog(buildContext, () {
-              //   List<String> output = [];
-              //   imageMap.forEach((key, value) {
-              //     if (!key.contains(Config.thumbnailPrefix)) {
-              //       output.add(value.getUrl());
-              //     }
-              //   });
-              //   return output;
-              // }());
+              showViewNetworkImageGroupDialog(
+                buildContext,
+                ImageItem.getImageUrlList(
+                  first: dataMap[key]!.getFirstImage(),
+                  second: dataMap[key]!.getSecondImage(),
+                  third: dataMap[key]!.getThirdImage(),
+                  fourth: dataMap[key]!.getFourthImage(),
+                  fifth: dataMap[key]!.getFifthImage(),
+                  ossPath: dataMap[key]!.getOSSPath(),
+                ),
+              );
             },
           ),
         ),

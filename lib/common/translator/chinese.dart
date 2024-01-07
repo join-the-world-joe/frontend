@@ -192,6 +192,8 @@ class Chinese {
     Language.attemptToInsertRecordOfUser: '尝试插入用户记录',
     Language.attemptToSoftDeleteRecordsOfUser: '尝试删除用户记录....',
     Language.attemptToUpdateRecordOfAdvertisement: '尝试更新广告记录',
+    Language.attemptToInsertRecordOfADOfDeals: '尝试插入今日特价广告',
+    Language.attemptToInsertRecordOfADOfCarousel: '尝试插入轮播广告',
 
     // inform.notification
     Language.eventForceOffline: '强制下线',

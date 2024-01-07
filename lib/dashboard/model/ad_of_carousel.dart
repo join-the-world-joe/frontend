@@ -8,19 +8,31 @@ class ADOfCarousel {
   String _placeOfOrigin = '';
   int _advertisementId = -1;
   String _advertisementName = '';
-  String _image = '';
   int _status = -1;
+  String _coverImage = '';
+  String _firstImage = '';
+  String _secondImage = '';
+  String _thirdImage = '';
+  String _fourthImage = '';
+  String _fifthImage = '';
+  String _ossPath = '';
 
   ADOfCarousel.construct({
     required String title,
     required int stock,
     required int status,
+    required String ossPath,
     required int sellingPrice,
     required int productId,
     required String productName,
     required List<String> sellingPoints,
     required String placeOfOrigin,
-    required String image,
+    required String coverImage,
+    required String firstImage,
+    required String secondImage,
+    required String thirdImage,
+    required String fourthImage,
+    required String fifthImage,
     required int advertisementId,
     required String advertisementName,
   }) {
@@ -32,9 +44,16 @@ class ADOfCarousel {
     _productName = productName;
     _sellingPoints = sellingPoints;
     _placeOfOrigin = placeOfOrigin;
-    _image = image;
     _advertisementId = advertisementId;
     _advertisementName = advertisementName;
+
+    _coverImage = coverImage;
+    _firstImage = firstImage;
+    _secondImage = secondImage;
+    _thirdImage = thirdImage;
+    _fourthImage = fourthImage;
+    _fifthImage = fifthImage;
+    _ossPath = ossPath;
   }
 
   String getTitle() {
@@ -61,8 +80,32 @@ class ADOfCarousel {
     return _productName;
   }
 
-  String getImage() {
-    return _image;
+  String getOSSPath() {
+    return _ossPath;
+  }
+
+  String getCoverImage() {
+    return _coverImage;
+  }
+
+  String getFirstImage() {
+    return _firstImage;
+  }
+
+  String getSecondImage() {
+    return _secondImage;
+  }
+
+  String getThirdImage() {
+    return _thirdImage;
+  }
+
+  String getFourthImage() {
+    return _fourthImage;
+  }
+
+  String getFifthImage() {
+    return _fifthImage;
   }
 
   List<String> getSellingPoints() {

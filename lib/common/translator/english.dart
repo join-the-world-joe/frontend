@@ -192,6 +192,8 @@ class English {
     Language.attemptToInsertRecordOfUser : 'Insert User....',
     Language.attemptToSoftDeleteRecordsOfUser: 'Remove User....',
     Language.attemptToUpdateRecordOfAdvertisement: 'Update Advertisement',
+    Language.attemptToInsertRecordOfADOfDeals : 'Insert Deals',
+    Language.attemptToInsertRecordOfADOfCarousel: 'Insert Carousel',
 
     // inform.notification
     Language.eventForceOffline: 'Force Offline',

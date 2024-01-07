@@ -1,31 +1,39 @@
 import 'package:flutter_framework/common/code/code.dart';
+import 'package:flutter_framework/common/service/admin/business/insert_record_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/service/admin/business/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/common/service/admin/business/insert_record_of_product.dart';
+import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_product.dart';
 import 'package:flutter_framework/common/service/advertisement/protocol/insert_record_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/model/advertisement.dart';
 
-class InsertRecordOfAdvertisementStep {
-  String from = 'InsertRecordOfAdvertisementStep';
+class InsertRecordOfADOfDealsStep {
+  String from = 'InsertRecordOfADOfDealsStep';
   DateTime _requestTime = DateTime.now();
   bool _requested = false;
   bool _responded = false;
   final Duration _defaultTimeout = Config.httpDefaultTimeout;
-  InsertRecordOfAdvertisementRsp? _rsp;
-  Advertisement? _record;
+  InsertRecordOfADOfDealsRsp? _rsp;
+  List<int> _advertisementIdList = [];
 
-  InsertRecordOfAdvertisementStep.construct({
-    required int result,
-    required Advertisement record,
+  InsertRecordOfADOfDealsStep.construct({
+    required List<int> advertisementIdList,
   }) {
     _rsp = null;
     _requested = false;
     _responded = false;
-    _record = record;
+    _advertisementIdList = advertisementIdList;
   }
 
-  void respond(InsertRecordOfAdvertisementRsp rsp) {
+  int getCode() {
+    if (_rsp != null) {
+      return _rsp!.getCode();
+    }
+    return 1;
+  }
+
+  void respond(InsertRecordOfADOfDealsRsp rsp) {
     _rsp = rsp;
     _responded = true;
   }
@@ -41,24 +49,10 @@ class InsertRecordOfAdvertisementStep {
     var caller = 'progress';
     if (!_requested) {
       _requestTime = DateTime.now();
-      insertRecordOfAdvertisement(
+      insertRecordOfADOfDeals(
         from: from,
         caller: caller,
-        name: _record!.getName(),
-        title: _record!.getTitle(),
-        sellingPrice: _record!.getSellingPrice(),
-        sellingPoints: _record!.getSellingPoints(),
-        coverImage: _record!.getCoverImage(),
-        firstImage: _record!.getFirstImage(),
-        secondImage: _record!.getSecondImage(),
-        thirdImage: _record!.getThirdImage(),
-        fourthImage: _record!.getFourthImage(),
-        fifthImage: _record!.getFifthImage(),
-        placeOfOrigin: _record!.getPlaceOfOrigin(),
-        stock: _record!.getStock(),
-        productId: _record!.getProductId(),
-        ossFolder: _record!.getOSSFolder(),
-        ossPath: _record!.getOSSPath(),
+        advertisementIdList: _advertisementIdList,
       );
       _requested = true;
     }

@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_framework/common/service/admin/business/insert_record_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/service/admin/progress/insert_record_of_ad_of_deals/insert_record_of_ad_of_deals_progress.dart';
+import 'package:flutter_framework/common/service/admin/progress/insert_record_of_ad_of_deals/insert_record_of_ad_of_deals_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/service/advertisement/business/fetch_id_list_of_ad_of_deals.dart';
 import 'package:flutter_framework/common/service/advertisement/business/fetch_records_of_ad_of_deals.dart';
@@ -16,9 +18,8 @@ import 'package:flutter_framework/common/service/advertisement/protocol/fetch_ve
 import 'dart:async';
 import 'package:flutter_framework/common/translator/language.dart';
 import 'package:flutter_framework/common/translator/translator.dart';
-import 'package:flutter_framework/dashboard/config/config.dart';
-import 'package:flutter_framework/dashboard/dialog/approve_advertisement.dart';
-import 'package:flutter_framework/dashboard/dialog/reject_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/dialog/approve_advertisement.dart';
+import 'package:flutter_framework/common/service/admin/dialog/reject_advertisement.dart';
 import 'package:flutter_framework/common/service/advertisement/dialog/selling_point_of_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
@@ -55,6 +56,7 @@ class _State extends State<Deals> {
   Map<int, ADOfDeals> dataMap = {};
   Map<int, DateTime> datetimeMap = {};
   Map<int, bool> boolMap = {};
+  InsertRecordOfADOfDealsProgress? insertRecordOfADOfDealsProgress;
 
   Stream<int>? stream() async* {
     var lastStage = curStage;
@@ -89,18 +91,15 @@ class _State extends State<Deals> {
     var caller = 'insertRecordOfADOfDealsHandler';
     try {
       var rsp = InsertRecordOfADOfDealsRsp.fromJson(body);
-      if (rsp.getCode() == Code.oK) {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          Translator.translate(Language.publishAdvertisementsSuccessfully),
-        );
-      } else {
-        showMessageDialog(
-          context,
-          Translator.translate(Language.titleOfNotification),
-          '${Translator.translate(Language.failureWithErrorCode)}  ${rsp.getCode()}',
-        );
+      Log.debug(
+        major: major,
+        minor: minor,
+        from: Deals.content,
+        caller: caller,
+        message: 'code: ${rsp.getCode()}',
+      );
+      if (insertRecordOfADOfDealsProgress != null) {
+        insertRecordOfADOfDealsProgress!.respond(rsp);
       }
     } catch (e) {
       Log.debug(
@@ -436,11 +435,32 @@ class _State extends State<Deals> {
                               );
                               return;
                             }
-                            insertRecordOfADOfDeals(
-                              from: Deals.content,
-                              caller: '$caller.insertRecordOfADOfDeals',
-                              advertisementIdList: idList,
-                            );
+                            if (insertRecordOfADOfDealsProgress == null) {
+                              var step = InsertRecordOfADOfDealsStep.construct(
+                                advertisementIdList: idList,
+                              );
+                              insertRecordOfADOfDealsProgress = InsertRecordOfADOfDealsProgress.construct(
+                                step: step,
+                                message: Translator.translate(Language.attemptToInsertRecordOfADOfDeals),
+                              );
+                              insertRecordOfADOfDealsProgress!.show(context: context).then((value) {
+                                if (value != Code.oK) {
+                                  showMessageDialog(
+                                    context,
+                                    Translator.translate(Language.titleOfNotification),
+                                    '${Translator.translate(Language.failureWithErrorCode)}  ${step.getCode()}',
+                                  );
+                                } else {
+                                  // success
+                                  showMessageDialog(
+                                    context,
+                                    Translator.translate(Language.titleOfNotification),
+                                    Translator.translate(Language.publishAdvertisementsSuccessfully),
+                                  );
+                                }
+                                insertRecordOfADOfDealsProgress = null;
+                              });
+                            }
                           },
                           label: Text(
                             Translator.translate(Language.titleOfPublishOfAdvertisement),

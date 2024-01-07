@@ -5,7 +5,7 @@ import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 import 'package:flutter_framework/utils/log.dart';
 import 'package:flutter_framework/utils/spacing.dart';
-import '../config/config.dart';
+import '../../../../dashboard/config/config.dart';
 
 Future<bool> showRejectAdvertisementDialog(BuildContext context, String id, String name) async {
   var oriObserve = Runtime.getObserve();

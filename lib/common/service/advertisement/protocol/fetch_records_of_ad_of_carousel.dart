@@ -49,7 +49,13 @@ class FetchRecordsOfADOfCarouselRsp {
             productName: element['product_name'],
             placeOfOrigin: element['place_of_origin'],
             sellingPoints: Convert.base64StringList2ListString(List<String>.from(element['selling_points'] as List)),
-            image: element['image'],
+            coverImage: element['cover_image'],
+            firstImage: element['first_image'],
+            secondImage: element['second_image'],
+            thirdImage: element['third_image'],
+            fourthImage: element['fourth_image'],
+            fifthImage: element['fifth_image'],
+            ossPath: element['oss_path'],
           );
         }
       }
