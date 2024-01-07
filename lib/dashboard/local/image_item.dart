@@ -147,4 +147,55 @@ class ImageItem {
       height: height,
     );
   }
+
+  static String getImageUrl(String imageField, String ossPath) {
+    String output = '';
+    try {
+      var imageItem = ImageItem.fromRemote(imageField, ossPath);
+      output = imageItem.getUrl();
+    } catch (e) {
+      print('ImageItem.getImageUrl failure, err: $e');
+    }
+    return output;
+  }
+
+  static List<String> getImageUrlList({
+    required String first,
+    required String second,
+    required String third,
+    required String fourth,
+    required String fifth,
+    required String ossPath,
+  }) {
+    List<String> output = [];
+    try {
+      if (first.isEmpty) {
+        return output;
+      }
+      output.add(getImageUrl(first, ossPath));
+
+      if (second.isEmpty) {
+        return output;
+      }
+      output.add(getImageUrl(second, ossPath));
+
+      if (third.isEmpty) {
+        return output;
+      }
+      output.add(getImageUrl(third, ossPath));
+
+      if (fourth.isEmpty) {
+        return output;
+      }
+      output.add(getImageUrl(fourth, ossPath));
+
+      if (fifth.isEmpty) {
+        return output;
+      }
+      output.add(getImageUrl(fifth, ossPath));
+    } catch (e) {
+      print('ImageItem.getImageUrlList failure, err: $e');
+    }
+    return output;
+  }
 }

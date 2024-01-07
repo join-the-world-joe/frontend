@@ -20,7 +20,9 @@ import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/dashboard/dialog/approve_advertisement.dart';
 import 'package:flutter_framework/dashboard/dialog/reject_advertisement.dart';
 import 'package:flutter_framework/common/service/advertisement/dialog/selling_point_of_advertisement.dart';
+import 'package:flutter_framework/dashboard/dialog/view_network_image.dart';
 import 'package:flutter_framework/dashboard/dialog/view_network_image_group.dart';
+import 'package:flutter_framework/dashboard/dialog/warning.dart';
 import 'package:flutter_framework/dashboard/model/ad_of_deals.dart';
 import 'package:flutter_framework/framework/packet_client.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
@@ -152,15 +154,13 @@ class _State extends State<Deals> {
         message: 'code: ${rsp.getCode()}',
       );
       if (rsp.getCode() == Code.oK) {
-        if (Config.debug) {
-          Log.debug(
-            major: major,
-            minor: minor,
-            from: Deals.content,
-            caller: caller,
-            message: 'advertisement id list: ${rsp.getIdList()}',
-          );
-        }
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Deals.content,
+          caller: caller,
+          message: 'advertisement id list: ${rsp.getIdList()}',
+        );
         if (rsp.getIdList().isEmpty) {
           showMessageDialog(
             context,
@@ -205,21 +205,21 @@ class _State extends State<Deals> {
       );
       if (rsp.getCode() == Code.oK) {
         // print('data map: ${rsp.getDataMap().toString()}');
-        if (Config.debug) {
-          List<int> tempIdList = [];
-          if (rsp.getDataMap().isNotEmpty) {
-            rsp.getDataMap().forEach((key, value) {
-              tempIdList.add(value.getAdvertisementId());
-            });
-          }
-          Log.debug(
-            major: major,
-            minor: minor,
-            from: Deals.content,
-            caller: caller,
-            message: 'advertisement id list: $tempIdList',
-          );
+
+        List<int> tempIdList = [];
+        if (rsp.getDataMap().isNotEmpty) {
+          rsp.getDataMap().forEach((key, value) {
+            tempIdList.add(value.getAdvertisementId());
+          });
         }
+        Log.debug(
+          major: major,
+          minor: minor,
+          from: Deals.content,
+          caller: caller,
+          message: 'advertisement id list: $tempIdList',
+        );
+
         if (rsp.getDataMap().isEmpty) {
           showMessageDialog(
             context,
@@ -514,7 +514,7 @@ class Source extends DataTableSource {
     // var statusOfAdvertisement = Translator.translate(Language.loading);
     Text status = Text(Translator.translate(Language.loading));
     List<String> sellingPoints = [];
-    Map<String, ImageItem> imageMap = {};
+    // Map<String, ImageItem> imageMap = {};
 
     var key = idList[index];
 
@@ -543,22 +543,6 @@ class Source extends DataTableSource {
                 ));
         sellingPoints = dataMap[key]!.getSellingPoints();
         sellingPrice = Convert.intDivide10toDoubleString(dataMap[key]!.getSellingPrice());
-        try {
-          Map<String, dynamic> image = jsonDecode(dataMap[key]!.getImage());
-          image.forEach((key, value) {
-            imageMap[key] = ImageItem.construct(
-              native: false,
-              data: Uint8List(0),
-              objectFileName: '',
-              url: value,
-              nativeFileName: '',
-              width: 0,
-              height: 0,
-            );
-          });
-        } catch (e) {
-          print('showUpdateAdvertisementDialog failure, err: $e');
-        }
       } else {
         print("unknown error: dataMap.containsKey(key) == false");
       }
@@ -618,17 +602,15 @@ class Source extends DataTableSource {
             tooltip: Translator.translate(Language.clickToView),
             icon: const Icon(Icons.search),
             onPressed: () {
-              // show thumbnail
-              // print('view thumbnail');
-              // showViewNetworkImageDialog(buildContext, () {
-              //   String output = '';
-              //   imageMap.forEach((key, value) {
-              //     if (key.contains(Config.thumbnailPrefix)) {
-              //       output = value.getUrl();
-              //     }
-              //   });
-              //   return output;
-              // }());
+              // show cover image
+              // print('view cover image');
+              var coverImageUrl = ImageItem.getImageUrl(dataMap[key]!.getCoverImage(), dataMap[key]!.getOSSPath());
+              var ret = Uri.parse(coverImageUrl).isAbsolute;
+              if (!ret) {
+                showWarningDialog(buildContext, Translator.translate(Language.urlIllegal));
+                return;
+              }
+              showViewNetworkImageDialog(buildContext, coverImageUrl);
             },
           ),
         ),
@@ -639,15 +621,17 @@ class Source extends DataTableSource {
             onPressed: () {
               // show image
               // print('view image');
-              showViewNetworkImageGroupDialog(buildContext, () {
-                List<String> output = [];
-                // imageMap.forEach((key, value) {
-                //   if (!key.contains(Config.thumbnailPrefix)) {
-                //     output.add(value.getUrl());
-                //   }
-                // });
-                return output;
-              }());
+              showViewNetworkImageGroupDialog(
+                buildContext,
+                ImageItem.getImageUrlList(
+                  first: dataMap[key]!.getFirstImage(),
+                  second: dataMap[key]!.getSecondImage(),
+                  third: dataMap[key]!.getThirdImage(),
+                  fourth: dataMap[key]!.getFourthImage(),
+                  fifth: dataMap[key]!.getFifthImage(),
+                  ossPath: dataMap[key]!.getOSSPath(),
+                ),
+              );
             },
           ),
         ),

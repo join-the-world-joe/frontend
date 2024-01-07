@@ -456,57 +456,6 @@ class Source extends DataTableSource {
   @override
   int get selectedRowCount => 0;
 
-  String getImageUrl(String imageField, String ossPath) {
-    String output = '';
-    try {
-      var imageItem = ImageItem.fromRemote(imageField, ossPath);
-      output = imageItem.getUrl();
-    } catch (e) {
-      print('Advertisement.Source.getImageUrl failure, err: $e');
-    }
-    return output;
-  }
-
-  List<String> getImageUrlList({
-    required String first,
-    required String second,
-    required String third,
-    required String fourth,
-    required String fifth,
-    required String ossPath,
-  }) {
-    List<String> output = [];
-    try {
-      if (first.isEmpty) {
-        return output;
-      }
-      output.add(getImageUrl(first, ossPath));
-
-      if (second.isEmpty) {
-        return output;
-      }
-      output.add(getImageUrl(second, ossPath));
-
-      if (third.isEmpty) {
-        return output;
-      }
-      output.add(getImageUrl(third, ossPath));
-
-      if (fourth.isEmpty) {
-        return output;
-      }
-      output.add(getImageUrl(fourth, ossPath));
-
-      if (fifth.isEmpty) {
-        return output;
-      }
-      output.add(getImageUrl(fifth, ossPath));
-    } catch (e) {
-      print('Advertisement.Source.getImageUrlList failure, err: $e');
-    }
-    return output;
-  }
-
   @override
   DataRow getRow(int index) {
     // print("getRow: $index");
@@ -611,7 +560,7 @@ class Source extends DataTableSource {
             onPressed: () {
               // show cover image
               // print('view cover image');
-              var coverImageUrl = getImageUrl(dataMap[key]!.getCoverImage(), dataMap[key]!.getOSSPath());
+              var coverImageUrl = ImageItem.getImageUrl(dataMap[key]!.getCoverImage(), dataMap[key]!.getOSSPath());
               // print('coverImageUrl: $coverImageUrl');
               var ret = Uri.parse(coverImageUrl).isAbsolute;
               if (!ret) {
@@ -630,15 +579,16 @@ class Source extends DataTableSource {
               // show image
               // print('view image');
               showViewNetworkImageGroupDialog(
-                  buildContext,
-                  getImageUrlList(
-                    first: dataMap[key]!.getFirstImage(),
-                    second: dataMap[key]!.getSecondImage(),
-                    third: dataMap[key]!.getThirdImage(),
-                    fourth: dataMap[key]!.getFourthImage(),
-                    fifth: dataMap[key]!.getFifthImage(),
-                    ossPath: dataMap[key]!.getOSSPath(),
-                  ));
+                buildContext,
+                ImageItem.getImageUrlList(
+                  first: dataMap[key]!.getFirstImage(),
+                  second: dataMap[key]!.getSecondImage(),
+                  third: dataMap[key]!.getThirdImage(),
+                  fourth: dataMap[key]!.getFourthImage(),
+                  fifth: dataMap[key]!.getFifthImage(),
+                  ossPath: dataMap[key]!.getOSSPath(),
+                ),
+              );
             },
           ),
         ),
