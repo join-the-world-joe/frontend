@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/service/oss/progress/remove_list_of_object_file/remove_list_of_object_file_step.dart';
 import 'package:flutter_framework/common/service/oss/protocol/remove_list_of_object_file.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class RemoveListOfObjectFileProgress {
-  late String _message;
+  final String _message = Translator.translate(Language.attemptToRemoveListOfObjectFile);
   int _result = Code.internalError;
   late RemoveListOfObjectFileStep _step;
 
@@ -15,13 +17,9 @@ class RemoveListOfObjectFileProgress {
   }
 
   RemoveListOfObjectFileProgress.construct({
-    required int result,
     required RemoveListOfObjectFileStep step,
-    required String message,
   }) {
     _step = step;
-    _result = result;
-    _message = message;
   }
 
   Future<int> show({

@@ -16,7 +16,6 @@ class InsertRecordOfAdvertisementStep {
   Advertisement? _record;
 
   InsertRecordOfAdvertisementStep.construct({
-    required int result,
     required Advertisement record,
   }) {
     _rsp = null;

@@ -4,11 +4,13 @@ import 'package:flutter_framework/common/service/admin/progress/insert_record_of
 import 'package:flutter_framework/common/service/admin/progress/insert_record_of_user/insert_record_of_user_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_product.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_user_record.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class InsertRecordOfUserProgress {
-  late String _message;
+  final String _message = Translator.translate(Language.attemptToInsertRecordOfUser);
   int _result = Code.internalError;
   late InsertRecordOfUserStep _step;
 
@@ -17,13 +19,9 @@ class InsertRecordOfUserProgress {
   }
 
   InsertRecordOfUserProgress.construct({
-    required int result,
     required InsertRecordOfUserStep step,
-    required String message,
   }) {
     _step = step;
-    _result = result;
-    _message = message;
   }
 
   Future<int> show({

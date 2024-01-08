@@ -211,18 +211,14 @@ Future<bool> showRemoveRecordOfAdvertisementDialog(BuildContext context, Adverti
                               var step = SoftDeleteRecordsOfAdvertisementStep.construct();
                               step.setAdvertisementIdList([advertisement.getId()]);
                               softDeleteRecordsOfAdvertisementProgress = SoftDeleteRecordsOfAdvertisementProgress.construct(
-                                result: -1,
                                 step: step,
-                                message: Translator.translate(Language.attemptToSoftDeleteRecordOfAdvertisement),
                               );
                               softDeleteRecordsOfAdvertisementProgress!.show(context: context).then((value) {
                                 if (value == Code.oK) {
                                   figureOutputObjectFileList();
                                   var step = RemoveListOfObjectFileStep.construct(listOfObjectFile: objectFileList);
                                   removeListOfObjectFileProgress = RemoveListOfObjectFileProgress.construct(
-                                    result: -1,
                                     step: step,
-                                    message: Translator.translate(Language.attemptToRemoveListOfObjectFile),
                                   );
                                   removeListOfObjectFileProgress!.show(context: context).then((value) {
                                     showMessageDialog(

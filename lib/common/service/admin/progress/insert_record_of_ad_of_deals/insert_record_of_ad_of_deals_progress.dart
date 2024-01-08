@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/service/admin/progress/insert_record_of_ad_of_deals/insert_record_of_ad_of_deals_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_ad_of_deals.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class InsertRecordOfADOfDealsProgress {
-  late String _message;
+  final String _message = Translator.translate(Language.attemptToInsertRecordOfADOfDeals);
   int _result = Code.internalError;
   late InsertRecordOfADOfDealsStep _step;
 
@@ -16,10 +18,8 @@ class InsertRecordOfADOfDealsProgress {
 
   InsertRecordOfADOfDealsProgress.construct({
     required InsertRecordOfADOfDealsStep step,
-    required String message,
   }) {
     _step = step;
-    _message = message;
   }
 
   Future<int> show({

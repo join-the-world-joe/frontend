@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/service/admin/progress/update_record_of_product/update_record_of_product_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/update_record_of_product.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class UpdateRecordOfProductProgress {
-  late String _message;
+  final String _message = Translator.translate(Language.attemptToUpdateRecordOfProduct);
   int _result = Code.internalError;
   late UpdateRecordOfProductStep _step;
 
@@ -15,13 +17,9 @@ class UpdateRecordOfProductProgress {
   }
 
   UpdateRecordOfProductProgress.construct({
-    required int result,
     required UpdateRecordOfProductStep step,
-    required String message,
   }) {
     _step = step;
-    _result = result;
-    _message = message;
   }
 
   Future<int> show({
@@ -64,7 +62,7 @@ class UpdateRecordOfProductProgress {
         );
       },
     ).then(
-          (value) {
+      (value) {
         Runtime.setPeriod(Config.periodOfScreenNormal);
         Runtime.setPeriodic(null);
         return _result;

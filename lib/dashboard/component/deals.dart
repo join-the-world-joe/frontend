@@ -441,7 +441,6 @@ class _State extends State<Deals> {
                               );
                               insertRecordOfADOfDealsProgress = InsertRecordOfADOfDealsProgress.construct(
                                 step: step,
-                                message: Translator.translate(Language.attemptToInsertRecordOfADOfDeals),
                               );
                               insertRecordOfADOfDealsProgress!.show(context: context).then((value) {
                                 if (value != Code.oK) {

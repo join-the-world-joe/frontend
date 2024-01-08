@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/service/admin/progress/insert_record_of_ad_of_carousel/insert_record_of_ad_of_carousel_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_ad_of_carousel.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class InsertRecordOfADOfCarouselProgress {
-  late String _message;
+  final String _message = Translator.translate(Language.attemptToInsertRecordOfADOfCarousel);
   int _result = Code.internalError;
   late InsertRecordOfADOfCarouselStep _step;
 
@@ -16,10 +18,8 @@ class InsertRecordOfADOfCarouselProgress {
 
   InsertRecordOfADOfCarouselProgress.construct({
     required InsertRecordOfADOfCarouselStep step,
-    required String message,
   }) {
     _step = step;
-    _message = message;
   }
 
   Future<int> show({

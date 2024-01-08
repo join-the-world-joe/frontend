@@ -145,9 +145,7 @@ Future<bool> showSoftDeleteRecordsOfUserDialog(BuildContext context, User user) 
                             if (softDeleteRecordsOfUserProgress == null) {
                               var step = SoftDeleteRecordsOfUserStep.construct(userIdList: [int.parse(user.getId())]);
                               softDeleteRecordsOfUserProgress = SoftDeleteRecordsOfUserProgress.construct(
-                                result: -1,
                                 step: step,
-                                message: Translator.translate(Language.attemptToSoftDeleteRecordsOfUser),
                               );
                               softDeleteRecordsOfUserProgress!.show(context: context).then((value) {
                                 if (value == Code.oK) {

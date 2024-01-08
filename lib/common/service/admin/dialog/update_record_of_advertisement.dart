@@ -1105,9 +1105,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                   listOfObjectFile: objectFileToBeRemoved,
                 );
                 removeListOfObjectFileProgress = RemoveListOfObjectFileProgress.construct(
-                  result: -1,
                   step: step,
-                  message: Translator.translate(Language.attemptToRemoveListOfObjectFile),
                 );
                 await removeListOfObjectFileProgress!.show(context: context).then((value) {
                   if (value != Code.oK) {
@@ -1121,9 +1119,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                 var step1 = FetchHeaderListOfObjectFileListStep.construct();
                 step1.setNameListOfFile(nameListOfFile);
                 fetchHeaderListOfObjectFileListProgress = FetchHeaderListOfObjectFileListProgress.construct(
-                  result: -1,
                   step: step1,
-                  message: Translator.translate(Language.attemptToFetchHeaderListOfOSSObjectFile),
                 );
                 await fetchHeaderListOfObjectFileListProgress!.show(context: context).then((value) {
                   if (value != Code.oK) {
@@ -1143,9 +1139,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                   objectDataMapping: objectDataMapping,
                 );
                 uploadImageListProgress = UploadImageListProgress.construct(
-                  result: -2,
                   step: step2,
-                  message: Translator.translate(Language.attemptToUploadImageList),
                 );
                 await uploadImageListProgress!.show(context: context).then((value) {
                   if (value != Code.oK) {
@@ -1201,9 +1195,7 @@ Future<bool> showUpdateRecordOfAdvertisementDialog(BuildContext context, Adverti
                   placeOfOrigin: placeOfOriginController.text,
                 );
                 updateRecordOfAdvertisementProgress = UpdateRecordOfAdvertisementProgress.construct(
-                  result: -3,
                   step: step,
-                  message: Translator.translate(Language.attemptToUpdateRecordOfAdvertisement),
                 );
                 await updateRecordOfAdvertisementProgress!.show(context: context).then((value) {
                   if (value == Code.oK) {

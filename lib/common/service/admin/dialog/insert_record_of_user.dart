@@ -229,9 +229,7 @@ Future<void> showInsertRecordOfUserDialog(BuildContext context) async {
                   roleList: roleList,
                 );
                 insertRecordOfUserProgress = InsertRecordOfUserProgress.construct(
-                  result: -1,
                   step: step,
-                  message: Translator.translate(Language.attemptToInsertRecordOfUser),
                 );
                 insertRecordOfUserProgress!.show(context: context).then((value) {
                   if (value == Code.oK) {

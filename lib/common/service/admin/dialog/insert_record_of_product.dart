@@ -145,9 +145,7 @@ Future<void> showInsertRecordOfProductDialog(BuildContext context) async {
                 step.setContact(contactController.text);
                 step.setBuyingPrice(Convert.doubleStringMultiple10toInt(buyingPriceController.text));
                 insertRecordOfProductProgress = InsertRecordOfProductProgress.construct(
-                  result: Code.internalError,
                   step: step,
-                  message: Translator.translate(Language.attemptToInsertRecordOfProduct),
                 );
                 insertRecordOfProductProgress!.show(context: context).then((value) {
                   if (value == Code.oK) {

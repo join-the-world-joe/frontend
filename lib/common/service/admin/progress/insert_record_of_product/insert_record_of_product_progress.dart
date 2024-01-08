@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/service/admin/progress/insert_record_of_product/insert_record_of_product_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/insert_record_of_product.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class InsertRecordOfProductProgress {
-  late String _message;
+  final String _message = Translator.translate(Language.attemptToInsertRecordOfProduct);
   int _result = Code.internalError;
   late InsertRecordOfProductStep _step;
 
@@ -15,13 +17,9 @@ class InsertRecordOfProductProgress {
   }
 
   InsertRecordOfProductProgress.construct({
-    required int result,
     required InsertRecordOfProductStep step,
-    required String message,
   }) {
     _step = step;
-    _result = result;
-    _message = message;
   }
 
   Future<int> show({
@@ -64,7 +62,7 @@ class InsertRecordOfProductProgress {
         );
       },
     ).then(
-          (value) {
+      (value) {
         Runtime.setPeriod(Config.periodOfScreenNormal);
         Runtime.setPeriodic(null);
         return _result;

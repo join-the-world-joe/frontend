@@ -448,7 +448,6 @@ class _State extends State<Carousel> {
                               );
                               insertRecordOfADOfCarouselProgress = InsertRecordOfADOfCarouselProgress.construct(
                                 step: step,
-                                message: Translator.translate(Language.attemptToInsertRecordOfADOfCarousel),
                               );
                               insertRecordOfADOfCarouselProgress!.show(context: context).then((value) {
                                 if (value != Code.oK) {

@@ -147,9 +147,7 @@ Future<bool> showUpdateRecordOfProductDialog(BuildContext context, Product produ
                 step.setProductId(idController.text);
                 step.setBuyingPrice(buyingPriceController.text);
                 updateRecordOfProductProgress = UpdateRecordOfProductProgress.construct(
-                  result: Code.internalError,
                   step: step,
-                  message: Translator.translate(Language.attemptToUpdateRecordOfProduct),
                 );
                 updateRecordOfProductProgress!.show(context: context).then((value) {
                   if (value == Code.oK) {

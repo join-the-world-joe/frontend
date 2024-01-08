@@ -936,9 +936,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                 var step = FetchHeaderListOfObjectFileListStep.construct();
                 step.setNameListOfFile(nameListOfFile);
                 fetchHeaderListOfObjectFileListProgress = FetchHeaderListOfObjectFileListProgress.construct(
-                  result: -1,
                   step: step,
-                  message: Translator.translate(Language.attemptToFetchHeaderListOfOSSObjectFile),
                 );
                 await fetchHeaderListOfObjectFileListProgress!.show(context: context).then((value) {
                   if (value != Code.oK) {
@@ -954,9 +952,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                       objectDataMapping: objectDataMapping,
                     );
                     uploadImageListProgress = UploadImageListProgress.construct(
-                      result: -2,
                       step: step,
-                      message: Translator.translate(Language.attemptToUploadImageList),
                     );
                     uploadImageListProgress!.show(context: context).then((value) {
                       if (value != Code.oK) {
@@ -968,7 +964,6 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                         return;
                       }
                       var step = InsertRecordOfAdvertisementStep.construct(
-                          result: -3,
                           record: Advertisement.construct(
                             id: 0,
                             name: nameController.text,
@@ -989,9 +984,7 @@ Future<void> showInsertRecordOfAdvertisementDialog(BuildContext context) async {
                             ossFolder: ossFolder,
                           ));
                       insertRecordOfAdvertisementProgress = InsertRecordOfAdvertisementProgress.construct(
-                        result: -3,
                         step: step,
-                        message: Translator.translate(Language.attemptToInsertRecordOfAdvertisement),
                       );
                       insertRecordOfAdvertisementProgress!.show(context: context).then((value) {
                         if (value != Code.oK) {
