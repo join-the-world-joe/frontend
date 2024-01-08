@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_framework/common/code/code.dart';
 import 'package:flutter_framework/common/service/admin/progress/sign_in/sign_in_step.dart';
 import 'package:flutter_framework/common/service/admin/protocol/sign_in.dart';
+import 'package:flutter_framework/common/translator/language.dart';
+import 'package:flutter_framework/common/translator/translator.dart';
 import 'package:flutter_framework/dashboard/config/config.dart';
 import 'package:flutter_framework/runtime/runtime.dart';
 
 class SignInProgress {
-  late String _message;
+  final String _message = Translator.translate(Language.attemptToSignIn);
   int _result = Code.internalError;
   late SignInStep _step;
 
@@ -15,13 +17,9 @@ class SignInProgress {
   }
 
   SignInProgress.construct({
-    required int result,
     required SignInStep step,
-    required String message,
   }) {
     _step = step;
-    _result = result;
-    _message = message;
   }
 
   Future<int> show({

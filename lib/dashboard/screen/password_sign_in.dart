@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_framework/common/dialog/message.dart';
 import 'package:flutter_framework/common/route/admin.dart';
 import 'package:flutter_framework/common/service/admin/progress/sign_in/sign_in_progress.dart';
 import 'package:flutter_framework/common/service/admin/progress/sign_in/sign_in_step.dart';
@@ -299,15 +300,17 @@ class _State extends State<PasswordSignIn> {
                             step.setAccount(idControl.text);
                             step.setPassword(Runtime.rsa.encrypt(passwordControl.text));
                             signInProgress = SignInProgress.construct(
-                              result: Code.internalError,
                               step: step,
-                              message: Translator.translate(Language.attemptToSignIn),
                             );
                             signInProgress!.show(context: context).then((value) {
                               if (value == Code.oK) {
                                 navigate(Screen.home);
                               } else {
-                                showWarningDialog(context, Translator.translate(Language.operationTimeout));
+                                showMessageDialog(
+                                  context,
+                                  Translator.translate(Language.titleOfNotification),
+                                  '${Translator.translate(Language.failureWithErrorCode)} ${step.getCode()}',
+                                );
                               }
                               signInProgress = null;
                             });
@@ -319,15 +322,17 @@ class _State extends State<PasswordSignIn> {
                             step.setEmail(idControl.text);
                             step.setPassword(Runtime.rsa.encrypt(passwordControl.text));
                             signInProgress = SignInProgress.construct(
-                              result: Code.internalError,
                               step: step,
-                              message: Translator.translate(Language.attemptToSignIn),
                             );
                             signInProgress!.show(context: context).then((value) {
                               if (value == Code.oK) {
                                 navigate(Screen.home);
                               } else {
-                                showWarningDialog(context, Translator.translate(Language.operationTimeout));
+                                showMessageDialog(
+                                  context,
+                                  Translator.translate(Language.titleOfNotification),
+                                  '${Translator.translate(Language.failureWithErrorCode)} ${step.getCode()}',
+                                );
                               }
                               signInProgress = null;
                             });

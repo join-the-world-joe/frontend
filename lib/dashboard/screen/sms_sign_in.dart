@@ -436,15 +436,17 @@ class _State extends State<SMSSignIn> {
                             step.setCountryCode(countryCodeControl.text);
                             step.setVerificationCode(int.parse(verificationCodeControl.text));
                             signInProgress = SignInProgress.construct(
-                              result: Code.internalError,
                               step: step,
-                              message: Translator.translate(Language.attemptToSignIn),
                             );
                             signInProgress!.show(context: context).then((value) {
                               if (value == Code.oK) {
                                 navigate(Screen.home);
                               } else {
-                                showWarningDialog(context, Translator.translate(Language.operationTimeout));
+                                showMessageDialog(
+                                  context,
+                                  Translator.translate(Language.titleOfNotification),
+                                  '${Translator.translate(Language.failureWithErrorCode)} ${step.getCode()}',
+                                );
                               }
                               signInProgress = null;
                             });

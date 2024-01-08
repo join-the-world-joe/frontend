@@ -28,6 +28,13 @@ class SignInStep {
     _responded = false;
   }
 
+  int getCode() {
+    if (_rsp != null) {
+      return _rsp!.getCode();
+    }
+    return 1;
+  }
+
   void respond(SignInRsp rsp) {
     if (rsp.getCode() == Code.oK) {
       Cache.setUserId(rsp.getUserId());
